@@ -1,42 +1,51 @@
 use std::fs;
-use std::fs::File;
-use std::path::Path;
-use std::process::{Child, Command, Stdio};
+use std::process::Child;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use rand::Rng;
 use rayon::prelude::*;
 use walkdir::WalkDir;
+use crate::mypy::{get_mypy_run_command, validate_mypy_output};
 
 use crate::ruff::{create_broken_python_files, get_ruff_run_command, validate_ruff_output};
 
 mod ruff;
+mod mypy;
 
-const INPUT_DIR: &str = "/home/rafal/Desktop/Ruff/Broken";
-// const INPUT_DIR: &str = "/home/rafal/Desktop/33";
-const OUTPUT_DIR: &str = "/home/rafal/Desktop/Ruff/Broken";
-const RUFF_SETTING_FILE: &str = "/home/rafal/Desktop/Ruff/ruff.toml";
+// RUFF
+const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/Broken";
+const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/InvalidFiles";
+const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/ValidFiles";
+const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/Broken";
 
-const LOOP_NUMBER: u32 = 2;
+// Mypy
+// const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken";
+// const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/InvalidFiles";
+// const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/ValidFiles";
+// const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken";
 
-const DESTRUCTIVE_RUN: bool = false; // Use true, to remove files and copy them, with false, just scanning will happen
+
+const INPUT_DIR: &str = if DESTRUCTIVE_RUN { DESTRUCTIVE_INPUT_DIR } else { NON_DESTRUCTIVE_INPUT_DIR };
+const LOOP_NUMBER: u32 = 5;
+const DESTRUCTIVE_RUN: bool = true ; // Use true, to remove files and copy them, with false, just scanning will happen
+const GENERATE_FILES: bool = true;
 
 const CURRENT_MODE: MODES = MODES::RUFF;
 
 enum MODES {
-    RUFF
+    RUFF,
+    MYPY
 }
 
 fn main() {
-    // rayon::ThreadPoolBuilder::new()
-    //     .num_threads(16)
-    //     .build_global()
-    //     .unwrap();
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(16)
+        .build_global()
+        .unwrap();
 
-    for i in 1..(LOOP_NUMBER + 1) {
-        println!("Starting loop {i} out of all {}", LOOP_NUMBER + 1);
+    for i in 1..=LOOP_NUMBER {
+        println!("Starting loop {i} out of all {LOOP_NUMBER}");
 
-        if DESTRUCTIVE_RUN {
+        if DESTRUCTIVE_RUN && GENERATE_FILES {
             let _ = fs::remove_dir_all(INPUT_DIR);
             fs::create_dir_all(INPUT_DIR).unwrap();
 
@@ -54,11 +63,13 @@ fn main() {
                 files.push(s.to_string());
             }
         }
+        assert!(files.len() > 0);
 
         let atomic = AtomicU32::new(0);
+        let atomic_broken = AtomicU32::new(0);
         let all = files.len();
 
-        files.into_par_iter().for_each(|mut full_name| {
+        files.into_par_iter().for_each(|full_name| {
             let number = atomic.fetch_add(1, Ordering::Release);
             if number % 1000 == 0 {
                 println!("_____ {number} / {all}")
@@ -67,28 +78,34 @@ fn main() {
             let output = command.wait_with_output().unwrap();
 
             let mut out = output.stderr.clone();
-            out.push('\n' as u8);
+            out.push(b'\n');
             out.extend(output.stdout);
             let s = String::from_utf8(out).unwrap();
-            choose_validate_output_function(full_name,s);
+            if !choose_validate_output_function(full_name, s){
+                atomic_broken.fetch_add(1, Ordering::Relaxed);
+            }
         });
+
+        println!("\n\nFound {} broken files", atomic_broken.load(Ordering::Relaxed));
     }
 }
 
-fn choose_validate_output_function(full_name: String,s: String) {
+fn choose_validate_output_function(full_name: String, s: String) -> bool {
     match CURRENT_MODE {
-        MODES::RUFF => validate_ruff_output(full_name,s)
+        MODES::RUFF => validate_ruff_output(full_name, s),
+        MODES::MYPY => validate_mypy_output(full_name, s)
     }
 }
 
 fn choose_run_command(full_name: &str) -> Child {
     match CURRENT_MODE {
-        MODES::RUFF => get_ruff_run_command(full_name)
+        MODES::RUFF => get_ruff_run_command(full_name),
+        MODES::MYPY => get_mypy_run_command(full_name),
     }
 }
 
 fn choose_broken_files_creator() -> Child {
     match CURRENT_MODE {
-        MODES::RUFF => create_broken_python_files()
+        MODES::RUFF | MODES::MYPY => create_broken_python_files()
     }
 }
