@@ -29,6 +29,7 @@ pub const CURRENT_MODE: MODES = MODES::ROME;
 // pub const CURRENT_MODE: MODES = MODES::MYPY;
 
 // LOOP_NUMBER - How much creating/removing/checking steps will be executed
+// BROKEN_FILES_FOR_EACH_FILE - Number of broken files that will be created for each 1 valid file
 // COPY_BROKEN_FILES - If true, will copy broken files that cause problems to OUTPUT_DIR
 // GENERATE_FILES - If true will generate broken files and save them to DESTRUCTIVE_INPUT_DIR(this folder will be removed after each run)
 
@@ -38,6 +39,7 @@ pub const INPUT_DIR: &str = if COPY_BROKEN_FILES {
     NON_DESTRUCTIVE_INPUT_DIR
 };
 pub const LOOP_NUMBER: u32 = 1;
+pub const BROKEN_FILES_FOR_EACH_FILE: u32 = 1;
 pub const COPY_BROKEN_FILES: bool = true;
 pub const GENERATE_FILES: bool = true;
 

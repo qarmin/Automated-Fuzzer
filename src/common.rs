@@ -3,7 +3,7 @@ use std::fs;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
 
-use crate::settings::{BASE_OF_VALID_FILES, COPY_BROKEN_FILES, INPUT_DIR, OUTPUT_DIR};
+use crate::settings::{BASE_OF_VALID_FILES, BROKEN_FILES_FOR_EACH_FILE, COPY_BROKEN_FILES, INPUT_DIR, OUTPUT_DIR};
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except",
@@ -19,7 +19,8 @@ const JAVASCRIPT_ARGS: &[&str] = &["true", "false"];
 pub fn create_broken_python_files() -> Child {
     Command::new("create_broken_files")
         .args(
-            r##"-i BASE_OF_VALID_FILES -o INPUT_DIR -n 1 -c true -s"##
+            r##"-i BASE_OF_VALID_FILES -o INPUT_DIR -n BROKEN_FILES_FOR_EACH_FILE -c true -s"##
+                .replace("BROKEN_FILES_FOR_EACH_FILE", &BROKEN_FILES_FOR_EACH_FILE.to_string())
                 .replace("BASE_OF_VALID_FILES", BASE_OF_VALID_FILES)
                 .replace("INPUT_DIR", INPUT_DIR)
                 .split(' '),
