@@ -9,6 +9,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
+name = "automated_fuzzer"
+version = "0.1.0"
+dependencies = [
+ "rand",
+ "rayon",
+ "walkdir",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -164,15 +173,6 @@ dependencies = [
  "crossbeam-deque",
  "crossbeam-utils",
  "num_cpus",
-]
-
-[[package]]
-name = "run_command_for_every_file"
-version = "0.1.0"
-dependencies = [
- "rand",
- "rayon",
- "walkdir",
 ]
 
 [[package]]
