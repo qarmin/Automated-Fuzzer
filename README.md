@@ -13,6 +13,7 @@ cargo install create_broken_files
 - Create settings(by copying e.g. Ruff config) in `settings.rs` and setup paths to valid folders(this folders must exists) - changing supported apps works by commenting/uncommenting parts of code
 - Copy `ruff.rs` and create file with similar content - one function will create command to run and second will validate output to check if crash/error happened
 - Add this functions to `main.rs` inside `choose_validate_output_function`, `choose_run_command` and `choose_broken_files_creator`
+- Prepare valid files(find them on github in OS folders etc.), and put them into folder from `BASE_OF_VALID_FILES`
 - Run app via `cargo run --release`
 - Depending on CPU load, consider to enable more/less rayon threads
 
