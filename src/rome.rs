@@ -1,6 +1,6 @@
 use std::process::{Child, Command, Stdio};
 
-use crate::common::try_to_save_file;
+use crate::common::{create_new_file_name, try_to_save_file};
 
 // const ROME_SETTING_FILE: &str = "/home/rafal/Desktop/RunEveryCommand/Rome/rome.toml"; // TODO not sure how to use it, or what exactly will this help
 const ROME_APP: &str = "rome";
@@ -17,23 +17,18 @@ pub fn get_rome_run_command(full_name: &str) -> Child {
         .unwrap()
 }
 
-pub fn validate_rome_output(full_name: String, s: String) -> bool {
-    if s.contains("RUST_BACKTRACE") || s.contains("Rome encountered an unexpected error") {
-        let mut lines = s
-            .lines()
-            // .filter(|e|
-            //     {
-            //         !((e.contains(".py") && e.matches(':').count() >= 3) || e.starts_with("warning: `") || e.starts_with("Ignoring `"))
-            //     })
-            .map(String::from)
-            .collect::<Vec<String>>();
-        lines.dedup(); // Mostly used for removing duplicated empty space
-        let s = lines.into_iter().collect::<String>();
+pub fn is_broken_rome(content: &str) -> bool {
+    content.contains("RUST_BACKTRACE") || content.contains("Rome encountered an unexpected error")
+}
 
-        println!("\n_______________ File {full_name} _______________________");
-        println!("{s}");
-        try_to_save_file(&full_name);
-        return false;
+pub fn validate_rome_output(full_name: String, output: String) -> Option<String> {
+    let new_name = create_new_file_name(&full_name);
+    println!("\n_______________ File {full_name} saved to {new_name} _______________________");
+    println!("{output}");
+
+    if try_to_save_file(&full_name, &new_name) {
+        Some(new_name)
+    } else {
+        None
     }
-    true
 }

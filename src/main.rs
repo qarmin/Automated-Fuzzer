@@ -4,14 +4,18 @@ use std::fs;
 use std::process::Child;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use crate::common::{create_broken_javascript_files, create_broken_python_files};
-use crate::mypy::{get_mypy_run_command, validate_mypy_output};
-use crate::rome::{get_rome_run_command, validate_rome_output};
 use rayon::prelude::*;
 use walkdir::WalkDir;
 
-use crate::ruff::{get_ruff_run_command, validate_ruff_output};
-use crate::settings::{CURRENT_MODE, EXTENSIONS, GENERATE_FILES, INPUT_DIR, LOOP_NUMBER, MODES};
+use crate::common::{create_broken_javascript_files, create_broken_python_files, minimize_output};
+use crate::mypy::{get_mypy_run_command, is_broken_mypy, validate_mypy_output};
+use crate::rome::{get_rome_run_command, is_broken_rome, validate_rome_output};
+use crate::ruff::{
+    execute_command_and_connect_output, get_ruff_run_command, is_broken_ruff, validate_ruff_output,
+};
+use crate::settings::{
+    CURRENT_MODE, EXTENSIONS, GENERATE_FILES, INPUT_DIR, LOOP_NUMBER, MINIMIZE_OUTPUT, MODES,
+};
 
 mod common;
 mod mypy;
@@ -20,10 +24,10 @@ mod ruff;
 mod settings;
 
 fn main() {
-    // rayon::ThreadPoolBuilder::new()
-    //     .num_threads(16)
-    //     .build_global()
-    //     .unwrap();
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(1)
+        .build_global()
+        .unwrap();
 
     for i in 1..=LOOP_NUMBER {
         println!("Starting loop {i} out of all {LOOP_NUMBER}");
@@ -56,15 +60,15 @@ fn main() {
             if number % 1000 == 0 {
                 println!("_____ {number} / {all}")
             }
-            let command = choose_run_command(&full_name);
-            let output = command.wait_with_output().unwrap();
 
-            let mut out = output.stderr.clone();
-            out.push(b'\n');
-            out.extend(output.stdout);
-            let s = String::from_utf8(out).unwrap();
-            if !choose_validate_output_function(full_name, s) {
+            let s = execute_command_and_connect_output(&full_name);
+            if is_broken(&s) {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
+                if let Some(new_file_name) = choose_validate_output_function(full_name, s) {
+                    if MINIMIZE_OUTPUT {
+                        minimize_output(&new_file_name);
+                    }
+                };
             }
         });
 
@@ -75,7 +79,7 @@ fn main() {
     }
 }
 
-fn choose_validate_output_function(full_name: String, s: String) -> bool {
+fn choose_validate_output_function(full_name: String, s: String) -> Option<String> {
     match CURRENT_MODE {
         MODES::RUFF => validate_ruff_output(full_name, s),
         MODES::MYPY => validate_mypy_output(full_name, s),
@@ -95,5 +99,13 @@ fn choose_broken_files_creator() -> Child {
     match CURRENT_MODE {
         MODES::RUFF | MODES::MYPY => create_broken_python_files(),
         MODES::ROME => create_broken_javascript_files(),
+    }
+}
+
+fn is_broken(content: &str) -> bool {
+    match CURRENT_MODE {
+        MODES::RUFF => is_broken_ruff(content),
+        MODES::MYPY => is_broken_mypy(content),
+        MODES::ROME => is_broken_rome(content),
     }
 }

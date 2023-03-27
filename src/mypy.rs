@@ -1,6 +1,6 @@
 use std::process::{Child, Command, Stdio};
 
-use crate::common::try_to_save_file;
+use crate::common::{create_new_file_name, try_to_save_file};
 
 pub fn get_mypy_run_command(full_name: &str) -> Child {
     Command::new("mypy")
@@ -12,13 +12,18 @@ pub fn get_mypy_run_command(full_name: &str) -> Child {
         .unwrap()
 }
 
-pub fn validate_mypy_output(full_name: String, s: String) -> bool {
-    println!("NONE ____ {s}");
-    if s.contains("INTERNAL ERROR") || s.contains("Traceback") {
-        println!("\n_______________ File {full_name} _______________________");
-        println!("{s}");
-        try_to_save_file(&full_name);
-        return false;
+pub fn is_broken_mypy(content: &str) -> bool {
+    content.contains("INTERNAL ERROR") || content.contains("Traceback")
+}
+
+pub fn validate_mypy_output(full_name: String, output: String) -> Option<String> {
+    let new_name = create_new_file_name(&full_name);
+    println!("\n_______________ File {full_name} saved to {new_name} _______________________");
+    println!("{output}");
+
+    if try_to_save_file(&full_name, &new_name) {
+        Some(new_name)
+    } else {
+        None
     }
-    true
 }
