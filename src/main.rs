@@ -24,10 +24,10 @@ mod ruff;
 mod settings;
 
 fn main() {
-    rayon::ThreadPoolBuilder::new()
-        .num_threads(1)
-        .build_global()
-        .unwrap();
+    // rayon::ThreadPoolBuilder::new()
+    //     .num_threads(16)
+    //     .build_global()
+    //     .unwrap();
 
     for i in 1..=LOOP_NUMBER {
         println!("Starting loop {i} out of all {LOOP_NUMBER}");

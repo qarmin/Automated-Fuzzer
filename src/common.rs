@@ -3,15 +3,14 @@ use crate::ruff::execute_command_and_connect_output;
 use rand::prelude::ThreadRng;
 use rand::Rng;
 use std::cmp::max;
+use std::collections::HashSet;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
 
-use crate::settings::{
-    BASE_OF_VALID_FILES, BROKEN_FILES_FOR_EACH_FILE, COPY_BROKEN_FILES, INPUT_DIR, OUTPUT_DIR,
-};
+use crate::settings::{BASE_OF_VALID_FILES, BROKEN_FILES_FOR_EACH_FILE, COPY_BROKEN_FILES, INPUT_DIR, MINIMIZATION_ATTEMPTS, OUTPUT_DIR};
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except",
@@ -88,12 +87,11 @@ pub fn minimize_output(full_name: &str) {
     let mut lines = data.lines().map(str::to_string).collect::<Vec<String>>();
     let mut rng = rand::thread_rng();
 
-    println!("Original files {}", lines.len());
+    let old_line_number = lines.len();
 
-    const TRIES: u32 = 100;
-    let mut to_try = TRIES;
+    let mut attempts = MINIMIZATION_ATTEMPTS;
     let mut minimized_output = false;
-    while to_try > 0 {
+    while attempts > 0 {
         let Some(new_lines) = minimize_lines(full_name, &lines, &mut rng) else {
             break;
         };
@@ -103,11 +101,11 @@ pub fn minimize_output(full_name: &str) {
 
         let output = execute_command_and_connect_output(full_name);
         if is_broken(&output) {
-            to_try = TRIES;
+            attempts = MINIMIZATION_ATTEMPTS;
             lines = new_lines;
             minimized_output = true;
         } else {
-            to_try -= 1;
+            attempts -= 1;
         }
     }
 
@@ -122,7 +120,7 @@ pub fn minimize_output(full_name: &str) {
         write!(output_file, "{}", lines.join("\n")).unwrap();
     }
 
-    println!("Minimized files {}", lines.len());
+    println!("File {full_name}, minimized from {old_line_number} to {} lines", lines.len());
 }
 
 pub fn minimize_lines(
@@ -141,21 +139,52 @@ pub fn minimize_lines(
         .open(full_name)
         .unwrap();
 
-    let number = rng.gen_range(0..2);
+    let number = rng.gen_range(0..=3);
     let mut content;
 
     let limit = max(1, rng.gen_range(0..(max(1, lines.len() / 5))));
 
     if number == 0 {
+        // Removing from start
         content = lines[limit..].to_vec();
     } else if number == 1 {
+        // Removing from end
         let limit = lines.len() - limit;
         content = lines[..limit].to_vec();
-    } else {
-        content = lines.to_vec();
-        for _ in 0..limit {
-            content.remove(rng.gen_range(0..content.len()));
+    } else if number == 2 {
+        // Removing from middle
+
+        let limit_upper ;
+        let limit_lower;
+        loop {
+            let limit1 = rng.gen_range(0..lines.len());
+            let limit2 = rng.gen_range(0..lines.len());
+            if limit1 > limit2 {
+                limit_lower = limit2;
+                limit_upper = limit1;
+                break;
+            } else if limit2 > limit1 {
+                limit_lower = limit1;
+                limit_upper = limit2;
+                break;
+            }
         }
+        content = lines[limit_lower..limit_upper].to_vec();
+    } else {
+        // Removing randoms
+        content = lines.to_vec();
+        let mut indexes_to_remove = HashSet::new();
+        for _ in 0..limit {
+            indexes_to_remove.insert(rng.gen_range(0..content.len()));
+        }
+
+        let mut new_data = Vec::new();
+        for (idx, line) in content.into_iter().enumerate(){
+            if !indexes_to_remove.contains(&idx) {
+                new_data.push(line);
+            }
+        }
+        content = new_data
     }
 
     write!(output_file, "{}", content.join("\n")).unwrap();
