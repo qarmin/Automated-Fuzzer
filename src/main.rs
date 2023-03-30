@@ -1,9 +1,13 @@
 #![allow(clippy::upper_case_acronyms)]
 
 use std::fs;
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::process::Child;
+use std::ptr::write;
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use rand::Rng;
 use rayon::prelude::*;
 use walkdir::WalkDir;
 

@@ -10,7 +10,10 @@ use std::io::Write;
 use std::path::Path;
 use std::process::{Child, Command, Stdio};
 
-use crate::settings::{BASE_OF_VALID_FILES, BROKEN_FILES_FOR_EACH_FILE, COPY_BROKEN_FILES, INPUT_DIR, MINIMIZATION_ATTEMPTS, OUTPUT_DIR};
+use crate::settings::{
+    BASE_OF_VALID_FILES, BROKEN_FILES_FOR_EACH_FILE, COPY_BROKEN_FILES, INPUT_DIR,
+    MINIMIZATION_ATTEMPTS, OUTPUT_DIR,
+};
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except",
@@ -80,7 +83,6 @@ pub fn minimize_output(full_name: &str) {
     let output = execute_command_and_connect_output(full_name);
 
     if !is_broken(&output) {
-        dbg!("");
         return;
     }
 
@@ -120,7 +122,10 @@ pub fn minimize_output(full_name: &str) {
         write!(output_file, "{}", lines.join("\n")).unwrap();
     }
 
-    println!("File {full_name}, minimized from {old_line_number} to {} lines", lines.len());
+    println!(
+        "File {full_name}, minimized from {old_line_number} to {} lines",
+        lines.len()
+    );
 }
 
 pub fn minimize_lines(
@@ -152,9 +157,8 @@ pub fn minimize_lines(
         let limit = lines.len() - limit;
         content = lines[..limit].to_vec();
     } else if number == 2 {
-        // Removing from middle
-
-        let limit_upper ;
+        // Removing random from middle
+        let limit_upper;
         let limit_lower;
         loop {
             let limit1 = rng.gen_range(0..lines.len());
@@ -179,7 +183,7 @@ pub fn minimize_lines(
         }
 
         let mut new_data = Vec::new();
-        for (idx, line) in content.into_iter().enumerate(){
+        for (idx, line) in content.into_iter().enumerate() {
             if !indexes_to_remove.contains(&idx) {
                 new_data.push(line);
             }
