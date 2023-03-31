@@ -4,21 +4,37 @@
 // OUTPUT_DIR - where to copy broken files
 // CURRENT_MODE - variable to tell app which app needs to be checked
 
+// OXC
+pub const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken";
+pub const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/oxc/InvalidFiles";
+pub const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/JAVASCRIPT_VALID_FILES";
+pub const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken";
+pub const EXTENSIONS: &[&str] = &[".js", ".ts"];
+pub const CURRENT_MODE: MODES = MODES::OXC;
+
+// DLINT
+// pub const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Dlint/Broken";
+// pub const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Dlint/InvalidFiles";
+// pub const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/JAVASCRIPT_VALID_FILES";
+// pub const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Dlint/Broken";
+// pub const EXTENSIONS: &[&str] = &[".js", ".ts"];
+// pub const CURRENT_MODE: MODES = MODES::DLINT;
+
 // ROME
 // pub const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Rome/Broken";
 // pub const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Rome/InvalidFiles";
-// pub const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/Rome/ValidFiles";
+// pub const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/JAVASCRIPT_VALID_FILES";
 // pub const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Rome/Broken";
 // pub const EXTENSIONS: &[&str] = &[".js", ".ts"];
 // pub const CURRENT_MODE: MODES = MODES::ROME;
 
 // RUFF
-pub const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/Broken";
-pub const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/InvalidFiles";
-pub const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/ValidFiles";
-pub const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/Broken";
-pub const EXTENSIONS: &[&str] = &[".py"];
-pub const CURRENT_MODE: MODES = MODES::RUFF;
+// pub const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/Broken";
+// pub const DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/InvalidFiles";
+// pub const BASE_OF_VALID_FILES: &str = "/home/rafal/Desktop/RunEveryCommand/PYTHON_VALID_FILES";
+// pub const OUTPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/Broken";
+// pub const EXTENSIONS: &[&str] = &[".py"];
+// pub const CURRENT_MODE: MODES = MODES::RUFF;
 
 // Mypy
 // pub const NON_DESTRUCTIVE_INPUT_DIR: &str = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken";
@@ -51,4 +67,6 @@ pub enum MODES {
     RUFF,
     MYPY,
     ROME,
+    DLINT,
+    OXC,
 }

@@ -12,7 +12,9 @@ use rayon::prelude::*;
 use walkdir::WalkDir;
 
 use crate::common::{create_broken_javascript_files, create_broken_python_files, minimize_output};
+use crate::dlint::{get_dlint_run_command, is_broken_dlint, validate_dlint_output};
 use crate::mypy::{get_mypy_run_command, is_broken_mypy, validate_mypy_output};
+use crate::oxc::{get_oxc_run_command, is_broken_oxc, validate_oxc_output};
 use crate::rome::{get_rome_run_command, is_broken_rome, validate_rome_output};
 use crate::ruff::{
     execute_command_and_connect_output, get_ruff_run_command, is_broken_ruff, validate_ruff_output,
@@ -26,10 +28,12 @@ mod mypy;
 mod rome;
 mod ruff;
 mod settings;
+mod dlint;
+mod oxc;
 
 fn main() {
     // rayon::ThreadPoolBuilder::new()
-    //     .num_threads(16)
+    //     .num_threads(1)
     //     .build_global()
     //     .unwrap();
 
@@ -66,6 +70,7 @@ fn main() {
             }
 
             let s = execute_command_and_connect_output(&full_name);
+
             if is_broken(&s) {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
                 if let Some(new_file_name) = choose_validate_output_function(full_name, s) {
@@ -88,6 +93,8 @@ fn choose_validate_output_function(full_name: String, s: String) -> Option<Strin
         MODES::RUFF => validate_ruff_output(full_name, s),
         MODES::MYPY => validate_mypy_output(full_name, s),
         MODES::ROME => validate_rome_output(full_name, s),
+        MODES::DLINT => validate_dlint_output(full_name, s),
+        MODES::OXC => validate_oxc_output(full_name, s),
     }
 }
 
@@ -96,13 +103,15 @@ fn choose_run_command(full_name: &str) -> Child {
         MODES::RUFF => get_ruff_run_command(full_name),
         MODES::MYPY => get_mypy_run_command(full_name),
         MODES::ROME => get_rome_run_command(full_name),
+        MODES::DLINT  => get_dlint_run_command(full_name),
+        MODES::OXC  => get_oxc_run_command(full_name),
     }
 }
 
 fn choose_broken_files_creator() -> Child {
     match CURRENT_MODE {
         MODES::RUFF | MODES::MYPY => create_broken_python_files(),
-        MODES::ROME => create_broken_javascript_files(),
+        MODES::ROME | MODES::DLINT| MODES::OXC => create_broken_javascript_files(),
     }
 }
 
@@ -111,5 +120,7 @@ fn is_broken(content: &str) -> bool {
         MODES::RUFF => is_broken_ruff(content),
         MODES::MYPY => is_broken_mypy(content),
         MODES::ROME => is_broken_rome(content),
+        MODES::DLINT => is_broken_dlint(content),
+        MODES::OXC => is_broken_oxc(content),
     }
 }
