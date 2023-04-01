@@ -23,7 +23,7 @@ cargo install create_broken_files
 - In loop, different app(`ruff`, `rome`, `mypy` etc.) check this file
 - Basing on output messages like `RUST_BACKTRACE`, `crashed`, `error`, `internal bug`, file is checked if caused some bugs(this will find not only crashes).
 - If yes, then this file is copied to special folder to be able to verify it
-- If minimization is enabled, app tries to minimize output to produce bug
+- If minimization is enabled, app tries to minimize output to produce bug(this may take some time, but output files are usually smaller 2x-100x times)
 
 Video, how output should look:  
 

@@ -138,6 +138,7 @@ pub fn minimize_output(full_name: &str) {
     );
 }
 
+#[allow(clippy::comparison_chain)]
 pub fn minimize_lines(
     full_name: &str,
     lines: &Vec<String>,

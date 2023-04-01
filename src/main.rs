@@ -1,13 +1,9 @@
 #![allow(clippy::upper_case_acronyms)]
 
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::Write;
 use std::process::Child;
-use std::ptr::write;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use rand::Rng;
 use rayon::prelude::*;
 use walkdir::WalkDir;
 
@@ -24,12 +20,12 @@ use crate::settings::{
 };
 
 mod common;
+mod dlint;
 mod mypy;
+mod oxc;
 mod rome;
 mod ruff;
 mod settings;
-mod dlint;
-mod oxc;
 
 fn main() {
     // rayon::ThreadPoolBuilder::new()
@@ -103,15 +99,15 @@ fn choose_run_command(full_name: &str) -> Child {
         MODES::RUFF => get_ruff_run_command(full_name),
         MODES::MYPY => get_mypy_run_command(full_name),
         MODES::ROME => get_rome_run_command(full_name),
-        MODES::DLINT  => get_dlint_run_command(full_name),
-        MODES::OXC  => get_oxc_run_command(full_name),
+        MODES::DLINT => get_dlint_run_command(full_name),
+        MODES::OXC => get_oxc_run_command(full_name),
     }
 }
 
 fn choose_broken_files_creator() -> Child {
     match CURRENT_MODE {
         MODES::RUFF | MODES::MYPY => create_broken_python_files(),
-        MODES::ROME | MODES::DLINT| MODES::OXC => create_broken_javascript_files(),
+        MODES::ROME | MODES::DLINT | MODES::OXC => create_broken_javascript_files(),
     }
 }
 

@@ -2,13 +2,14 @@ use std::process::{Child, Command, Stdio};
 
 use crate::common::{create_new_file_name, try_to_save_file};
 
-const OXC_APP: &str = "/home/rafal/Downloads/oxc-main/target/release/oxc_cli";
+const OXC_APP: &str = "/home/rafal/test/oxc/target/release/oxc_cli";
 
 pub fn get_oxc_run_command(full_name: &str) -> Child {
     Command::new(OXC_APP)
         .arg("lint")
         .arg("all")
         .arg(full_name)
+        .arg("--fix")
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
