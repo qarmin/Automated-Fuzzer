@@ -2,7 +2,7 @@ use std::process::{Child, Command, Stdio};
 
 use crate::common::{create_broken_python_files, create_new_file_name, try_to_save_file};
 use crate::obj::ProgramConfig;
-use crate::Setting;
+use crate::settings::Setting;
 
 pub struct RuffStruct {
     pub settings: Setting,

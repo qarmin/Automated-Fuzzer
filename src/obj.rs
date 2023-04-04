@@ -1,5 +1,5 @@
 use std::process::Child;
-use crate::Setting;
+use crate::settings::Setting;
 
 pub trait ProgramConfig: Sync {
     fn is_broken(&self, content: &str) -> bool;

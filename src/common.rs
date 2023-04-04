@@ -87,6 +87,7 @@ pub fn try_to_save_file(obj: &dyn ProgramConfig,full_name: &str, new_name: &str)
     false
 }
 
+#[allow(clippy::borrowed_box)]
 pub fn minimize_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let Ok(data) = fs::read_to_string(full_name) else {
         println!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8");
@@ -208,6 +209,7 @@ pub fn minimize_lines(
     Some(content)
 }
 
+#[allow(clippy::borrowed_box)]
 pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> String {
     let command = obj.get_run_command(full_name);
     let output = command.wait_with_output().unwrap();
