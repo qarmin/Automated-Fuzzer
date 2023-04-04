@@ -4,70 +4,21 @@ use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
-use std::process::{Child, Command, Stdio};
 
 use rand::prelude::ThreadRng;
 use rand::Rng;
 
 use crate::obj::ProgramConfig;
+use crate::settings::Setting;
 
-const PYTHON_ARGS: &[&str] = &[
-    "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except",
-    "in", "raise", "True", "class", "finally", "is", "return", "and", "continue", "for", "lambda",
-    "float", "int", "bool", "try", "as", "def", "from", "nonlocal", "while", "assert", "del",
-    "global", "not", "with", "async", "elif", "if", "or", "yield", "__init__", ":", "?", "[", "\"",
-    "\"\"\"", "\'", "]", "}", "%", "f\"", "f'", "<", "<=", ">=", ">", ".", ",", "==", "!=", "{",
-    "=", "|", "\\", ";", "_", "-", "**", "*", "/", "!", "(", ")", "(True)", "{}", "()", "[]",
-    "pylint", "\n", "\t",
-];
-
-const JAVASCRIPT_ARGS: &[&str] = &[
-    ":", "?", "[", "\"", "\"\"\"", "\'", "]", "}", "%", "f\"", "f'", "<", "<=", ">=", ">", ".",
-    ",", "==", "!=", "{", "=", "|", "\\", ";", "_", "-", "**", "*", "/", "!", "(", ")", "(True)",
-    "{}", "()", "[]", "pylint", "\n", "\t", "#", "'", "\"", "//", "abstract", "arguments", "await",
-    "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger",
-    "default", "delete", "do", "double", "else", "enum", "eval", "export", "extends", "false",
-    "final", "finally", "float", "for", "function", "goto", "if", "implements", "import", "in",
-    "instanceof", "int", "interface", "let", "long", "native", "new", "null", "package", "private",
-    "protected", "public", "return", "short", "static", "super", "switch", "synchronized", "this",
-    "throw", "throws", "transient", "true", "try", "typeof", "var", "void", "volatile", "while",
-    "with", "yield",
-];
-
-pub fn create_broken_python_files(obj: &dyn ProgramConfig) -> Child {
-    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
-    let input_dir = &obj.get_settings().input_dir;
-    let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
-    Command::new("create_broken_files")
-        .args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
-        .args(PYTHON_ARGS)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-}
-
-pub fn create_broken_javascript_files(obj: &dyn ProgramConfig) -> Child {
-    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
-    let input_dir = &obj.get_settings().input_dir;
-    let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
-    Command::new("create_broken_files")
-        .args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
-        .args(JAVASCRIPT_ARGS)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-}
-
-pub fn create_new_file_name(obj: &dyn ProgramConfig,old_name: &str) -> String {
+pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     loop {
         let pat = Path::new(&old_name);
         let extension = pat.extension().unwrap().to_str().unwrap().to_string();
         let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
         let new_name = format!(
             "{}/{file_name}{}.{extension}",
-            obj.get_settings().output_dir,
+            setting.output_dir,
             rand::thread_rng().gen_range(1..10000)
         );
         if !Path::new(&new_name).exists() {
@@ -76,8 +27,8 @@ pub fn create_new_file_name(obj: &dyn ProgramConfig,old_name: &str) -> String {
     }
 }
 
-pub fn try_to_save_file(obj: &dyn ProgramConfig,full_name: &str, new_name: &str) -> bool {
-    if obj.get_settings().copy_broken_files {
+pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> bool {
+    if setting.copy_broken_files {
         if let Err(e) = fs::copy(full_name, new_name) {
             eprintln!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
             return true;

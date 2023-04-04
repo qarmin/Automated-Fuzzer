@@ -1,6 +1,7 @@
+use crate::broken_files::create_broken_python_files;
 use std::process::{Child, Command, Stdio};
 
-use crate::common::{create_broken_python_files, create_new_file_name, try_to_save_file};
+use crate::common::{create_new_file_name, try_to_save_file};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -25,11 +26,11 @@ impl ProgramConfig for RuffStruct {
         lines.dedup();
         let output = lines.into_iter().collect::<String>();
 
-        let new_name = create_new_file_name(self, &full_name);
+        let new_name = create_new_file_name(self.get_settings(), &full_name);
         println!("\n_______________ File {full_name} saved to {new_name} _______________________");
         println!("{output}");
 
-        if try_to_save_file(self,&full_name, &new_name) {
+        if try_to_save_file(self.get_settings(), &full_name, &new_name) {
             Some(new_name)
         } else {
             None
