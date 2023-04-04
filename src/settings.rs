@@ -50,7 +50,7 @@ pub fn load_settings() -> Setting {
         minimize_output: general["minimize_output"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         current_mode,
-        extensions: curr_setting["extensions"].split('\n').map(str::trim).filter_map(|e| if e.is_empty() { None } else {
+        extensions: curr_setting["extensions"].split(',').map(str::trim).filter_map(|e| if e.is_empty() { None } else {
             Some(format!(".{e}"))
         }).collect(),
         output_dir: curr_setting["output_dir"].parse().unwrap(),

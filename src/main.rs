@@ -2,6 +2,7 @@
 
 
 use std::fs;
+use std::path::Path;
 
 use std::sync::atomic::{AtomicU32, Ordering};
 
@@ -10,22 +11,18 @@ use rayon::prelude::*;
 use walkdir::WalkDir;
 
 use crate::common::{execute_command_and_connect_output, minimize_output};
-use crate::dlint::DlintStruct;
-use crate::mypy::MypyStruct;
+use crate::apps::dlint::DlintStruct;
+use crate::apps::mypy::MypyStruct;
 use crate::obj::ProgramConfig;
-use crate::oxc::OxcStruct;
-use crate::rome::RomeStruct;
-use crate::ruff::RuffStruct;
+use crate::apps::oxc::OxcStruct;
+use crate::apps::rome::RomeStruct;
+use crate::apps::ruff::RuffStruct;
 use crate::settings::{load_settings, MODES};
 
 mod common;
-mod dlint;
-mod mypy;
-mod oxc;
-mod rome;
-mod ruff;
 mod settings;
 mod obj;
+pub mod apps;
 
 
 fn main() {
@@ -57,6 +54,7 @@ fn main() {
         }
 
         let mut files = Vec::new();
+        assert!(Path::new(&settings.input_dir).is_dir());
         for i in WalkDir::new(&settings.input_dir).into_iter().flatten() {
             let Some(s) = i.path().to_str() else { continue; };
             if settings.extensions.iter().any(|e| s.ends_with(e)) {
