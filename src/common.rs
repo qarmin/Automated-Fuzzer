@@ -9,12 +9,7 @@ use std::process::{Child, Command, Stdio};
 use rand::prelude::ThreadRng;
 use rand::Rng;
 
-use crate::is_broken;
-use crate::ruff::execute_command_and_connect_output;
-use crate::settings::{
-    BASE_OF_VALID_FILES, BROKEN_FILES_FOR_EACH_FILE, COPY_BROKEN_FILES, INPUT_DIR,
-    MINIMIZATION_ATTEMPTS, OUTPUT_DIR,
-};
+use crate::obj::ProgramConfig;
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except",
@@ -39,9 +34,12 @@ const JAVASCRIPT_ARGS: &[&str] = &[
     "with", "yield",
 ];
 
-pub fn create_broken_python_files() -> Child {
+pub fn create_broken_python_files(obj: &dyn ProgramConfig) -> Child {
+    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
+    let input_dir = &obj.get_settings().input_dir;
+    let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
     Command::new("create_broken_files")
-        .args(format!("-i {BASE_OF_VALID_FILES} -o {INPUT_DIR} -n {BROKEN_FILES_FOR_EACH_FILE} -c true -s").split(' '))
+        .args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
         .args(PYTHON_ARGS)
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -49,9 +47,12 @@ pub fn create_broken_python_files() -> Child {
         .unwrap()
 }
 
-pub fn create_broken_javascript_files() -> Child {
+pub fn create_broken_javascript_files(obj: &dyn ProgramConfig) -> Child {
+    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
+    let input_dir = &obj.get_settings().input_dir;
+    let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
     Command::new("create_broken_files")
-        .args(format!("-i {BASE_OF_VALID_FILES} -o {INPUT_DIR} -n {BROKEN_FILES_FOR_EACH_FILE} -c true -s").split(' '))
+        .args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
         .args(JAVASCRIPT_ARGS)
         .stderr(Stdio::piped())
         .stdout(Stdio::piped())
@@ -59,13 +60,14 @@ pub fn create_broken_javascript_files() -> Child {
         .unwrap()
 }
 
-pub fn create_new_file_name(old_name: &str) -> String {
+pub fn create_new_file_name(obj: &dyn ProgramConfig,old_name: &str) -> String {
     loop {
         let pat = Path::new(&old_name);
         let extension = pat.extension().unwrap().to_str().unwrap().to_string();
         let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
         let new_name = format!(
-            "{OUTPUT_DIR}/{file_name}{}.{extension}",
+            "{}/{file_name}{}.{extension}",
+            obj.get_settings().output_dir,
             rand::thread_rng().gen_range(1..10000)
         );
         if !Path::new(&new_name).exists() {
@@ -74,8 +76,8 @@ pub fn create_new_file_name(old_name: &str) -> String {
     }
 }
 
-pub fn try_to_save_file(full_name: &str, new_name: &str) -> bool {
-    if COPY_BROKEN_FILES {
+pub fn try_to_save_file(obj: &dyn ProgramConfig,full_name: &str, new_name: &str) -> bool {
+    if obj.get_settings().copy_broken_files {
         if let Err(e) = fs::copy(full_name, new_name) {
             eprintln!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
             return true;
@@ -85,14 +87,14 @@ pub fn try_to_save_file(full_name: &str, new_name: &str) -> bool {
     false
 }
 
-pub fn minimize_output(full_name: &str) {
+pub fn minimize_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let Ok(data) = fs::read_to_string(full_name) else {
         println!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8");
         return;
     };
-    let output = execute_command_and_connect_output(full_name);
+    let output = execute_command_and_connect_output(obj, full_name);
 
-    if !is_broken(&output) {
+    if !obj.is_broken(&output) {
         return;
     }
 
@@ -101,7 +103,7 @@ pub fn minimize_output(full_name: &str) {
 
     let old_line_number = lines.len();
 
-    let mut attempts = MINIMIZATION_ATTEMPTS;
+    let mut attempts = obj.get_settings().minimization_attempts;
     let mut minimized_output = false;
     while attempts > 0 {
         let Some(new_lines) = minimize_lines(full_name, &lines, &mut rng) else {
@@ -111,9 +113,9 @@ pub fn minimize_output(full_name: &str) {
             break;
         }
 
-        let output = execute_command_and_connect_output(full_name);
-        if is_broken(&output) {
-            attempts = MINIMIZATION_ATTEMPTS;
+        let output = execute_command_and_connect_output(obj, full_name);
+        if obj.is_broken(&output) {
+            attempts = obj.get_settings().minimization_attempts;
             lines = new_lines;
             minimized_output = true;
         } else {
@@ -204,4 +206,14 @@ pub fn minimize_lines(
 
     write!(output_file, "{}", content.join("\n")).unwrap();
     Some(content)
+}
+
+pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> String {
+    let command = obj.get_run_command(full_name);
+    let output = command.wait_with_output().unwrap();
+
+    let mut out = output.stderr.clone();
+    out.push(b'\n');
+    out.extend(output.stdout);
+    String::from_utf8(out).unwrap()
 }

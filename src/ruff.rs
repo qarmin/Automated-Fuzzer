@@ -1,58 +1,58 @@
 use std::process::{Child, Command, Stdio};
 
-use crate::choose_run_command;
-use crate::common::{create_new_file_name, try_to_save_file};
+use crate::common::{create_broken_python_files, create_new_file_name, try_to_save_file};
+use crate::obj::ProgramConfig;
+use crate::Setting;
 
-const RUFF_SETTING_FILE: &str = "/home/rafal/Desktop/RunEveryCommand/Ruff/ruff.toml";
-const RUFF_APP: &str = "ruff";
-
-pub fn get_ruff_run_command(full_name: &str) -> Child {
-    Command::new(RUFF_APP)
-        .arg(full_name)
-        .arg("--config")
-        .arg(RUFF_SETTING_FILE)
-        .arg("--no-cache")
-        .arg("--fix")
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
+pub struct RuffStruct {
+    pub settings: Setting,
 }
 
-pub fn execute_command_and_connect_output(full_name: &str) -> String {
-    let command = choose_run_command(full_name);
-    let output = command.wait_with_output().unwrap();
+impl ProgramConfig for RuffStruct {
+    fn is_broken(&self, content: &str) -> bool {
+        content.contains("RUST_BACKTRACE") || content.contains("This indicates a bug in")
+    }
+    fn validate_output(&self, full_name: String, output: String) -> Option<String> {
+        let mut lines = output
+            .lines()
+            .filter(|e| {
+                !((e.contains(".py") && e.matches(':').count() >= 3)
+                    || e.starts_with("warning: `")
+                    || e.starts_with("Ignoring `"))
+            })
+            .map(String::from)
+            .collect::<Vec<String>>();
+        lines.dedup();
+        let output = lines.into_iter().collect::<String>();
 
-    let mut out = output.stderr.clone();
-    out.push(b'\n');
-    out.extend(output.stdout);
-    String::from_utf8(out).unwrap()
-}
+        let new_name = create_new_file_name(self, &full_name);
+        println!("\n_______________ File {full_name} saved to {new_name} _______________________");
+        println!("{output}");
 
-pub fn is_broken_ruff(content: &str) -> bool {
-    content.contains("RUST_BACKTRACE") || content.contains("This indicates a bug in")
-}
+        if try_to_save_file(self,&full_name, &new_name) {
+            Some(new_name)
+        } else {
+            None
+        }
+    }
+    fn get_run_command(&self, full_name: &str) -> Child {
+        Command::new(&self.settings.app_binary)
+            .arg(full_name)
+            .arg("--config")
+            .arg(&self.settings.app_config)
+            .arg("--no-cache")
+            .arg("--fix")
+            .stderr(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
+    }
 
-pub fn validate_ruff_output(full_name: String, output: String) -> Option<String> {
-    let mut lines = output
-        .lines()
-        .filter(|e| {
-            !((e.contains(".py") && e.matches(':').count() >= 3)
-                || e.starts_with("warning: `")
-                || e.starts_with("Ignoring `"))
-        })
-        .map(String::from)
-        .collect::<Vec<String>>();
-    lines.dedup();
-    let output = lines.into_iter().collect::<String>();
+    fn broken_file_creator(&self) -> Child {
+        create_broken_python_files(self)
+    }
 
-    let new_name = create_new_file_name(&full_name);
-    println!("\n_______________ File {full_name} saved to {new_name} _______________________");
-    println!("{output}");
-
-    if try_to_save_file(&full_name, &new_name) {
-        Some(new_name)
-    } else {
-        None
+    fn get_settings(&self) -> &Setting {
+        &self.settings
     }
 }

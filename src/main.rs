@@ -1,23 +1,24 @@
 #![allow(clippy::upper_case_acronyms)]
 
+use std::collections::HashMap;
 use std::fs;
-use std::process::Child;
+use std::rc::Rc;
+use std::str::FromStr;
+use std::sync::Arc;
 use std::sync::atomic::{AtomicU32, Ordering};
 
+use config::Config;
 use rayon::prelude::*;
 use walkdir::WalkDir;
 
-use crate::common::{create_broken_javascript_files, create_broken_python_files, minimize_output};
-use crate::dlint::{get_dlint_run_command, is_broken_dlint, validate_dlint_output};
-use crate::mypy::{get_mypy_run_command, is_broken_mypy, validate_mypy_output};
-use crate::oxc::{get_oxc_run_command, is_broken_oxc, validate_oxc_output};
-use crate::rome::{get_rome_run_command, is_broken_rome, validate_rome_output};
-use crate::ruff::{
-    execute_command_and_connect_output, get_ruff_run_command, is_broken_ruff, validate_ruff_output,
-};
-use crate::settings::{
-    CURRENT_MODE, EXTENSIONS, GENERATE_FILES, INPUT_DIR, LOOP_NUMBER, MINIMIZE_OUTPUT, MODES,
-};
+use crate::common::{execute_command_and_connect_output, minimize_output};
+use crate::dlint::DlintStruct;
+use crate::mypy::MypyStruct;
+use crate::obj::ProgramConfig;
+use crate::oxc::OxcStruct;
+use crate::rome::RomeStruct;
+use crate::ruff::RuffStruct;
+use crate::settings::MODES;
 
 mod common;
 mod dlint;
@@ -26,6 +27,67 @@ mod oxc;
 mod rome;
 mod ruff;
 mod settings;
+mod obj;
+
+#[derive(Clone)]
+pub struct Setting {
+    loop_number: u32,
+    broken_files_for_each_file: u32,
+    copy_broken_files: bool,
+    generate_files: bool,
+    minimize_output: bool,
+    minimization_attempts: u32,
+    current_mode: MODES,
+    extensions: Vec<String>,
+    output_dir: String,
+    base_of_valid_files: String,
+    input_dir: String,
+    app_binary: String,
+    app_config: String
+}
+
+fn load_settings() -> Setting {
+    let settings = Config::builder()
+        .add_source(config::File::with_name("fuzz_settings"))
+        .build()
+        .unwrap();
+    let config = settings
+        .try_deserialize::<HashMap<String, HashMap<String, String>>>()
+        .unwrap();
+
+    let general = config["general"].clone();
+    let current_mode_string = general["current_mode"].clone();
+    let current_mode = MODES::from_str(&current_mode_string).unwrap();
+    let curr_setting = config[&current_mode_string].clone();
+
+    let copy_broken_files = general["copy_broken_files"].parse().unwrap();
+    let broken_files_dir: String = general["broken_files_dir"].parse().unwrap();
+    let non_destructive_input_dir: String = curr_setting["non_destructive_input_dir"].parse().unwrap();
+    let input_dir = if copy_broken_files {
+        broken_files_dir.clone()
+    } else {
+        non_destructive_input_dir.clone()
+    };
+    let set = Setting {
+        loop_number: general["loop_number"].parse().unwrap(),
+        broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
+        copy_broken_files,
+        generate_files: general["generate_files"].parse().unwrap(),
+        minimize_output: general["minimize_output"].parse().unwrap(),
+        minimization_attempts: general["minimization_attempts"].parse().unwrap(),
+        current_mode,
+        extensions: curr_setting["extensions"].split('\n').map(str::trim).filter_map(|e| if e.is_empty() { None } else {
+            Some(format!(".{e}"))
+        }).collect(),
+        output_dir: curr_setting["output_dir"].parse().unwrap(),
+        base_of_valid_files: curr_setting["base_of_valid_files"].parse().unwrap(),
+        input_dir,
+        app_binary: curr_setting["app_binary"].parse().unwrap(),
+        app_config: curr_setting["app_config"].parse().unwrap(),
+    };
+    panic!("POTATO");
+    return set;
+}
 
 fn main() {
     // rayon::ThreadPoolBuilder::new()
@@ -33,23 +95,32 @@ fn main() {
     //     .build_global()
     //     .unwrap();
 
-    for i in 1..=LOOP_NUMBER {
-        println!("Starting loop {i} out of all {LOOP_NUMBER}");
+    let settings = load_settings();
+    let obj: Box<dyn ProgramConfig> = match settings.current_mode {
+        MODES::OXC => Box::new(OxcStruct{settings: settings.clone()}),
+        MODES::MYPY => Box::new(MypyStruct{settings: settings.clone()}),
+        MODES::DLINT => Box::new(DlintStruct{settings: settings.clone()}),
+        MODES::ROME => Box::new(RomeStruct{settings: settings.clone()}),
+        MODES::RUFF => Box::new(RuffStruct{settings: settings.clone()})
+    };
 
-        if GENERATE_FILES {
-            let _ = fs::remove_dir_all(INPUT_DIR);
-            fs::create_dir_all(INPUT_DIR).unwrap();
+    for i in 1..=settings.loop_number {
+        println!("Starting loop {i} out of all {}", settings.loop_number);
 
-            let command = choose_broken_files_creator();
+        if settings.generate_files {
+            let _ = fs::remove_dir_all(&settings.input_dir);
+            fs::create_dir_all(&settings.input_dir).unwrap();
+
+            let command = obj.broken_file_creator();
             let _output = command.wait_with_output().unwrap();
             // println!("{}", String::from_utf8(output.stdout).unwrap());
             println!("Generated files to test.");
         }
 
         let mut files = Vec::new();
-        for i in WalkDir::new(INPUT_DIR).into_iter().flatten() {
+        for i in WalkDir::new(&settings.input_dir).into_iter().flatten() {
             let Some(s) = i.path().to_str() else { continue; };
-            if EXTENSIONS.iter().any(|e| s.ends_with(e)) {
+            if settings.extensions.iter().any(|e| s.ends_with(e)) {
                 files.push(s.to_string());
             }
         }
@@ -65,13 +136,13 @@ fn main() {
                 println!("_____ {number} / {all}")
             }
 
-            let s = execute_command_and_connect_output(&full_name);
+            let s = execute_command_and_connect_output(&obj,&full_name);
 
-            if is_broken(&s) {
+            if obj.is_broken(&s) {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
-                if let Some(new_file_name) = choose_validate_output_function(full_name, s) {
-                    if MINIMIZE_OUTPUT {
-                        minimize_output(&new_file_name);
+                if let Some(new_file_name) = obj.validate_output(full_name, s) {
+                    if settings.minimize_output {
+                        minimize_output(&obj, &new_file_name);
                     }
                 };
             }
@@ -81,42 +152,5 @@ fn main() {
             "\n\nFound {} broken files",
             atomic_broken.load(Ordering::Relaxed)
         );
-    }
-}
-
-fn choose_validate_output_function(full_name: String, s: String) -> Option<String> {
-    match CURRENT_MODE {
-        MODES::RUFF => validate_ruff_output(full_name, s),
-        MODES::MYPY => validate_mypy_output(full_name, s),
-        MODES::ROME => validate_rome_output(full_name, s),
-        MODES::DLINT => validate_dlint_output(full_name, s),
-        MODES::OXC => validate_oxc_output(full_name, s),
-    }
-}
-
-fn choose_run_command(full_name: &str) -> Child {
-    match CURRENT_MODE {
-        MODES::RUFF => get_ruff_run_command(full_name),
-        MODES::MYPY => get_mypy_run_command(full_name),
-        MODES::ROME => get_rome_run_command(full_name),
-        MODES::DLINT => get_dlint_run_command(full_name),
-        MODES::OXC => get_oxc_run_command(full_name),
-    }
-}
-
-fn choose_broken_files_creator() -> Child {
-    match CURRENT_MODE {
-        MODES::RUFF | MODES::MYPY => create_broken_python_files(),
-        MODES::ROME | MODES::DLINT | MODES::OXC => create_broken_javascript_files(),
-    }
-}
-
-fn is_broken(content: &str) -> bool {
-    match CURRENT_MODE {
-        MODES::RUFF => is_broken_ruff(content),
-        MODES::MYPY => is_broken_mypy(content),
-        MODES::ROME => is_broken_rome(content),
-        MODES::DLINT => is_broken_dlint(content),
-        MODES::OXC => is_broken_oxc(content),
     }
 }
