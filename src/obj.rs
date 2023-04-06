@@ -4,7 +4,7 @@ use std::process::{Child, Command, Stdio};
 
 pub trait ProgramConfig: Sync {
     fn is_broken(&self, content: &str) -> bool;
-    fn validate_output(&self, full_name: String, output: String) -> Option<String> {
+    fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         println!("\n_______________ File {full_name} saved to {new_name} _______________________");
         println!("{output}");

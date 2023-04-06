@@ -28,7 +28,7 @@ pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
 }
 
 pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> bool {
-    if setting.copy_broken_files {
+    if !setting.safe_run && setting.copy_broken_files {
         if let Err(e) = fs::copy(full_name, new_name) {
             eprintln!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
             return true;
@@ -57,6 +57,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let mut attempts = obj.get_settings().minimization_attempts;
     let mut minimized_output = false;
+    let mut valid_output = false;
     while attempts > 0 {
         let Some(new_lines) = minimize_lines(full_name, &lines, &mut rng) else {
             break;
@@ -70,21 +71,32 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             attempts = obj.get_settings().minimization_attempts;
             lines = new_lines;
             minimized_output = true;
+            valid_output = true;
         } else {
             attempts -= 1;
+            valid_output = false;
         }
     }
 
-    // Restore content of file
-    if !minimized_output {
+    if !minimized_output || !valid_output {
         let mut output_file = OpenOptions::new()
             .write(true)
             .truncate(true)
             .create(false)
             .open(full_name)
             .unwrap();
-        write!(output_file, "{}", lines.join("\n")).unwrap();
+
+        // Restore content of file
+        if !minimized_output {
+            write!(output_file, "{data}").unwrap();
+        }
+        // If minimization was successful, but last run broke file, restore latest good configuration
+        if !valid_output {
+            write!(output_file, "{}", lines.join("\n")).unwrap();
+        }
     }
+
+    assert!(obj.is_broken(&execute_command_and_connect_output(obj, full_name)));
 
     println!(
         "File {full_name}, minimized from {old_line_number} to {} lines",
@@ -111,6 +123,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let mut attempts = obj.get_settings().minimization_attempts;
     let mut minimized_output = false;
+    let mut valid_output = false;
     while attempts > 0 {
         let Some(new_data) = minimize_binaries(full_name, &old_new_data, &mut rng) else {
             break;
@@ -124,21 +137,32 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             attempts = obj.get_settings().minimization_attempts;
             old_new_data = new_data;
             minimized_output = true;
+            valid_output = true;
         } else {
             attempts -= 1;
+            valid_output = false;
         }
     }
 
-    // Restore content of file
-    if !minimized_output {
+    if !minimized_output || !valid_output {
         let mut output_file = OpenOptions::new()
             .write(true)
             .truncate(true)
             .create(false)
             .open(full_name)
             .unwrap();
-        output_file.write_all(&data).unwrap();
+
+        // Restore content of file
+        if !minimized_output {
+            output_file.write_all(&data).unwrap();
+        }
+        // If minimization was successful, but last run broke file, restore latest good configuration
+        if !valid_output {
+            output_file.write_all(&old_new_data).unwrap();
+        }
     }
+
+    assert!(obj.is_broken(&execute_command_and_connect_output(obj, full_name)));
 
     println!(
         "File {full_name}, minimized from {items_number} to {} bytes",

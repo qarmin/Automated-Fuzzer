@@ -62,7 +62,7 @@ fn main() {
     for i in 1..=settings.loop_number {
         println!("Starting loop {i} out of all {}", settings.loop_number);
 
-        if settings.generate_files {
+        if !settings.safe_run && settings.generate_files {
             let _ = fs::remove_dir_all(&settings.input_dir);
             fs::create_dir_all(&settings.input_dir).unwrap();
 
@@ -104,7 +104,7 @@ fn main() {
             }
             if obj.is_broken(&s) {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
-                if let Some(new_file_name) = obj.validate_output(full_name, s) {
+                if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, s) {
                     if settings.minimize_output {
                         if settings.binary_mode {
                             minimize_binary_output(&obj, &new_file_name);

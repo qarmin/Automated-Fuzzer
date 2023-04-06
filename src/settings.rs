@@ -21,6 +21,7 @@ pub struct Setting {
     pub binary_mode: bool,
     pub debug_print_results: bool,
     pub debug_print_broken_files_creator: bool,
+    pub safe_run: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -38,14 +39,6 @@ pub fn load_settings() -> Setting {
     let curr_setting = config[&current_mode_string].clone();
 
     let copy_broken_files = general["copy_broken_files"].parse().unwrap();
-    let broken_files_dir: String = general["broken_files_dir"].parse().unwrap();
-    let non_destructive_input_dir: String =
-        curr_setting["non_destructive_input_dir"].parse().unwrap();
-    let input_dir = if copy_broken_files {
-        broken_files_dir
-    } else {
-        non_destructive_input_dir
-    };
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
@@ -67,12 +60,13 @@ pub fn load_settings() -> Setting {
             .collect(),
         output_dir: curr_setting["output_dir"].parse().unwrap(),
         base_of_valid_files: curr_setting["base_of_valid_files"].parse().unwrap(),
-        input_dir,
+        input_dir: general["broken_files_dir"].parse().unwrap(),
         app_binary: curr_setting["app_binary"].parse().unwrap(),
         app_config: curr_setting["app_config"].parse().unwrap(),
         binary_mode: curr_setting["binary_mode"].parse().unwrap(),
         debug_print_results: general["debug_print_results"].parse().unwrap(),
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
+        safe_run: general["safe_run"].parse().unwrap(),
     }
 }
 
