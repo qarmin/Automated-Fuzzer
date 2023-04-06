@@ -2,7 +2,6 @@
 
 use std::fs;
 use std::path::Path;
-
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use rayon::prelude::*;
@@ -15,7 +14,8 @@ use crate::apps::mypy::MypyStruct;
 use crate::apps::oxc::OxcStruct;
 use crate::apps::rome::RomeStruct;
 use crate::apps::ruff::RuffStruct;
-use crate::common::{execute_command_and_connect_output, minimize_output};
+use crate::apps::symphonia::SymphoniaStruct;
+use crate::common::{execute_command_and_connect_output, minimize_binary_output, minimize_string_output};
 use crate::obj::ProgramConfig;
 use crate::settings::{load_settings, MODES};
 
@@ -54,6 +54,9 @@ fn main() {
         MODES::IMAGE => Box::new(ImageStruct {
             settings: settings.clone(),
         }),
+        MODES::SYMPHONIA => Box::new(SymphoniaStruct {
+            settings: settings.clone(),
+        }),
     };
 
     for i in 1..=settings.loop_number {
@@ -66,9 +69,9 @@ fn main() {
             let command = obj.broken_file_creator();
             let output = command.wait_with_output().unwrap();
             let out = String::from_utf8(output.stdout).unwrap();
-            if out.contains("data") {
+            if settings.debug_print_broken_files_creator {
                 println!("{out}");
-            }
+            };
             println!("Generated files to test.");
         }
 
@@ -96,12 +99,18 @@ fn main() {
             }
 
             let s = execute_command_and_connect_output(&obj, &full_name);
-            println!("{s}");
+            if settings.debug_print_results {
+                println!("{s}");
+            }
             if obj.is_broken(&s) {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
                 if let Some(new_file_name) = obj.validate_output(full_name, s) {
                     if settings.minimize_output {
-                        minimize_output(&obj, &new_file_name);
+                        if settings.binary_mode {
+                            minimize_binary_output(&obj, &new_file_name);
+                        } else {
+                            minimize_string_output(&obj, &new_file_name);
+                        }
                     }
                 };
             }

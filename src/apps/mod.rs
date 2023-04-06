@@ -5,3 +5,4 @@ pub mod mypy;
 pub mod oxc;
 pub mod rome;
 pub mod ruff;
+pub mod symphonia;

@@ -39,7 +39,7 @@ pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> b
 }
 
 #[allow(clippy::borrowed_box)]
-pub fn minimize_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
+pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let Ok(data) = fs::read_to_string(full_name) else {
         println!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8");
         return;
@@ -91,6 +91,114 @@ pub fn minimize_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         lines.len()
     );
 }
+
+#[allow(clippy::borrowed_box)]
+pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
+    let Ok(data) = fs::read(full_name) else {
+        println!("INFO: Cannot read content of {full_name}");
+        return;
+    };
+    let output = execute_command_and_connect_output(obj, full_name);
+
+    if !obj.is_broken(&output) {
+        return;
+    }
+
+    let mut rng = rand::thread_rng();
+
+    let mut old_new_data = data.clone();
+    let items_number = data.len();
+
+    let mut attempts = obj.get_settings().minimization_attempts;
+    let mut minimized_output = false;
+    while attempts > 0 {
+        let Some(new_data) = minimize_binaries(full_name, &old_new_data, &mut rng) else {
+            break;
+        };
+        if new_data.len() == old_new_data.len() {
+            break;
+        }
+
+        let output = execute_command_and_connect_output(obj, full_name);
+        if obj.is_broken(&output) {
+            attempts = obj.get_settings().minimization_attempts;
+            old_new_data = new_data;
+            minimized_output = true;
+        } else {
+            attempts -= 1;
+        }
+    }
+
+    // Restore content of file
+    if !minimized_output {
+        let mut output_file = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .create(false)
+            .open(full_name)
+            .unwrap();
+        output_file.write_all(&data).unwrap();
+    }
+
+    println!(
+        "File {full_name}, minimized from {items_number} to {} bytes",
+        old_new_data.len()
+    );
+}
+
+#[allow(clippy::comparison_chain)]
+pub fn minimize_binaries(
+    full_name: &str,
+    data: &Vec<u8>,
+    rng: &mut ThreadRng,
+) -> Option<Vec<u8>> {
+    if data.len() <= 3 {
+        return None;
+    }
+
+    let mut output_file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .create(false)
+        .open(full_name)
+        .unwrap();
+
+    let number = rng.gen_range(0..=20);
+    let  content;
+
+    let limit = max(1, rng.gen_range(0..(max(1, data.len() / 5))));
+
+    if number == 0 {
+        // Removing from start
+        content = data[limit..].to_vec();
+    } else if number < 8 {
+        // Removing from end
+        let limit = data.len() - limit;
+        content = data[..limit].to_vec();
+    } else {
+        // Removing random from middle
+        let limit_upper;
+        let limit_lower;
+        loop {
+            let limit1 = rng.gen_range(0..data.len());
+            let limit2 = rng.gen_range(0..data.len());
+            if limit1 > limit2 {
+                limit_lower = limit2;
+                limit_upper = limit1;
+                break;
+            } else if limit2 > limit1 {
+                limit_lower = limit1;
+                limit_upper = limit2;
+                break;
+            }
+        }
+        content = data[limit_lower..limit_upper].to_vec();
+    }
+
+    output_file.write_all(&content).unwrap();
+    Some(content)
+}
+
 
 #[allow(clippy::comparison_chain)]
 pub fn minimize_lines(

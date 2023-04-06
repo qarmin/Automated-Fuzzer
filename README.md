@@ -1,6 +1,6 @@
 ## Automated Fuzzer
 
-This repo contains simple tool to create broken files and checking them with special apps(rome, ruff, mypy already are implemented, but it is easy to add support for any different app).
+This repo contains simple tool to create broken files and checking them with special apps(rome, ruff, mypy and more already are implemented, but it is easy to add support for any different app).
 
 This small tool I created mainly for my own use without much vision, and cannot be used directly via `cargo install --git`, but you need to modify source files to be able to run it(this is not too hard)
 
@@ -9,13 +9,12 @@ This small tool I created mainly for my own use without much vision, and cannot 
 ```
 cargo install create_broken_files
 ```
-- Add to `commons.rs`(already this is done partially for python/javascript) words that will be added to code(best to add some language keywords)
-- Create settings(by copying e.g. Ruff config) in `settings.rs` and setup paths to valid folders(this folders must exists) - changing supported apps works by commenting/uncommenting parts of code
-- Copy `ruff.rs` and create file with similar content - one function will create command to run and second will validate output to check if crash/error happened
-- Add this functions to `main.rs` inside `choose_validate_output_function`, `choose_run_command` and `choose_broken_files_creator`
-- Prepare valid files(find them on github in OS folders etc.), and put them into folder from `BASE_OF_VALID_FILES`
+- Create file inside `apps` folder and customize class name
+- Customize run command, broken messages or created files
+- Add to MODE enum your app and point at new file in `main.rs` in match statement
+- Create setting inside `fuzz_settings.toml`
+- Create required folders used inside `fuzz_settings.toml`
 - Run app via `cargo run --release`
-- Depending on CPU load, consider to enable more/less rayon threads
 
 ## How this works
 - At start app take n valid files from folder

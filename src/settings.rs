@@ -18,6 +18,9 @@ pub struct Setting {
     pub input_dir: String,
     pub app_binary: String,
     pub app_config: String,
+    pub binary_mode: bool,
+    pub debug_print_results: bool,
+    pub debug_print_broken_files_creator: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -67,6 +70,9 @@ pub fn load_settings() -> Setting {
         input_dir,
         app_binary: curr_setting["app_binary"].parse().unwrap(),
         app_config: curr_setting["app_config"].parse().unwrap(),
+        binary_mode: curr_setting["binary_mode"].parse().unwrap(),
+        debug_print_results: general["debug_print_results"].parse().unwrap(),
+        debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
     }
 }
 
@@ -86,4 +92,6 @@ pub enum MODES {
     IMAGE,
     #[strum(ascii_case_insensitive)]
     LOFTY,
+    #[strum(ascii_case_insensitive)]
+    SYMPHONIA,
 }

@@ -16,6 +16,7 @@ impl ProgramConfig for OxcStruct {
     fn get_run_command(&self, full_name: &str) -> Child {
         Command::new(&self.settings.app_binary)
             .arg("lint")
+            .arg("-A")
             .arg("all")
             .arg(full_name)
             .arg("--fix")
