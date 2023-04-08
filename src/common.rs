@@ -196,23 +196,7 @@ pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -
         let limit = data.len() - limit;
         content = data[..limit].to_vec();
     } else {
-        // Removing random from middle
-        let limit_upper;
-        let limit_lower;
-        loop {
-            let limit1 = rng.gen_range(0..data.len());
-            let limit2 = rng.gen_range(0..data.len());
-            if limit1 > limit2 {
-                limit_lower = limit2;
-                limit_upper = limit1;
-                break;
-            } else if limit2 > limit1 {
-                limit_lower = limit1;
-                limit_upper = limit2;
-                break;
-            }
-        }
-        content = data[limit_lower..limit_upper].to_vec();
+        content = remove_random_from_middle(rng, data);
     }
 
     output_file.write_all(&content).unwrap();
@@ -236,55 +220,80 @@ pub fn minimize_lines(
         .open(full_name)
         .unwrap();
 
-    let number = rng.gen_range(0..=3);
-    let mut content;
+    let number = rng.gen_range(0..=25);
+    let content;
 
     let limit = max(1, rng.gen_range(0..(max(1, lines.len() / 5))));
 
-    if number == 0 {
+    if number < 5 {
         // Removing from start
         content = lines[limit..].to_vec();
-    } else if number == 1 {
+    } else if number < 10 {
         // Removing from end
         let limit = lines.len() - limit;
         content = lines[..limit].to_vec();
-    } else if number == 2 {
-        // Removing random from middle
-        let limit_upper;
-        let limit_lower;
-        loop {
-            let limit1 = rng.gen_range(0..lines.len());
-            let limit2 = rng.gen_range(0..lines.len());
-            if limit1 > limit2 {
-                limit_lower = limit2;
-                limit_upper = limit1;
-                break;
-            } else if limit2 > limit1 {
-                limit_lower = limit1;
-                limit_upper = limit2;
-                break;
-            }
-        }
-        content = lines[limit_lower..limit_upper].to_vec();
+    } else if number < 15 {
+        // Removing code between empty lines
+        content = remove_code_between_empty_lines(rng, lines);
+    } else if number < 22 {
+        content = remove_random_from_middle(rng, lines);
     } else {
         // Removing randoms
-        content = lines.to_vec();
-        let mut indexes_to_remove = HashSet::new();
-        for _ in 0..limit {
-            indexes_to_remove.insert(rng.gen_range(0..content.len()));
-        }
-
-        let mut new_data = Vec::new();
-        for (idx, line) in content.into_iter().enumerate() {
-            if !indexes_to_remove.contains(&idx) {
-                new_data.push(line);
-            }
-        }
-        content = new_data
+        content = remove_random_items(rng, lines, limit);
     }
 
     write!(output_file, "{}", content.join("\n")).unwrap();
     Some(content)
+}
+
+pub fn remove_code_between_empty_lines(rng: &mut ThreadRng, orig: &[String]) -> Vec<String> {
+    let mut indexes = Vec::new();
+    for (idx, line) in orig.iter().enumerate() {
+        if line.trim().is_empty() {
+            indexes.push(idx);
+        }
+    }
+    if indexes.len() < 2 {
+        return orig[0..(orig.len() / 2)].to_vec();
+    }
+
+    let limits = get_two_random_not_equal_ints(rng, orig.len());
+
+    orig[(limits.0)..(limits.1)].to_vec()
+}
+
+pub fn remove_random_from_middle<T>(rng: &mut ThreadRng, orig: &[T]) -> Vec<T> where T: Clone {
+    let limits= get_two_random_not_equal_ints(rng, orig.len());
+    orig[(limits.0)..(limits.1)].to_vec()
+}
+
+pub fn remove_random_items<T>(rng: &mut ThreadRng, orig: &[T], limit: usize) -> Vec<T> where T: Clone {
+    let content = orig.to_vec();
+    let mut indexes_to_remove = HashSet::new();
+    for _ in 0..limit {
+        indexes_to_remove.insert(rng.gen_range(0..content.len()));
+    }
+
+    let mut new_data = Vec::new();
+    for (idx, line) in content.into_iter().enumerate() {
+        if !indexes_to_remove.contains(&idx) {
+            new_data.push(line);
+        }
+    };
+    new_data
+}
+
+fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, usize) {
+    loop {
+        let limits = (rng.gen_range(0..length), rng.gen_range(0..length));
+        if limits.0 == limits.1 {
+            continue;
+        }
+        if limits.0 > limits.1 {
+            return (limits.1, limits.0);
+        }
+        return (limits.0, limits.1);
+    }
 }
 
 #[allow(clippy::borrowed_box)]

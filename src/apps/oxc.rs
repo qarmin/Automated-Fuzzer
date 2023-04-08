@@ -1,4 +1,4 @@
-use crate::broken_files::{create_broken_files,  LANGS};
+use crate::broken_files::{create_broken_files, LANGS};
 use std::process::{Child, Command, Stdio};
 
 use crate::obj::ProgramConfig;
