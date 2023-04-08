@@ -2,7 +2,7 @@ use std::process::{Child, Command, Stdio};
 
 use crate::obj::ProgramConfig;
 
-#[derive(PartialEq, Eq)]
+#[derive(PartialEq, Eq, Clone, Copy)]
 pub enum LANGS {
     PYTHON,
     JAVASCRIPT,
@@ -56,7 +56,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let mut command = Command::new("create_broken_files");
     let mut com = &mut command;
     if lang != LANGS::GENERAL {
-        com = com.args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
+        com = com.args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '));
     }
     match lang {
         LANGS::PYTHON => com = com.args(PYTHON_ARGS),
@@ -69,7 +69,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
                 "-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c false"
             )
                 .split(' '),
-            )
+            );
         }
     }
     com.stderr(Stdio::piped())

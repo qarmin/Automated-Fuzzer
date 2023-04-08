@@ -1,3 +1,15 @@
+use crate::apps::dlint::DlintStruct;
+use crate::apps::image::ImageStruct;
+use crate::apps::lofty::LoftyStruct;
+use crate::apps::mypy::MypyStruct;
+use crate::apps::oxc::OxcStruct;
+use crate::apps::quick_lint_js::QuickLintStruct;
+use crate::apps::rome::RomeStruct;
+use crate::apps::ruff::RuffStruct;
+use crate::apps::selene::SeleneStruct;
+use crate::apps::staticheckgo::StaticCheckGoStruct;
+use crate::apps::symphonia::SymphoniaStruct;
+use crate::obj::ProgramConfig;
 use config::Config;
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -72,6 +84,22 @@ pub fn load_settings() -> Setting {
     }
 }
 
+pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
+    match settings.current_mode {
+        MODES::OXC => Box::new(OxcStruct { settings }),
+        MODES::MYPY => Box::new(MypyStruct { settings }),
+        MODES::DLINT => Box::new(DlintStruct { settings }),
+        MODES::ROME => Box::new(RomeStruct { settings }),
+        MODES::RUFF => Box::new(RuffStruct { settings }),
+        MODES::LOFTY => Box::new(LoftyStruct { settings }),
+        MODES::IMAGE => Box::new(ImageStruct { settings }),
+        MODES::SYMPHONIA => Box::new(SymphoniaStruct { settings }),
+        MODES::SELENE => Box::new(SeleneStruct { settings }),
+        MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
+        MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
+    }
+}
+
 #[derive(Debug, PartialEq, EnumString, Copy, Clone)]
 pub enum MODES {
     #[strum(ascii_case_insensitive)]
@@ -94,4 +122,6 @@ pub enum MODES {
     SELENE,
     #[strum(ascii_case_insensitive)]
     STATICCHECKGO,
+    #[strum(ascii_case_insensitive)]
+    QUICKLINTJS,
 }

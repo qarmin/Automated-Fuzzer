@@ -7,21 +7,10 @@ use std::{fs, process};
 use rayon::prelude::*;
 use walkdir::WalkDir;
 
-use crate::apps::dlint::DlintStruct;
-use crate::apps::image::ImageStruct;
-use crate::apps::lofty::LoftyStruct;
-use crate::apps::mypy::MypyStruct;
-use crate::apps::oxc::OxcStruct;
-use crate::apps::rome::RomeStruct;
-use crate::apps::ruff::RuffStruct;
-use crate::apps::selene::SeleneStruct;
-use crate::apps::staticheckgo::StaticCheckGoStruct;
-use crate::apps::symphonia::SymphoniaStruct;
 use crate::common::{
     execute_command_and_connect_output, minimize_binary_output, minimize_string_output,
 };
-use crate::obj::ProgramConfig;
-use crate::settings::{load_settings, MODES};
+use crate::settings::{get_object, load_settings};
 
 pub mod apps;
 mod broken_files;
@@ -36,38 +25,10 @@ fn main() {
     //     .unwrap();
 
     let settings = load_settings();
-    let obj: Box<dyn ProgramConfig> = match settings.current_mode {
-        MODES::OXC => Box::new(OxcStruct {
-            settings: settings.clone(),
-        }),
-        MODES::MYPY => Box::new(MypyStruct {
-            settings: settings.clone(),
-        }),
-        MODES::DLINT => Box::new(DlintStruct {
-            settings: settings.clone(),
-        }),
-        MODES::ROME => Box::new(RomeStruct {
-            settings: settings.clone(),
-        }),
-        MODES::RUFF => Box::new(RuffStruct {
-            settings: settings.clone(),
-        }),
-        MODES::LOFTY => Box::new(LoftyStruct {
-            settings: settings.clone(),
-        }),
-        MODES::IMAGE => Box::new(ImageStruct {
-            settings: settings.clone(),
-        }),
-        MODES::SYMPHONIA => Box::new(SymphoniaStruct {
-            settings: settings.clone(),
-        }),
-        MODES::SELENE => Box::new(SeleneStruct {
-            settings: settings.clone(),
-        }),
-        MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct {
-            settings: settings.clone(),
-        }),
-    };
+    let obj = get_object(settings.clone());
+
+    assert!(Path::new(&settings.base_of_valid_files).exists());
+    assert!(Path::new(&settings.output_dir).exists());
 
     for i in 1..=settings.loop_number {
         println!("Starting loop {i} out of all {}", settings.loop_number);
@@ -111,7 +72,7 @@ fn main() {
         files.into_par_iter().for_each(|full_name| {
             let number = atomic.fetch_add(1, Ordering::Release);
             if number % 1000 == 0 {
-                println!("_____ {number} / {all}")
+                println!("_____ {number} / {all}");
             }
 
             let s = execute_command_and_connect_output(&obj, &full_name);

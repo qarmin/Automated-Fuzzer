@@ -42,3 +42,4 @@ Yes, it found thousands of crashes in several projects(most are implemented as e
 - Deno lint - https://github.com/denoland/deno_lint/issues/1145 - (873 files)
 - Oxc - https://github.com/Boshen/oxc/issues/232 - (>300 files)
 - Static Check Go Tools - https://github.com/dominikh/go-tools/issues/1393 - (10 files)
+- Quick Lint js - https://github.com/quick-lint/quick-lint-js/issues/974 - (81 files)
