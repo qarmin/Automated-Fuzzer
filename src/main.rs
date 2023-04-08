@@ -14,8 +14,11 @@ use crate::apps::mypy::MypyStruct;
 use crate::apps::oxc::OxcStruct;
 use crate::apps::rome::RomeStruct;
 use crate::apps::ruff::RuffStruct;
+use crate::apps::selene::SeleneStruct;
 use crate::apps::symphonia::SymphoniaStruct;
-use crate::common::{execute_command_and_connect_output, minimize_binary_output, minimize_string_output};
+use crate::common::{
+    execute_command_and_connect_output, minimize_binary_output, minimize_string_output,
+};
 use crate::obj::ProgramConfig;
 use crate::settings::{load_settings, MODES};
 
@@ -55,6 +58,9 @@ fn main() {
             settings: settings.clone(),
         }),
         MODES::SYMPHONIA => Box::new(SymphoniaStruct {
+            settings: settings.clone(),
+        }),
+        MODES::SELENE => Box::new(SeleneStruct {
             settings: settings.clone(),
         }),
     };

@@ -1,4 +1,4 @@
-use crate::broken_files::create_broken_general_files;
+use crate::broken_files::{create_broken_files, LANGS};
 use std::process::Child;
 
 use crate::obj::ProgramConfig;
@@ -10,10 +10,10 @@ pub struct SymphoniaStruct {
 
 impl ProgramConfig for SymphoniaStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE")// && !content.contains("codec_ima.rs")
+        content.contains("RUST_BACKTRACE") // && !content.contains("codec_ima.rs")
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_general_files(self)
+        create_broken_files(self, LANGS::GENERAL)
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

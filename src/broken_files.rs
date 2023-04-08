@@ -1,5 +1,13 @@
-use crate::obj::ProgramConfig;
 use std::process::{Child, Command, Stdio};
+
+use crate::obj::ProgramConfig;
+
+pub enum LANGS {
+    PYTHON,
+    JAVASCRIPT,
+    LUA,
+    GENERAL,
+}
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except",
@@ -23,45 +31,42 @@ const JAVASCRIPT_ARGS: &[&str] = &[
     "throw", "throws", "transient", "true", "try", "typeof", "var", "void", "volatile", "while",
     "with", "yield",
 ];
+const LUA_ARGS: &[&str] = &[
+    "and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local",
+    "nil", "not", "or", "repeat", "return", "then", "true", "until", "while", "+", "-", "*", "/",
+    "%", "^", "#", "==", "~=", "<=", ">=", "<", ">", "=", "(", ")", "{", "}", "[", "]", ";", ":",
+    ",", ".", "..", "...", "\"", "\'", "\'\'", "\"\"",
+];
 
-pub fn create_broken_python_files(obj: &dyn ProgramConfig) -> Child {
+pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let base_of_valid_files = &obj.get_settings().base_of_valid_files;
     let input_dir = &obj.get_settings().input_dir;
     let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
-    Command::new("create_broken_files")
-        .args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
-        .args(PYTHON_ARGS)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-}
-
-pub fn create_broken_javascript_files(obj: &dyn ProgramConfig) -> Child {
-    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
-    let input_dir = &obj.get_settings().input_dir;
-    let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
-    Command::new("create_broken_files")
-        .args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
-        .args(JAVASCRIPT_ARGS)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-}
-
-pub fn create_broken_general_files(obj: &dyn ProgramConfig) -> Child {
-    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
-    let input_dir = &obj.get_settings().input_dir;
-    let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
-    Command::new("create_broken_files")
-        .args(
-            format!(
-                "-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c false"
+    let mut command = Command::new("create_broken_files");
+    let mut com = &mut command;
+    match lang {
+        LANGS::PYTHON => {
+            com = com.args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
+                .args(PYTHON_ARGS);
+        }
+        LANGS::JAVASCRIPT => {
+            com = com.args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
+                .args(JAVASCRIPT_ARGS)
+        }
+        LANGS::LUA => {
+            com = com.args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '))
+                .args(LUA_ARGS)
+        }
+        LANGS::GENERAL => {
+            com = com.args(
+                format!(
+                    "-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c false"
+                )
+                    .split(' '),
             )
-            .split(' '),
-        )
-        .stderr(Stdio::piped())
+        }
+    }
+    com.stderr(Stdio::piped())
         .stdout(Stdio::piped())
         .spawn()
         .unwrap()

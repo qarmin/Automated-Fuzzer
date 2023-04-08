@@ -1,4 +1,4 @@
-use crate::broken_files::create_broken_python_files;
+use crate::broken_files::{create_broken_files, LANGS};
 use std::process::{Child, Command, Stdio};
 
 use crate::common::{create_new_file_name, try_to_save_file};
@@ -11,7 +11,7 @@ pub struct RuffStruct {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE") || content.contains("This indicates a bug in")
+        content.contains("Failed to create fix") && content.contains("RUST_BACKTRACE") || content.contains("This indicates a bug in")
     }
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let mut lines = output
@@ -50,7 +50,7 @@ impl ProgramConfig for RuffStruct {
     }
 
     fn broken_file_creator(&self) -> Child {
-        create_broken_python_files(self)
+        create_broken_files(self, LANGS::PYTHON)
     }
 
     fn get_settings(&self) -> &Setting {

@@ -38,26 +38,26 @@ pub fn load_settings() -> Setting {
     let current_mode = MODES::from_str(&current_mode_string).unwrap();
     let curr_setting = config[&current_mode_string].clone();
 
-    let copy_broken_files = general["copy_broken_files"].parse().unwrap();
+    let extensions = curr_setting["extensions"]
+        .split(',')
+        .map(str::trim)
+        .filter_map(|e| {
+            if e.is_empty() {
+                None
+            } else {
+                Some(format!(".{e}"))
+            }
+        })
+        .collect();
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
-        copy_broken_files,
+        copy_broken_files: general["copy_broken_files"].parse().unwrap(),
         generate_files: general["generate_files"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         current_mode,
-        extensions: curr_setting["extensions"]
-            .split(',')
-            .map(str::trim)
-            .filter_map(|e| {
-                if e.is_empty() {
-                    None
-                } else {
-                    Some(format!(".{e}"))
-                }
-            })
-            .collect(),
+        extensions,
         output_dir: curr_setting["output_dir"].parse().unwrap(),
         base_of_valid_files: curr_setting["base_of_valid_files"].parse().unwrap(),
         input_dir: general["broken_files_dir"].parse().unwrap(),
@@ -65,7 +65,9 @@ pub fn load_settings() -> Setting {
         app_config: curr_setting["app_config"].parse().unwrap(),
         binary_mode: curr_setting["binary_mode"].parse().unwrap(),
         debug_print_results: general["debug_print_results"].parse().unwrap(),
-        debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
+        debug_print_broken_files_creator: general["debug_print_broken_files_creator"]
+            .parse()
+            .unwrap(),
         safe_run: general["safe_run"].parse().unwrap(),
     }
 }
@@ -88,4 +90,6 @@ pub enum MODES {
     LOFTY,
     #[strum(ascii_case_insensitive)]
     SYMPHONIA,
+    #[strum(ascii_case_insensitive)]
+    SELENE,
 }

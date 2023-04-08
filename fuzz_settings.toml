@@ -20,6 +20,14 @@ current_mode = "ruff"
 # output_dir - place where to save broken files
 # binary_mode - used to minify output, if binary mode is on, then all minimization works on bytes, if is off, then minimization works on lines
 
+[selene]
+app_binary = "/home/rafal/test/selene/target/release/selene"
+app_config = ""
+extensions = "lua"
+base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
+output_dir = "/home/rafal/Desktop/RunEveryCommand/selene/Broken"
+binary_mode = false
+
 [oxc]
 app_binary = "/home/rafal/test/oxc/target/release/oxc_cli"
 app_config = ""

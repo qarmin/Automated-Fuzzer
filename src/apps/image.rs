@@ -1,4 +1,4 @@
-use crate::broken_files::create_broken_general_files;
+use crate::broken_files::{create_broken_files, LANGS};
 use std::process::Child;
 
 use crate::obj::ProgramConfig;
@@ -13,7 +13,7 @@ impl ProgramConfig for ImageStruct {
         content.contains("RUST_BACKTRACE")
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_general_files(self)
+        create_broken_files(self, LANGS::GENERAL)
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

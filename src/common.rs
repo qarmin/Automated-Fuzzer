@@ -171,11 +171,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 }
 
 #[allow(clippy::comparison_chain)]
-pub fn minimize_binaries(
-    full_name: &str,
-    data: &Vec<u8>,
-    rng: &mut ThreadRng,
-) -> Option<Vec<u8>> {
+pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -> Option<Vec<u8>> {
     if data.len() <= 3 {
         return None;
     }
@@ -188,7 +184,7 @@ pub fn minimize_binaries(
         .unwrap();
 
     let number = rng.gen_range(0..=20);
-    let  content;
+    let content;
 
     let limit = max(1, rng.gen_range(0..(max(1, data.len() / 5))));
 
@@ -222,7 +218,6 @@ pub fn minimize_binaries(
     output_file.write_all(&content).unwrap();
     Some(content)
 }
-
 
 #[allow(clippy::comparison_chain)]
 pub fn minimize_lines(

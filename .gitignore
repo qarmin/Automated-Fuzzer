@@ -4,3 +4,4 @@
 src/crates/*/target
 *.zip
 src/crates/*/Cargo.lock
+*.txt

@@ -1,4 +1,4 @@
-use crate::broken_files::create_broken_javascript_files;
+use crate::broken_files::{create_broken_files, LANGS};
 use std::process::{Child, Command, Stdio};
 
 use crate::obj::ProgramConfig;
@@ -23,7 +23,7 @@ impl ProgramConfig for DlintStruct {
             .unwrap()
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_javascript_files(self)
+        create_broken_files(self, LANGS::JAVASCRIPT)
     }
     fn get_settings(&self) -> &Setting {
         &self.settings
