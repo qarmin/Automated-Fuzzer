@@ -11,7 +11,8 @@ pub struct RuffStruct {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("Failed to create fix") && content.contains("RUST_BACKTRACE")
+        content.contains("Failed to create fix")
+            || content.contains("RUST_BACKTRACE")
             || content.contains("This indicates a bug in")
     }
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {

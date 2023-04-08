@@ -92,4 +92,6 @@ pub enum MODES {
     SYMPHONIA,
     #[strum(ascii_case_insensitive)]
     SELENE,
+    #[strum(ascii_case_insensitive)]
+    STATICCHECKGO,
 }

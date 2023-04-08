@@ -5,10 +5,10 @@ This repo contains simple tool to create broken files and checking them with spe
 This small tool I created mainly for my own use without much vision, so you can easily compile app without changing source code
 if you want to use already implemented fuzzers, but if you want to test your own app
 
-This tool is designed for fast iterations, so it works really great if your app can test/lint several files per second(e.g. ruff on my pc can test even 50 middle size files per second in one core).
+This tool is designed for fast iterations, so it works really great if your app can test/lint several files per second(e.g. ruff on my pc can test even 50 middle size files per second in one core). If you use slower tool(I had this problem mypy), you may want to manually generate broken files via [create_broken_files](https://crates.io/crates/create_broken_files) and test this files in chunks manually.
 
 ## How to use it?
-- Install tool to create broken files
+- Install tool to create broken files(rust and cargo can be installed directly from https://rustup.rs/ via simple command)
 ```
 cargo install create_broken_files
 ```
@@ -41,3 +41,4 @@ Yes, it found thousands of crashes in several projects(most are implemented as e
 - Lofty - https://github.com/Serial-ATA/lofty-rs/issues/174 - (1 file)
 - Deno lint - https://github.com/denoland/deno_lint/issues/1145 - (873 files)
 - Oxc - https://github.com/Boshen/oxc/issues/232 - (>300 files)
+- Static Check Go Tools - https://github.com/dominikh/go-tools/issues/1393 - (10 files)

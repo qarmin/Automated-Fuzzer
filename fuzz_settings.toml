@@ -10,7 +10,7 @@ minimization_attempts = 50 # Attemps to minimize code, if after 25 attempts from
 debug_print_results = false # Debug prints output of commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 
-current_mode = "ruff"
+current_mode = "staticcheckgo"
 
 # app_binary - place where binary exists
 # app_config - path to configuration file
@@ -19,6 +19,14 @@ current_mode = "ruff"
 # base_of_valid_files - place with valid files
 # output_dir - place where to save broken files
 # binary_mode - used to minify output, if binary mode is on, then all minimization works on bytes, if is off, then minimization works on lines
+
+[staticcheckgo]
+app_binary = "/home/rafal/Desktop/RunEveryCommand/APPS/staticcheck"
+app_config = ""
+extensions = "go"
+base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_GO_VALID_FILES"
+output_dir = "/home/rafal/Desktop/RunEveryCommand/staticcheckgo/Broken"
+binary_mode = false
 
 [selene]
 app_binary = "/home/rafal/test/selene/target/release/selene"

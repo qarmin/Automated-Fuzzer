@@ -1,8 +1,8 @@
 #![allow(clippy::upper_case_acronyms)]
 
-use std::fs;
 use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
+use std::{fs, process};
 
 use rayon::prelude::*;
 use walkdir::WalkDir;
@@ -15,6 +15,7 @@ use crate::apps::oxc::OxcStruct;
 use crate::apps::rome::RomeStruct;
 use crate::apps::ruff::RuffStruct;
 use crate::apps::selene::SeleneStruct;
+use crate::apps::staticheckgo::StaticCheckGoStruct;
 use crate::apps::symphonia::SymphoniaStruct;
 use crate::common::{
     execute_command_and_connect_output, minimize_binary_output, minimize_string_output,
@@ -63,6 +64,9 @@ fn main() {
         MODES::SELENE => Box::new(SeleneStruct {
             settings: settings.clone(),
         }),
+        MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct {
+            settings: settings.clone(),
+        }),
     };
 
     for i in 1..=settings.loop_number {
@@ -75,6 +79,12 @@ fn main() {
             let command = obj.broken_file_creator();
             let output = command.wait_with_output().unwrap();
             let out = String::from_utf8(output.stdout).unwrap();
+            if !output.status.success() {
+                println!("{:?}", output.status);
+                println!("{out}");
+                println!("Failed to generate files");
+                process::exit(1);
+            }
             if settings.debug_print_broken_files_creator {
                 println!("{out}");
             };

@@ -262,12 +262,18 @@ pub fn remove_code_between_empty_lines(rng: &mut ThreadRng, orig: &[String]) -> 
     orig[(limits.0)..(limits.1)].to_vec()
 }
 
-pub fn remove_random_from_middle<T>(rng: &mut ThreadRng, orig: &[T]) -> Vec<T> where T: Clone {
-    let limits= get_two_random_not_equal_ints(rng, orig.len());
+pub fn remove_random_from_middle<T>(rng: &mut ThreadRng, orig: &[T]) -> Vec<T>
+where
+    T: Clone,
+{
+    let limits = get_two_random_not_equal_ints(rng, orig.len());
     orig[(limits.0)..(limits.1)].to_vec()
 }
 
-pub fn remove_random_items<T>(rng: &mut ThreadRng, orig: &[T], limit: usize) -> Vec<T> where T: Clone {
+pub fn remove_random_items<T>(rng: &mut ThreadRng, orig: &[T], limit: usize) -> Vec<T>
+where
+    T: Clone,
+{
     let content = orig.to_vec();
     let mut indexes_to_remove = HashSet::new();
     for _ in 0..limit {
@@ -279,7 +285,7 @@ pub fn remove_random_items<T>(rng: &mut ThreadRng, orig: &[T], limit: usize) -> 
         if !indexes_to_remove.contains(&idx) {
             new_data.push(line);
         }
-    };
+    }
     new_data
 }
 
