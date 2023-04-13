@@ -1,12 +1,12 @@
 [general]
-loop_number = 10 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file
-generate_files = true # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run)
+loop_number = 1 # How much creating/removing/checking steps will be executed
+broken_files_for_each_file = 20# Number of broken files that will be created for each 1 valid file
 safe_run = false # only prints results from broken_files_dir, do not copy broken files or try to minimize output
 copy_broken_files = true
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
+generate_files = true # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run)
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
-minimization_attempts = 50 # Attemps to minimize code, if after 25 attempts from 50 minimization completelly
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
+minimization_attempts = 2 # Attemps to minimize code, if after 25 attempts from 50 minimization completelly
 debug_print_results = false # Debug prints output of commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 
@@ -19,6 +19,14 @@ current_mode = "ruff"
 # base_of_valid_files - place with valid files
 # output_dir - place where to save broken files
 # binary_mode - used to minify output, if binary mode is on, then all minimization works on bytes, if is off, then minimization works on lines
+
+[pdfrs]
+app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/pdf/target/release/pdf"
+app_config = ""
+extensions = "pdf"
+base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PDF_VALID_FILES"
+output_dir = "/home/rafal/Desktop/RunEveryCommand/pdfrs/Broken"
+binary_mode = true
 
 [quicklintjs]
 app_binary = "quick-lint-js"

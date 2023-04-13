@@ -4,20 +4,16 @@ use std::process::Child;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
-pub struct QuickLintStruct {
+pub struct PdfRsStruct {
     pub settings: Setting,
 }
 
-impl ProgramConfig for QuickLintStruct {
+impl ProgramConfig for PdfRsStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("aborted") || content.contains("internal check failed")
+        content.contains("RUST_BACKTRACE")
     }
     fn broken_file_creator(&self) -> Child {
-        if self.settings.binary_mode {
-            create_broken_files(self, LANGS::GENERAL)
-        } else {
-            create_broken_files(self, LANGS::JAVASCRIPT)
-        }
+        create_broken_files(self, LANGS::GENERAL)
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

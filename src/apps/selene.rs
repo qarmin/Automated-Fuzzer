@@ -13,7 +13,11 @@ impl ProgramConfig for SeleneStruct {
         content.contains("RUST_BACKTRACE")
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_files(self, LANGS::LUA)
+        if self.settings.binary_mode {
+            create_broken_files(self, LANGS::GENERAL)
+        } else {
+            create_broken_files(self, LANGS::LUA)
+        }
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

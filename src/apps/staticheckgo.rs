@@ -27,7 +27,11 @@ impl ProgramConfig for StaticCheckGoStruct {
             .unwrap()
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_files(self, LANGS::GO)
+        if self.settings.binary_mode {
+            create_broken_files(self, LANGS::GENERAL)
+        } else {
+            create_broken_files(self, LANGS::GO)
+        }
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

@@ -9,3 +9,4 @@ pub mod ruff;
 pub mod selene;
 pub mod staticheckgo;
 pub mod symphonia;
+pub mod pdfrs;

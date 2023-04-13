@@ -14,6 +14,7 @@ use config::Config;
 use std::collections::HashMap;
 use std::str::FromStr;
 use strum_macros::EnumString;
+use crate::apps::pdfrs::PdfRsStruct;
 
 #[derive(Clone, Debug)]
 pub struct Setting {
@@ -97,6 +98,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::SELENE => Box::new(SeleneStruct { settings }),
         MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
         MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
+        MODES::PDFRS => Box::new(PdfRsStruct { settings }),
     }
 }
 
@@ -124,4 +126,6 @@ pub enum MODES {
     STATICCHECKGO,
     #[strum(ascii_case_insensitive)]
     QUICKLINTJS,
+    #[strum(ascii_case_insensitive)]
+    PDFRS,
 }

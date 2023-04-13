@@ -52,7 +52,11 @@ impl ProgramConfig for RuffStruct {
     }
 
     fn broken_file_creator(&self) -> Child {
-        create_broken_files(self, LANGS::PYTHON)
+        if self.settings.binary_mode {
+            create_broken_files(self, LANGS::GENERAL)
+        } else {
+            create_broken_files(self, LANGS::PYTHON)
+        }
     }
 
     fn get_settings(&self) -> &Setting {

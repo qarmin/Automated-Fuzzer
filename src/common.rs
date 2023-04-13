@@ -91,7 +91,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             write!(output_file, "{data}").unwrap();
         }
         // If minimization was successful, but last run broke file, restore latest good configuration
-        if !valid_output {
+        else if !valid_output {
             write!(output_file, "{}", lines.join("\n")).unwrap();
         }
     }
@@ -157,7 +157,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             output_file.write_all(&data).unwrap();
         }
         // If minimization was successful, but last run broke file, restore latest good configuration
-        if !valid_output {
+        else if !valid_output {
             output_file.write_all(&old_new_data).unwrap();
         }
     }
