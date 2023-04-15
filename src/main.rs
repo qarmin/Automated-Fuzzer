@@ -30,6 +30,7 @@ fn main() {
     assert!(Path::new(&settings.base_of_valid_files).exists());
     assert!(Path::new(&settings.output_dir).exists());
 
+    let atomic_all_broken = AtomicU32::new(0);
     for i in 1..=settings.loop_number {
         println!("Starting loop {i} out of all {}", settings.loop_number);
 
@@ -75,13 +76,14 @@ fn main() {
                 println!("_____ {number} / {all}");
             }
 
-            let s = execute_command_and_connect_output(&obj, &full_name);
+            let (is_really_broken, output) = execute_command_and_connect_output(&obj, &full_name);
             if settings.debug_print_results {
-                println!("{s}");
+                println!("{output}");
             }
-            if obj.is_broken(&s) {
+            if is_really_broken || obj.is_broken(&output) {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
-                if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, s) {
+                atomic_all_broken.fetch_add(1, Ordering::Relaxed);
+                if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, output) {
                     if settings.minimize_output {
                         if settings.binary_mode {
                             minimize_binary_output(&obj, &new_file_name);
@@ -98,4 +100,8 @@ fn main() {
             atomic_broken.load(Ordering::Relaxed)
         );
     }
+    println!(
+        "\n\nFound {} broken files in all iterations",
+        atomic_all_broken.load(Ordering::Relaxed)
+    );
 }

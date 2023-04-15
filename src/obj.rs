@@ -1,6 +1,7 @@
+use std::process::{Child, Command, Stdio};
+
 use crate::common::{create_new_file_name, try_to_save_file};
 use crate::settings::Setting;
-use std::process::{Child, Command, Stdio};
 
 pub trait ProgramConfig: Sync {
     fn is_broken(&self, content: &str) -> bool;
@@ -16,12 +17,25 @@ pub trait ProgramConfig: Sync {
         }
     }
     fn get_run_command(&self, full_name: &str) -> Child {
-        Command::new(&self.get_settings().app_binary)
+        self._get_basic_run_command()
             .arg(full_name)
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
             .spawn()
             .unwrap()
+    }
+    fn _get_basic_run_command(&self) -> Command {
+        let timeout = self.get_settings().timeout;
+
+        let mut comm = if timeout == 0 {
+            Command::new(&self.get_settings().app_binary)
+        } else {
+            let mut a = Command::new("timeout");
+            a.arg("-v")
+                .arg(&timeout.to_string())
+                .arg(&self.get_settings().app_binary);
+            a
+        };
+        comm.stderr(Stdio::piped()).stdout(Stdio::piped());
+        comm
     }
     fn broken_file_creator(&self) -> Child;
     fn get_settings(&self) -> &Setting;

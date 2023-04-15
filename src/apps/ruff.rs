@@ -1,5 +1,5 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::{Child, Command, Stdio};
+use std::process::Child;
 
 use crate::common::{create_new_file_name, try_to_save_file};
 use crate::obj::ProgramConfig;
@@ -39,14 +39,12 @@ impl ProgramConfig for RuffStruct {
         }
     }
     fn get_run_command(&self, full_name: &str) -> Child {
-        Command::new(&self.settings.app_binary)
+        self._get_basic_run_command()
             .arg(full_name)
             .arg("--config")
             .arg(&self.settings.app_config)
             .arg("--no-cache")
             .arg("--fix")
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
             .spawn()
             .unwrap()
     }

@@ -3,13 +3,14 @@ use std::collections::HashSet;
 use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
+use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 
 use rand::prelude::ThreadRng;
 use rand::Rng;
 
 use crate::obj::ProgramConfig;
-use crate::settings::Setting;
+use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     loop {
@@ -44,9 +45,9 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         println!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8");
         return;
     };
-    let output = execute_command_and_connect_output(obj, full_name);
 
-    if !obj.is_broken(&output) {
+    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
+    if !(is_really_broken || obj.is_broken(&output)) {
         return;
     }
 
@@ -55,7 +56,11 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let old_line_number = lines.len();
 
-    let mut attempts = obj.get_settings().minimization_attempts;
+    let mut attempts = if is_really_broken {
+        obj.get_settings().minimization_attempts_with_signal_timeout
+    } else {
+        obj.get_settings().minimization_attempts
+    };
     let mut minimized_output = false;
     let mut valid_output = false;
     while attempts > 0 {
@@ -66,9 +71,13 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             break;
         }
 
-        let output = execute_command_and_connect_output(obj, full_name);
-        if obj.is_broken(&output) {
-            attempts = obj.get_settings().minimization_attempts;
+        let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
+        if is_really_broken || obj.is_broken(&output) {
+            attempts = if is_really_broken {
+                obj.get_settings().minimization_attempts_with_signal_timeout
+            } else {
+                obj.get_settings().minimization_attempts
+            };
             lines = new_lines;
             minimized_output = true;
             valid_output = true;
@@ -96,7 +105,8 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         }
     }
 
-    assert!(obj.is_broken(&execute_command_and_connect_output(obj, full_name)));
+    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
+    assert!(is_really_broken || obj.is_broken(&output));
 
     println!(
         "File {full_name}, minimized from {old_line_number} to {} lines",
@@ -110,9 +120,9 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         println!("INFO: Cannot read content of {full_name}");
         return;
     };
-    let output = execute_command_and_connect_output(obj, full_name);
 
-    if !obj.is_broken(&output) {
+    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
+    if !(is_really_broken || obj.is_broken(&output)) {
         return;
     }
 
@@ -121,7 +131,11 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let mut old_new_data = data.clone();
     let items_number = data.len();
 
-    let mut attempts = obj.get_settings().minimization_attempts;
+    let mut attempts = if is_really_broken {
+        obj.get_settings().minimization_attempts_with_signal_timeout
+    } else {
+        obj.get_settings().minimization_attempts
+    };
     let mut minimized_output = false;
     let mut valid_output = false;
     while attempts > 0 {
@@ -132,9 +146,13 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             break;
         }
 
-        let output = execute_command_and_connect_output(obj, full_name);
-        if obj.is_broken(&output) {
-            attempts = obj.get_settings().minimization_attempts;
+        let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
+        if is_really_broken || obj.is_broken(&output) {
+            attempts = if is_really_broken {
+                obj.get_settings().minimization_attempts_with_signal_timeout
+            } else {
+                obj.get_settings().minimization_attempts
+            };
             old_new_data = new_data;
             minimized_output = true;
             valid_output = true;
@@ -162,7 +180,8 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         }
     }
 
-    assert!(obj.is_broken(&execute_command_and_connect_output(obj, full_name)));
+    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
+    assert!(is_really_broken || obj.is_broken(&output));
 
     println!(
         "File {full_name}, minimized from {items_number} to {} bytes",
@@ -170,7 +189,6 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     );
 }
 
-#[allow(clippy::comparison_chain)]
 pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -> Option<Vec<u8>> {
     if data.len() <= 3 {
         return None;
@@ -203,7 +221,6 @@ pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -
     Some(content)
 }
 
-#[allow(clippy::comparison_chain)]
 pub fn minimize_lines(
     full_name: &str,
     lines: &Vec<String>,
@@ -303,12 +320,40 @@ fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, 
 }
 
 #[allow(clippy::borrowed_box)]
-pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> String {
+pub fn execute_command_and_connect_output(
+    obj: &Box<dyn ProgramConfig>,
+    full_name: &str,
+) -> (bool, String) {
     let command = obj.get_run_command(full_name);
     let output = command.wait_with_output().unwrap();
+    let mut is_signal_code_timeout_broken = false;
 
     let mut out = output.stderr.clone();
     out.push(b'\n');
     out.extend(output.stdout);
-    String::from_utf8(out).unwrap()
+    let mut str_out = String::from_utf8(out).unwrap();
+    str_out.push_str(&format!(
+        "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
+        output.status.code(),
+        output.status.signal()
+    ));
+
+    if obj.get_settings().error_when_found_signal {
+        if let Some(_signal) = output.status.signal() {
+            // println!("Non standard output signal {}", signal);
+            is_signal_code_timeout_broken = true;
+        }
+    }
+    if obj.get_settings().error_statuses_different_than_0_1
+        && ![Some(0), Some(1)].contains(&output.status.code())
+    {
+        // println!("Non standard output status {:?}", output.status.code());
+        is_signal_code_timeout_broken = true;
+    }
+    if obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) {
+        // println!("Timeout found");
+        is_signal_code_timeout_broken = true;
+    }
+
+    (is_signal_code_timeout_broken, str_out)
 }

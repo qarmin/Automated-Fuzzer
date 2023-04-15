@@ -1,5 +1,5 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::{Child, Command, Stdio};
+use std::process::Child;
 
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -14,13 +14,8 @@ impl ProgramConfig for MypyStruct {
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
-        Command::new(&self.settings.app_binary)
-            .arg(full_name)
-            .args("--no-incremental --ignore-missing-imports --disallow-any-unimported --disallow-any-expr --disallow-any-decorated --disallow-any-explicit --disallow-any-generics --disallow-subclassing-any --disallow-untyped-calls --disallow-untyped-defs --disallow-incomplete-defs --check-untyped-defs --disallow-untyped-decorators --warn-redundant-casts --warn-unused-ignores --no-warn-no-return --warn-return-any --warn-unreachable --strict".split(' '))
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .unwrap()
+        self._get_basic_run_command().arg(full_name).args("--no-incremental --ignore-missing-imports --disallow-any-unimported --disallow-any-expr --disallow-any-decorated --disallow-any-explicit --disallow-any-generics --disallow-subclassing-any --disallow-untyped-calls --disallow-untyped-defs --disallow-incomplete-defs --check-untyped-defs --disallow-untyped-decorators --warn-redundant-casts --warn-unused-ignores --no-warn-no-return --warn-return-any --warn-unreachable --strict".split(' '))
+            .spawn().unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {

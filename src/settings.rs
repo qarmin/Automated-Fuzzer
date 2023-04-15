@@ -3,9 +3,11 @@ use crate::apps::image::ImageStruct;
 use crate::apps::lofty::LoftyStruct;
 use crate::apps::mypy::MypyStruct;
 use crate::apps::oxc::OxcStruct;
+use crate::apps::pdfrs::PdfRsStruct;
 use crate::apps::quick_lint_js::QuickLintStruct;
 use crate::apps::rome::RomeStruct;
 use crate::apps::ruff::RuffStruct;
+use crate::apps::rustfmt::RustFmtStruct;
 use crate::apps::selene::SeleneStruct;
 use crate::apps::staticheckgo::StaticCheckGoStruct;
 use crate::apps::symphonia::SymphoniaStruct;
@@ -14,7 +16,8 @@ use config::Config;
 use std::collections::HashMap;
 use std::str::FromStr;
 use strum_macros::EnumString;
-use crate::apps::pdfrs::PdfRsStruct;
+
+pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
 
 #[derive(Clone, Debug)]
 pub struct Setting {
@@ -24,6 +27,7 @@ pub struct Setting {
     pub generate_files: bool,
     pub minimize_output: bool,
     pub minimization_attempts: u32,
+    pub minimization_attempts_with_signal_timeout: u32,
     pub current_mode: MODES,
     pub extensions: Vec<String>,
     pub output_dir: String,
@@ -33,6 +37,9 @@ pub struct Setting {
     pub app_config: String,
     pub binary_mode: bool,
     pub debug_print_results: bool,
+    pub timeout: usize,
+    pub error_statuses_different_than_0_1: bool,
+    pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
     pub safe_run: bool,
 }
@@ -69,8 +76,13 @@ pub fn load_settings() -> Setting {
         generate_files: general["generate_files"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
+        minimization_attempts_with_signal_timeout: general
+            ["minimization_attempts_with_signal_timeout"]
+            .parse()
+            .unwrap(),
         current_mode,
         extensions,
+        timeout: general["timeout"].parse().unwrap(),
         output_dir: curr_setting["output_dir"].parse().unwrap(),
         base_of_valid_files: curr_setting["base_of_valid_files"].parse().unwrap(),
         input_dir: general["broken_files_dir"].parse().unwrap(),
@@ -78,6 +90,10 @@ pub fn load_settings() -> Setting {
         app_config: curr_setting["app_config"].parse().unwrap(),
         binary_mode: curr_setting["binary_mode"].parse().unwrap(),
         debug_print_results: general["debug_print_results"].parse().unwrap(),
+        error_statuses_different_than_0_1: general["error_statuses_different_than_0_1"]
+            .parse()
+            .unwrap(),
+        error_when_found_signal: general["error_when_found_signal"].parse().unwrap(),
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"]
             .parse()
             .unwrap(),
@@ -99,6 +115,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
         MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
         MODES::PDFRS => Box::new(PdfRsStruct { settings }),
+        MODES::RUSTFMT => Box::new(RustFmtStruct { settings }),
     }
 }
 
@@ -128,4 +145,6 @@ pub enum MODES {
     QUICKLINTJS,
     #[strum(ascii_case_insensitive)]
     PDFRS,
+    #[strum(ascii_case_insensitive)]
+    RUSTFMT,
 }

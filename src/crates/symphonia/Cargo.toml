@@ -1,9 +1,9 @@
 [package]
-name = "lofty"
+name = "symphonia"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lofty = "0.12"
+symphonia = { version = "0.5", features = ["mp3", "aac", "alac", "flac", "isomp4", "mkv", "ogg", "pcm", "vorbis", "wav"] }

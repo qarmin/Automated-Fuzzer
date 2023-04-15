@@ -8,6 +8,7 @@ pub enum LANGS {
     JAVASCRIPT,
     LUA,
     GO,
+    RUST,
     GENERAL,
 }
 
@@ -49,6 +50,21 @@ const GO_ARGS: &[&str] = &[
     "const", "fallthrough", "if", "range", "type", "continue", "for", "import", "return", "var",
 ];
 
+// "|", "||",  "|=", "--", "-=", "\0", "->"  cause some problems
+const RUST_ARGS: &[&str] = &[
+    "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for",
+    "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return",
+    "self", "Self", "static", "struct", "super", "trait", "true", "type", "unsafe", "use", "where",
+    "while", "async", "await", "dyn", "abstract", "become", "box", "do", "final", "macro",
+    "override", "priv", "typeof", "unsized", "virtual", "yield", "try", "union", "'static", "dyn",
+    "r#", "//", "///", "////", "//!", "//!!", "/*!", "/*!!", "/*", "/**", "/***", "*/", "**/",
+    "***/", "\r", "\n", " ", "\t", "b", "\\", "/", "'", "\"", "0x", "0b", "0o", "u8", "i8", "u16",
+    "i16", "u32", "i32", "u64", "i64", "u128", "i128", "usize", "isize", "f32", "f64", "{", "+",
+    "-", "*", "/", "%", "^", "!", "&", "&&", "<<", ">>", "+=", "*=", "/=", "%=", "^=", "&=", "<<=",
+    ">>=", "=", "==", "!=", ">", "<", ">=", "<=", "@", "_", ".", "..", "...", "..=", ",", ";", ":",
+    "::", "=>", "$", "?", "~", "{", "}", "[", "]", "(", ")",
+];
+
 pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let base_of_valid_files = &obj.get_settings().base_of_valid_files;
     let input_dir = &obj.get_settings().input_dir;
@@ -63,6 +79,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::JAVASCRIPT => com = com.args(JAVASCRIPT_ARGS),
         LANGS::LUA => com = com.args(LUA_ARGS),
         LANGS::GO => com = com.args(GO_ARGS),
+        LANGS::RUST => com = com.args(RUST_ARGS),
         LANGS::GENERAL => {
             com = com.args(
                 format!(

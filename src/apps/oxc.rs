@@ -1,5 +1,5 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::{Child, Command, Stdio};
+use std::process::Child;
 
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -14,14 +14,12 @@ impl ProgramConfig for OxcStruct {
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
-        Command::new(&self.settings.app_binary)
+        self._get_basic_run_command()
             .arg("lint")
             .arg("-A")
             .arg("all")
             .arg(full_name)
             .arg("--fix")
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
             .spawn()
             .unwrap()
     }

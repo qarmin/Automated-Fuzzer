@@ -1,5 +1,5 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::{Child, Command, Stdio};
+use std::process::Child;
 
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -10,16 +10,13 @@ pub struct DlintStruct {
 
 impl ProgramConfig for DlintStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE") || content.contains("timeout: sending signal")
+        content.contains("RUST_BACKTRACE")
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
-        Command::new(&self.settings.app_binary)
-        // Command::new("timeout").arg("-v").arg("20").arg(&self.settings.app_binary) // TODO timeout
+        self._get_basic_run_command()
             .arg("run")
             .arg(full_name)
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
             .spawn()
             .unwrap()
     }
