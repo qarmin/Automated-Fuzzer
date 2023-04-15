@@ -1,4 +1,5 @@
 pub mod dlint;
+pub mod eslint;
 pub mod image;
 pub mod lofty;
 pub mod mypy;

@@ -1,4 +1,5 @@
 use crate::apps::dlint::DlintStruct;
+use crate::apps::eslint::EslintStruct;
 use crate::apps::image::ImageStruct;
 use crate::apps::lofty::LoftyStruct;
 use crate::apps::mypy::MypyStruct;
@@ -116,6 +117,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
         MODES::PDFRS => Box::new(PdfRsStruct { settings }),
         MODES::RUSTFMT => Box::new(RustFmtStruct { settings }),
+        MODES::ESLINT => Box::new(EslintStruct { settings }),
     }
 }
 
@@ -147,4 +149,6 @@ pub enum MODES {
     PDFRS,
     #[strum(ascii_case_insensitive)]
     RUSTFMT,
+    #[strum(ascii_case_insensitive)]
+    ESLINT,
 }
