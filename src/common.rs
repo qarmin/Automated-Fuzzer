@@ -191,7 +191,12 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
 pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -> Option<Vec<u8>> {
     if data.len() <= 3 {
-        return None;
+        if data.len() == 1 {
+            return None;
+        }
+        let mut temp_data = data.clone();
+        temp_data.remove(rng.gen_range(0..data.len()));
+        return Some(temp_data);
     }
 
     let mut output_file = OpenOptions::new()
@@ -227,7 +232,12 @@ pub fn minimize_lines(
     rng: &mut ThreadRng,
 ) -> Option<Vec<String>> {
     if lines.len() <= 3 {
-        return None;
+        if lines.len() == 1 {
+            return None;
+        }
+        let mut temp_lines = lines.clone();
+        temp_lines.remove(rng.gen_range(0..lines.len()));
+        return Some(temp_lines);
     }
 
     let mut output_file = OpenOptions::new()
@@ -331,7 +341,7 @@ pub fn execute_command_and_connect_output(
     let mut out = output.stderr.clone();
     out.push(b'\n');
     out.extend(output.stdout);
-    let mut str_out = String::from_utf8(out).unwrap();
+    let mut str_out = String::from_utf8_lossy(&out).to_string();
     str_out.push_str(&format!(
         "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
         output.status.code(),

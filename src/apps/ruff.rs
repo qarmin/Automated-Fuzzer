@@ -26,7 +26,7 @@ impl ProgramConfig for RuffStruct {
             .map(String::from)
             .collect::<Vec<String>>();
         lines.dedup();
-        let output = lines.into_iter().collect::<String>();
+        let output = lines.join("\n");
 
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         println!("\n_______________ File {full_name} saved to {new_name} _______________________");
