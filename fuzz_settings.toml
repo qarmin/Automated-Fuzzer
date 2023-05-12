@@ -10,11 +10,12 @@ minimization_attempts = 100 # Attemps to minimize code, counter reset when found
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
 debug_print_results = false # Debug prints output of commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
+remove_non_crashing_items_from_broken_files = true # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
 timeout = 100 # timeout time, if equal zero, then timeout is disabled
 error_statuses_different_than_0_1 = false # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 error_when_found_signal = true # Errors, when app was killed by OS or used
 
-current_mode = "eslint"
+current_mode = "ruff"
 
 # app_binary - place where binary exists
 # app_config - path to configuration file

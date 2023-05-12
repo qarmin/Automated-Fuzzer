@@ -29,6 +29,7 @@ pub struct Setting {
     pub minimize_output: bool,
     pub minimization_attempts: u32,
     pub minimization_attempts_with_signal_timeout: u32,
+    pub remove_non_crashing_items_from_broken_files: bool,
     pub current_mode: MODES,
     pub extensions: Vec<String>,
     pub output_dir: String,
@@ -79,6 +80,10 @@ pub fn load_settings() -> Setting {
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         minimization_attempts_with_signal_timeout: general
             ["minimization_attempts_with_signal_timeout"]
+            .parse()
+            .unwrap(),
+        remove_non_crashing_items_from_broken_files: general
+            ["remove_non_crashing_items_from_broken_files"]
             .parse()
             .unwrap(),
         current_mode,

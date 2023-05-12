@@ -1,4 +1,5 @@
 #![allow(clippy::upper_case_acronyms)]
+#![allow(clippy::borrowed_box)]
 
 use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
@@ -16,16 +17,22 @@ pub mod apps;
 mod broken_files;
 mod common;
 mod obj;
+mod remove_non_crashing_files;
 mod settings;
 
 fn main() {
-    // rayon::ThreadPoolBuilder::new()
-    //     .num_threads(1)
-    //     .build_global()
-    //     .unwrap();
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(8)
+        .build_global()
+        .unwrap();
 
     let settings = load_settings();
     let obj = get_object(settings.clone());
+
+    if settings.remove_non_crashing_items_from_broken_files {
+        remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);
+        return;
+    }
 
     assert!(Path::new(&settings.base_of_valid_files).exists());
     assert!(Path::new(&settings.output_dir).exists());
@@ -57,7 +64,11 @@ fn main() {
         assert!(Path::new(&settings.input_dir).is_dir());
         for i in WalkDir::new(&settings.input_dir).into_iter().flatten() {
             let Some(s) = i.path().to_str() else { continue; };
-            if settings.extensions.iter().any(|e| s.ends_with(e)) {
+            if settings
+                .extensions
+                .iter()
+                .any(|e| s.to_lowercase().ends_with(e))
+            {
                 files.push(s.to_string());
             }
         }
@@ -75,7 +86,6 @@ fn main() {
             if number % 1000 == 0 {
                 println!("_____ {number} / {all}");
             }
-
             let (is_really_broken, output) = execute_command_and_connect_output(&obj, &full_name);
             if settings.debug_print_results {
                 println!("{output}");

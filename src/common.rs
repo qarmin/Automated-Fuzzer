@@ -47,9 +47,10 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     };
 
     let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    if !(is_really_broken || obj.is_broken(&output)) {
-        return;
-    }
+    assert!(
+        (is_really_broken || obj.is_broken(&output)),
+        "At start should be broken!"
+    );
 
     let mut lines = data.lines().map(str::to_string).collect::<Vec<String>>();
     let mut rng = rand::thread_rng();
@@ -122,9 +123,10 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     };
 
     let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    if !(is_really_broken || obj.is_broken(&output)) {
-        return;
-    }
+    assert!(
+        (is_really_broken || obj.is_broken(&output)),
+        "At start should be broken!"
+    );
 
     let mut rng = rand::thread_rng();
 
@@ -334,6 +336,8 @@ pub fn execute_command_and_connect_output(
     obj: &Box<dyn ProgramConfig>,
     full_name: &str,
 ) -> (bool, String) {
+    let content_before = fs::read(full_name).unwrap(); // In each iteration be sure that before and after, file is the same
+
     let command = obj.get_run_command(full_name);
     let output = command.wait_with_output().unwrap();
     let mut is_signal_code_timeout_broken = false;
@@ -365,5 +369,6 @@ pub fn execute_command_and_connect_output(
         is_signal_code_timeout_broken = true;
     }
 
+    fs::write(full_name, content_before).unwrap(); // TODO read and save only in usafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
     (is_signal_code_timeout_broken, str_out)
 }
