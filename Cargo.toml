@@ -12,5 +12,5 @@ rayon = "1.7.0"
 rand = "0.8.5"
 config = "0.13.3"
 
-strum_macros = "0.24"
-strum = { version = "0.24", features = ["derive"] }
+strum_macros = "0.25"
+strum = { version = "0.25", features = ["derive"] }

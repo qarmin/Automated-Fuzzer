@@ -3,6 +3,7 @@ use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use rayon::prelude::*;
 use std::fs;
+use std::sync::atomic::{AtomicUsize, Ordering};
 use walkdir::WalkDir;
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
@@ -18,7 +19,9 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
         })
         .collect();
 
-    println!("Found {} files to check", broken_files.len());
+    let before = broken_files.len();
+    let after = AtomicUsize::new(before);
+    println!("Found {before} files to check");
     broken_files.into_par_iter().for_each(|full_name| {
         let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
         if is_really_broken || obj.is_broken(&output) {
@@ -27,5 +30,8 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
 
         println!("File {full_name} is not broken, and will be removed");
         fs::remove_file(&full_name).unwrap();
+        after.fetch_sub(1, Ordering::Relaxed);
     });
+    let after = after.load(Ordering::Relaxed);
+    println!("Removed {} files, left {after} files", before - after);
 }

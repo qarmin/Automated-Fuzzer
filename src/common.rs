@@ -12,6 +12,8 @@ use rand::Rng;
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
+pub const STRING_MINIMIZATION_LIMIT: usize = 50;
+
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     loop {
         let pat = Path::new(&old_name);
@@ -64,13 +66,38 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     };
     let mut minimized_output = false;
     let mut valid_output = false;
+    let mut current_alternative_idx: i32 = STRING_MINIMIZATION_LIMIT as i32;
+    let mut tries = 0;
+
     while attempts > 0 {
-        let Some(new_lines) = minimize_lines(full_name, &lines, &mut rng) else {
+        attempts -= 1;
+        tries += 1;
+
+        let new_lines;
+
+        if lines.len() <= STRING_MINIMIZATION_LIMIT {
+            if current_alternative_idx >= lines.len() as i32 {
+                current_alternative_idx = lines.len() as i32 - 1;
+            }
+            if current_alternative_idx >= 0 {
+                new_lines = Some(minimize_lines_one_by_one(
+                    full_name, &lines, current_alternative_idx as usize,
+                ));
+                current_alternative_idx -= 1;
+            } else {
+                break;
+            }
+        } else {
+            new_lines = minimize_lines(full_name, &lines, &mut rng);
+        }
+
+        let Some(new_lines) = new_lines else {
             break;
         };
+
         if new_lines.len() == lines.len() {
             break;
-        }
+        };
 
         let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
         if is_really_broken || obj.is_broken(&output) {
@@ -82,8 +109,8 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             lines = new_lines;
             minimized_output = true;
             valid_output = true;
+            current_alternative_idx = STRING_MINIMIZATION_LIMIT as i32;
         } else {
-            attempts -= 1;
             valid_output = false;
         }
     }
@@ -110,8 +137,8 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     assert!(is_really_broken || obj.is_broken(&output));
 
     println!(
-        "File {full_name}, minimized from {old_line_number} to {} lines",
-        lines.len()
+        "File {full_name}, minimized from {old_line_number} to {} lines after {tries} attempts",
+        lines.len(),
     );
 }
 
@@ -140,7 +167,12 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     };
     let mut minimized_output = false;
     let mut valid_output = false;
+    let mut tries = 0;
+
     while attempts > 0 {
+        attempts -= 1;
+        tries += 1;
+
         let Some(new_data) = minimize_binaries(full_name, &old_new_data, &mut rng) else {
             break;
         };
@@ -159,7 +191,6 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             minimized_output = true;
             valid_output = true;
         } else {
-            attempts -= 1;
             valid_output = false;
         }
     }
@@ -186,27 +217,28 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     assert!(is_really_broken || obj.is_broken(&output));
 
     println!(
-        "File {full_name}, minimized from {items_number} to {} bytes",
-        old_new_data.len()
+        "File {full_name}, minimized from {items_number} to {} bytes after {tries} attempts",
+        old_new_data.len(),
     );
 }
 
 pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -> Option<Vec<u8>> {
-    if data.len() <= 3 {
-        if data.len() == 1 {
-            return None;
-        }
-        let mut temp_data = data.clone();
-        temp_data.remove(rng.gen_range(0..data.len()));
-        return Some(temp_data);
-    }
-
     let mut output_file = OpenOptions::new()
         .write(true)
         .truncate(true)
         .create(false)
         .open(full_name)
         .unwrap();
+
+    if data.len() <= 3 {
+        if data.len() == 1 {
+            return None;
+        }
+        let mut temp_data = data.clone();
+        temp_data.remove(rng.gen_range(0..data.len()));
+        output_file.write_all(&temp_data).unwrap();
+        return Some(temp_data);
+    }
 
     let number = rng.gen_range(0..=20);
     let content;
@@ -233,15 +265,7 @@ pub fn minimize_lines(
     lines: &Vec<String>,
     rng: &mut ThreadRng,
 ) -> Option<Vec<String>> {
-    if lines.len() <= 3 {
-        if lines.len() == 1 {
-            return None;
-        }
-        let mut temp_lines = lines.clone();
-        temp_lines.remove(rng.gen_range(0..lines.len()));
-        return Some(temp_lines);
-    }
-
+    assert!(lines.len() >= STRING_MINIMIZATION_LIMIT);
     let mut output_file = OpenOptions::new()
         .write(true)
         .truncate(true)
@@ -264,7 +288,7 @@ pub fn minimize_lines(
     } else if number < 15 {
         // Removing code between empty lines
         content = remove_code_between_empty_lines(rng, lines);
-    } else if number < 22 {
+    } else if number <= 23 {
         content = remove_random_from_middle(rng, lines);
     } else {
         // Removing randoms
@@ -273,6 +297,19 @@ pub fn minimize_lines(
 
     write!(output_file, "{}", content.join("\n")).unwrap();
     Some(content)
+}
+pub fn minimize_lines_one_by_one(full_name: &str, lines: &Vec<String>, idx: usize) -> Vec<String> {
+    let mut output_file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .create(false)
+        .open(full_name)
+        .unwrap();
+
+    let mut temp_lines = lines.clone();
+    temp_lines.remove(idx);
+    write!(output_file, "{}", temp_lines.join("\n")).unwrap();
+    temp_lines
 }
 
 pub fn remove_code_between_empty_lines(rng: &mut ThreadRng, orig: &[String]) -> Vec<String> {

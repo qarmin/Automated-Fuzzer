@@ -11,9 +11,17 @@ pub struct RuffStruct {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("Failed to create fix")
-            || content.contains("RUST_BACKTRACE")
-            || content.contains("This indicates a bug in")
+        (
+            // TODO enable after fixing the issue
+            content.contains("Failed to create fix")
+            ||
+            content.contains("RUST_BACKTRACE") || content.contains("::catch_unwind::")
+            // TODO re-enable after
+            ||                 content.contains("This indicates a bug in") || content.contains("Autofix introduced a syntax error")
+        )
+        // Remove after https://github.com/astral-sh/ruff/issues/4406 is fixed
+        && !content.contains("out of bounds")
+        && !content.contains("is not a char boundary")
     }
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let mut lines = output
@@ -43,6 +51,9 @@ impl ProgramConfig for RuffStruct {
             .arg(full_name)
             .arg("--config")
             .arg(&self.settings.app_config)
+            .arg("--select")
+            // .arg("ALL,NURSERY")
+            .arg("ALL") // Nursery enable after fixing bugs related to it
             .arg("--no-cache")
             .arg("--fix")
             .spawn()

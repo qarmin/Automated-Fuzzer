@@ -72,6 +72,10 @@ fn main() {
                 files.push(s.to_string());
             }
         }
+        if files.len() > settings.max_collected_files {
+            files.truncate(settings.max_collected_files);
+        }
+
         if files.is_empty() {
             dbg!(&settings);
             assert!(!files.is_empty());

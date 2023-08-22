@@ -8,6 +8,7 @@ pub mod pdfrs;
 pub mod quick_lint_js;
 pub mod rome;
 pub mod ruff;
+pub mod rust_parser;
 pub mod rustfmt;
 pub mod selene;
 pub mod staticheckgo;

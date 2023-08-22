@@ -8,6 +8,7 @@ use crate::apps::pdfrs::PdfRsStruct;
 use crate::apps::quick_lint_js::QuickLintStruct;
 use crate::apps::rome::RomeStruct;
 use crate::apps::ruff::RuffStruct;
+use crate::apps::rust_parser::RustParserStruct;
 use crate::apps::rustfmt::RustFmtStruct;
 use crate::apps::selene::SeleneStruct;
 use crate::apps::staticheckgo::StaticCheckGoStruct;
@@ -44,6 +45,7 @@ pub struct Setting {
     pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
     pub safe_run: bool,
+    pub max_collected_files: usize,
 }
 
 pub fn load_settings() -> Setting {
@@ -104,6 +106,7 @@ pub fn load_settings() -> Setting {
             .parse()
             .unwrap(),
         safe_run: general["safe_run"].parse().unwrap(),
+        max_collected_files: general["max_collected_files"].parse().unwrap(),
     }
 }
 
@@ -123,6 +126,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::PDFRS => Box::new(PdfRsStruct { settings }),
         MODES::RUSTFMT => Box::new(RustFmtStruct { settings }),
         MODES::ESLINT => Box::new(EslintStruct { settings }),
+        MODES::RUSTPARSER => Box::new(RustParserStruct { settings }),
     }
 }
 
@@ -156,4 +160,6 @@ pub enum MODES {
     RUSTFMT,
     #[strum(ascii_case_insensitive)]
     ESLINT,
+    #[strum(ascii_case_insensitive)]
+    RUSTPARSER,
 }

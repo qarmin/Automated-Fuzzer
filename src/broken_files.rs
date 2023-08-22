@@ -19,7 +19,7 @@ const PYTHON_ARGS: &[&str] = &[
     "global", "not", "with", "async", "elif", "if", "or", "yield", "__init__", "pylint", ":", "?",
     "[", "\"", "\"\"\"", "\'", "]", "}", "%", "f\"", "f'", "<", "<=", ">=", ">", ".", ",", "==",
     "!=", "{", "=", "|", "\\", ";", "_", "-", "**", "*", "/", "!", "(", ")", "(True)", "{}", "()",
-    "[]", "\n", "\t",
+    "[]", "\n", "\t", "# fmt: skip", "# fmt: off", "# fmt: on", "# fmt: noqa", "# noqa", "# type:",
 ];
 
 const JAVASCRIPT_ARGS: &[&str] = &[
