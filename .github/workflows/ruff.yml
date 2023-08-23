@@ -18,15 +18,15 @@ jobs:
       - uses: actions/checkout@v3
 
 
-      - name: Restore Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin
-            ~/.cargo/registry
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-        id: cache
+#      - name: Restore Cache
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            ~/.cargo/bin
+#            ~/.cargo/registry
+#            target
+#          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+#        id: cache
 
       - name: Install dependencies
         run: |
@@ -57,14 +57,14 @@ jobs:
           path: /opt/RESULTS
 
 
-      - name: Save Cache
-        if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin
-            ~/.cargo/registry
-            target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
+#      - name: Save Cache
+#        if: steps.cache.outputs.cache-hit != 'true'
+#        uses: actions/cache@v2
+#        with:
+#          path: |
+#            ~/.cargo/bin
+#            ~/.cargo/registry
+#            target
+#          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+#          restore-keys: |
+#            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
