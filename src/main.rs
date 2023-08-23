@@ -22,7 +22,7 @@ mod settings;
 
 fn main() {
     rayon::ThreadPoolBuilder::new()
-        .num_threads(8)
+        .num_threads(1)
         .build_global()
         .unwrap();
 

@@ -24,6 +24,12 @@ const BROKEN_ITEMS: &[&str] = &[
     "PT009",                                     // 6788
     "SIM300",                                    // 6788
     "UP018",                                     // 6788
+    "UnnecessaryCollectionCall",                 // 6809
+    "D210",                                      // 6810
+    "RSE102",                                    // 6810
+    "EM101",                                     // 6811
+    "F401",                                      // 6811
+    "PytestCompositeAssertion",
 ];
 
 impl ProgramConfig for RuffStruct {

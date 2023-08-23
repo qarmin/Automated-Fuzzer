@@ -254,6 +254,78 @@ pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -
     output_file.write_all(&content).unwrap();
     Some(content)
 }
+pub fn remove_single_def(lines: &Vec<String>, rng: &mut ThreadRng) -> Option<Vec<String>> {
+    let mut list_def = Vec::new();
+    for (idx, line) in lines.iter().enumerate() {
+        if line.trim().starts_with("def ") {
+            list_def.push(idx);
+        }
+    }
+    if list_def.len() <= 1 {
+        return None;
+    }
+    let start_idx = rng.gen_range(0..list_def.len());
+    let start = list_def[start_idx];
+    let end = if start_idx == list_def.len() - 1 {
+        lines.len() - 1
+    } else {
+        list_def[start_idx]
+    };
+    let start_end = start..=end;
+
+    dbg!(&start_end);
+    let mut new_list = Vec::new();
+    for (idx, s) in lines.iter().enumerate() {
+        if start_end.contains(&idx) {
+            continue;
+        }
+        new_list.push(s.clone());
+    }
+    return Some(new_list);
+}
+
+pub fn remove_single_docstring(lines: &Vec<String>, rng: &mut ThreadRng) -> Option<Vec<String>> {
+    let mut list_def = Vec::new();
+    let mut curr_docstring = None;
+    for (idx, line) in lines.iter().enumerate() {
+        let line_trim = line.trim();
+        if line_trim.starts_with("\"\"\"") && line_trim.ends_with("\"\"\"") && line_trim.len() > 3 {
+            list_def.push((idx, idx));
+        } else if line_trim.starts_with("\"\"\"") || line_trim.ends_with("\"\"\"") {
+            if curr_docstring.is_none() {
+                curr_docstring = Some(idx);
+            } else {
+                list_def.push((curr_docstring.unwrap(), idx));
+                curr_docstring = None;
+            }
+        }
+    }
+    if list_def.is_empty() {
+        return None;
+    }
+    let start_idx = rng.gen_range(0..list_def.len());
+    let llen = list_def[start_idx];
+
+    let start_end = llen.0..=llen.1;
+    let mut new_list = Vec::new();
+    for (idx, s) in lines.iter().enumerate() {
+        if start_end.contains(&idx) {
+            continue;
+        }
+        new_list.push(s.clone());
+    }
+    return Some(new_list);
+}
+
+pub fn remove_all_comments(lines: &Vec<String>) -> Vec<String> {
+    let mut new_data = Vec::new();
+    for line in lines {
+        if !line.trim().starts_with("#") {
+            new_data.push(line.clone());
+        }
+    }
+    new_data
+}
 
 pub fn minimize_lines(full_name: &str, lines: &Vec<String>, rng: &mut ThreadRng) -> Vec<String> {
     assert!(lines.len() >= STRING_MINIMIZATION_LIMIT);
@@ -265,25 +337,46 @@ pub fn minimize_lines(full_name: &str, lines: &Vec<String>, rng: &mut ThreadRng)
         .unwrap();
 
     let number = rng.gen_range(0..=25);
-    let content;
+    let mut content = Vec::new();
 
     let limit = max(1, rng.gen_range(0..(max(1, lines.len() / 5))));
 
-    if number < 3 {
-        // Removing from start
-        content = lines[limit..].to_vec();
-    } else if number < 6 {
-        // Removing from end
-        let limit = lines.len() - limit;
-        content = lines[..limit].to_vec();
-    } else if number < 15 {
-        // Removing code between empty lines
-        content = remove_code_between_empty_lines(rng, lines);
-    } else if number <= 23 {
-        content = remove_random_from_middle(rng, lines);
-    } else {
-        // Removing randoms
-        content = remove_random_items(rng, lines, limit);
+    // Methods to better remove lines but only for python code
+    if rng.gen_bool(0.25) {
+        if rng.gen_bool(0.5) {
+            if let Some(new_data) = remove_single_def(lines, rng) {
+                content = new_data;
+            }
+            println!("SINGLE_DEF - {}/{}", content.len(), lines.len());
+        } else if rng.gen_bool(0.9) {
+            // if let Some(new_data) = remove_single_docstring(lines, rng) {
+            //     content = new_data;
+            // }
+            // println!("DOCSTRING - {}/{}", content.len(), lines.len());
+        } else {
+            // content = remove_all_comments(lines);
+            // println!("COMMENTS - {}/{}", content.len(), lines.len());
+        }
+    }
+
+    // If python code was not changed, try again
+    if content.is_empty() || content.len() == lines.len() {
+        if number < 3 {
+            // Removing from start
+            content = lines[limit..].to_vec();
+        } else if number < 6 {
+            // Removing from end
+            let limit = lines.len() - limit;
+            content = lines[..limit].to_vec();
+        } else if number < 15 {
+            // Removing code between empty lines
+            content = remove_code_between_empty_lines(rng, lines);
+        } else if number <= 23 {
+            content = remove_random_from_middle(rng, lines);
+        } else {
+            // Removing randoms
+            content = remove_random_items(rng, lines, limit);
+        }
     }
 
     write!(output_file, "{}", content.join("\n")).unwrap();
@@ -397,6 +490,141 @@ pub fn execute_command_and_connect_output(
         is_signal_code_timeout_broken = true;
     }
 
-    fs::write(full_name, content_before).unwrap(); // TODO read and save only in usafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
+    fs::write(full_name, content_before).unwrap(); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
     (is_signal_code_timeout_broken, str_out)
+}
+
+#[test]
+fn test_remove_single_docstring() {
+    for _i in 0..100 {
+        let mut rng = rand::thread_rng();
+        let lines = r###"
+    """
+    DOCSTRING
+    """
+    def function():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+        let expected = r###"
+    def function():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+
+        assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
+    }
+}
+#[test]
+fn test_remove_single_docstring2() {
+    for _i in 0..100 {
+        let mut rng = rand::thread_rng();
+        let lines = r###"
+    """
+    DOCSTRING
+    """
+    def function():
+        pass
+    """
+    PORTORYKO
+    """
+    def romma():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+        let expected1 = r###"
+    def function():
+        pass
+    """
+    PORTORYKO
+    """
+    def romma():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+        let expected2 = r###"
+    """
+    DOCSTRING
+    """
+    def function():
+        pass
+    def romma():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+
+        let result = remove_single_docstring(&lines, &mut rng).unwrap();
+        assert!([expected1, expected2].contains(&result));
+    }
+}
+
+#[test]
+fn test_remove_single_docstring3() {
+    for _i in 0..100 {
+        let mut rng = rand::thread_rng();
+        let lines = r###"
+    """DOCSTRING"""
+    def function():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+        let expected = r###"
+    def function():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+
+        assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
+    }
+}
+
+#[test]
+fn test_remove_single_def() {
+    for _i in 0..100 {
+        let mut rng = rand::thread_rng();
+        let lines = r###"
+    def function():
+        pass
+    def function2():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+        let expected1 = r###"
+    def function2():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+        let expected2 = r###"
+    def function():
+        pass
+    "###
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
+
+        let ret = remove_single_def(&lines, &mut rng).unwrap();
+        println!("RET {:?}", ret);
+        println!("EXP1 {:?}", expected1);
+        println!("EXP2 {:?}", expected2);
+
+        assert!([expected2, expected1].contains(&ret));
+    }
 }
