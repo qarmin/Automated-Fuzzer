@@ -1,4 +1,4 @@
-name: Rust
+name: Ruff
 
 on:
   push:
@@ -10,7 +10,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  ruff-ci:
 
     runs-on: ubuntu-latest
 
@@ -26,7 +26,7 @@ jobs:
       - name: Install create_broken_files
         run: cargo install create_broken_files
       - name: Install ruff
-        run: cargo install --git https://github.com/astral-sh/ruff.git
+        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
       - name: Download and prepare python data files
         run: |
           wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PYTHON_CI.zip
