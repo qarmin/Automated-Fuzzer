@@ -49,7 +49,7 @@ jobs:
       - name: Run app
         run: |
           mv fuzz_settings_ci.toml fuzz_settings.toml
-          timeout 30 target/release/automated_fuzzer
+          timeout 30 target/release/automated_fuzzer || true
       - name: Store results
         uses: actions/upload-artifact@v2
         with:

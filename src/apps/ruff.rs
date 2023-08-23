@@ -66,8 +66,8 @@ impl ProgramConfig for RuffStruct {
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()
             .arg(full_name)
-            .arg("--config")
-            .arg(&self.settings.app_config)
+            // .arg("--config")
+            // .arg(&self.settings.app_config)
             .arg("--select")
             // .arg("ALL,NURSERY")
             // .arg("NURSERY")
