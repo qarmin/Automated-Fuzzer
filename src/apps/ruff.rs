@@ -1,6 +1,6 @@
-use crate::broken_files::{create_broken_files, LANGS};
 use std::process::Child;
 
+use crate::broken_files::{create_broken_files, LANGS};
 use crate::common::{create_new_file_name, try_to_save_file};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -9,19 +9,36 @@ pub struct RuffStruct {
     pub settings: Setting,
 }
 
+const BROKEN_ITEMS: &[&str] = &[
+    "Failed to create fix for ImplicitOptional", // Probably expected
+    "out of bounds",                             // 4406
+    "is not a char boundary",                    // 4406
+    "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
+    "Failed to create fix for UnnecessaryMap: Currently not supporting default values", // 6715
+    "W292",                                      // 4406
+    "UP009",                                     // 6756
+    "Q002",                                      // 6785
+    "Q000",                                      // 6785
+    "ICN001",                                    // 6786
+    "end_of_last_statement",                     // 6787
+    "PT009",                                     // 6788
+    "SIM300",                                    // 6788
+    "UP018",                                     // 6788
+];
+
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
-        (
-            // TODO enable after fixing the issue
-            content.contains("Failed to create fix")
-            ||
-            content.contains("RUST_BACKTRACE") || content.contains("::catch_unwind::")
-            // TODO re-enable after
-            ||                 content.contains("This indicates a bug in") || content.contains("Autofix introduced a syntax error")
-        )
-        // Remove after https://github.com/astral-sh/ruff/issues/4406 is fixed
-        && !content.contains("out of bounds")
-        && !content.contains("is not a char boundary")
+        let found_broken_items = content.contains("Failed to create fix")
+            || content.contains("RUST_BACKTRACE")
+            || content.contains("catch_unwind::{{closure}}")
+            || content.contains("This indicates a bug in")
+            || content.contains("Autofix introduced a syntax error");
+        // Debug check if properly
+        // dbg!(
+        //     BROKEN_ITEMS.iter().find(|e| content.contains(*e)),
+        //     found_broken_items
+        // );
+        found_broken_items && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
     }
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let mut lines = output
@@ -53,6 +70,7 @@ impl ProgramConfig for RuffStruct {
             .arg(&self.settings.app_config)
             .arg("--select")
             // .arg("ALL,NURSERY")
+            // .arg("NURSERY")
             .arg("ALL") // Nursery enable after fixing bugs related to it
             .arg("--no-cache")
             .arg("--fix")

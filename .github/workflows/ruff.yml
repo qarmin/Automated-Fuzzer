@@ -1,0 +1,44 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget
+      - name: Build
+        run: cargo build --release
+      - name: Install create_broken_files
+        run: cargo install create_broken_files
+      - name: Download and prepare python data files
+        run: |
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PYTHON_CI.zip
+          unzip PYTHON_CI.zip
+          cp AAAA /opt/PYTHON_DATA -r
+          mkdir /opt/RESULTS
+          mkdir /opt/TEST_DIR
+          pwd
+      - name: Run app
+        run: |
+          mv fuzz_settings_ci.toml fuzz_settings.toml
+          target/release/automated_fuzzer
+      - name: Store results
+        uses: actions/upload-artifact@v2
+        with:
+          name: results
+          path: /opt/RESULTS

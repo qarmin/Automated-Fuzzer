@@ -12,7 +12,7 @@ use rand::Rng;
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
-pub const STRING_MINIMIZATION_LIMIT: usize = 50;
+pub const STRING_MINIMIZATION_LIMIT: usize = 3;
 
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     loop {
@@ -80,9 +80,8 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
                 current_alternative_idx = lines.len() as i32 - 1;
             }
             if current_alternative_idx >= 0 {
-                new_lines = Some(minimize_lines_one_by_one(
-                    full_name, &lines, current_alternative_idx as usize,
-                ));
+                new_lines =
+                    minimize_lines_one_by_one(full_name, &lines, current_alternative_idx as usize);
                 current_alternative_idx -= 1;
             } else {
                 break;
@@ -90,10 +89,6 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         } else {
             new_lines = minimize_lines(full_name, &lines, &mut rng);
         }
-
-        let Some(new_lines) = new_lines else {
-            break;
-        };
 
         if new_lines.len() == lines.len() {
             break;
@@ -260,11 +255,7 @@ pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -
     Some(content)
 }
 
-pub fn minimize_lines(
-    full_name: &str,
-    lines: &Vec<String>,
-    rng: &mut ThreadRng,
-) -> Option<Vec<String>> {
+pub fn minimize_lines(full_name: &str, lines: &Vec<String>, rng: &mut ThreadRng) -> Vec<String> {
     assert!(lines.len() >= STRING_MINIMIZATION_LIMIT);
     let mut output_file = OpenOptions::new()
         .write(true)
@@ -278,10 +269,10 @@ pub fn minimize_lines(
 
     let limit = max(1, rng.gen_range(0..(max(1, lines.len() / 5))));
 
-    if number < 5 {
+    if number < 3 {
         // Removing from start
         content = lines[limit..].to_vec();
-    } else if number < 10 {
+    } else if number < 6 {
         // Removing from end
         let limit = lines.len() - limit;
         content = lines[..limit].to_vec();
@@ -296,7 +287,7 @@ pub fn minimize_lines(
     }
 
     write!(output_file, "{}", content.join("\n")).unwrap();
-    Some(content)
+    content
 }
 pub fn minimize_lines_one_by_one(full_name: &str, lines: &Vec<String>, idx: usize) -> Vec<String> {
     let mut output_file = OpenOptions::new()
