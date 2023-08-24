@@ -269,11 +269,10 @@ pub fn remove_single_def(lines: &Vec<String>, rng: &mut ThreadRng) -> Option<Vec
     let end = if start_idx == list_def.len() - 1 {
         lines.len() - 1
     } else {
-        list_def[start_idx]
+        list_def[start_idx + 1]
     };
-    let start_end = start..=end;
+    let start_end = start..end;
 
-    dbg!(&start_end);
     let mut new_list = Vec::new();
     for (idx, s) in lines.iter().enumerate() {
         if start_end.contains(&idx) {
@@ -347,15 +346,12 @@ pub fn minimize_lines(full_name: &str, lines: &Vec<String>, rng: &mut ThreadRng)
             if let Some(new_data) = remove_single_def(lines, rng) {
                 content = new_data;
             }
-            println!("SINGLE_DEF - {}/{}", content.len(), lines.len());
         } else if rng.gen_bool(0.9) {
-            // if let Some(new_data) = remove_single_docstring(lines, rng) {
-            //     content = new_data;
-            // }
-            // println!("DOCSTRING - {}/{}", content.len(), lines.len());
+            if let Some(new_data) = remove_single_docstring(lines, rng) {
+                content = new_data;
+            }
         } else {
-            // content = remove_all_comments(lines);
-            // println!("COMMENTS - {}/{}", content.len(), lines.len());
+            content = remove_all_comments(lines);
         }
     }
 
@@ -621,10 +617,32 @@ fn test_remove_single_def() {
         .collect::<Vec<String>>();
 
         let ret = remove_single_def(&lines, &mut rng).unwrap();
-        println!("RET {:?}", ret);
-        println!("EXP1 {:?}", expected1);
-        println!("EXP2 {:?}", expected2);
-
-        assert!([expected2, expected1].contains(&ret));
+        if ![&expected2, &expected1].contains(&&ret) {
+            println!("RET {:?}", ret);
+            println!("EXP1 {:?}", expected1);
+            println!("EXP2 {:?}", expected2);
+            assert!([expected2, expected1].contains(&ret));
+        }
     }
+}
+
+#[test]
+fn test_remove_all_comments() {
+    let lines = r###"
+    # comment
+    def function():
+        pass
+    "###
+    .split("\n")
+    .map(String::from)
+    .collect::<Vec<String>>();
+    let expected = r###"
+    def function():
+        pass
+    "###
+    .split("\n")
+    .map(String::from)
+    .collect::<Vec<String>>();
+
+    assert_eq!(remove_all_comments(&lines), expected);
 }

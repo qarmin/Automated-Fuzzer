@@ -21,10 +21,10 @@ mod remove_non_crashing_files;
 mod settings;
 
 fn main() {
-    rayon::ThreadPoolBuilder::new()
-        .num_threads(1)
-        .build_global()
-        .unwrap();
+    // rayon::ThreadPoolBuilder::new()
+    //     .num_threads(8)
+    //     .build_global()
+    //     .unwrap();
 
     let settings = load_settings();
     let obj = get_object(settings.clone());
