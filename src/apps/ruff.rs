@@ -14,22 +14,19 @@ const BROKEN_ITEMS: &[&str] = &[
     "out of bounds",                             // 4406
     "is not a char boundary",                    // 4406
     "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
-    "Failed to create fix for UnnecessaryMap: Currently not supporting default values", // 6715
     "W292",                                      // 4406
-    "UP009",                                     // 6756
     "Q002",                                      // 6785
     "Q000",                                      // 6785
     "ICN001",                                    // 6786
-    "end_of_last_statement",                     // 6787
-    "PT009",                                     // 6788
-    "SIM300",                                    // 6788
-    "UP018",                                     // 6788
     "UnnecessaryCollectionCall",                 // 6809
     "D210",                                      // 6810
     "RSE102",                                    // 6810
     "EM101",                                     // 6811
     "F401",                                      // 6811
-    "PytestCompositeAssertion",
+    "due to late binding",                       // 6842
+    "ANN204",                                    // 6843
+    "I001",                                      // 6843
+    "UP007",                                     // 6843
 ];
 
 impl ProgramConfig for RuffStruct {

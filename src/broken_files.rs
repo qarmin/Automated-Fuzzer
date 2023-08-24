@@ -20,6 +20,8 @@ const PYTHON_ARGS: &[&str] = &[
     "[", "\"", "\"\"\"", "\'", "]", "}", "%", "f\"", "f'", "<", "<=", ">=", ">", ".", ",", "==",
     "!=", "{", "=", "|", "\\", ";", "_", "-", "**", "*", "/", "!", "(", ")", "(True)", "{}", "()",
     "[]", "\n", "\t", "# fmt: skip", "# fmt: off", "# fmt: on", "# fmt: noqa", "# noqa", "# type:",
+    "is not", "None", "False", "True", "is None", "is not None", "is False", "is True", "is not ",
+    "is not True", "is not False", "is not None", "is False", "is True", "is not True",
 ];
 
 const JAVASCRIPT_ARGS: &[&str] = &[
