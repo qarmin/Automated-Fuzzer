@@ -27,6 +27,7 @@ const BROKEN_ITEMS: &[&str] = &[
     "ANN204",                                    // 6843
     "I001",                                      // 6843
     "UP007",                                     // 6843
+    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
 ];
 
 impl ProgramConfig for RuffStruct {
