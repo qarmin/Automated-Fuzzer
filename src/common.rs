@@ -31,7 +31,7 @@ pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
 }
 
 pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> bool {
-    if !setting.safe_run && setting.copy_broken_files {
+    if setting.copy_broken_files {
         if let Err(e) = fs::copy(full_name, new_name) {
             eprintln!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
             return true;
@@ -131,10 +131,16 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
     assert!(is_really_broken || obj.is_broken(&output));
 
-    println!(
-        "File {full_name}, minimized from {old_line_number} to {} lines after {tries} attempts",
-        lines.len(),
-    );
+    if old_line_number == lines.len() {
+        println!(
+            "File {full_name}, was not minimized after {tries} attempts, had {old_line_number} lines",
+        );
+    } else {
+        println!(
+            "File {full_name}, minimized from {old_line_number} to {} lines after {tries} attempts",
+            lines.len(),
+        );
+    }
 }
 
 #[allow(clippy::borrowed_box)]
@@ -211,10 +217,16 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
     assert!(is_really_broken || obj.is_broken(&output));
 
-    println!(
-        "File {full_name}, minimized from {items_number} to {} bytes after {tries} attempts",
-        old_new_data.len(),
-    );
+    if items_number == old_new_data.len() {
+        println!(
+            "File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",
+        );
+    } else {
+        println!(
+            "File {full_name}, minimized from {items_number} to {} bytes after {tries} attempts",
+            old_new_data.len(),
+        );
+    }
 }
 
 pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -> Option<Vec<u8>> {
@@ -486,7 +498,10 @@ pub fn execute_command_and_connect_output(
         is_signal_code_timeout_broken = true;
     }
 
-    fs::write(full_name, content_before).unwrap(); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
+    let res = fs::write(&full_name, content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
+    if res.is_err() {
+        panic!("{res:?} - {full_name} - probably you need to set write permissions to this file");
+    }
     (is_signal_code_timeout_broken, str_out)
 }
 

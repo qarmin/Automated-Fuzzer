@@ -1,10 +1,10 @@
 use crate::common::execute_command_and_connect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
+use jwalk::WalkDir;
 use rayon::prelude::*;
 use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use walkdir::WalkDir;
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let broken_files: Vec<String> = WalkDir::new(&settings.output_dir)

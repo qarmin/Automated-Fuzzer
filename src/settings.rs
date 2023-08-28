@@ -44,8 +44,8 @@ pub struct Setting {
     pub error_statuses_different_than_0_1: bool,
     pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
-    pub safe_run: bool,
     pub max_collected_files: usize,
+    pub ignore_generate_copy_files_step: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -105,8 +105,10 @@ pub fn load_settings() -> Setting {
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"]
             .parse()
             .unwrap(),
-        safe_run: general["safe_run"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
+        ignore_generate_copy_files_step: general["ignore_generate_copy_files_step"]
+            .parse()
+            .unwrap(),
     }
 }
 

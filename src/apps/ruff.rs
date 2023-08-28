@@ -11,23 +11,30 @@ pub struct RuffStruct {
 
 const BROKEN_ITEMS: &[&str] = &[
     "Failed to create fix for ImplicitOptional", // Probably expected
+    "into scope due to name conflict",           // Expected
     "out of bounds",                             // 4406
     "is not a char boundary",                    // 4406
     "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
+    "due to late binding",                       // 6842
+    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "W292",                                      // 4406
     "Q002",                                      // 6785
     "Q000",                                      // 6785
     "ICN001",                                    // 6786
     "UnnecessaryCollectionCall",                 // 6809
-    "D210",                                      // 6810
-    "RSE102",                                    // 6810
     "EM101",                                     // 6811
     "F401",                                      // 6811
-    "due to late binding",                       // 6842
-    "ANN204",                                    // 6843
-    "I001",                                      // 6843
-    "UP007",                                     // 6843
-    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
+    "CPY001",                                    // 6890
+    "E202",                                      // 6890
+    "E702",                                      // 6890
+    "E999",                                      // 6890
+    "D100",                                      // 6891
+    "D101",                                      // 6891
+    "F632",                                      // 6891
+    "F821",                                      // 6891
+    "PLR0133",                                   // 6891
+    "RUF001",                                    // 4519
+    "assertion failed: start.raw <= end.raw",    // 4519
 ];
 
 impl ProgramConfig for RuffStruct {
@@ -68,10 +75,12 @@ impl ProgramConfig for RuffStruct {
         }
     }
     fn get_run_command(&self, full_name: &str) -> Child {
+        // .arg("--config")
+        // .arg(&self.settings.app_config) // For now config is not
+
         self._get_basic_run_command()
+            .arg("check")
             .arg(full_name)
-            // .arg("--config")
-            // .arg(&self.settings.app_config)
             .arg("--select")
             // .arg("ALL,NURSERY")
             // .arg("NURSERY")
@@ -80,6 +89,12 @@ impl ProgramConfig for RuffStruct {
             .arg("--fix")
             .spawn()
             .unwrap()
+
+        // self._get_basic_run_command()
+        //     .arg("format")
+        //     .arg(full_name)
+        //     .spawn()
+        //     .unwrap()
     }
 
     fn broken_file_creator(&self) -> Child {
