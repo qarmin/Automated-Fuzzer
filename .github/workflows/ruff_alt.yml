@@ -40,11 +40,13 @@ jobs:
       - name: Download and prepare python data files
         run: |
           CURR_DIR=$(pwd)
+          mkdir /opt/PYTHON_DATA
           mkdir /opt/TEST_DIR
+          mkdir /opt/RESULTS
+          
           cd /opt/TEST_DIR
           wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PZ_py_files.zip
           unzip PZ_py_files.zip
-          mkdir /opt/RESULTS
           echo $CURR_DIR
           cd $CURR_DIR
       - name: Run app
