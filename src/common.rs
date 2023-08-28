@@ -292,10 +292,10 @@ pub fn remove_single_def(lines: &Vec<String>, rng: &mut ThreadRng) -> Option<Vec
         }
         new_list.push(s.clone());
     }
-    return Some(new_list);
+    Some(new_list)
 }
 
-pub fn remove_single_docstring(lines: &Vec<String>, rng: &mut ThreadRng) -> Option<Vec<String>> {
+pub fn remove_single_docstring(lines: &[String], rng: &mut ThreadRng) -> Option<Vec<String>> {
     let mut list_def = Vec::new();
     let mut curr_docstring = None;
     for (idx, line) in lines.iter().enumerate() {
@@ -325,13 +325,13 @@ pub fn remove_single_docstring(lines: &Vec<String>, rng: &mut ThreadRng) -> Opti
         }
         new_list.push(s.clone());
     }
-    return Some(new_list);
+    Some(new_list)
 }
 
 pub fn remove_all_comments(lines: &Vec<String>) -> Vec<String> {
     let mut new_data = Vec::new();
     for line in lines {
-        if !line.trim().starts_with("#") {
+        if !line.trim().starts_with('#') {
             new_data.push(line.clone());
         }
     }
@@ -390,7 +390,7 @@ pub fn minimize_lines(full_name: &str, lines: &Vec<String>, rng: &mut ThreadRng)
     write!(output_file, "{}", content.join("\n")).unwrap();
     content
 }
-pub fn minimize_lines_one_by_one(full_name: &str, lines: &Vec<String>, idx: usize) -> Vec<String> {
+pub fn minimize_lines_one_by_one(full_name: &str, lines: &[String], idx: usize) -> Vec<String> {
     let mut output_file = OpenOptions::new()
         .write(true)
         .truncate(true)
@@ -398,7 +398,7 @@ pub fn minimize_lines_one_by_one(full_name: &str, lines: &Vec<String>, idx: usiz
         .open(full_name)
         .unwrap();
 
-    let mut temp_lines = lines.clone();
+    let mut temp_lines = lines.to_vec();
     temp_lines.remove(idx);
     write!(output_file, "{}", temp_lines.join("\n")).unwrap();
     temp_lines
@@ -498,10 +498,13 @@ pub fn execute_command_and_connect_output(
         is_signal_code_timeout_broken = true;
     }
 
-    let res = fs::write(&full_name, content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
-    if res.is_err() {
-        panic!("{res:?} - {full_name} - probably you need to set write permissions to this file");
-    }
+    let res = fs::write(full_name, content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
+
+    assert!(
+        res.is_ok(),
+        "{res:?} - {full_name} - probably you need to set write permissions to this file"
+    );
+
     (is_signal_code_timeout_broken, str_out)
 }
 

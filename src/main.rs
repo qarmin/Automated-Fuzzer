@@ -75,7 +75,7 @@ fn main() {
         1
     };
     for i in 1..=loop_number {
-        println!("Starting loop {i} out of all {}", loop_number);
+        println!("Starting loop {i} out of all {loop_number}");
 
         if !settings.ignore_generate_copy_files_step {
             println!("Removing old files");
@@ -155,9 +155,9 @@ fn main() {
                         }
                         // println!("Copying file {s}  to {new_name:?}");
                         if let Err(e) = fs::copy(&s, &new_name) {
-                            println!("Failed to copy file {s} to {new_name} with error {e}")
+                            println!("Failed to copy file {s} to {new_name} with error {e}");
                         };
-                    })
+                    });
             }
         }
 

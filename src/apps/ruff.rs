@@ -39,7 +39,6 @@ const BROKEN_ITEMS: &[&str] = &[
     "ARG001",                                    // 6952
     "CPY001",                                    // 6952
     "NPY001",                                    // 6952
-    "crates/ruff/src/rules/pyupgrade/rules/convert_named_tuple_functional_to_class.rs", // 6953
 ];
 
 impl ProgramConfig for RuffStruct {

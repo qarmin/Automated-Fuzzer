@@ -8,10 +8,18 @@ pub struct RomeStruct {
     pub settings: Setting,
 }
 
+const BROKEN_ITEMS: &[&str] = &[
+    "begin <= end (1 <= 0) ",         // 4323
+    "assertion failed: start <= end", // 4323
+    "is not a char boundary",         // 4323
+    "is out of bounds of",            // 4323
+];
+
 impl ProgramConfig for RomeStruct {
     fn is_broken(&self, content: &str) -> bool {
         content.contains("RUST_BACKTRACE")
             || content.contains("Rome encountered an unexpected error")
+                && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
