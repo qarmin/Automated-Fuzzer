@@ -52,6 +52,7 @@ jobs:
       - name: Store results
         uses: actions/upload-artifact@v3
         with:
+          if-no-files-found: ignore
           name: results
           path: /opt/RESULTS
 

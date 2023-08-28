@@ -41,14 +41,14 @@ jobs:
         run: |
           CURR_DIR=$(pwd)
           mkdir /opt/TEST_DIR
+          cd /opt/TEST_DIR
           wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PZ_py_files.zip
           unzip PZ_py_files.zip
           mkdir /opt/RESULTS
-          pwd
-      - name: Run app
-        run: |
           echo $CURR_DIR
           cd $CURR_DIR
+      - name: Run app
+        run: |
           mv fuzz_settings_ci_alt.toml fuzz_settings.toml
           timeout 18000 target/release/automated_fuzzer || true
       - name: Store results
