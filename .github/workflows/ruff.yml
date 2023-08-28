@@ -50,7 +50,7 @@ jobs:
           mv fuzz_settings_ci.toml fuzz_settings.toml
           timeout 20000 target/release/automated_fuzzer || true
       - name: Store results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: results
           path: /opt/RESULTS

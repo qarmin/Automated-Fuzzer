@@ -35,6 +35,34 @@ fn main() {
         return;
     }
 
+    println!(
+        "Base of valid {} Files Number {}.",
+        settings.base_of_valid_files,
+        WalkDir::new(&settings.base_of_valid_files)
+            .max_depth(999)
+            .into_iter()
+            .flatten()
+            .count()
+    );
+    println!(
+        "Input Dir {} Files Number {}.",
+        settings.input_dir,
+        WalkDir::new(&settings.input_dir)
+            .max_depth(999)
+            .into_iter()
+            .flatten()
+            .count()
+    );
+    println!(
+        "Output Dir {} Files Number {}.",
+        settings.output_dir,
+        WalkDir::new(&settings.output_dir)
+            .max_depth(999)
+            .into_iter()
+            .flatten()
+            .count()
+    );
+
     assert!(Path::new(&settings.base_of_valid_files).exists());
     assert!(Path::new(&settings.output_dir).exists());
 
@@ -66,14 +94,6 @@ fn main() {
                 if settings.debug_print_broken_files_creator {
                     println!("{out}");
                 };
-                println!(
-                    "Generated files to test - initial number {}.",
-                    WalkDir::new(&settings.base_of_valid_files)
-                        .max_depth(999)
-                        .into_iter()
-                        .flatten()
-                        .count()
-                );
             } else {
                 // instead creating files, copy them
                 // let base_of_valid_files = &obj.get_settings().base_of_valid_files;
