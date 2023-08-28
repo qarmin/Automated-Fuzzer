@@ -9,6 +9,8 @@ pub struct RuffStruct {
     pub settings: Setting,
 }
 
+// Try to not add D* rules if you are not really sure that this rule is broken
+// With this rule here, results can be invalid
 const BROKEN_ITEMS: &[&str] = &[
     "Failed to create fix for ImplicitOptional", // Probably expected
     "into scope due to name conflict",           // Expected
@@ -28,13 +30,16 @@ const BROKEN_ITEMS: &[&str] = &[
     "E202",                                      // 6890
     "E702",                                      // 6890
     "E999",                                      // 6890
-    "D100",                                      // 6891
-    "D101",                                      // 6891
     "F632",                                      // 6891
     "F821",                                      // 6891
     "PLR0133",                                   // 6891
     "RUF001",                                    // 4519
-    "assertion failed: start.raw <= end.raw",    // 4519
+    "ANN001",                                    // 6952
+    "ANN201",                                    // 6952
+    "ARG001",                                    // 6952
+    "CPY001",                                    // 6952
+    "NPY001",                                    // 6952
+    "crates/ruff/src/rules/pyupgrade/rules/convert_named_tuple_functional_to_class.rs", // 6953
 ];
 
 impl ProgramConfig for RuffStruct {

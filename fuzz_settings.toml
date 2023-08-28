@@ -30,9 +30,9 @@ current_mode = "ruff"
 app_binary = "ruff"
 app_config = "/home/rafal/Desktop/RunEveryCommand/ruff/ruff.toml"
 extensions = "py"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
-#base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2"
-#base_of_valid_files = "/home/rafal/Projekty/Rust/download_python_url/py_files"
+base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
+#base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
+#base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
 output_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
 binary_mode = false
 
