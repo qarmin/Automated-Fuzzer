@@ -1,4 +1,4 @@
-name: 🐧 Ruff
+name: 🐧 Ruff ALT
 on:
   push:
   pull_request:
@@ -47,6 +47,7 @@ jobs:
           pwd
       - name: Run app
         run: |
+          echo $CURR_DIR
           cd $CURR_DIR
           mv fuzz_settings_ci_alt.toml fuzz_settings.toml
           timeout 18000 target/release/automated_fuzzer || true
