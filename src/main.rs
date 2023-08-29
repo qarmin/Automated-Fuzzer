@@ -17,6 +17,7 @@ use jwalk::WalkDir;
 
 pub mod apps;
 mod broken_files;
+mod clean_base_files;
 mod common;
 mod obj;
 mod remove_non_crashing_files;
@@ -33,6 +34,10 @@ fn main() {
 
     if settings.remove_non_crashing_items_from_broken_files {
         remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);
+        return;
+    }
+    if settings.clean_base_files {
+        clean_base_files::clean_base_files(&settings);
         return;
     }
 

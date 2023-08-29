@@ -7,18 +7,7 @@ use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
-    let broken_files: Vec<String> = WalkDir::new(&settings.output_dir)
-        .into_iter()
-        .flatten()
-        .filter_map(|entry| {
-            println!("{entry:?}");
-            if entry.file_type().is_file() {
-                return Some(entry.path().to_string_lossy().to_string());
-            }
-            None
-        })
-        .collect();
-
+    let broken_files: Vec<String> = collect_broken_files(settings);
     let before = broken_files.len();
     let after = AtomicUsize::new(before);
     println!("Found {before} files to check");
@@ -32,6 +21,20 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
         fs::remove_file(&full_name).unwrap();
         after.fetch_sub(1, Ordering::Relaxed);
     });
+
     let after = after.load(Ordering::Relaxed);
     println!("Removed {} files, left {after} files", before - after);
+}
+
+fn collect_broken_files(settings: &Setting) -> Vec<String> {
+    WalkDir::new(&settings.output_dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|entry| {
+            if entry.file_type().is_file() {
+                return Some(entry.path().to_string_lossy().to_string());
+            }
+            None
+        })
+        .collect()
 }

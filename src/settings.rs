@@ -31,6 +31,8 @@ pub struct Setting {
     pub minimization_attempts: u32,
     pub minimization_attempts_with_signal_timeout: u32,
     pub remove_non_crashing_items_from_broken_files: bool,
+    pub clean_base_files: bool,
+    pub temp_file: String,
     pub current_mode: MODES,
     pub extensions: Vec<String>,
     pub output_dir: String,
@@ -109,6 +111,8 @@ pub fn load_settings() -> Setting {
         ignore_generate_copy_files_step: general["ignore_generate_copy_files_step"]
             .parse()
             .unwrap(),
+        clean_base_files: general["clean_base_files"].parse().unwrap(),
+        temp_file: general["temp_file"].clone(),
     }
 }
 
