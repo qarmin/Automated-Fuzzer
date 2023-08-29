@@ -2,6 +2,7 @@
 #![allow(clippy::borrowed_box)]
 
 use rand::prelude::*;
+use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::{fs, process};
@@ -169,6 +170,13 @@ fn main() {
             .flatten()
         {
             let path = i.path();
+            if !path.is_file() {
+                continue;
+            }
+            let Ok(metadata) = i.metadata() else {
+                return;
+            };
+            metadata.permissions().set_mode(0o777);
             let Some(s) = path.to_str() else {
                 continue;
             };
