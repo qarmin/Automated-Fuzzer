@@ -3,7 +3,7 @@ on:
   push:
   pull_request:
   schedule:
-    - cron: '22 0 * * *'
+    - cron: '0 22 * * *'
 
 env:
   CARGO_TERM_COLOR: always
@@ -45,8 +45,16 @@ jobs:
           mkdir /opt/RESULTS
           
           cd /opt/TEST_DIR
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PZ_py_files.zip
-          unzip PZ_py_files.zip
+          
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PYTHON_AL.zip
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PYTHON_MZ.zip
+          
+          unzip PYTHON_AL.zip
+          unzip PYTHON_MZ.zip
+          
+          rm PYTHON_AL.zip
+          rm PYTHON_MZ.zip
+          
           echo $CURR_DIR
           cd $CURR_DIR
       - name: Run app
