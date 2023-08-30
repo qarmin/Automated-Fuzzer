@@ -94,9 +94,11 @@ impl ProgramConfig for RuffStruct {
             .arg("check")
             .arg(full_name)
             .arg("--select")
-            // .arg("ALL,NURSERY")
+            ////////////////////////////////////////
+            .arg("ALL,NURSERY")
             // .arg("NURSERY")
-            .arg("ALL") // Nursery enable after fixing bugs related to it
+            // .arg("ALL") // Nursery enable after fixing bugs related to it
+            ////////////////////////////////////////
             .arg("--no-cache")
             .arg("--fix")
             .spawn()

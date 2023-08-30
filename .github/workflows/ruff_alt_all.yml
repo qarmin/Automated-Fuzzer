@@ -1,4 +1,4 @@
-name: 🐧 Ruff ALT
+name: 🐧 Ruff ALT No exceptions
 on:
   push:
   pull_request:
@@ -15,17 +15,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-
-#      - name: Restore Cache
-#        uses: actions/cache@v2
-#        with:
-#          path: |
-#            ~/.cargo/bin
-#            ~/.cargo/registry
-#            target
-#          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-#        id: cache
 
       - name: Install dependencies
         run: |
@@ -61,6 +50,7 @@ jobs:
           cd $CURR_DIR
       - name: Remove exceptions
         run: |
+          cat src/apps/ruff.rs
           sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/ruff.rs
           sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/dlint.rs
           sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/rome.rs
@@ -74,16 +64,3 @@ jobs:
           if-no-files-found: ignore
           name: results
           path: /opt/RESULTS
-
-
-#      - name: Save Cache
-#        if: steps.cache.outputs.cache-hit != 'true'
-#        uses: actions/cache@v2
-#        with:
-#          path: |
-#            ~/.cargo/bin
-#            ~/.cargo/registry
-#            target
-#          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
