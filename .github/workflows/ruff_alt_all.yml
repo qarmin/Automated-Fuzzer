@@ -28,6 +28,7 @@ jobs:
           sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/ruff.rs
           sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/dlint.rs
           sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/rome.rs
+          cat src/apps/ruff.rs
       - name: Build
         run: cargo build --release
       - name: Install create_broken_files
