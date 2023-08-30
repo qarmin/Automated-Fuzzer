@@ -9,21 +9,23 @@ pub struct RuffStruct {
     pub settings: Setting,
 }
 
+// This errors are not critical, and can be ignored when found two issues and one with it
+const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
+    "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
+    "UnnecessaryCollectionCall",       // 6809
+    "due to late binding",             // 6842
+    "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
+];
+
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
 const BROKEN_ITEMS: &[&str] = &[
-    "Failed to create fix for ImplicitOptional", // Probably expected
-    "into scope due to name conflict",           // Expected
-    "out of bounds",                             // 4406
-    "is not a char boundary",                    // 4406
-    "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
-    "due to late binding",                       // 6842
+    "crates/ruff_source_file/src/line_index.rs", // 4406
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "W292",                                      // 4406
     "Q002",                                      // 6785
     "Q000",                                      // 6785
     "ICN001",                                    // 6786
-    "UnnecessaryCollectionCall",                 // 6809
     "EM101",                                     // 6811
     "F401",                                      // 6811
     "CPY001",                                    // 6890
@@ -51,6 +53,17 @@ const BROKEN_ITEMS: &[&str] = &[
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
+        let mut content = content.to_string();
+        if !BROKEN_ITEMS_NOT_CRITICAL.is_empty() {
+            // Remove lines that contains not critical errors
+            content = content
+                .lines()
+                .filter(|line| !BROKEN_ITEMS_NOT_CRITICAL.iter().any(|e2| line.contains(e2)))
+                .collect::<Vec<&str>>()
+                .join("\n")
+                .to_string();
+        }
+
         let found_broken_items = content.contains("Failed to create fix")
             || content.contains("RUST_BACKTRACE")
             || content.contains("catch_unwind::{{closure}}")
