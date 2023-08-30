@@ -20,6 +20,12 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y wget
+      - name: Remove exceptions
+        run: |
+          cat src/apps/ruff.rs
+          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/ruff.rs
+          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/dlint.rs
+          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/rome.rs
       - name: Build
         run: cargo build --release
       - name: Install sd
@@ -48,12 +54,6 @@ jobs:
           
           echo $CURR_DIR
           cd $CURR_DIR
-      - name: Remove exceptions
-        run: |
-          cat src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/dlint.rs
-          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/rome.rs
       - name: Run app
         run: |
           mv fuzz_settings_ci_alt.toml fuzz_settings.toml
