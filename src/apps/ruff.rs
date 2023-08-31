@@ -49,6 +49,7 @@ const BROKEN_ITEMS: &[&str] = &[
     "W605",                                      // 6987
     "EM102",                                     // 6988
     "B009",                                      // 6989
+    "ruff_source_file/src/locator.rs",           // 7012
 ];
 
 impl ProgramConfig for RuffStruct {
