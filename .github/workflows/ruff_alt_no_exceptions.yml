@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ruff-ci:
+  ruff-alt-no-exceptions-ci:
 
     runs-on: ubuntu-latest
 

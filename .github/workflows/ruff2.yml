@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ruff-ci:
+  ruff-normal2-ci:
 
     runs-on: ubuntu-latest
 
@@ -43,6 +43,8 @@ jobs:
           mkdir /opt/PYTHON_DATA
           mkdir /opt/TEST_DIR
           mkdir /opt/RESULTS
+          
+          cd /opt/PYTHON_DATA
           
           wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_2.zip
           unzip FILES_2.zip
