@@ -20,24 +20,36 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y wget
+
       - name: Build
         run: cargo build --release
+
       - name: Install create_broken_files
         run: cargo install create_broken_files
+
       - name: Install ruff
         run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+
       - name: Download and prepare python data files
         run: |
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PYTHON_CI.zip
-          unzip PYTHON_CI.zip
-          cp AAAA /opt/PYTHON_DATA -r
-          mkdir /opt/RESULTS
+          CURR_DIR=$(pwd)
+          mkdir /opt/PYTHON_DATA
           mkdir /opt/TEST_DIR
-          pwd
+          mkdir /opt/RESULTS
+          
+          cd /opt/PYTHON_DATA
+          
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_999.zip
+          unzip FILES_999.zip
+          rm FILES_999.zip
+          
+          cd $CURR_DIR
+
       - name: Run app
         run: |
           mv fuzz_settings_ci.toml fuzz_settings.toml
           timeout 1800 target/release/automated_fuzzer || true
+
       - name: Store results
         uses: actions/upload-artifact@v3
         with:

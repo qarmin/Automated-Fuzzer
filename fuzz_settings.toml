@@ -2,7 +2,7 @@
 loop_number = 5 # How much creating/removing/checking steps will be executed
 broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file
 copy_broken_files = true # Copy broken files to broken dir, disable if testing new settings
-generate_files = true # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run), otherwise it will copy all valid files into BROKEN_FIELS_DIR
+generate_files = false # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run), otherwise it will copy all valid files into BROKEN_FIELS_DIR
 ignore_generate_copy_files_step = false # If true, will only use files inside BROKEN_FILES_DIR, without  copying new files or generating
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
@@ -32,9 +32,10 @@ current_mode = "ruff"
 app_binary = "ruff"
 app_config = "/home/rafal/Desktop/RunEveryCommand/ruff/ruff.toml"
 extensions = "py"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
+#base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
 #base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
 #base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
+base_of_valid_files = "/home/rafal/test/DOWNLOADED/py_files"
 output_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
 binary_mode = false
 

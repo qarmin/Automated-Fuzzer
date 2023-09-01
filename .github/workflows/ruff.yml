@@ -39,12 +39,16 @@ jobs:
         run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
       - name: Download and prepare python data files
         run: |
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/PYTHON_CI.zip
-          unzip PYTHON_CI.zip
-          cp AAAA /opt/PYTHON_DATA -r
-          mkdir /opt/RESULTS
+          CURR_DIR=$(pwd)
+          mkdir /opt/PYTHON_DATA
           mkdir /opt/TEST_DIR
-          pwd
+          mkdir /opt/RESULTS
+          
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_999.zip
+          unzip FILES_999.zip
+          rm FILES_999.zip
+          
+          cd $CURR_DIR
       - name: Run app
         run: |
           mv fuzz_settings_ci.toml fuzz_settings.toml
