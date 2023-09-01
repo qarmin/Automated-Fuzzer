@@ -44,9 +44,9 @@ jobs:
           mkdir /opt/TEST_DIR
           mkdir /opt/RESULTS
           
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_1.zip
-          unzip FILES_1.zip
-          rm FILES_1.zip
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_2.zip
+          unzip FILES_2.zip
+          rm FILES_2.zip
           
           cd $CURR_DIR
       - name: Run app
