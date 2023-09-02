@@ -19,6 +19,7 @@ pub mod apps;
 mod broken_files;
 mod clean_base_files;
 mod common;
+mod minimal_rules;
 mod obj;
 mod remove_non_crashing_files;
 mod settings;
@@ -32,12 +33,18 @@ fn main() {
     let settings = load_settings();
     let obj = get_object(settings.clone());
 
+    let _ = fs::create_dir_all(&settings.temp_folder);
+
     if settings.remove_non_crashing_items_from_broken_files {
         remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);
         return;
     }
     if settings.clean_base_files {
         clean_base_files::clean_base_files(&settings);
+        return;
+    }
+    if settings.find_minimal_rules {
+        minimal_rules::find_minimal_rules(&settings, &obj);
         return;
     }
 

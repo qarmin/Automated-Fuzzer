@@ -25,35 +25,20 @@ const BROKEN_ITEMS: &[&str] = &[
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "W292",                                      // 4406
     "Q002",                                      // 6785
-    "Q000",                                      // 6785
+    "PTH116",                                    // 6785
     "ICN001",                                    // 6786
     "EM101",                                     // 6811
-    "F401",                                      // 6811
-    "CPY001",                                    // 6890
-    "E202",                                      // 6890
-    "E702",                                      // 6890
-    "E999",                                      // 6890
     "F632",                                      // 6891
-    "F821",                                      // 6891
-    "PLR0133",                                   // 6891
+    "E712",                                      // 6891
     "RUF001",                                    // 4519
-    "ANN001",                                    // 6952
-    "ANN201",                                    // 6952
-    "ARG001",                                    // 6952
-    "CPY001",                                    // 6952
     "NPY001",                                    // 6952
-    "E201",                                      // 6987
-    "E203",                                      // 6987
-    "I001",                                      // 6987
-    "UP025",                                     // 6987
-    "W291",                                      // 6987
+    "ANN401",                                    // 6987
     "W605",                                      // 6987
     "EM102",                                     // 6988
-    "B009",                                      // 6989
     "E231",                                      // 6890
-    "string::StringParser::parse_fstring",       // 6831
-    "locator.rs",                                // 7058
-    "start.raw <= end.raw",                      // 7059
+    "E202",                                      // 6890
+    "ERA001",                                    // 6831
+    "D209",                                      // 7058
 ];
 
 impl ProgramConfig for RuffStruct {

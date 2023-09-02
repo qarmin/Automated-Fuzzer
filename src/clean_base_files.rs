@@ -12,7 +12,8 @@ pub fn clean_base_files(settings: &Setting) {
 }
 
 fn remove_non_parsing_python_files(settings: &Setting) {
-    create_new_python_ast_file(&settings.temp_file);
+    let temp_file = format!("{}/temp_file", settings.temp_folder);
+    create_new_python_ast_file(&temp_file);
 
     let broken_files: Vec<String> = collect_base_files(settings);
     let before = broken_files.len();
@@ -20,7 +21,7 @@ fn remove_non_parsing_python_files(settings: &Setting) {
     println!("Found {before} python files to check");
     broken_files.into_par_iter().for_each(|full_name| {
         let output = Command::new("python3")
-            .arg(&settings.temp_file)
+            .arg(&temp_file)
             .arg(&full_name)
             .output();
         let output = output.unwrap();

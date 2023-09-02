@@ -32,7 +32,7 @@ pub struct Setting {
     pub minimization_attempts_with_signal_timeout: u32,
     pub remove_non_crashing_items_from_broken_files: bool,
     pub clean_base_files: bool,
-    pub temp_file: String,
+    pub temp_folder: String,
     pub current_mode: MODES,
     pub extensions: Vec<String>,
     pub output_dir: String,
@@ -48,6 +48,7 @@ pub struct Setting {
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
     pub ignore_generate_copy_files_step: bool,
+    pub find_minimal_rules: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -112,7 +113,8 @@ pub fn load_settings() -> Setting {
             .parse()
             .unwrap(),
         clean_base_files: general["clean_base_files"].parse().unwrap(),
-        temp_file: general["temp_file"].clone(),
+        temp_folder: general["temp_folder"].clone(),
+        find_minimal_rules: general["find_minimal_rules"].parse().unwrap(),
     }
 }
 
