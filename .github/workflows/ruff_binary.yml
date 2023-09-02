@@ -1,4 +1,4 @@
-name: 🐧 Ruff 2
+name: 🐧 Ruff binary
 on:
   push:
   pull_request:
@@ -9,34 +9,27 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ruff-normal2-ci:
+  ruff-binary-ci:
 
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v3
 
-
-#      - name: Restore Cache
-#        uses: actions/cache@v2
-#        with:
-#          path: |
-#            ~/.cargo/bin
-#            ~/.cargo/registry
-#            target
-#          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-#        id: cache
-
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y wget
+
       - name: Build
         run: cargo build --release
+
       - name: Install create_broken_files
         run: cargo install create_broken_files
+
       - name: Install ruff
         run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+
       - name: Download and prepare python data files
         run: |
           CURR_DIR=$(pwd)
@@ -46,31 +39,20 @@ jobs:
           
           cd /opt/PYTHON_DATA
           
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_2.zip
-          unzip FILES_2.zip
-          rm FILES_2.zip
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_1.zip
+          unzip FILES_1.zip
+          rm FILES_1.zip
           
           cd $CURR_DIR
+
       - name: Run app
         run: |
-          mv fuzz_settings_ci.toml fuzz_settings.toml
+          mv fuzz_settings_ci_binary.toml fuzz_settings.toml
           timeout 20000 target/release/automated_fuzzer || true
+
       - name: Store results
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: ignore
           name: results
           path: /opt/RESULTS
-
-
-#      - name: Save Cache
-#        if: steps.cache.outputs.cache-hit != 'true'
-#        uses: actions/cache@v2
-#        with:
-#          path: |
-#            ~/.cargo/bin
-#            ~/.cargo/registry
-#            target
-#          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-#          restore-keys: |
-#            ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}

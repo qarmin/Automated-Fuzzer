@@ -15,6 +15,7 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
     "UnnecessaryCollectionCall",       // 6809
     "due to late binding",             // 6842
     "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
+    "Unable to use existing symbol due to incompatible context", // 7060
 ];
 
 // Try to not add D* rules if you are not really sure that this rule is broken
@@ -50,7 +51,9 @@ const BROKEN_ITEMS: &[&str] = &[
     "EM102",                                     // 6988
     "B009",                                      // 6989
     "E231",                                      // 6890
-    "string::StringParser::parse_fstring",       // 7049
+    "string::StringParser::parse_fstring",       // 6831
+    "locator.rs",                                // 7058
+    "start.raw <= end.raw",                      // 7059
 ];
 
 impl ProgramConfig for RuffStruct {

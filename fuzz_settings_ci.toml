@@ -1,6 +1,6 @@
 [general]
 loop_number = 500 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 10# Number of broken files that will be created for each 1 valid file
+broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file
 copy_broken_files = true
 generate_files = true # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run)
 ignore_generate_copy_files_step = false # If true, will only use files inside BROKEN_FILES_DIR, without  copying new files or generating
