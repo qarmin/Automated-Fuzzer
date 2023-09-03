@@ -26,6 +26,7 @@ const BROKEN_ITEMS: &[&str] = &[
     "crates/ruff_source_file/src/line_index.rs", // 4406
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
+    "locator.rs",                                // 7058
 ];
 const INVALID_RULES: &[&str] = &[
     "W292",   // 4406
