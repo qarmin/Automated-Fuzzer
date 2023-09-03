@@ -7,6 +7,7 @@ use crate::settings::Setting;
 
 pub struct RuffStruct {
     pub settings: Setting,
+    pub ignored_rules: String,
 }
 
 // This errors are not critical, and can be ignored when found two issues and one with it
@@ -16,6 +17,7 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
     "due to late binding",             // 6842
     "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
     "Unable to use existing symbol due to incompatible context", // 7060
+    "UnnecessaryMap: Expected tuple for dict comprehension", // 7071
 ];
 
 // Try to not add D* rules if you are not really sure that this rule is broken
@@ -23,26 +25,48 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS: &[&str] = &[
     "crates/ruff_source_file/src/line_index.rs", // 4406
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
-    "W292",                                      // 4406
-    "Q002",                                      // 6785
-    "PTH116",                                    // 6785
-    "ICN001",                                    // 6786
-    "EM101",                                     // 6811
-    "F632",                                      // 6891
-    "E712",                                      // 6891
-    "RUF001",                                    // 4519
-    "NPY001",                                    // 6952
-    "ANN401",                                    // 6987
-    "W605",                                      // 6987
-    "EM102",                                     // 6988
-    "E231",                                      // 6890
-    "E202",                                      // 6890
-    "ERA001",                                    // 6831
-    "D209",                                      // 7058
-    "E203",                                      // 7070
-    "E231",                                      // 7070
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
 ];
+const INVALID_RULES: &[&str] = &[
+    "W292",   // 4406
+    "Q002",   // 6785
+    "PTH116", // 6785
+    "ICN001", // 6786
+    "EM101",  // 6811
+    "F632",   // 6891
+    "E712",   // 6891
+    "RUF001", // 4519
+    "NPY001", // 6952
+    "ANN401", // 6987
+    "W605",   // 6987
+    "EM102",  // 6988
+    "E231",   // 6890
+    "E202",   // 6890
+    "ERA001", // 6831
+    "D209",   // 7058
+    "E203",   // 7070
+    "E231",   // 7070
+    "C417",   // 7071
+    "B013",   // 7072
+    "UP007",  // 7073
+    "UP032",  // 7074
+    "RET503", // 7075
+    "SIM210", // 7076
+    "NPY003", // 7077
+    "F401",   // 7078
+];
+
+#[must_use]
+pub fn calculate_ignored_rules() -> String {
+    INVALID_RULES
+        .iter()
+        .filter(|e| &&e.to_uppercase().as_str() == e)
+        .collect::<Vec<_>>()
+        .iter()
+        .map(|&&s| s)
+        .collect::<Vec<_>>()
+        .join(",")
+}
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
@@ -69,6 +93,7 @@ impl ProgramConfig for RuffStruct {
         // );
         found_broken_items && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
     }
+
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let mut lines = output
             .lines()
@@ -93,22 +118,21 @@ impl ProgramConfig for RuffStruct {
         }
     }
     fn get_run_command(&self, full_name: &str) -> Child {
-        // .arg("--config")
-        // .arg(&self.settings.app_config) // For now config is not
-
-        self._get_basic_run_command()
+        let mut command = self._get_basic_run_command();
+        command
             .arg("check")
             .arg(full_name)
             .arg("--select")
-            ////////////////////////////////////////
             .arg("ALL,NURSERY")
-            // .arg("NURSERY")
-            // .arg("ALL") // Nursery enable after fixing bugs related to it
-            ////////////////////////////////////////
             .arg("--no-cache")
-            .arg("--fix")
-            .spawn()
-            .unwrap()
+            .arg("--fix");
+        if !self.ignored_rules.is_empty() {
+            command.arg("--ignore").arg(&self.ignored_rules);
+        }
+        command.spawn().unwrap()
+
+        // .arg("--config")
+        // .arg(&self.settings.app_config) // For now config is not
 
         // self._get_basic_run_command()
         //     .arg("format")
@@ -116,7 +140,6 @@ impl ProgramConfig for RuffStruct {
         //     .spawn()
         //     .unwrap()
     }
-
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
             create_broken_files(self, LANGS::GENERAL)
@@ -127,5 +150,9 @@ impl ProgramConfig for RuffStruct {
 
     fn get_settings(&self) -> &Setting {
         &self.settings
+    }
+
+    fn init(&mut self) {
+        self.ignored_rules = calculate_ignored_rules();
     }
 }

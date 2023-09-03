@@ -44,6 +44,12 @@ jobs:
         run: |
           mv fuzz_settings_ci.toml fuzz_settings.toml
           timeout 20000 target/release/automated_fuzzer || true
+
+      # Some output files can be not parsable or not broken if closed app before finish
+      - name: Remove non crashing files
+          mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
+          target/release/automated_fuzzer
+
       - name: Store results
         uses: actions/upload-artifact@v3
         with:

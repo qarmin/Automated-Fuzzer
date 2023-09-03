@@ -1,3 +1,4 @@
+use crate::apps::ruff::calculate_ignored_rules;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -76,13 +77,13 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             }
         }
         println!(
-            "For file {new_name} ({i}) valid rules are: {}",
+            "For file {i} valid rules are: {}  - {new_name}",
             valid_remove_rules.join(",")
         );
     });
 }
 
-fn collect_all_ruff_rules() -> Vec<String> {
+pub fn collect_all_ruff_rules() -> Vec<String> {
     let stdout: Vec<_> = Command::new("ruff")
         .arg("rule")
         .arg("--all")
@@ -118,6 +119,7 @@ fn check_if_rule_file_crashing(
 ) -> bool {
     assert!(!rules.is_empty());
     let mut command = Command::new("ruff");
+    let ignored_rules = calculate_ignored_rules();
     let command = command
         .arg("check")
         .arg(test_file)
@@ -125,6 +127,9 @@ fn check_if_rule_file_crashing(
         .arg(rules.join(","))
         .arg("--fix")
         .arg("--no-cache");
+    if !ignored_rules.is_empty() {
+        command.arg("--ignore").arg(&ignored_rules);
+    }
     command.stderr(Stdio::piped()).stdout(Stdio::piped());
     let output = command.spawn().unwrap().wait_with_output().unwrap();
     let stdout: Vec<_> = output.stdout;

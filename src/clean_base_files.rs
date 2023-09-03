@@ -20,15 +20,9 @@ fn remove_non_parsing_python_files(settings: &Setting) {
     let after = AtomicUsize::new(before);
     println!("Found {before} python files to check");
     broken_files.into_par_iter().for_each(|full_name| {
-        let output = Command::new("python3")
-            .arg(&temp_file)
-            .arg(&full_name)
-            .output();
-        let output = output.unwrap();
-        if output.status.success() {
+        if !check_if_file_is_parsable_by_cpython(&temp_file, &full_name) {
             return;
-        };
-
+        }
         println!("File {full_name} is not valid python file, and will be removed");
         fs::remove_file(&full_name).unwrap();
         after.fetch_sub(1, Ordering::Relaxed);
@@ -41,7 +35,21 @@ fn remove_non_parsing_python_files(settings: &Setting) {
     );
 }
 
-fn create_new_python_ast_file(temp_file: &str) {
+pub fn check_if_file_is_parsable_by_cpython(
+    python_ast_file_name: &str,
+    source_code_file_name: &str,
+) -> bool {
+    let output = Command::new("python3")
+        .arg(python_ast_file_name)
+        .arg(source_code_file_name)
+        .output();
+    let output = output.unwrap();
+    // dbg!(String::from_utf8_lossy(&output.stderr));
+    // dbg!(String::from_utf8_lossy(&output.stdout));
+    output.status.success()
+}
+
+pub fn create_new_python_ast_file(temp_file: &str) {
     let code = r#"
 import ast
 import sys

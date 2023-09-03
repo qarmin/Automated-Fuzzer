@@ -31,7 +31,9 @@ fn main() {
     //     .unwrap();
 
     let settings = load_settings();
-    let obj = get_object(settings.clone());
+    let mut obj = get_object(settings.clone());
+
+    obj.init();
 
     let _ = fs::create_dir_all(&settings.temp_folder);
 

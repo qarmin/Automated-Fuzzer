@@ -1,3 +1,4 @@
+use crate::clean_base_files::{check_if_file_is_parsable_by_cpython, create_new_python_ast_file};
 use crate::common::execute_command_and_connect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -7,17 +8,26 @@ use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+    let temp_file = format!("{}/temp_file", settings.temp_folder);
+    create_new_python_ast_file(&temp_file);
+
     let broken_files: Vec<String> = collect_broken_files(settings);
     let before = broken_files.len();
     let after = AtomicUsize::new(before);
     println!("Found {before} files to check");
     broken_files.into_par_iter().for_each(|full_name| {
-        let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
-        if is_really_broken || obj.is_broken(&output) {
-            return;
-        };
+        let is_parsable = check_if_file_is_parsable_by_cpython(&temp_file, &full_name);
 
-        println!("File {full_name} is not broken, and will be removed");
+        if is_parsable {
+            let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
+            if is_really_broken || obj.is_broken(&output) {
+                return;
+            };
+            println!("File {full_name} is not broken, and will be removed");
+        } else {
+            println!("File {full_name} is not parsable, and will be removed");
+        }
+
         fs::remove_file(&full_name).unwrap();
         after.fetch_sub(1, Ordering::Relaxed);
     });

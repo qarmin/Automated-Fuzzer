@@ -39,4 +39,5 @@ pub trait ProgramConfig: Sync {
     }
     fn broken_file_creator(&self) -> Child;
     fn get_settings(&self) -> &Setting;
+    fn init(&mut self) {}
 }

@@ -124,7 +124,10 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::MYPY => Box::new(MypyStruct { settings }),
         MODES::DLINT => Box::new(DlintStruct { settings }),
         MODES::ROME => Box::new(RomeStruct { settings }),
-        MODES::RUFF => Box::new(RuffStruct { settings }),
+        MODES::RUFF => Box::new(RuffStruct {
+            settings,
+            ignored_rules: String::new(),
+        }),
         MODES::LOFTY => Box::new(LoftyStruct { settings }),
         MODES::IMAGE => Box::new(ImageStruct { settings }),
         MODES::SYMPHONIA => Box::new(SymphoniaStruct { settings }),
