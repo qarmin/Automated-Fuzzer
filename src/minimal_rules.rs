@@ -1,3 +1,4 @@
+use std::collections::BTreeMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -88,23 +89,21 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         })
         .collect();
 
-    save_results_to_file(settings, collected_rules);
-    //
+    save_results_to_file(settings, collected_rules.clone());
 
-    // GOOD to print rules
-    // let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
-    // for i in collected_rules {
-    //     for j in i {
-    //         *btree_map.entry(j).or_insert(0) += 1;
-    //     }
-    // }
-    // // Reorder items to have in vec most common used rules
-    // let mut items = Vec::new();
-    // for (k, v) in btree_map {
-    //     items.push((k, v));
-    // }
-    // items.sort_by(|a, b| b.1.cmp(&a.1));
-    // println!("{items:?}");
+    let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
+    for (rules, _, _, _) in collected_rules {
+        for j in rules {
+            *btree_map.entry(j).or_insert(0) += 1;
+        }
+    }
+    // Reorder items to have in vec most common used rules
+    let mut items = Vec::new();
+    for (k, v) in btree_map {
+        items.push((k, v));
+    }
+    items.sort_by(|a, b| b.1.cmp(&a.1));
+    println!("{items:?}");
 }
 
 pub fn save_results_to_file(
@@ -121,7 +120,7 @@ pub fn save_results_to_file(
         if output.contains("Failed to converge after") {
             file_content += &format!("Rules {} cause infinite loop", rules.join(","));
         } else {
-            file_content += &format!("Rules {} cause cause autofix error", rules.join(","));
+            file_content += &format!("Rules {} cause autofix error", rules.join(","));
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
@@ -139,16 +138,19 @@ error
 ```
 $ERROR
 ```
-        "###
+
+
+"###
         .replace("$RULES_TO_REPLACE", &rules.join(","))
         .replace("$FILE_CONTENT", &file_code)
-        .replace("$ERROR", &output);
+        .replace("$ERROR", &output)
+        .replace("\n\n```", "\n```");
 
-        fs::write(format!("{}/to_report.txt", folder), &file_content).unwrap();
+        fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
-        fs::write(format!("{}/python_code.py", folder), &file_code).unwrap();
+        fs::write(format!("{folder}/python_code.py"), &file_code).unwrap();
 
-        let zip_filename = format!("{}/python_compressed.zip", folder);
+        let zip_filename = format!("{folder}/python_compressed.zip");
         let zip_file = File::create(&zip_filename).unwrap();
         let mut zip_writer = ZipWriter::new(zip_file);
 
@@ -158,10 +160,6 @@ $ERROR
 
         let _ = zip_writer.start_file(file_name, options);
         let _ = zip_writer.write_all(file_code.as_bytes());
-        // let dbg!(folder);
-        // let rules = rules.join(",");
-        // let content = format!("{name} - {rules}\n", name = name, rules = rules);
-        // file.write_all(content.as_bytes()).unwrap();
     }
 }
 
