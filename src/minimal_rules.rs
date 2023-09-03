@@ -52,6 +52,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 valid_remove_rules = rules_to_test.clone();
                 rules_to_test.shuffle(&mut thread_rng());
                 rules_to_test.truncate(rules_to_test.len() / 2);
+                rules_to_test.sort();
             } else {
                 rules_to_test = valid_remove_rules.clone();
             }

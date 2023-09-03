@@ -62,6 +62,9 @@ jobs:
           name: results
           path: /opt/RESULTS
 
+      - name: Exit when found broken files
+        run: |
+          [ "$(ls -A /opt/RESULTS)" ] && exit 1 || exit 0
 
 #      - name: Save Cache
 #        if: steps.cache.outputs.cache-hit != 'true'

@@ -39,6 +39,8 @@ const BROKEN_ITEMS: &[&str] = &[
     "E202",                                      // 6890
     "ERA001",                                    // 6831
     "D209",                                      // 7058
+    "E203",                                      // 7070
+    "E231",                                      // 7070
 ];
 
 impl ProgramConfig for RuffStruct {
