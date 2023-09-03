@@ -1,86 +1,168 @@
-use crate::apps::ruff::calculate_ignored_rules;
-use crate::obj::ProgramConfig;
-use crate::settings::Setting;
+use std::fs;
+use std::fs::File;
+use std::io::Write;
+use std::process::{Command, Stdio};
+
 use jwalk::WalkDir;
 use rand::prelude::*;
 use rayon::prelude::*;
-use std::fs;
-use std::process::{Command, Stdio};
-use std::sync::atomic::{AtomicUsize, Ordering};
+
+use zip::write::FileOptions;
+use zip::ZipWriter;
+
+use crate::apps::ruff::calculate_ignored_rules;
+use crate::obj::ProgramConfig;
+use crate::settings::Setting;
 
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
     let files_to_check = collect_output_dir_files(settings);
 
     let all_ruff_rules = collect_all_ruff_rules();
+    let collected_rules: Vec<_> = files_to_check
+        .into_par_iter()
+        .filter_map(|i| {
+            let file_name = i.split('/').last().unwrap();
+            let new_name = format!("{temp_folder}/{file_name}");
+            let original_content = fs::read_to_string(&i).unwrap();
+            let mut out = String::new();
 
-    // Execute
-    let atomic_counter = AtomicUsize::new(0);
-    let all_files = files_to_check.len();
-
-    files_to_check.into_par_iter().for_each(|i| {
-        let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
-        if idx % 10 == 0 {
-            println!("Checking file {idx} of {all_files}");
-        }
-
-        let file_name = i.split('/').last().unwrap();
-        let new_name = format!("{temp_folder}/{file_name}");
-        let original_content = fs::read_to_string(&i).unwrap();
-
-        fs::write(&new_name, &original_content).unwrap();
-
-        if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj) {
-            println!("File {new_name} ({i}) is not broken");
-            return;
-        }
-
-        let mut valid_remove_rules = all_ruff_rules.clone();
-        let mut rules_to_test = all_ruff_rules.clone();
-
-        let mut to_idx = 100;
-        while to_idx != 0 {
             fs::write(&new_name, &original_content).unwrap();
-            // println!("TO_IDX - {to_idx}");
-            to_idx -= 1;
-            // Almost sure that  this will not crash with more than 4 rules
-            if valid_remove_rules.len() <= 4 {
-                break;
+
+            if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj).0 {
+                println!("File {new_name} ({i}) is not broken");
+                return None;
             }
 
-            let crashing = check_if_rule_file_crashing(&new_name, &rules_to_test, obj);
-            if crashing {
-                valid_remove_rules = rules_to_test.clone();
-                rules_to_test.shuffle(&mut thread_rng());
-                rules_to_test.truncate(rules_to_test.len() / 2);
-                rules_to_test.sort();
-            } else {
-                rules_to_test = valid_remove_rules.clone();
+            let mut valid_remove_rules = all_ruff_rules.clone();
+            let mut rules_to_test = all_ruff_rules.clone();
+
+            let mut to_idx = 100;
+            while to_idx != 0 {
+                fs::write(&new_name, &original_content).unwrap();
+                // println!("TO_IDX - {to_idx}");
+                to_idx -= 1;
+                // Almost sure that  this will not crash with more than 4 rules
+                if valid_remove_rules.len() <= 4 {
+                    break;
+                }
+
+                let (crashing, output) =
+                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj);
+                if crashing {
+                    valid_remove_rules = rules_to_test.clone();
+                    rules_to_test.shuffle(&mut thread_rng());
+                    rules_to_test.truncate(rules_to_test.len() / 2);
+                    rules_to_test.sort();
+                    out = output;
+                } else {
+                    rules_to_test = valid_remove_rules.clone();
+                }
             }
+
+            rules_to_test = valid_remove_rules.clone();
+            let mut curr_idx = valid_remove_rules.len();
+            while curr_idx != 0 {
+                fs::write(&new_name, &original_content).unwrap();
+                if valid_remove_rules.len() <= 1 {
+                    break;
+                }
+                // println!("CURR_IDX - {curr_idx}");
+                curr_idx -= 1;
+                rules_to_test.remove(curr_idx);
+                let (crashing, output) =
+                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj);
+                if crashing {
+                    valid_remove_rules = rules_to_test.clone();
+                    out = output;
+                } else {
+                    rules_to_test = valid_remove_rules.clone();
+                }
+            }
+            println!(
+                "For file {i} valid rules are: {}  - {new_name}",
+                valid_remove_rules.join(",")
+            );
+
+            Some((valid_remove_rules, file_name.to_string(), new_name, out))
+        })
+        .collect();
+
+    save_results_to_file(settings, collected_rules);
+    //
+
+    // GOOD to print rules
+    // let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
+    // for i in collected_rules {
+    //     for j in i {
+    //         *btree_map.entry(j).or_insert(0) += 1;
+    //     }
+    // }
+    // // Reorder items to have in vec most common used rules
+    // let mut items = Vec::new();
+    // for (k, v) in btree_map {
+    //     items.push((k, v));
+    // }
+    // items.sort_by(|a, b| b.1.cmp(&a.1));
+    // println!("{items:?}");
+}
+
+pub fn save_results_to_file(
+    settings: &Setting,
+    rules_with_names: Vec<(Vec<String>, String, String, String)>,
+) {
+    for (rules, file_name, name, output) in rules_with_names {
+        let file_code = fs::read_to_string(&name).unwrap();
+        let file_steam = file_name.split('.').next().unwrap();
+        let rule_str = rules.join("_");
+        let folder = format!("{}/{}___{}", settings.temp_folder, rule_str, file_steam);
+        let _ = fs::create_dir_all(&folder);
+        let mut file_content = String::new();
+        if output.contains("Failed to converge after") {
+            file_content += &format!("Rules {} cause infinite loop", rules.join(","));
+        } else {
+            file_content += &format!("Rules {} cause cause autofix error", rules.join(","));
         }
 
-        rules_to_test = valid_remove_rules.clone();
-        let mut curr_idx = valid_remove_rules.len();
-        while curr_idx != 0 {
-            fs::write(&new_name, &original_content).unwrap();
-            if valid_remove_rules.len() <= 1 {
-                break;
-            }
-            // println!("CURR_IDX - {curr_idx}");
-            curr_idx -= 1;
-            rules_to_test.remove(curr_idx);
-            let crashing = check_if_rule_file_crashing(&new_name, &rules_to_test, obj);
-            if crashing {
-                valid_remove_rules = rules_to_test.clone();
-            } else {
-                rules_to_test = valid_remove_rules.clone();
-            }
-        }
-        println!(
-            "For file {i} valid rules are: {}  - {new_name}",
-            valid_remove_rules.join(",")
-        );
-    });
+        file_content += "\n\n///////////////////////////////////////////////////////\n\n";
+        file_content += &r###"Ruff 0.0.287 (latest changes from main branch)
+```
+ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix
+```
+
+file content(at least simple cpython script shows that this is valid python file):
+```
+$FILE_CONTENT
+```
+
+error
+```
+$ERROR
+```
+        "###
+        .replace("$RULES_TO_REPLACE", &rules.join(","))
+        .replace("$FILE_CONTENT", &file_code)
+        .replace("$ERROR", &output);
+
+        fs::write(format!("{}/to_report.txt", folder), &file_content).unwrap();
+
+        fs::write(format!("{}/python_code.py", folder), &file_code).unwrap();
+
+        let zip_filename = format!("{}/python_compressed.zip", folder);
+        let zip_file = File::create(&zip_filename).unwrap();
+        let mut zip_writer = ZipWriter::new(zip_file);
+
+        let options = FileOptions::default()
+            .compression_method(zip::CompressionMethod::Deflated)
+            .unix_permissions(0o755);
+
+        let _ = zip_writer.start_file(file_name, options);
+        let _ = zip_writer.write_all(file_code.as_bytes());
+        // let dbg!(folder);
+        // let rules = rules.join(",");
+        // let content = format!("{name} - {rules}\n", name = name, rules = rules);
+        // file.write_all(content.as_bytes()).unwrap();
+    }
 }
 
 pub fn collect_all_ruff_rules() -> Vec<String> {
@@ -116,7 +198,7 @@ fn check_if_rule_file_crashing(
     test_file: &str,
     rules: &[String],
     obj: &Box<dyn ProgramConfig>,
-) -> bool {
+) -> (bool, String) {
     assert!(!rules.is_empty());
     let mut command = Command::new("ruff");
     let ignored_rules = calculate_ignored_rules();
@@ -138,7 +220,7 @@ fn check_if_rule_file_crashing(
     let stderr_str = String::from_utf8(stderr).unwrap();
     let all_std = format!("{stdout_str}{stderr_str}");
 
-    obj.is_broken(&all_std)
+    (obj.is_broken(&all_std), all_std)
 }
 
 fn collect_output_dir_files(settings: &Setting) -> Vec<String> {
