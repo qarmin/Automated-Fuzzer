@@ -41,6 +41,7 @@ const BROKEN_ITEMS: &[&str] = &[
     "D209",                                      // 7058
     "E203",                                      // 7070
     "E231",                                      // 7070
+    "ruff_python_parser::string::StringParser::parse_fstring", // 6831
 ];
 
 impl ProgramConfig for RuffStruct {
