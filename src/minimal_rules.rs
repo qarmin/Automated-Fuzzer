@@ -114,13 +114,24 @@ pub fn save_results_to_file(
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
         let rule_str = rules.join("_");
-        let folder = format!("{}/{}___{}", settings.temp_folder, rule_str, file_steam);
+        let folder = format!(
+            "{}/{}___({} bytes) - {}",
+            settings.temp_folder,
+            rule_str,
+            file_code.len(),
+            file_steam,
+        );
         let _ = fs::create_dir_all(&folder);
         let mut file_content = String::new();
-        if output.contains("Failed to converge after") {
-            file_content += &format!("Rules {} cause infinite loop", rules.join(","));
+        if rules.len() == 1 {
+            file_content += "Rule";
         } else {
-            file_content += &format!("Rules {} cause autofix error", rules.join(","));
+            file_content += "Rules";
+        }
+        if output.contains("Failed to converge after") {
+            file_content += &format!(" {} cause infinite loop", rules.join(", "));
+        } else {
+            file_content += &format!(" {} cause autofix error", rules.join(", "));
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
@@ -227,7 +238,9 @@ fn collect_output_dir_files(settings: &Setting) -> Vec<String> {
         .flatten()
         .filter_map(|entry| {
             if entry.file_type().is_file() {
-                return Some(entry.path().to_string_lossy().to_string());
+                if entry.path().to_string_lossy().ends_with(".py") {
+                    return Some(entry.path().to_string_lossy().to_string());
+                }
             }
             None
         })

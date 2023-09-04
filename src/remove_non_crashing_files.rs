@@ -41,7 +41,7 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
         .into_iter()
         .flatten()
         .filter_map(|entry| {
-            if entry.file_type().is_file() {
+            if entry.file_type().is_file() && entry.path().to_string_lossy().ends_with(".py") {
                 return Some(entry.path().to_string_lossy().to_string());
             }
             None

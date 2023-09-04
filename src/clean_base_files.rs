@@ -36,14 +36,20 @@ fn remove_non_parsing_python_files(settings: &Setting) {
 }
 
 pub fn check_if_file_is_parsable_by_cpython(
-    python_ast_file_name: &str,
+    _python_ast_file_name: &str,
     source_code_file_name: &str,
 ) -> bool {
+    // let output = Command::new("python3")
+    //     .arg(python_ast_file_name)
+    //     .arg(source_code_file_name)
+    //     .output();
     let output = Command::new("python3")
-        .arg(python_ast_file_name)
-        .arg(source_code_file_name)
+        .arg("-m")
+        .arg("py_compile")
+        .arg(&source_code_file_name)
         .output();
     let output = output.unwrap();
+    // dbg!(&source_code_file_name);
     // dbg!(String::from_utf8_lossy(&output.stderr));
     // dbg!(String::from_utf8_lossy(&output.stdout));
     output.status.success()
@@ -80,7 +86,7 @@ fn collect_base_files(settings: &Setting) -> Vec<String> {
         .into_iter()
         .flatten()
         .filter_map(|entry| {
-            if entry.file_type().is_file() {
+            if entry.file_type().is_file() && entry.path().to_string_lossy().ends_with(".py") {
                 return Some(entry.path().to_string_lossy().to_string());
             }
             None
