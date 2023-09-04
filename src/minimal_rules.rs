@@ -17,7 +17,7 @@ use crate::settings::Setting;
 
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
-    let files_to_check = collect_output_dir_files(settings);
+    let files_to_check = collect_broken_files_dir_files(settings);
 
     let all_ruff_rules = collect_all_ruff_rules();
     let collected_rules: Vec<_> = files_to_check
@@ -81,11 +81,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 }
             }
             println!(
-                "For file {i} valid rules are: {}  - {new_name}",
+                "For file {i} valid rules are: {}  - {i}",
                 valid_remove_rules.join(",")
             );
 
-            Some((valid_remove_rules, file_name.to_string(), new_name, out))
+            Some((valid_remove_rules, file_name.to_string(), i, out))
         })
         .collect();
 
@@ -232,15 +232,13 @@ fn check_if_rule_file_crashing(
     (obj.is_broken(&all_std), all_std)
 }
 
-fn collect_output_dir_files(settings: &Setting) -> Vec<String> {
-    WalkDir::new(&settings.output_dir)
+fn collect_broken_files_dir_files(settings: &Setting) -> Vec<String> {
+    WalkDir::new(&settings.broken_files_dir)
         .into_iter()
         .flatten()
         .filter_map(|entry| {
-            if entry.file_type().is_file() {
-                if entry.path().to_string_lossy().ends_with(".py") {
-                    return Some(entry.path().to_string_lossy().to_string());
-                }
+            if entry.file_type().is_file() && entry.path().to_string_lossy().ends_with(".py") {
+                return Some(entry.path().to_string_lossy().to_string());
             }
             None
         })

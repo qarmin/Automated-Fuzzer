@@ -21,7 +21,7 @@ pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
         let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
         let new_name = format!(
             "{}/{file_name}{}.{extension}",
-            setting.output_dir,
+            setting.broken_files_dir,
             rand::thread_rng().gen_range(1..10000)
         );
         if !Path::new(&new_name).exists() {

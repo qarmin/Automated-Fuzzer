@@ -5,7 +5,7 @@ copy_broken_files = true # Copy broken files to broken dir, disable if testing n
 generate_files = true # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run), otherwise it will copy all valid files into BROKEN_FIELS_DIR
 ignore_generate_copy_files_step = false # If true, will only use files inside BROKEN_FILES_DIR, without  copying new files or generating
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
+temp_possible_broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
 minimization_attempts = 1000 # Attemps to minimize code, counter reset when found minimized test case
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
 debug_print_results = false # Debug prints output of commands
@@ -17,7 +17,7 @@ temp_folder = "/home/rafal/test/tmp_folder" # Temp file used to store random dat
 timeout = 100 # timeout time, if equal zero, then timeout is disabled
 error_statuses_different_than_0_1 = true # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 error_when_found_signal = true # Errors, when app was killed by OS or used
-max_collected_files = 1000000000 # Max number of files that will be collected from base_of_valid_files
+max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 
 current_mode = "ruff"
 
@@ -25,91 +25,91 @@ current_mode = "ruff"
 # app_config - path to configuration file
 # extensions - list of extensions of tested files
 # non_destructive_input_dir - folder which contains files to test, such files will not be overwriten
-# base_of_valid_files - place with valid files
-# output_dir - place where to save broken files
+# valid_input_files_dir - place with valid files
+# broken_files_dir - place where to save broken files
 # binary_mode - used to minify output, if binary mode is on, then all minimization works on bytes, if is off, then minimization works on lines
 
 [ruff]
 app_binary = "ruff"
 app_config = "/home/rafal/Desktop/RunEveryCommand/ruff/ruff.toml"
 extensions = "py"
-#base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
-#base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
-#base_of_valid_files = "/home/rafal/test/DOWNLOADED/py_files"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
+#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
+#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
+#valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
 binary_mode = true
 
 [rustparser]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/rust_parser/target/release/rust_parser"
 app_config = ""
 extensions = "py"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/rust_parser/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rust_parser/Broken"
 binary_mode = false
 
 [eslint]
 app_binary = "/home/rafal/.nvm/versions/node/v19.1.0/bin/npx" # npx eslint
 app_config = "/home/rafal/Desktop/RunEveryCommand/eslint/.eslintrc.yml"
 extensions = "ts,js,mjs,mts"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/eslint/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/eslint/Broken"
 binary_mode = false
 
 [rustfmt]
 app_binary = "rustfmt"
 app_config = "/home/rafal/Projekty/Rust/Rozne/rustfmtt.toml"
 extensions = "rs"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_RUST_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/rustfmt/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_RUST_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rustfmt/Broken"
 binary_mode = false
 
 [pdfrs]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/pdf/target/release/pdf"
 app_config = ""
 extensions = "pdf"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PDF_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/pdfrs/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PDF_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/pdfrs/Broken"
 binary_mode = true
 
 [quicklintjs]
 app_binary = "quick-lint-js"
 app_config = ""
 extensions = "ts,js,mjs,mts"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/quicklint/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/quicklint/Broken"
 binary_mode = false
 
 [staticcheckgo]
 app_binary = "/home/rafal/Desktop/RunEveryCommand/APPS/staticcheck"
 app_config = ""
 extensions = "go"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_GO_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/staticcheckgo/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_GO_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/staticcheckgo/Broken"
 binary_mode = false
 
 [selene]
 app_binary = "/home/rafal/test/selene/target/release/selene"
 app_config = ""
 extensions = "lua"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/selene/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/selene/Broken"
 binary_mode = false
 
 [oxc]
 app_binary = "oxc_cli"
 app_config = ""
 extensions = "ts,js,mjs,mts"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken"
 binary_mode = false
 
 [mypy]
 app_binary = "mypy"
 app_config = ""
 extensions = "py"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken"
 binary_mode = false
 
 
@@ -117,38 +117,38 @@ binary_mode = false
 app_binary = "/home/rafal/test/deno_lint/target/release/examples/dlint"
 app_config = ""
 extensions = "ts,js,mjs,mts"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/dlint/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dlint/Broken"
 binary_mode = false
 
 [rome]
 app_binary = "rome"
 app_config = ""
 extensions = "ts,js,mjs,mts"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/rome/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rome/Broken"
 binary_mode = false
 
 [image]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/image/target/release/image"
 app_config = ""
 extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_IMAGE_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/image/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_IMAGE_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/image/Broken"
 binary_mode = true
 
 [lofty]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/lofty/target/release/lofty"
 app_config = ""
 extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/lofty/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/lofty/Broken"
 binary_mode = true
 
 [symphonia]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/symphonia/target/release/symphonia"
 app_config = ""
 extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
-base_of_valid_files = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
-output_dir = "/home/rafal/Desktop/RunEveryCommand/symphonia/Broken"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/symphonia/Broken"
 binary_mode = true

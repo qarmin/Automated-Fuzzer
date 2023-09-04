@@ -37,7 +37,7 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
 }
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
-    WalkDir::new(&settings.output_dir)
+    WalkDir::new(&settings.broken_files_dir)
         .into_iter()
         .flatten()
         .filter_map(|entry| {

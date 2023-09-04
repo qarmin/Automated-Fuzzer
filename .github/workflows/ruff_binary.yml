@@ -33,11 +33,11 @@ jobs:
       - name: Download and prepare python data files
         run: |
           CURR_DIR=$(pwd)
-          mkdir /opt/PYTHON_DATA
-          mkdir /opt/TEST_DIR
-          mkdir /opt/RESULTS
+          mkdir /opt/VALID_FILES_DIR
+          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
+          mkdir /opt/BROKEN_FILES_DIR
           
-          cd /opt/PYTHON_DATA
+          cd /opt/VALID_FILES_DIR
           
           wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_1.zip
           unzip FILES_1.zip
@@ -61,8 +61,8 @@ jobs:
         with:
           if-no-files-found: ignore
           name: results
-          path: /opt/RESULTS
+          path: /opt/BROKEN_FILES_DIR
 
       - name: Exit when found broken files
         run: |
-          [ "$(ls -A /opt/RESULTS)" ] && exit 1 || exit 0
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || exit 0

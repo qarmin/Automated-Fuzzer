@@ -68,13 +68,13 @@ const RUST_ARGS: &[&str] = &[
 ];
 
 pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
-    let base_of_valid_files = &obj.get_settings().base_of_valid_files;
-    let input_dir = &obj.get_settings().input_dir;
+    let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
+    let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
     let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
     let mut command = Command::new("create_broken_files");
     let mut com = &mut command;
     if lang != LANGS::GENERAL {
-        com = com.args(format!("-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c true -s").split(' '));
+        com = com.args(format!("-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c true -s").split(' '));
     }
     match lang {
         LANGS::PYTHON => com = com.args(PYTHON_ARGS),
@@ -85,7 +85,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::GENERAL => {
             com = com.args(
                 format!(
-                "-i {base_of_valid_files} -o {input_dir} -n {broken_files_for_each_file} -c false"
+                "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c false"
             )
                 .split(' '),
             );

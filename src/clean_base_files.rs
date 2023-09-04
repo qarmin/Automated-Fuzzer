@@ -46,7 +46,7 @@ pub fn check_if_file_is_parsable_by_cpython(
     let output = Command::new("python3")
         .arg("-m")
         .arg("py_compile")
-        .arg(&source_code_file_name)
+        .arg(source_code_file_name)
         .output();
     let output = output.unwrap();
     // dbg!(&source_code_file_name);
@@ -82,7 +82,7 @@ else:
 }
 
 fn collect_base_files(settings: &Setting) -> Vec<String> {
-    WalkDir::new(&settings.base_of_valid_files)
+    WalkDir::new(&settings.valid_input_files_dir)
         .into_iter()
         .flatten()
         .filter_map(|entry| {

@@ -5,7 +5,7 @@ copy_broken_files = true
 generate_files = false # If true will generate broken files and save them to BROKEN_FILES_DIR(this folder will be removed after each run)
 ignore_generate_copy_files_step = true # If true, will only use files inside BROKEN_FILES_DIR, without  copying new files or generating
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
-broken_files_dir = "/opt/TEST_DIR" # Place where possibly broken files are saved
+temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 3000 # Attemps to minimize code, counter reset when found minimized test case
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
 debug_print_results = false # Debug prints output of commands
@@ -17,7 +17,7 @@ temp_folder = "/opt/tmp_folder" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled
 error_statuses_different_than_0_1 = true # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 error_when_found_signal = true # Errors, when app was killed by OS or used
-max_collected_files = 1000000000 # Max number of files that will be collected from base_of_valid_files
+max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 
 current_mode = "ruff"
 
@@ -25,6 +25,6 @@ current_mode = "ruff"
 app_binary = "ruff"
 app_config = ""
 extensions = "py"
-base_of_valid_files = "/opt/PYTHON_DATA"
-output_dir = "/opt/RESULTS"
+valid_input_files_dir = "/opt/VALID_FILES_DIR"
+broken_files_dir = "/opt/BROKEN_FILES_DIR"
 binary_mode = false

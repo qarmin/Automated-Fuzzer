@@ -52,8 +52,8 @@ fn main() {
 
     println!(
         "Base of valid {} Files Number {}.",
-        settings.base_of_valid_files,
-        WalkDir::new(&settings.base_of_valid_files)
+        settings.valid_input_files_dir,
+        WalkDir::new(&settings.valid_input_files_dir)
             .max_depth(999)
             .into_iter()
             .flatten()
@@ -61,8 +61,8 @@ fn main() {
     );
     println!(
         "Input Dir {} Files Number {}.",
-        settings.input_dir,
-        WalkDir::new(&settings.input_dir)
+        settings.temp_possible_broken_files_dir,
+        WalkDir::new(&settings.temp_possible_broken_files_dir)
             .max_depth(999)
             .into_iter()
             .flatten()
@@ -70,16 +70,16 @@ fn main() {
     );
     println!(
         "Output Dir {} Files Number {}.",
-        settings.output_dir,
-        WalkDir::new(&settings.output_dir)
+        settings.broken_files_dir,
+        WalkDir::new(&settings.broken_files_dir)
             .max_depth(999)
             .into_iter()
             .flatten()
             .count()
     );
 
-    assert!(Path::new(&settings.base_of_valid_files).exists());
-    assert!(Path::new(&settings.output_dir).exists());
+    assert!(Path::new(&settings.valid_input_files_dir).exists());
+    assert!(Path::new(&settings.broken_files_dir).exists());
 
     let atomic_all_broken = AtomicU32::new(0);
 
@@ -94,8 +94,8 @@ fn main() {
 
         if !settings.ignore_generate_copy_files_step {
             println!("Removing old files");
-            let _ = fs::remove_dir_all(&settings.input_dir);
-            fs::create_dir_all(&settings.input_dir).unwrap();
+            let _ = fs::remove_dir_all(&settings.temp_possible_broken_files_dir);
+            fs::create_dir_all(&settings.temp_possible_broken_files_dir).unwrap();
             if settings.generate_files {
                 let command = obj.broken_file_creator();
                 let output = command.wait_with_output().unwrap();
@@ -111,10 +111,10 @@ fn main() {
                 };
             } else {
                 // instead creating files, copy them
-                // let base_of_valid_files = &obj.get_settings().base_of_valid_files;
-                // let input_dir = &obj.get_settings().input_dir;
+                // let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
+                // let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
                 let mut collected_files = Vec::new();
-                for i in WalkDir::new(&settings.base_of_valid_files)
+                for i in WalkDir::new(&settings.valid_input_files_dir)
                     .max_depth(999)
                     .into_iter()
                     .flatten()
@@ -159,13 +159,18 @@ fn main() {
                     .for_each(|(s, old_name, extension)| {
                         let mut rng = thread_rng();
 
-                        let mut new_name =
-                            format!("{}/{}.{}", settings.input_dir, old_name, extension);
+                        let mut new_name = format!(
+                            "{}/{}.{}",
+                            settings.temp_possible_broken_files_dir, old_name, extension
+                        );
                         while Path::new(&new_name).exists() {
                             let random_number: u64 = rng.gen();
                             new_name = format!(
                                 "{}/{}-{}.{}",
-                                settings.input_dir, old_name, random_number, extension
+                                settings.temp_possible_broken_files_dir,
+                                old_name,
+                                random_number,
+                                extension
                             );
                         }
                         // println!("Copying file {s}  to {new_name:?}");
@@ -177,8 +182,8 @@ fn main() {
         }
 
         let mut files = Vec::new();
-        assert!(Path::new(&settings.input_dir).is_dir());
-        for i in WalkDir::new(&settings.input_dir)
+        assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());
+        for i in WalkDir::new(&settings.temp_possible_broken_files_dir)
             .max_depth(999)
             .into_iter()
             .flatten()
