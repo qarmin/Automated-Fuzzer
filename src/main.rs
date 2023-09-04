@@ -12,7 +12,8 @@ use rayon::prelude::*;
 use crate::common::{
     execute_command_and_connect_output, minimize_binary_output, minimize_string_output,
 };
-use crate::settings::{get_object, load_settings};
+use crate::obj::ProgramConfig;
+use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
 
 pub mod apps;
@@ -77,88 +78,13 @@ fn main() {
             fs::create_dir_all(&settings.temp_possible_broken_files_dir).unwrap();
             if settings.generate_files {
                 println!("So - generating files from valid input files dir");
-                let command = obj.broken_file_creator();
-                let output = command.wait_with_output().unwrap();
-                let out = String::from_utf8(output.stdout).unwrap();
-                if !output.status.success() {
-                    println!("{:?}", output.status);
-                    println!("{out}");
-                    println!("Failed to generate files");
-                    process::exit(1);
-                }
-                if settings.debug_print_broken_files_creator {
-                    println!("{out}");
-                };
+                generate_files(&obj, &settings);
             } else {
                 println!("So - copying files");
                 // instead creating files, copy them
                 // let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
                 // let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
-                let mut collected_files = Vec::new();
-                for i in WalkDir::new(&settings.valid_input_files_dir)
-                    .max_depth(999)
-                    .into_iter()
-                    .flatten()
-                {
-                    let path = i.path();
-                    if !path.is_file() {
-                        continue;
-                    }
-                    let Some(s) = path.to_str() else {
-                        continue;
-                    };
-                    let Some(old_name) = path.file_stem() else {
-                        continue;
-                    };
-                    let Some(old_name) = old_name.to_str() else {
-                        continue;
-                    };
-                    let Some(extension) = path.extension() else {
-                        continue;
-                    };
-                    let Some(extension) = extension.to_str() else {
-                        continue;
-                    };
-                    if settings
-                        .extensions
-                        .iter()
-                        .any(|e| s.to_lowercase().ends_with(e))
-                    {
-                        collected_files.push((
-                            s.to_string(),
-                            old_name.to_string(),
-                            extension.to_string(),
-                        ));
-                    }
-                }
-                println!(
-                    "Completed collecting files to check({} found files)",
-                    collected_files.len()
-                );
-                collected_files
-                    .into_par_iter()
-                    .for_each(|(s, old_name, extension)| {
-                        let mut rng = thread_rng();
-
-                        let mut new_name = format!(
-                            "{}/{}.{}",
-                            settings.temp_possible_broken_files_dir, old_name, extension
-                        );
-                        while Path::new(&new_name).exists() {
-                            let random_number: u64 = rng.gen();
-                            new_name = format!(
-                                "{}/{}-{}.{}",
-                                settings.temp_possible_broken_files_dir,
-                                old_name,
-                                random_number,
-                                extension
-                            );
-                        }
-                        // println!("Copying file {s}  to {new_name:?}");
-                        if let Err(e) = fs::copy(&s, &new_name) {
-                            println!("Failed to copy file {s} to {new_name} with error {e}");
-                        };
-                    });
+                copy_files(&settings);
             }
         } else {
             println!("So - no copying or generating files");
@@ -170,68 +96,11 @@ fn main() {
             "Temp possible broken files dir2", &settings.temp_possible_broken_files_dir,
         );
 
-        let mut files = Vec::new();
-        assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());
-        for i in WalkDir::new(&settings.temp_possible_broken_files_dir)
-            .max_depth(999)
-            .into_iter()
-            .flatten()
-        {
-            let path = i.path();
-            if !path.is_file() {
-                continue;
-            }
-            let Ok(metadata) = i.metadata() else {
-                return;
-            };
-            metadata.permissions().set_mode(0o777);
-            let Some(s) = path.to_str() else {
-                continue;
-            };
-            if settings
-                .extensions
-                .iter()
-                .any(|e| s.to_lowercase().ends_with(e))
-            {
-                files.push(s.to_string());
-            }
-        }
-        if files.len() > settings.max_collected_files {
-            files.truncate(settings.max_collected_files);
-        }
+        let files = collect_files(&settings);
 
-        if files.is_empty() {
-            dbg!(&settings);
-            assert!(!files.is_empty());
-        }
-
-        let atomic = AtomicU32::new(0);
         let atomic_broken = AtomicU32::new(0);
-        let all = files.len();
 
-        files.into_par_iter().for_each(|full_name| {
-            let number = atomic.fetch_add(1, Ordering::Release);
-            if number % 1000 == 0 {
-                println!("_____ {number} / {all}");
-            }
-            let (is_really_broken, output) = execute_command_and_connect_output(&obj, &full_name);
-            if settings.debug_print_results {
-                println!("{output}");
-            }
-            if is_really_broken || obj.is_broken(&output) {
-                atomic_broken.fetch_add(1, Ordering::Relaxed);
-                atomic_all_broken.fetch_add(1, Ordering::Relaxed);
-                if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, output) {
-                    if settings.minimize_output {
-                        if settings.binary_mode {
-                            minimize_binary_output(&obj, &new_file_name);
-                        } else {
-                            minimize_string_output(&obj, &new_file_name);
-                        }
-                    }
-                };
-            }
-        });
+        test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
 
         println!(
             "\n\nFound {} broken files",
@@ -244,6 +113,156 @@ fn main() {
     );
 }
 
+fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
+    let command = obj.broken_file_creator();
+    let output = command.wait_with_output().unwrap();
+    let out = String::from_utf8(output.stdout).unwrap();
+    if !output.status.success() {
+        println!("{:?}", output.status);
+        println!("{out}");
+        println!("Failed to generate files");
+        process::exit(1);
+    }
+    if settings.debug_print_broken_files_creator {
+        println!("{out}");
+    };
+}
+
+fn copy_files(settings: &Setting) {
+    let mut collected_files = Vec::new();
+    for i in WalkDir::new(&settings.valid_input_files_dir)
+        .max_depth(999)
+        .into_iter()
+        .flatten()
+    {
+        let path = i.path();
+        if !path.is_file() {
+            continue;
+        }
+        let Some(s) = path.to_str() else {
+            continue;
+        };
+        let Some(old_name) = path.file_stem() else {
+            continue;
+        };
+        let Some(old_name) = old_name.to_str() else {
+            continue;
+        };
+        let Some(extension) = path.extension() else {
+            continue;
+        };
+        let Some(extension) = extension.to_str() else {
+            continue;
+        };
+        if settings
+            .extensions
+            .iter()
+            .any(|e| s.to_lowercase().ends_with(e))
+        {
+            collected_files.push((s.to_string(), old_name.to_string(), extension.to_string()));
+        }
+    }
+    println!(
+        "Completed collecting files to check({} found files)",
+        collected_files.len()
+    );
+    collected_files
+        .into_par_iter()
+        .for_each(|(s, old_name, extension)| {
+            let mut rng = thread_rng();
+
+            let mut new_name = format!(
+                "{}/{}.{}",
+                settings.temp_possible_broken_files_dir, old_name, extension
+            );
+            while Path::new(&new_name).exists() {
+                let random_number: u64 = rng.gen();
+                new_name = format!(
+                    "{}/{}-{}.{}",
+                    settings.temp_possible_broken_files_dir, old_name, random_number, extension
+                );
+            }
+            // println!("Copying file {s}  to {new_name:?}");
+            if let Err(e) = fs::copy(&s, &new_name) {
+                println!("Failed to copy file {s} to {new_name} with error {e}");
+            };
+        });
+}
+
+fn collect_files(settings: &Setting) -> Vec<String> {
+    let mut files = Vec::new();
+    assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());
+    for i in WalkDir::new(&settings.temp_possible_broken_files_dir)
+        .max_depth(999)
+        .into_iter()
+        .flatten()
+    {
+        let path = i.path();
+        if !path.is_file() {
+            continue;
+        }
+        let Ok(metadata) = i.metadata() else {
+            continue;
+        };
+        metadata.permissions().set_mode(0o777);
+        let Some(s) = path.to_str() else {
+            continue;
+        };
+        if settings
+            .extensions
+            .iter()
+            .any(|e| s.to_lowercase().ends_with(e))
+        {
+            files.push(s.to_string());
+        }
+    }
+    if files.len() > settings.max_collected_files {
+        files.truncate(settings.max_collected_files);
+    }
+
+    if files.is_empty() {
+        dbg!(&settings);
+        assert!(!files.is_empty());
+    }
+
+    files
+}
+
+fn test_files(
+    files: Vec<String>,
+    settings: &Setting,
+    obj: &Box<dyn ProgramConfig>,
+    atomic_broken: &AtomicU32,
+    atomic_all_broken: &AtomicU32,
+) {
+    let atomic = AtomicU32::new(0);
+    let all = files.len();
+
+    files.into_par_iter().for_each(|full_name| {
+        let number = atomic.fetch_add(1, Ordering::Release);
+        if number % 1000 == 0 {
+            println!("_____ {number} / {all}");
+        }
+        let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
+        if settings.debug_print_results {
+            println!("{output}");
+        }
+        if is_really_broken || obj.is_broken(&output) {
+            atomic_broken.fetch_add(1, Ordering::Relaxed);
+            atomic_all_broken.fetch_add(1, Ordering::Relaxed);
+            if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, output) {
+                if settings.minimize_output {
+                    if settings.binary_mode {
+                        minimize_binary_output(obj, &new_file_name);
+                    } else {
+                        minimize_string_output(obj, &new_file_name);
+                    }
+                }
+            };
+        }
+    });
+}
+
 fn check_files_number(name: &str, dir: &str) {
     println!(
         "{name} - {} - Files Number {}.",
@@ -252,7 +271,7 @@ fn check_files_number(name: &str, dir: &str) {
             .max_depth(999)
             .into_iter()
             .flatten()
-            .map(|e| e.path().is_file())
+            .filter(|e| e.path().is_file())
             .count()
     );
 }
