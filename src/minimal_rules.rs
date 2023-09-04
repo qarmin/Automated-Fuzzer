@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::fs;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -228,7 +228,15 @@ fn check_if_rule_file_crashing(
     let stdout_str = String::from_utf8(stdout).unwrap();
     let stderr_str = String::from_utf8(stderr).unwrap();
     let all_std = format!("{stdout_str}{stderr_str}");
-
+    // Debug save results
+    // dbg!(&all_std);
+    // let mut file = OpenOptions::new()
+    //     .write(true)
+    //     .append(true)
+    //     .create(true)
+    //     .open("/home/rafal/test/rr/a.txt")
+    //     .unwrap();
+    // file.write(all_std.as_bytes()).unwrap();
     (obj.is_broken(&all_std), all_std)
 }
 

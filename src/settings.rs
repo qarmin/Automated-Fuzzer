@@ -1,6 +1,7 @@
 use crate::apps::dlint::DlintStruct;
 use crate::apps::eslint::EslintStruct;
 use crate::apps::image::ImageStruct;
+use crate::apps::libcst::LibCSTStruct;
 use crate::apps::lofty::LoftyStruct;
 use crate::apps::mypy::MypyStruct;
 use crate::apps::oxc::OxcStruct;
@@ -128,6 +129,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
             settings,
             ignored_rules: String::new(),
         }),
+        MODES::LIBCST => Box::new(LibCSTStruct { settings }),
         MODES::LOFTY => Box::new(LoftyStruct { settings }),
         MODES::IMAGE => Box::new(ImageStruct { settings }),
         MODES::SYMPHONIA => Box::new(SymphoniaStruct { settings }),
@@ -173,4 +175,6 @@ pub enum MODES {
     ESLINT,
     #[strum(ascii_case_insensitive)]
     RUSTPARSER,
+    #[strum(ascii_case_insensitive)]
+    LIBCST,
 }

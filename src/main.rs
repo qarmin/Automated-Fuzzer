@@ -90,12 +90,6 @@ fn main() {
             println!("So - no copying or generating files");
         }
 
-        check_files_number("Valid input dir2", &settings.valid_input_files_dir);
-        check_files_number("Broken files dir2", &settings.broken_files_dir);
-        check_files_number(
-            "Temp possible broken files dir2", &settings.temp_possible_broken_files_dir,
-        );
-
         let files = collect_files(&settings);
 
         let atomic_broken = AtomicU32::new(0);

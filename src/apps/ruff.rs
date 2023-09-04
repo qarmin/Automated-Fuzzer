@@ -105,6 +105,8 @@ impl ProgramConfig for RuffStruct {
             || content.contains("RUST_BACKTRACE")
             || content.contains("catch_unwind::{{closure}}")
             || content.contains("This indicates a bug in")
+            || content.contains("AddressSanitizer:")
+            || content.contains("LeakSanitizer:")
             || content.contains("Autofix introduced a syntax error");
         // Debug check if properly
         // dbg!(

@@ -33,11 +33,19 @@ current_mode = "ruff"
 app_binary = "ruff"
 app_config = "/home/rafal/Desktop/RunEveryCommand/ruff/ruff.toml"
 extensions = "py"
-#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
+#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
 #valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
+binary_mode = false
+
+[libcst]
+app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/libcst/target/release/libcstt"
+app_config = ""
+extensions = "py"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/libcst/Broken"
 binary_mode = false
 
 [rustparser]

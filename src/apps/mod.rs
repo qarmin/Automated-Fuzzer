@@ -1,6 +1,7 @@
 pub mod dlint;
 pub mod eslint;
 pub mod image;
+pub mod libcst;
 pub mod lofty;
 pub mod mypy;
 pub mod oxc;
