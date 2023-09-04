@@ -38,7 +38,7 @@ valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FIL
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
 #valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
-binary_mode = true
+binary_mode = false
 
 [rustparser]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/rust_parser/target/release/rust_parser"
