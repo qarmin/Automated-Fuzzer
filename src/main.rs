@@ -50,32 +50,10 @@ fn main() {
         return;
     }
 
-    println!(
-        "Base of valid {} Files Number {}.",
-        settings.valid_input_files_dir,
-        WalkDir::new(&settings.valid_input_files_dir)
-            .max_depth(999)
-            .into_iter()
-            .flatten()
-            .count()
-    );
-    println!(
-        "Input Dir {} Files Number {}.",
-        settings.temp_possible_broken_files_dir,
-        WalkDir::new(&settings.temp_possible_broken_files_dir)
-            .max_depth(999)
-            .into_iter()
-            .flatten()
-            .count()
-    );
-    println!(
-        "Output Dir {} Files Number {}.",
-        settings.broken_files_dir,
-        WalkDir::new(&settings.broken_files_dir)
-            .max_depth(999)
-            .into_iter()
-            .flatten()
-            .count()
+    check_files_number("Valid input dir", &settings.valid_input_files_dir);
+    check_files_number("Broken files dir", &settings.broken_files_dir);
+    check_files_number(
+        "Temp possible broken files dir", &settings.temp_possible_broken_files_dir,
     );
 
     assert!(Path::new(&settings.valid_input_files_dir).exists());
@@ -89,6 +67,7 @@ fn main() {
     } else {
         1
     };
+
     for i in 1..=loop_number {
         println!("Starting loop {i} out of all {loop_number}");
 
@@ -97,6 +76,7 @@ fn main() {
             let _ = fs::remove_dir_all(&settings.temp_possible_broken_files_dir);
             fs::create_dir_all(&settings.temp_possible_broken_files_dir).unwrap();
             if settings.generate_files {
+                println!("So - generating files from valid input files dir");
                 let command = obj.broken_file_creator();
                 let output = command.wait_with_output().unwrap();
                 let out = String::from_utf8(output.stdout).unwrap();
@@ -110,6 +90,7 @@ fn main() {
                     println!("{out}");
                 };
             } else {
+                println!("So - copying files");
                 // instead creating files, copy them
                 // let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
                 // let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
@@ -179,7 +160,15 @@ fn main() {
                         };
                     });
             }
+        } else {
+            println!("So - no copying or generating files");
         }
+
+        check_files_number("Valid input dir2", &settings.valid_input_files_dir);
+        check_files_number("Broken files dir2", &settings.broken_files_dir);
+        check_files_number(
+            "Temp possible broken files dir2", &settings.temp_possible_broken_files_dir,
+        );
 
         let mut files = Vec::new();
         assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());
@@ -252,5 +241,18 @@ fn main() {
     println!(
         "\n\nFound {} broken files in all iterations",
         atomic_all_broken.load(Ordering::Relaxed)
+    );
+}
+
+fn check_files_number(name: &str, dir: &str) {
+    println!(
+        "{name} - {} - Files Number {}.",
+        dir,
+        WalkDir::new(dir)
+            .max_depth(999)
+            .into_iter()
+            .flatten()
+            .map(|e| e.path().is_file())
+            .count()
     );
 }
