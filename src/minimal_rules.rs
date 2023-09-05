@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 use std::fs;
-use std::fs::{File, OpenOptions};
+use std::fs::File;
 use std::io::Write;
 use std::process::{Command, Stdio};
 
@@ -27,6 +27,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let new_name = format!("{temp_folder}/{file_name}");
             let original_content = fs::read_to_string(&i).unwrap();
             let mut out = String::new();
+
+            if original_content.lines().count() >= 100 {
+                println!("File {new_name} ({i}) is too big and probably cause infinite loop due fixing to much same errors");
+                return None;
+            }
 
             fs::write(&new_name, &original_content).unwrap();
 
@@ -81,7 +86,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 }
             }
             println!(
-                "For file {i} valid rules are: {}  - {i}",
+                "For file {i} valid rules are: {}",
                 valid_remove_rules.join(",")
             );
 
