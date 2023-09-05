@@ -28,6 +28,7 @@ jobs:
         run: |
           curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
           source $HOME/.cargo/env
+          rustup install nightly-x86_64-unknown-linux-gnu
 
       - name: Install create_broken_files
         run: cargo install create_broken_files
