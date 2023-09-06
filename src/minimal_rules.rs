@@ -35,6 +35,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
             fs::write(&new_name, &original_content).unwrap();
 
+            // TODO uncheck after https://github.com/astral-sh/ruff/issues/7169
+            let content = fs::read_to_string(&new_name).unwrap();
+            let content_with_replaced_non_ascii = content.replace(|c: char| !c.is_ascii(), "R");
+            fs::write(&new_name, &content_with_replaced_non_ascii).unwrap();
+
             if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj).0 {
                 println!("File {new_name} ({i}) is not broken");
                 return None;
@@ -93,6 +98,9 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             Some((valid_remove_rules, file_name.to_string(), i, out))
         })
         .collect();
+
+    fs::remove_dir_all(&temp_folder).unwrap();
+    fs::create_dir_all(&temp_folder).unwrap();
 
     save_results_to_file(settings, collected_rules.clone());
 
