@@ -47,7 +47,7 @@ fn main() {
         return;
     }
     if settings.find_minimal_rules {
-        minimal_rules::find_minimal_rules(&settings, &obj);
+        minimal_rules::check_code(&settings, &obj);
         return;
     }
 

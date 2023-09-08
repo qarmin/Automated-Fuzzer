@@ -12,10 +12,121 @@ use zip::write::FileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
+use crate::common::collect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
 // THIS ONLY WORKS WITH RUFF
+
+pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+    match settings.tool_type.as_str() {
+        "check" => {
+            find_minimal_rules(settings, obj);
+        }
+        "format" => {
+            report_problem_with_format(settings, obj);
+        }
+        _ => {
+            panic!("Unknown tool type: {}", settings.tool_type);
+        }
+    }
+}
+
+pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+    let temp_folder = settings.temp_folder.clone();
+    let files_to_check = collect_broken_files_dir_files(settings);
+
+    let collected_items: Vec<_> = files_to_check
+        .into_par_iter()
+        .filter_map(|i| {
+            let file_name = i.split('/').last().unwrap();
+            let new_name = format!("{temp_folder}/{file_name}");
+            let original_content = fs::read_to_string(&i).unwrap();
+
+            fs::write(&new_name, original_content).unwrap();
+
+            let output = obj.get_run_command(&new_name).wait_with_output().unwrap();
+            let all_str = collect_output(&output);
+            if !obj.is_broken(&all_str) {
+                println!("File {new_name} ({i}) is not broken");
+                return None;
+            }
+
+            println!("File {new_name} ______________ ({i}) is broken",);
+            Some((file_name.to_string(), i, all_str))
+        })
+        .collect();
+
+    fs::remove_dir_all(&temp_folder).unwrap();
+    fs::create_dir_all(&temp_folder).unwrap();
+
+    save_results_to_file_format(settings, collected_items);
+}
+
+pub fn save_results_to_file_format(
+    settings: &Setting,
+    collected_items: Vec<(String, String, String)>,
+) {
+    for (file_name, name, output) in collected_items {
+        let file_code = fs::read_to_string(&name).unwrap();
+        let file_steam = file_name.split('.').next().unwrap();
+        let folder = format!(
+            "{}/FORMAT_({} bytes) - {}",
+            settings.temp_folder,
+            file_code.len(),
+            file_steam,
+        );
+        let _ = fs::create_dir_all(&folder);
+        let mut file_content = String::new();
+
+        if output.contains("panicked") {
+            file_content += "Format cause panic";
+        } else {
+            file_content += "Format cause problem";
+        }
+
+        file_content += "\n\n///////////////////////////////////////////////////////\n\n";
+        file_content += &r###"Ruff 0.0.287 (latest changes from main branch)
+```
+ruff format *.py
+```
+
+file content(at least simple cpython script shows that this is valid python file):
+```
+$FILE_CONTENT
+```
+
+error
+```
+$ERROR
+```
+
+
+"###
+        .replace("$FILE_CONTENT", &file_code)
+        .replace("$ERROR", &output)
+        .replace("\n\n```", "\n```");
+
+        fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
+
+        fs::write(format!("{folder}/python_code.py"), &file_code).unwrap();
+
+        let zip_filename = format!("{folder}/python_compressed.zip");
+        zip_file(&zip_filename, &file_name, &file_code);
+    }
+}
+
+pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &str) {
+    let zip_file = File::create(zip_filename).unwrap();
+    let mut zip_writer = ZipWriter::new(zip_file);
+
+    let options = FileOptions::default()
+        .compression_method(zip::CompressionMethod::Deflated)
+        .unix_permissions(0o755);
+
+    let _ = zip_writer.start_file(file_name, options);
+    let _ = zip_writer.write_all(file_code.as_bytes());
+}
 
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
@@ -130,7 +241,7 @@ pub fn save_results_to_file(
         let file_steam = file_name.split('.').next().unwrap();
         let rule_str = rules.join("_");
         let folder = format!(
-            "{}/{}___({} bytes) - {}",
+            "{}/CHECK_{}___({} bytes) - {}",
             settings.temp_folder,
             rule_str,
             file_code.len(),
@@ -179,15 +290,7 @@ $ERROR
         fs::write(format!("{folder}/python_code.py"), &file_code).unwrap();
 
         let zip_filename = format!("{folder}/python_compressed.zip");
-        let zip_file = File::create(&zip_filename).unwrap();
-        let mut zip_writer = ZipWriter::new(zip_file);
-
-        let options = FileOptions::default()
-            .compression_method(zip::CompressionMethod::Deflated)
-            .unix_permissions(0o755);
-
-        let _ = zip_writer.start_file(file_name, options);
-        let _ = zip_writer.write_all(file_code.as_bytes());
+        zip_file(&zip_filename, &file_name, &file_code);
     }
 }
 
@@ -240,11 +343,7 @@ fn check_if_rule_file_crashing(
     }
     command.stderr(Stdio::piped()).stdout(Stdio::piped());
     let output = command.spawn().unwrap().wait_with_output().unwrap();
-    let stdout: Vec<_> = output.stdout;
-    let stderr: Vec<_> = output.stderr;
-    let stdout_str = String::from_utf8(stdout).unwrap();
-    let stderr_str = String::from_utf8(stderr).unwrap();
-    let all_std = format!("{stdout_str}{stderr_str}");
+    let all_std = collect_output(&output);
     // Debug save results
     // dbg!(&all_std);
     // let mut file = OpenOptions::new()

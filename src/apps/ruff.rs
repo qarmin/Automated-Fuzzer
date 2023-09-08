@@ -27,6 +27,7 @@ const BROKEN_ITEMS: &[&str] = &[
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
     "locator.rs",                                // 7058
+    "binary_like.rs",                            // 7245
                                                  // List of items to ignore when reporting, not always it is possible to
                                                  // "Autofix",              // A
                                                  // "Failed to create fix", // B
@@ -142,26 +143,29 @@ impl ProgramConfig for RuffStruct {
 
     fn get_run_command(&self, full_name: &str) -> Child {
         let mut command = self._get_basic_run_command();
-        command
-            .arg("check")
-            .arg(full_name)
-            .arg("--select")
-            .arg("ALL,NURSERY")
-            .arg("--no-cache")
-            .arg("--fix");
-        if !self.ignored_rules.is_empty() {
-            command.arg("--ignore").arg(&self.ignored_rules);
+
+        match self.settings.tool_type.as_str() {
+            "check" => {
+                command
+                    .arg("check")
+                    .arg(full_name)
+                    .arg("--select")
+                    .arg("ALL,NURSERY")
+                    .arg("--no-cache")
+                    .arg("--fix");
+                if !self.ignored_rules.is_empty() {
+                    command.arg("--ignore").arg(&self.ignored_rules);
+                }
+            }
+            "format" => {
+                command.arg("format").arg(full_name).arg("--check");
+            }
+            _ => {
+                panic!("Unknown tool type: {}", self.settings.tool_type);
+            }
         }
+
         command.spawn().unwrap()
-
-        // .arg("--config")
-        // .arg(&self.settings.app_config) // For now config is not
-
-        // self._get_basic_run_command()
-        //     .arg("format")
-        //     .arg(full_name)
-        //     .spawn()
-        //     .unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {

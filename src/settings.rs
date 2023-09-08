@@ -40,11 +40,12 @@ pub struct Setting {
     pub valid_input_files_dir: String,
     pub temp_possible_broken_files_dir: String,
     pub app_binary: String,
+    pub tool_type: String,
     pub app_config: String,
     pub binary_mode: bool,
     pub debug_print_results: bool,
     pub timeout: usize,
-    pub error_statuses_different_than_0_1: bool,
+    pub allowed_error_statuses: Vec<i32>,
     pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
@@ -102,9 +103,10 @@ pub fn load_settings() -> Setting {
         app_config: curr_setting["app_config"].parse().unwrap(),
         binary_mode: curr_setting["binary_mode"].parse().unwrap(),
         debug_print_results: general["debug_print_results"].parse().unwrap(),
-        error_statuses_different_than_0_1: general["error_statuses_different_than_0_1"]
-            .parse()
-            .unwrap(),
+        allowed_error_statuses: general["allowed_error_statuses"]
+            .split(',')
+            .map(|e| e.parse().unwrap())
+            .collect(),
         error_when_found_signal: general["error_when_found_signal"].parse().unwrap(),
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"]
             .parse()
@@ -116,6 +118,7 @@ pub fn load_settings() -> Setting {
         clean_base_files: general["clean_base_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
         find_minimal_rules: general["find_minimal_rules"].parse().unwrap(),
+        tool_type: curr_setting["tool_type"].clone(),
     }
 }
 

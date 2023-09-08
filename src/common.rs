@@ -5,6 +5,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
+use std::process::Output;
 
 use rand::prelude::ThreadRng;
 use rand::Rng;
@@ -28,6 +29,14 @@ pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
             return new_name;
         }
     }
+}
+
+pub fn collect_output(output: &Output) -> String {
+    let stdout = &output.stdout;
+    let stderr = &output.stderr;
+    let stdout_str = String::from_utf8_lossy(stdout);
+    let stderr_str = String::from_utf8_lossy(stderr);
+    format!("{stdout_str}\n{stderr_str}")
 }
 
 pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> bool {
@@ -471,10 +480,7 @@ pub fn execute_command_and_connect_output(
     let output = command.wait_with_output().unwrap();
     let mut is_signal_code_timeout_broken = false;
 
-    let mut out = output.stderr.clone();
-    out.push(b'\n');
-    out.extend(output.stdout);
-    let mut str_out = String::from_utf8_lossy(&out).to_string();
+    let mut str_out = collect_output(&output);
 
     if obj.get_settings().error_when_found_signal {
         if let Some(_signal) = output.status.signal() {
@@ -482,8 +488,12 @@ pub fn execute_command_and_connect_output(
             is_signal_code_timeout_broken = true;
         }
     }
-    if obj.get_settings().error_statuses_different_than_0_1
-        && ![Some(0), Some(1)].contains(&output.status.code())
+    if !obj.get_settings().allowed_error_statuses.is_empty()
+        && output.status.code().is_some()
+        && !obj
+            .get_settings()
+            .allowed_error_statuses
+            .contains(&output.status.code().unwrap())
     {
         // println!("Non standard output status {:?}", output.status.code());
         is_signal_code_timeout_broken = true;
