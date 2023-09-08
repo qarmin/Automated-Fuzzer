@@ -12,7 +12,9 @@ jobs:
   ruff-alt-ci:
 
     runs-on: ubuntu-latest
+
     strategy:
+      fail-fast: false
       matrix:
         downloader: [
           'FILES_11',

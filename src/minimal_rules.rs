@@ -15,6 +15,8 @@ use crate::apps::ruff::calculate_ignored_rules;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
+// THIS ONLY WORKS WITH RUFF
+
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
     let files_to_check = collect_broken_files_dir_files(settings);
@@ -35,7 +37,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
             fs::write(&new_name, &original_content).unwrap();
 
-            // TODO uncheck after https://github.com/astral-sh/ruff/issues/7169
+            // TODO remove this after https://github.com/astral-sh/ruff/issues/7169
             let content = fs::read_to_string(&new_name).unwrap();
             let content_with_replaced_non_ascii = content.replace(|c: char| !c.is_ascii(), "R");
             fs::write(&new_name, &content_with_replaced_non_ascii).unwrap();

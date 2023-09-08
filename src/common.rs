@@ -475,11 +475,6 @@ pub fn execute_command_and_connect_output(
     out.push(b'\n');
     out.extend(output.stdout);
     let mut str_out = String::from_utf8_lossy(&out).to_string();
-    str_out.push_str(&format!(
-        "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
-        output.status.code(),
-        output.status.signal()
-    ));
 
     if obj.get_settings().error_when_found_signal {
         if let Some(_signal) = output.status.signal() {
@@ -504,6 +499,12 @@ pub fn execute_command_and_connect_output(
         res.is_ok(),
         "{res:?} - {full_name} - probably you need to set write permissions to this file"
     );
+
+    str_out.push_str(&format!(
+        "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
+        output.status.code(),
+        output.status.signal()
+    ));
 
     (is_signal_code_timeout_broken, str_out)
 }

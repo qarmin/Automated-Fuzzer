@@ -16,6 +16,7 @@ pub trait ProgramConfig: Sync {
             None
         }
     }
+
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()
             .arg(full_name)

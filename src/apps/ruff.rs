@@ -27,7 +27,16 @@ const BROKEN_ITEMS: &[&str] = &[
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
     "locator.rs",                                // 7058
+    // List of items to ignore when reporting, not always it is possible to
+    "Autofix", // "Autofix" errors for now are not reported
 ];
+
+const BROKEN_ITEMS_TO_FIND: &[&str] = &[
+    "Failed to create fix", "RUST_BACKTRACE", "catch_unwind::{{closure}}",
+    "This indicates a bug in", "AddressSanitizer:", "LeakSanitizer:",
+    "Autofix introduced a syntax error",
+];
+
 const INVALID_RULES: &[&str] = &[
     "W292",    // 4406
     "RUF001",  // 4519
@@ -94,19 +103,15 @@ impl ProgramConfig for RuffStruct {
                 .to_string();
         }
 
-        let found_broken_items = content.contains("Failed to create fix")
-            || content.contains("RUST_BACKTRACE")
-            || content.contains("catch_unwind::{{closure}}")
-            || content.contains("This indicates a bug in")
-            || content.contains("AddressSanitizer:")
-            || content.contains("LeakSanitizer:")
-            || content.contains("Autofix introduced a syntax error");
-        // Debug check if properly
+        let found_broken_items = BROKEN_ITEMS_TO_FIND.iter().any(|e| content.contains(e));
+        let found_ignored_item = BROKEN_ITEMS.iter().any(|e| content.contains(e));
+
+        // Debug check if properly finding broken items
         // dbg!(
         //     BROKEN_ITEMS.iter().find(|e| content.contains(*e)),
         //     found_broken_items
         // );
-        found_broken_items && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
+        found_broken_items && !found_ignored_item
     }
 
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
@@ -132,6 +137,7 @@ impl ProgramConfig for RuffStruct {
             None
         }
     }
+
     fn get_run_command(&self, full_name: &str) -> Child {
         let mut command = self._get_basic_run_command();
         command
