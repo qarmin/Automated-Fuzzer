@@ -145,6 +145,8 @@ pub fn save_results_to_file(
         }
         if output.contains("Failed to converge after") {
             file_content += &format!(" {} cause infinite loop", rules.join(", "));
+        } else if output.contains("panicked") {
+            file_content += &format!(" {} cause panic", rules.join(", "));
         } else {
             file_content += &format!(" {} cause autofix error", rules.join(", "));
         }

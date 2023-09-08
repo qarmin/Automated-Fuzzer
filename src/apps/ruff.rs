@@ -27,8 +27,9 @@ const BROKEN_ITEMS: &[&str] = &[
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
     "locator.rs",                                // 7058
-    // List of items to ignore when reporting, not always it is possible to
-    "Autofix", // "Autofix" errors for now are not reported
+                                                 // List of items to ignore when reporting, not always it is possible to
+                                                 // "Autofix",              // A
+                                                 // "Failed to create fix", // B
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
@@ -76,6 +77,7 @@ const INVALID_RULES: &[&str] = &[
     "D202",    // 7172
     "RUF013",  // 7199
     "PT027",   // 7198
+    "F401",    // 7244
 ];
 
 #[must_use]
