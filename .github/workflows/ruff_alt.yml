@@ -46,7 +46,7 @@ jobs:
           
           cd /opt/POSSIBLY_BROKEN_FILES_DIR
           
-          file_name = ${{ matrix.downloader }}
+          file_name=${{ matrix.downloader }}
           wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${file_name}.zip"
           unzip "${file_name}.zip"
           rm "${file_name}.zip"
