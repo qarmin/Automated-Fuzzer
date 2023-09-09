@@ -1,4 +1,4 @@
-name: 🐧 Ruff
+name: 🐧 Ruff Format
 on:
   push:
   pull_request:
@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  ruff-normal-ci:
+  ruff-format-ci:
 
     runs-on: ubuntu-latest
 
@@ -80,7 +80,7 @@ jobs:
 
       - name: Run app - FORMAT ALT
         run: |
-          mv fuzz_settings_ci_alt.toml fuzz_settings.toml
+          mv fuzz_settings_ci_alt_format.toml fuzz_settings.toml
           timeout 18000 target/release/automated_fuzzer || true
         if: matrix.downloader == 'FILES_11'
 

@@ -17,10 +17,9 @@ jobs:
       fail-fast: false
       matrix:
         downloader: [
-          'FILES_1',
-          'FILES_2',
           'FILES_11',
           'FILES_12',
+          'FILES_13',
         ]
 
     steps:

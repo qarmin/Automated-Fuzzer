@@ -240,15 +240,9 @@ pub fn save_results_to_file(
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
         let rule_str = rules.join("_");
-        let folder = format!(
-            "{}/CHECK_{}___({} bytes) - {}",
-            settings.temp_folder,
-            rule_str,
-            file_code.len(),
-            file_steam,
-        );
-        let _ = fs::create_dir_all(&folder);
+
         let mut file_content = String::new();
+        let type_of_problem;
         if rules.len() == 1 {
             file_content += "Rule";
         } else {
@@ -256,11 +250,24 @@ pub fn save_results_to_file(
         }
         if output.contains("Failed to converge after") {
             file_content += &format!(" {} cause infinite loop", rules.join(", "));
+            type_of_problem = "loop";
         } else if output.contains("panicked") {
             file_content += &format!(" {} cause panic", rules.join(", "));
+            type_of_problem = "panic";
         } else {
             file_content += &format!(" {} cause autofix error", rules.join(", "));
+            type_of_problem = "autofix";
         }
+
+        let folder = format!(
+            "{}/CHECK_{}_{}___({} bytes) - {}",
+            settings.temp_folder,
+            rule_str,
+            type_of_problem,
+            file_code.len(),
+            file_steam,
+        );
+        let _ = fs::create_dir_all(&folder);
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r###"Ruff 0.0.287 (latest changes from main branch)
