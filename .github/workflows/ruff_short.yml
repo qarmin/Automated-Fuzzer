@@ -56,6 +56,10 @@ jobs:
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
           target/release/automated_fuzzer
 
+      - name: Remove pycache
+        run: |
+          rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
+
       - name: Store results
         uses: actions/upload-artifact@v3
         with:

@@ -13,6 +13,14 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        downloader: [
+          'FILES_11',
+          'FILES_12',
+        ]
+
     steps:
       - uses: actions/checkout@v3
 
@@ -39,9 +47,10 @@ jobs:
           
           cd /opt/VALID_FILES_DIR
           
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_1.zip
-          unzip FILES_1.zip
-          rm FILES_1.zip
+          file_name=${{ matrix.downloader }}
+          wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${file_name}.zip"
+          unzip "${file_name}.zip"
+          rm "${file_name}.zip"
           
           cd $CURR_DIR
 
@@ -56,11 +65,15 @@ jobs:
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
           target/release/automated_fuzzer
 
+      - name: Remove pycache
+        run: |
+          rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
+
       - name: Store results
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: ignore
-          name: results
+          name: ${{ matrix.downloader }}
           path: /opt/BROKEN_FILES_DIR
 
       - name: Exit when found broken files
