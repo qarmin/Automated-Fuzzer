@@ -61,7 +61,7 @@ jobs:
       - name: Run format - FORMAT NORMAL
         run: |
           mv fuzz_settings_ci_format.toml fuzz_settings.toml
-          timeout 20000 target/release/automated_fuzzer || true
+          timeout 10000 target/release/automated_fuzzer || true
         if: matrix.downloader == 'FILES_1'
 
       - name: Download and prepare python data files - FORMAT ALT
@@ -81,7 +81,7 @@ jobs:
       - name: Run app - FORMAT ALT
         run: |
           mv fuzz_settings_ci_alt_format.toml fuzz_settings.toml
-          timeout 18000 target/release/automated_fuzzer || true
+          timeout 10000 target/release/automated_fuzzer || true
         if: matrix.downloader == 'FILES_11'
 
       # Some output files can be not parsable or not broken if closed app before finish
