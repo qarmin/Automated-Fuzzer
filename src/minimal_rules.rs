@@ -12,6 +12,7 @@ use zip::write::FileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
+use crate::clean_base_files::check_if_file_is_parsable_by_cpython;
 use crate::common::collect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -152,6 +153,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let content = fs::read_to_string(&new_name).unwrap();
             let content_with_replaced_non_ascii = content.replace(|c: char| !c.is_ascii(), "R");
             fs::write(&new_name, &content_with_replaced_non_ascii).unwrap();
+
+            if !check_if_file_is_parsable_by_cpython("", &new_name) {
+                println!("File {new_name} ({i}) is not parsable");
+                return None;
+            }
 
             if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj).0 {
                 println!("File {new_name} ({i}) is not broken");
