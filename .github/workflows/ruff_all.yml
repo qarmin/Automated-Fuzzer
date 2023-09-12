@@ -75,7 +75,6 @@ jobs:
 #          mkdir /opt/BROKEN_FILES_DIR
 
       - name: Download and prepare python data files
-        if: matrix.generate-broken-files || matrix.generate-broken-files
         run: |
           CURR_DIR=$(pwd)
           
@@ -90,7 +89,6 @@ jobs:
           cd $CURR_DIR
 
       - name: Download and prepare python data files
-        if: matrix.generate-broken-files || matrix.generate-broken-files
         run: |
           CURR_DIR=$(pwd)
 
