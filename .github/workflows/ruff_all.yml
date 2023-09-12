@@ -68,11 +68,11 @@ jobs:
       #      - name: Install ruff
       #        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
       #
-      #      - name: Create folders
-      #        run: |
-      #          mkdir /opt/VALID_FILES_DIR
-      #          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
-      #          mkdir /opt/BROKEN_FILES_DIR
+      - name: Create folders
+        run: |
+          mkdir /opt/VALID_FILES_DIR
+          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
+          mkdir /opt/BROKEN_FILES_DIR
 
       - name: Download and prepare python data files
         run: |
