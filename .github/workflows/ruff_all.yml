@@ -75,28 +75,17 @@ jobs:
       #          mkdir /opt/BROKEN_FILES_DIR
 
       - name: Download and prepare python data files
-        if: ${{ matrix.generate-broken-files }} == "true"
         run: |
           CURR_DIR=$(pwd)
           
-          #          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
-          #          cd /opt/VALID_FILES_DIR
+          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
           
-          FILE_NAME=${{ matrix.file-name }}
-          wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
-          unzip "${FILE_NAME}.zip"
-          rm "${FILE_NAME}.zip"
+          if [ "$GENERATE_BROKEN_FILES" = "true" ]; then
+            cd /opt/VALID_FILES_DIR
+          else
+            cd /opt/POSSIBLY_BROKEN_FILES_DIR
+          fi
           
-          cd $CURR_DIR
-
-      - name: Download and prepare python data files
-        if: ${{ matrix.generate-broken-files }} == "false"
-        run: |
-          CURR_DIR=$(pwd)
-
-          #          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
-          #          cd /opt/POSSIBLY_BROKEN_FILES_DIR
-
           FILE_NAME=${{ matrix.file-name }}
           wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
           unzip "${FILE_NAME}.zip"
@@ -125,6 +114,12 @@ jobs:
           if-no-files-found: ignore
           name: ${{ matrix.name }}
           path: /opt/BROKEN_FILES_DIR
+
+      - name: Remove all folders
+        run: |
+          rm -rf /opt/VALID_FILES_DIR || true
+          rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
+          rm -rf /opt/BROKEN_FILES_DIR || true
 
       - name: Exit when found broken files
         run: |
