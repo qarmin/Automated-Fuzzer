@@ -17,78 +17,76 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Normal 1
+          - name: NORMAL_1
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
-            timeout: 10
-            output-name: NORMAL_1
+            timeout: 10000
             file-name: FILES_11
-          - name: Normal 2
+          - name: NORMAL_2
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
-            timeout: 10
-            output-name: NORMAL_2
+            timeout: 10000
             file-name: FILES_12
           - name: NORMAL_3
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_13
 
           - name: NO_GENERATE_1
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_11
           - name: NO_GENERATE_2
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_12
           - name: NO_GENERATE_3
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_13
 
           - name: SHORT_NORMAL_1
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
-            timeout: 1
+            timeout: 120
             file-name: FILES_11
 
           - name: NO_EXCEPTIONS_NORMAL_1
             generate-broken-files: true
             exceptions: false
             config-file: fuzz_settings_ci.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_11
           - name: NO_EXCEPTIONS_NO_GENERATE_2
             generate-broken-files: false
             exceptions: false
             config-file: fuzz_settings_ci_alt.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_12
 
           - name: BINARY_NORMAL_1
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci_binary.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_11
 
           - name: FORMAT_NO_GENERATE_1
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt_format.toml
-            timeout: 10
+            timeout: 10000
             file-name: FILES_11
 
     steps:
