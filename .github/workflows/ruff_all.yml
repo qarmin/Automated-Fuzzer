@@ -54,32 +54,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-#      - name: Install dependencies
-#        run: |
-#          sudo apt update
-#          sudo apt install -y wget
-#
-#      - name: Build
-#        run: cargo build --release
-#
-#      - name: Install create_broken_files
-#        run: cargo install create_broken_files
-#
-#      - name: Install ruff
-#        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
-#
-#      - name: Create folders
-#        run: |
-#          mkdir /opt/VALID_FILES_DIR
-#          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
-#          mkdir /opt/BROKEN_FILES_DIR
+      #      - name: Install dependencies
+      #        run: |
+      #          sudo apt update
+      #          sudo apt install -y wget
+      #
+      #      - name: Build
+      #        run: cargo build --release
+      #
+      #      - name: Install create_broken_files
+      #        run: cargo install create_broken_files
+      #
+      #      - name: Install ruff
+      #        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+      #
+      #      - name: Create folders
+      #        run: |
+      #          mkdir /opt/VALID_FILES_DIR
+      #          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
+      #          mkdir /opt/BROKEN_FILES_DIR
 
       - name: Download and prepare python data files
+        if: ${{ matrix.generate-broken-files }} == "true"
         run: |
           CURR_DIR=$(pwd)
           
-#          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
-#          cd /opt/VALID_FILES_DIR
+          #          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
+          #          cd /opt/VALID_FILES_DIR
           
           FILE_NAME=${{ matrix.file-name }}
           wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
@@ -89,11 +90,12 @@ jobs:
           cd $CURR_DIR
 
       - name: Download and prepare python data files
+        if: ${{ matrix.generate-broken-files }} == "false"
         run: |
           CURR_DIR=$(pwd)
 
-#          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
-#          cd /opt/POSSIBLY_BROKEN_FILES_DIR
+          #          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
+          #          cd /opt/POSSIBLY_BROKEN_FILES_DIR
 
           FILE_NAME=${{ matrix.file-name }}
           wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
