@@ -93,16 +93,16 @@ jobs:
           
           cd $CURR_DIR
 
-      - name: Run app
-        run: |
-          mv ${{ matrix.config-file }} fuzz_settings.toml
-          timeout ${{ matrix.timeout }} target/release/automated_fuzzer || true
-
-      # Some output files can be not parsable or not broken if closed app before finish
-      - name: Remove non crashing files
-        run: |
-          mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
-          target/release/automated_fuzzer
+      #      - name: Run app
+      #        run: |
+      #          mv ${{ matrix.config-file }} fuzz_settings.toml
+      #          timeout ${{ matrix.timeout }} target/release/automated_fuzzer || true
+      #
+      #      # Some output files can be not parsable or not broken if closed app before finish
+      #      - name: Remove non crashing files
+      #        run: |
+      #          mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
+      #          target/release/automated_fuzzer
 
       - name: Remove pycache
         run: |
