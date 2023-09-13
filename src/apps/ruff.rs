@@ -148,6 +148,7 @@ impl ProgramConfig for RuffStruct {
                     .arg(full_name)
                     .arg("--select")
                     .arg("ALL,NURSERY")
+                    .arg("--preview")
                     .arg("--no-cache")
                     .arg("--fix");
                 if !self.ignored_rules.is_empty() {

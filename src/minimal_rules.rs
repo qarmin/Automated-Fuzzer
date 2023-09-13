@@ -278,7 +278,7 @@ pub fn save_results_to_file(
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r###"Ruff 0.0.287 (latest changes from main branch)
 ```
-ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix
+ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --preview
 ```
 
 file content(at least simple cpython script shows that this is valid python file):
@@ -349,6 +349,7 @@ fn check_if_rule_file_crashing(
         .arg(test_file)
         .arg("--select")
         .arg(rules.join(","))
+        .arg("--preview")
         .arg("--fix")
         .arg("--no-cache");
     if !ignored_rules.is_empty() {
