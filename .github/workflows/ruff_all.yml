@@ -23,12 +23,12 @@ jobs:
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             file-name: FILES_11
-          - name: NORMAL_2
-            generate-broken-files: true
-            exceptions: true
-            config-file: fuzz_settings_ci.toml
-            timeout: 10000
-            file-name: FILES_12
+          #          - name: NORMAL_2 # Use too much space and CI fails
+          #            generate-broken-files: true
+          #            exceptions: true
+          #            config-file: fuzz_settings_ci.toml
+          #            timeout: 10000
+          #            file-name: FILES_12
           - name: NORMAL_3
             generate-broken-files: true
             exceptions: true
@@ -68,7 +68,13 @@ jobs:
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             file-name: FILES_11
-          - name: NO_EXCEPTIONS_NO_GENERATE_2
+          - name: NO_EXCEPTIONS_NORMAL_2
+            generate-broken-files: true
+            exceptions: false
+            config-file: fuzz_settings_ci.toml
+            timeout: 10000
+            file-name: FILES_11
+          - name: NO_EXCEPTIONS_NO_GENERATE_3
             generate-broken-files: false
             exceptions: false
             config-file: fuzz_settings_ci_alt.toml
@@ -81,6 +87,12 @@ jobs:
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
             file-name: FILES_11
+          - name: BINARY_NO_EXCEPTIONS_NORMAL_2
+            generate-broken-files: true
+            exceptions: false
+            config-file: fuzz_settings_ci_binary.toml
+            timeout: 10000
+            file-name: FILES_13
 
           - name: FORMAT_NO_GENERATE_1
             generate-broken-files: false
@@ -171,7 +183,6 @@ jobs:
         run: |
           rm -rf /opt/VALID_FILES_DIR || true
           rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
-          rm -rf /opt/BROKEN_FILES_DIR || true
 
       - name: Exit when found broken files
         run: |
