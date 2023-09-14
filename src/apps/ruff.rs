@@ -26,8 +26,6 @@ const BROKEN_ITEMS: &[&str] = &[
     "crates/ruff_source_file/src/line_index.rs", // 4406
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
-    "locator.rs",                                // 7058
-    "binary_like.rs",                            // 7245
                                                  // List of items to ignore when reporting, not always it is possible to
                                                  // "Autofix",              // A
                                                  // "Failed to create fix", // B
@@ -55,7 +53,6 @@ const INVALID_RULES: &[&str] = &[
     "EM102",   // 6988
     "E231",    // 6890
     "E202",    // 6890
-    "D209",    // 7058
     "E203",    // 7070
     "E231",    // 7070
     "UP032",   // 7074
