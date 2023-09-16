@@ -33,12 +33,12 @@ current_mode = "ruff"
 app_binary = "ruff"
 app_config = "/home/rafal/Desktop/RunEveryCommand/ruff/ruff.toml"
 extensions = "py"
-#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES" # ~2000 valid and big files
-#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2" # All available files
-#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3" # Used for tests for specific files
-valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
+#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2"
+#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3"
+#valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
-tool_type = "format" # Also available "format"
+tool_type = "check" # Also available "format"
 binary_mode = false
 
 [libcst]

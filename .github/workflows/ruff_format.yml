@@ -1,0 +1,92 @@
+name: 🐧 Ruff All
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 22 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ruff-normal-ci:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: NORMAL_1
+            generate-broken-files: true
+            exceptions: true
+            config-file: settings_ci.toml
+            file-name: FILES_11
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget
+      #      - name: Install ruff
+      #        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+
+      - name: Build
+        run: |
+          cd format
+          cargo build --release
+
+      - name: Create folders
+        run: |
+          mkdir /opt/START_DIR/
+          mkdir /opt/TEST_DIR/
+          mkdir /opt/TEST_DIR2/
+          mkdir /opt/BROKEN_FILES/
+
+      - name: Download and prepare python data files
+        run: |
+          CURR_DIR=$(pwd)
+          
+          cd /opt/START_DIR
+          
+          mkdir 11
+          cd 11
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILE_11.zip
+          unzip FILE_11.zip
+          rm FILE_11.zip
+          cd ..
+          
+          #          mkdir 12
+          #          cd 12
+          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILE_12.zip
+          #          unzip FILE_12.zip
+          #          rm FILE_12.zip
+          #          cd ..
+          #          
+          #          mkdir 13
+          #          cd 13
+          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILE_13.zip
+          #          unzip FILE_13.zip
+          #          rm FILE_13.zip
+          #          cd ..
+          
+          cd $CURR_DIR
+
+      - name: Run app
+        run: |
+          mv ${{ matrix.config-file }} settings.toml
+          target/release/formatter
+
+      - name: Store results
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: ignore
+          name: ${{ matrix.name }}
+          path: /opt/BROKEN_FILES
+
+      - name: Exit when found broken files
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES)" ] && exit 1 || exit 0
+
