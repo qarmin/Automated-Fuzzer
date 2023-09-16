@@ -18,8 +18,7 @@ jobs:
       matrix:
         include:
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_1
-            files:
-              - "FILES_21"
+            files: [ "FILES_21" ]
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_2
             files: [ "FILES_22" ]
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_3
@@ -64,9 +63,11 @@ jobs:
           
           cd /opt/START_DIR
           echo "START"
+          echo "${{ matrix.files[@] }}"
           echo "${{ matrix.files }}"
           echo ${{ matrix.files }}
           echo "END"
+          
           for FILE_NAME in "${{ matrix.files }}"; do
             mkdir "${FILE_NAME}"
             cd "${FILE_NAME}"
