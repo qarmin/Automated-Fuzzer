@@ -37,8 +37,8 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y wget pipx
-      - name: Install ruff
-        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+      #      - name: Install ruff
+      #        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
       - name: Install black and check version
         run: |
           pipx install black
@@ -62,7 +62,10 @@ jobs:
           CURR_DIR=$(pwd)
           
           cd /opt/START_DIR
-          
+          echo "START"
+          echo "${{ matrix.files }}"
+          echo ${{ matrix.files }}
+          echo "END"
           for FILE_NAME in "${{ matrix.files }}"; do
             mkdir "${FILE_NAME}"
             cd "${FILE_NAME}"
