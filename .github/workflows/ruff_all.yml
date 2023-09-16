@@ -150,7 +150,7 @@ jobs:
             cd /opt/POSSIBLY_BROKEN_FILES_DIR
           fi
           
-          for FILE_NAME in ${{ matrix.files }}; do
+          for FILE_NAME in "${{ matrix.files }}"; do
             mkdir "${FILE_NAME}"
             cd "${FILE_NAME}"
             wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
