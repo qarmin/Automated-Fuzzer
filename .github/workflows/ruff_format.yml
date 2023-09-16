@@ -18,10 +18,8 @@ jobs:
       matrix:
         include:
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_1
-            config-file: settings_ci.toml
             file-name: FILES_1
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_2
-            config-file: settings_ci.toml
             file-name: FILES_2
 
     steps:
@@ -68,17 +66,43 @@ jobs:
         run: |
           pwd
           cd format
-          mv ${{ matrix.config-file }} settings.toml
+          mv settings_black_difference_ci.toml settings.toml
           target/release/formatter
+          mv /opt/BROKEN_FILES /opt/BLACK_DIFFERENCE
 
-      - name: Store results
+      - name: Remove all folders except START_DIR
+        run: |
+          rm -rf /opt/TEST_DIR/ || true
+          rm -rf /opt/TEST_DIR2/ || true
+          rm -rf /opt/BROKEN_FILES/ || true
+          mkdir /opt/TEST_DIR/
+          mkdir /opt/TEST_DIR2/
+          mkdir /opt/BROKEN_FILES/
+
+      - name: Run app
+        run: |
+          pwd
+          cd format
+          mv settings_black_difference_ci.toml settings.toml
+          target/release/formatter
+          mv /opt/BROKEN_FILES /opt/NOT_STABLE
+
+      - name: Store results - black difference
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: ignore
-          name: ${{ matrix.name }}
-          path: /opt/BROKEN_FILES
+          name: ${{ matrix.name }}_black_difference
+          path: /opt/BLACK_DIFFERENCE
+
+      - name: Store results - not stable
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: ignore
+          name: ${{ matrix.name }}_not_stable
+          path: /opt/NOT_STABLE
 
       - name: Exit when found broken files
         run: |
-          [ "$(ls -A /opt/BROKEN_FILES)" ] && exit 1 || exit 0
+          [ "$(ls -A /opt/NOT_STABLE)" ] && exit 1 || true
+          [ "$(ls -A /opt/BLACK_DIFFERENCE)" ] && exit 1 || true
 
