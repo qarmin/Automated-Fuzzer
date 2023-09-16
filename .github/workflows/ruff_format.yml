@@ -17,11 +17,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: NORMAL_1
-            generate-broken-files: true
-            exceptions: true
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS
             config-file: settings_ci.toml
-            file-name: FILES_11
 
     steps:
       - uses: actions/checkout@v3
@@ -29,9 +26,13 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget
+          sudo apt install -y wget pipx
       #      - name: Install ruff
       #        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+      - name: Install black and check version
+        run: |
+          pipx install black
+          black --version
 
       - name: Build
         run: |
@@ -47,17 +48,24 @@ jobs:
 
       - name: Download and prepare python data files
         run: |
+          pwd
           CURR_DIR=$(pwd)
           
           cd /opt/START_DIR
-          
-          mkdir 11
-          cd 11
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_11.zip
-          unzip FILES_11.zip
-          rm FILES_11.zip
+               
+
+          mkdir 999
+          cd 999
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_999.zip
+          unzip FILES_999.zip
+          rm FILES_999.zip
           cd ..
-          
+          #          mkdir 11
+          #          cd 11
+          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_11.zip
+          #          unzip FILES_11.zip
+          #          rm FILES_11.zip
+          #          cd ..
           #          mkdir 12
           #          cd 12
           #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_12.zip
@@ -76,6 +84,7 @@ jobs:
 
       - name: Run app
         run: |
+          pwd
           mv ${{ matrix.config-file }} settings.toml
           target/release/formatter
 
