@@ -17,8 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: FINDING_NON_FULLY_CONVERTED_ITEMS
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_1
             config-file: settings_ci.toml
+            file-name: FILES_1
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_2
+            config-file: settings_ci.toml
+            file-name: FILES_2
 
     steps:
       - uses: actions/checkout@v3
@@ -45,109 +49,36 @@ jobs:
           mkdir /opt/TEST_DIR/
           mkdir /opt/TEST_DIR2/
           mkdir /opt/BROKEN_FILES/
-          mkdir /opt/REALLY_BROKEN_BROKEN_FILES/
 
-      - name: Download and prepare python data files FILES_11
+      - name: Download and prepare python data files
         run: |
           pwd
           CURR_DIR=$(pwd)
           
           cd /opt/START_DIR
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_11.zip
-          unzip FILES_11.zip
-          rm FILES_11.zip
+          
+          FILE_NAME=${{ matrix.file-name }}
+          wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
+          unzip "${FILE_NAME}.zip"
+          rm "${FILE_NAME}.zip"
           
           cd $CURR_DIR
 
-      - name: Run app FILES_11
+      - name: Run app
         run: |
           pwd
           cd format
           mv ${{ matrix.config-file }} settings.toml
           target/release/formatter
-
-      - name: Copy files FILES_11
-        run: |
-          mv /opt/BROKEN_FILES/ /opt/REALLY_BROKEN_BROKEN_FILES/FILES_11
-          rm -rf /opt/START_DIR/ || true
-          rm -rf /opt/TEST_DIR/ || true
-          rm -rf /opt/TEST_DIR2/ || true
-          rm -rf /opt/BROKEN_FILES/ || true
-          mkdir /opt/START_DIR/ || true
-          mkdir /opt/TEST_DIR/ || true
-          mkdir /opt/TEST_DIR2/ || true
-          mkdir /opt/BROKEN_FILES/ || true
-
-      - name: Download and prepare python data files FILES_12
-        run: |
-          pwd
-          CURR_DIR=$(pwd)
-          
-          cd /opt/START_DIR
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_12.zip
-          unzip FILES_12.zip
-          rm FILES_12.zip
-          
-          cd $CURR_DIR
-
-      - name: Run app FILES_12
-        run: |
-          pwd
-          cd format
-          mv ${{ matrix.config-file }} settings.toml
-          target/release/formatter
-
-      - name: Copy files FILES_12
-        run: |
-          mv /opt/BROKEN_FILES/ /opt/REALLY_BROKEN_BROKEN_FILES/FILES_12
-          rm -rf /opt/START_DIR/ || true
-          rm -rf /opt/TEST_DIR/ || true
-          rm -rf /opt/TEST_DIR2/ || true
-          rm -rf /opt/BROKEN_FILES/ || true
-          mkdir /opt/START_DIR/ || true
-          mkdir /opt/TEST_DIR/ || true
-          mkdir /opt/TEST_DIR2/ || true
-          mkdir /opt/BROKEN_FILES/ || true
-
-      - name: Download and prepare python data files FILES_13
-        run: |
-          pwd
-          CURR_DIR=$(pwd)
-          
-          cd /opt/START_DIR
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_13.zip
-          unzip FILES_13.zip
-          rm FILES_13.zip
-          
-          cd $CURR_DIR
-
-      - name: Run app FILES_13
-        run: |
-          pwd
-          cd format
-          mv ${{ matrix.config-file }} settings.toml
-          target/release/formatter
-
-      - name: Copy files FILES_13
-        run: |
-          mv /opt/BROKEN_FILES/ /opt/REALLY_BROKEN_BROKEN_FILES/FILES_13
-          rm -rf /opt/START_DIR/ || true
-          rm -rf /opt/TEST_DIR/ || true
-          rm -rf /opt/TEST_DIR2/ || true
-          rm -rf /opt/BROKEN_FILES/ || true
-          mkdir /opt/START_DIR/ || true
-          mkdir /opt/TEST_DIR/ || true
-          mkdir /opt/TEST_DIR2/ || true
-          mkdir /opt/BROKEN_FILES/ || true
 
       - name: Store results
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: ignore
           name: ${{ matrix.name }}
-          path: /opt/REALLY_BROKEN_BROKEN_FILES
+          path: /opt/BROKEN_FILES
 
       - name: Exit when found broken files
         run: |
-          [ "$(ls -A /opt/REALLY_BROKEN_BROKEN_FILES)" ] && exit 1 || exit 0
+          [ "$(ls -A /opt/BROKEN_FILES)" ] && exit 1 || exit 0
 
