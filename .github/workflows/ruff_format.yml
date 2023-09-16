@@ -53,23 +53,23 @@ jobs:
           
           mkdir 11
           cd 11
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILE_11.zip
-          unzip FILE_11.zip
-          rm FILE_11.zip
+          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_11.zip
+          unzip FILES_11.zip
+          rm FILES_11.zip
           cd ..
           
           #          mkdir 12
           #          cd 12
-          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILE_12.zip
-          #          unzip FILE_12.zip
-          #          rm FILE_12.zip
+          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_12.zip
+          #          unzip FILES_12.zip
+          #          rm FILES_12.zip
           #          cd ..
           #          
           #          mkdir 13
           #          cd 13
-          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILE_13.zip
-          #          unzip FILE_13.zip
-          #          rm FILE_13.zip
+          #          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/test/FILES_13.zip
+          #          unzip FILES_13.zip
+          #          rm FILES_13.zip
           #          cd ..
           
           cd $CURR_DIR
