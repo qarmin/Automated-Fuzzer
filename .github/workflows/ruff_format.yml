@@ -85,6 +85,7 @@ jobs:
       - name: Run app
         run: |
           pwd
+          cd format
           mv ${{ matrix.config-file }} settings.toml
           target/release/formatter
 
