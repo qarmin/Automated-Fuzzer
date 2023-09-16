@@ -18,7 +18,8 @@ jobs:
       matrix:
         include:
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_1
-            files: [ "FILES_21" ]
+            files:
+              - "FILES_21"
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_2
             files: [ "FILES_22" ]
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_3
