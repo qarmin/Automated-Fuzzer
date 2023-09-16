@@ -14,11 +14,11 @@ pub fn test_ruff_format_stability(setting: &Setting) {
     run_ruff(&setting.test_dir);
 
     let mut hashset_with_differences = HashSet::new();
-    let hashmap_with_results = calculate_hashes_of_files(setting);
+    let mut hashmap_with_results = calculate_hashes_of_files(setting);
     for i in 0..3 {
         info!("Iteration: {}", i);
         run_ruff(&setting.test_dir);
-        let different_files = check_if_hashes_are_equal(&hashmap_with_results, setting);
+        let different_files = check_if_hashes_are_equal(&mut hashmap_with_results, setting);
         hashset_with_differences.extend(different_files);
     }
     info!(
@@ -42,24 +42,30 @@ fn copy_files_to_broken_files(hashset_with_differences: &HashSet<String>, settin
 }
 
 fn check_if_hashes_are_equal(
-    hashmap: &HashMap<String, (Hash, usize)>,
+    hashmap: &mut HashMap<String, (Hash, usize)>,
     setting: &Setting,
 ) -> Vec<String> {
     info!("Starting to verifying hashes of files");
     let files_to_check = collect_files_to_check(&setting.test_dir);
 
-    files_to_check.into_par_iter().filter_map(|file_name| {
+    let items: Vec<_> = files_to_check.into_par_iter().filter_map(|file_name| {
         let file_content = fs::read(&file_name).unwrap();
         let size = file_content.len();
         let hash: Hash = md5::compute(file_content).0;
-        let (original_hash, original_size) = hashmap.get(&file_name).unwrap();
+        let (original_hash, original_size) = hashmap.get(&file_name).unwrap().clone();
 
-        if original_hash != &hash {
+        if original_hash != hash {
             error!("Hashes are not equal for file: {} - before len {original_size}, curr len {size}", file_name);
-            return Some(file_name);
+            return Some((file_name, hash, size));
         }
         None
-    }).collect()
+    }).collect();
+
+    for i in &items {
+        let (file_name, hash, size) = i;
+        hashmap.insert(file_name.clone(), (*hash, *size));
+    }
+    items.into_iter().map(|i| i.0).collect()
 }
 
 fn calculate_hashes_of_files(setting: &Setting) -> HashMap<String, (Hash, usize)> {

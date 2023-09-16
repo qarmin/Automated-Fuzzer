@@ -191,6 +191,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a26ae43d7bcc3b814de94796a5e736d4029efb0ee900c12e2d54c993ad1a1e07"
 
 [[package]]
+name = "formatter"
+version = "0.1.0"
+dependencies = [
+ "config",
+ "handsome_logger",
+ "jwalk",
+ "log",
+ "md5",
+ "rayon",
+ "time",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.14.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -281,19 +294,6 @@ name = "linked-hash-map"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
-
-[[package]]
-name = "ll"
-version = "0.1.0"
-dependencies = [
- "config",
- "handsome_logger",
- "jwalk",
- "log",
- "md5",
- "rayon",
- "time",
-]
 
 [[package]]
 name = "log"

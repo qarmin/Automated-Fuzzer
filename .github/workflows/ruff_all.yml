@@ -22,104 +22,84 @@ jobs:
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files:
-              - FILES_21
+            files: [ "FILES_21" ]
           - name: NORMAL_1
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files:
-              - FILES_22
+            files: [ "FILES_22" ]
           - name: NORMAL_3
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files:
-              - FILES_23
+            files: [ "FILES_23" ]
 
           - name: NO_GENERATE_1
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
-            files:
-              - FILES_21
-              - FILES_22
+            files: [ "FILES_21", "FILES_22" ]
           - name: NO_GENERATE_2
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
-            files:
-              - FILES_23
-              - FILES_24
+            files: [ "FILES_23", "FILES_24" ]
           - name: NO_GENERATE_3
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
-            files:
-              - FILES_25
-              - FILES_26
+            files: [ "FILES_25", "FILES_26" ]
 
           - name: SHORT_NORMAL_1
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 120
-            files:
-              - FILES_25
+            files: [ "FILES_25" ]
 
           - name: NO_EXCEPTIONS_NORMAL_1
             generate-broken-files: true
             exceptions: false
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files:
-              - FILES_21
-              - FILES_22
+            files: [ "FILES_21", "FILES_22" ]
           - name: NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
             exceptions: false
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files:
-              - FILES_23
-              - FILES_24
+            files: [ "FILES_23", "FILES_24" ]
           - name: NO_EXCEPTIONS_NO_GENERATE_3
             generate-broken-files: false
             exceptions: false
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
-            files:
-              - FILES_25
-              - FILES_26
+            files: [ "FILES_25", "FILES_26" ]
 
           - name: BINARY_NORMAL_1
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
-            files:
-              - FILES_21
+            files: [ "FILES_21" ]
           - name: BINARY_NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
             exceptions: false
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
-            files:
-              - FILES_22
+            files: [ "FILES_22" ]
 
           - name: FORMAT_NO_GENERATE_1
             generate-broken-files: false
             exceptions: true
             config-file: fuzz_settings_ci_alt_format.toml
             timeout: 10000
-            files:
-              - FILES_21
-              - FILES_22
+            files: [ "FILES_21", "FILES_22" ]
 
     steps:
       - uses: actions/checkout@v3
@@ -170,7 +150,7 @@ jobs:
             cd /opt/POSSIBLY_BROKEN_FILES_DIR
           fi
           
-          for FILE_NAME in "${{ matrix.files[@] }}"; do
+          for FILE_NAME in ${{ matrix.files }}; do
             mkdir "${FILE_NAME}"
             cd "${FILE_NAME}"
             wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"

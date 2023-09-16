@@ -1,5 +1,5 @@
 [general]
-start_dir = "/home/rafal/test/DOWNLOADED/py_files/" # Dir with files to use to test - this dir will not be touched
+start_dir = "/home/rafal/test/DOWNLOADED/py_files2/" # Dir with files to use to test - this dir will not be touched
 test_dir = "/home/rafal/test/DOWNLOADED/test_dir/" # Dir to save test results
 test_dir2 = "/home/rafal/test/DOWNLOADED/test_dir2/" # Dir to save test results 2
 broken_files_dir = "/home/rafal/test/DOWNLOADED/broken_files/" # Dir to save broken_files_results
