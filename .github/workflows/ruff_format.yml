@@ -17,18 +17,18 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_1
-          #            files: "FILES_21"
-          #          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_2
-          #            files: "FILES_22"
-          #          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_3
-          #            files: "FILES_23"
-          #          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_4
-          #            files: "FILES_24"
-          #          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_5
-          #            files: "FILES_25"
-          #          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_6
-          #            files: "FILES_26"
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_1
+            files: "FILES_21"
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_2
+            files: "FILES_22"
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_3
+            files: "FILES_23"
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_4
+            files: "FILES_24"
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_5
+            files: "FILES_25"
+          - name: FINDING_NON_FULLY_CONVERTED_ITEMS_6
+            files: "FILES_26"
           - name: FINDING_SHORTER
             files: "FILES_999"
 
