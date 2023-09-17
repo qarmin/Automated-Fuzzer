@@ -88,14 +88,16 @@ jobs:
           cd format
           mv settings_black_difference_ci.toml settings.toml
           target/release/formatter
-          mv /opt/BROKEN_FILES /opt/BLACK_DIFFERENCE
+          mkdir /opt/BLACK_DIFFERENCE
+          zip -r /opt/BLACK_DIFFERENCE/archiwum.zip /opt/BROKEN_FILES/*
+          rm -rf /opt/BROKEN_FILES
 
       - name: Store results - black difference
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: ignore
           name: BLACK_DIFFERENCE_${{ matrix.name }}
-          path: /opt/BLACK_DIFFERENCE
+          path: /opt/BLACK_DIFFERENCE/archiwum.zip
 
       - name: Remove all folders except START_DIR
         run: |
@@ -112,14 +114,16 @@ jobs:
           cd format
           mv settings_not_stable_ci.toml settings.toml
           target/release/formatter
-          mv /opt/BROKEN_FILES /opt/NOT_STABLE
+          mkdir /opt/NOT_STABLE
+          zip -r /opt/NOT_STABLE/archiwum.zip /opt/BROKEN_FILES/*
+          rm -rf /opt/BROKEN_FILES
 
       - name: Store results - not stable
         uses: actions/upload-artifact@v3
         with:
           if-no-files-found: ignore
           name: NOT_STABLE_${{ matrix.name }}
-          path: /opt/NOT_STABLE
+          path: /opt/NOT_STABLE/archiwum.zip
 
       - name: Exit when found broken files
         run: |
