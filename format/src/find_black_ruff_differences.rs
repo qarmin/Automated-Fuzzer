@@ -1,22 +1,30 @@
+use crate::common::{calculate_hashes_of_files, Hash};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
+use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::process::{Output, Stdio};
 
 pub fn check_differences(setting: &Setting) {
-    // let mut files_to_check = collect_files();
-    // println!("Found {} files to check", files_to_check.len());
-
-    info!("Start dir {} have {} files", &setting.start_dir, collect_number_of_files(&setting.start_dir));
+    info!(
+        "Start dir {} have {} files",
+        &setting.start_dir,
+        collect_number_of_files(&setting.start_dir)
+    );
 
     copy_files_from_start_dir_to_test_dir(setting);
 
     run_ruff(&setting.test_dir);
 
-    let output = run_black(&setting.test_dir);
-    copy_broken_black_files(output, setting);
+    let hashed_files = calculate_hashes_of_files(setting);
+
+    run_black(&setting.test_dir);
+
+    let different_files = find_different_files(&hashed_files, &setting.test_dir);
+
+    copy_broken_black_files(different_files, setting);
 
     copy_broken_files_to_test_dir(setting);
 
@@ -25,6 +33,34 @@ pub fn check_differences(setting: &Setting) {
     copy_broken_files_with_ruff(setting);
 
     run_diff_on_files(setting);
+}
+
+fn find_different_files(
+    hashmap: &HashMap<String, (Hash, usize)>,
+    test_dir: &String,
+) -> Vec<String> {
+    let different_files: Vec<_> = WalkDir::new(test_dir)
+        .into_iter()
+        .flatten()
+        .filter_map(|i| {
+            let path = i.path();
+            if path.is_dir() {
+                return None;
+            }
+            let file_name = path.to_str().unwrap();
+            let file_content = fs::read(file_name).unwrap();
+            let size = file_content.len();
+            let hash: Hash = md5::compute(file_content).0;
+            let (original_hash, original_size) = *hashmap.get(file_name).unwrap();
+
+            if original_hash != hash || original_size != size {
+                return Some(file_name.to_string());
+            }
+            None
+        })
+        .collect();
+    info!("Found {} files with differences", different_files.len());
+    different_files
 }
 
 fn collect_number_of_files(dir: &str) -> usize {
@@ -116,18 +152,14 @@ fn copy_broken_files_to_test_dir(setting: &Setting) {
     info!("Copied files with differences to test_dir");
 }
 
-fn copy_broken_black_files(black_output: Output, setting: &Setting) {
-    let out = String::from_utf8_lossy(&black_output.stdout);
-    let err = String::from_utf8_lossy(&black_output.stderr);
-    let all = format!("{}\n{}", out, err);
-
+fn copy_broken_black_files(different_files: Vec<String>, setting: &Setting) {
     let _ = fs::remove_dir_all(&setting.broken_files_dir);
     fs::create_dir_all(&setting.broken_files_dir).unwrap();
     info!("Created broken_files_dir");
 
     info!("Starting to copy black files with differences to broken_files_dir");
-    for (idx, line) in all.lines().enumerate() {
-        let Some(file_name) = line.strip_prefix("reformatted ") else {
+    for (idx, full_name) in different_files.into_iter().enumerate() {
+        let Some(file_name) = Path::new(&full_name).file_stem() else {
             continue;
         };
         let new_full_name = format!("{}{}_black.py", &setting.broken_files_dir, idx);
@@ -153,7 +185,7 @@ fn copy_broken_files_with_ruff(setting: &Setting) {
 }
 
 fn run_ruff(dir: &str) -> Output {
-    info!("Running ruff on dir: {dir}", );
+    info!("Running ruff on dir: {dir}",);
     let output = std::process::Command::new("ruff")
         .arg("format")
         .arg(dir)

@@ -3,13 +3,13 @@ use std::fs;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
 
+use crate::common::collect_files_to_check;
 use crate::settings::Setting;
-use jwalk::WalkDir;
 
 // Used to test if ruff format crashes or if cause format error
 
 pub fn error_in_format_ttol(setting: &Setting) {
-    let files_to_check = collect_files(setting);
+    let files_to_check = collect_files_to_check(&setting.start_dir);
 
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
     let all = files_to_check.len();
@@ -44,22 +44,9 @@ pub fn error_in_format_ttol(setting: &Setting) {
     });
 }
 
-pub fn collect_files(setting: &Setting) -> Vec<String> {
-    let mut files_to_check = vec![];
-    for i in WalkDir::new(&setting.start_dir).into_iter().flatten() {
-        let path = i.path();
-        if path.is_dir() {
-            continue;
-        }
-        files_to_check.push(path.to_str().unwrap().to_string());
-    }
-    println!("Found {} files to check", files_to_check.len());
-    files_to_check
-}
-
 #[allow(dead_code)]
 fn remove_invalid_files(setting: &Setting) {
-    let files_to_check = collect_files(setting);
+    let files_to_check = collect_files_to_check(&setting.start_dir);
 
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
     let all = files_to_check.len();

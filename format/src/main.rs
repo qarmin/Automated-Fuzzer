@@ -1,3 +1,4 @@
+mod common;
 mod error_in_format_tool;
 mod find_black_ruff_differences;
 mod settings;
