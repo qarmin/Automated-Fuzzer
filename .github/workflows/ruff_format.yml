@@ -29,6 +29,8 @@ jobs:
             files: "FILES_25"
           - name: FINDING_NON_FULLY_CONVERTED_ITEMS_6
             files: "FILES_26"
+          - name: FINDING_SHORTER
+            files: "FILES_999"
 
     steps:
       - uses: actions/checkout@v3
@@ -37,6 +39,17 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y wget pipx
+
+      - name: Install sd
+        if: ${{ matrix.name }} == "FINDING_SHORTER"
+        run: cargo install sd
+
+      - name: Change time
+        if: ${{ matrix.name }} == "FINDING_SHORTER"
+        run: |
+          cat src/apps/ruff.rs
+          sd "black_timeout = 14400" "black_timeout = 100" format/settings_black_difference_ci.toml
+          sd "black_timeout = 14400" "black_timeout = 100" format/settings_not_stable_ci.toml
 
       - name: Install ruff
         run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
