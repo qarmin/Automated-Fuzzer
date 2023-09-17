@@ -90,6 +90,13 @@ jobs:
           target/release/formatter
           mv /opt/BROKEN_FILES /opt/BLACK_DIFFERENCE
 
+      - name: Store results - black difference
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: ignore
+          name: ${{ matrix.name }}_black_difference
+          path: /opt/BLACK_DIFFERENCE
+
       - name: Remove all folders except START_DIR
         run: |
           rm -rf /opt/TEST_DIR/ || true
@@ -103,16 +110,11 @@ jobs:
         run: |
           pwd
           cd format
+          pwd
+          ls -al
           mv settings_black_difference_ci.toml settings.toml
           target/release/formatter
           mv /opt/BROKEN_FILES /opt/NOT_STABLE
-
-      - name: Store results - black difference
-        uses: actions/upload-artifact@v3
-        with:
-          if-no-files-found: ignore
-          name: ${{ matrix.name }}_black_difference
-          path: /opt/BLACK_DIFFERENCE
 
       - name: Store results - not stable
         uses: actions/upload-artifact@v3
