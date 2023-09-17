@@ -2,6 +2,7 @@ use crate::common::{calculate_hashes_of_files, check_if_hashes_are_equal};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::{error, info};
+use rand::Rng;
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
@@ -29,11 +30,12 @@ pub fn test_ruff_format_stability(setting: &Setting) {
 }
 
 fn copy_files_to_broken_files(hashset_with_differences: &HashSet<String>, setting: &Setting) {
+    let mut rng = rand::thread_rng();
     let _ = fs::remove_dir_all(&setting.broken_files_dir);
     fs::create_dir_all(&setting.broken_files_dir).unwrap();
-    for (idx, file_name) in hashset_with_differences.iter().enumerate() {
+    for file_name in hashset_with_differences {
         let start_file = file_name.replace(&setting.test_dir, &setting.start_dir);
-        let broken_file = format!("{}/A{}.py", &setting.broken_files_dir, idx);
+        let broken_file = format!("{}/A_{}.py", &setting.broken_files_dir, rng.gen::<u64>());
         fs::copy(&start_file, &broken_file).unwrap();
         error!("File with difference: {}", start_file);
     }

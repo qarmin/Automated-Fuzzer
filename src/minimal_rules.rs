@@ -87,7 +87,7 @@ pub fn save_results_to_file_format(
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.0.287 (latest changes from main branch)
+        file_content += &r###"Ruff 0.0.290 (latest changes from main branch)
 ```
 ruff format *.py
 ```
@@ -276,7 +276,7 @@ pub fn save_results_to_file(
         let _ = fs::create_dir_all(&folder);
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.0.287 (latest changes from main branch)
+        file_content += &r###"Ruff 0.0.290 (latest changes from main branch)
 ```
 ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --preview
 ```

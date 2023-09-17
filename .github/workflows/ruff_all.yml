@@ -1,4 +1,4 @@
-name: 🐧 Ruff All
+name: 🐧 Ruff Check
 on:
   push:
   pull_request:

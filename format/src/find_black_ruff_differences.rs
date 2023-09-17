@@ -2,11 +2,12 @@ use crate::common::{calculate_hashes_of_files, collect_only_direct_folders, Hash
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
+use rand::Rng;
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::process::{Output, Stdio};
-use rayon::prelude::*;
 
 pub fn check_differences(setting: &Setting) {
     info!(
@@ -159,8 +160,9 @@ fn copy_broken_black_files(different_files: Vec<String>, setting: &Setting) {
     info!("Created broken_files_dir");
 
     info!("Starting to copy black files with differences to broken_files_dir");
-    for (idx, full_name) in different_files.into_iter().enumerate() {
-        let new_full_name = format!("{}{}_black.py", &setting.broken_files_dir, idx);
+    let mut rng = rand::thread_rng();
+    for full_name in different_files.into_iter() {
+        let new_full_name = format!("{}{}_black.py", &setting.broken_files_dir, rng.gen::<u64>());
         fs::copy(full_name, new_full_name).unwrap();
     }
     info!("Copied black files with differences to broken_files_dir");
@@ -229,7 +231,6 @@ fn run_black(dir: &str, setting: &Setting) {
             .wait_with_output()
             .unwrap();
     });
-
 
     info!("Black formatted files");
 }
