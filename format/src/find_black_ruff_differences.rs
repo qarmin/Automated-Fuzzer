@@ -9,6 +9,8 @@ pub fn check_differences(setting: &Setting) {
     // let mut files_to_check = collect_files();
     // println!("Found {} files to check", files_to_check.len());
 
+    info!("Start dir {} have {} files", &setting.start_dir, collect_number_of_files(&setting.start_dir));
+
     copy_files_from_start_dir_to_test_dir(setting);
 
     run_ruff(&setting.test_dir);
@@ -23,6 +25,21 @@ pub fn check_differences(setting: &Setting) {
     copy_broken_files_with_ruff(setting);
 
     run_diff_on_files(setting);
+}
+
+fn collect_number_of_files(dir: &str) -> usize {
+    WalkDir::new(dir)
+        .into_iter()
+        .flatten()
+        .filter(|i| {
+            let path = i.path();
+            if path.is_dir() {
+                return false;
+            }
+            let file_name = path.to_str().unwrap();
+            file_name.ends_with(".py")
+        })
+        .count()
 }
 
 fn run_diff_on_files(setting: &Setting) {
@@ -136,7 +153,7 @@ fn copy_broken_files_with_ruff(setting: &Setting) {
 }
 
 fn run_ruff(dir: &str) -> Output {
-    info!("Running ruff");
+    info!("Running ruff on dir: {dir}", );
     let output = std::process::Command::new("ruff")
         .arg("format")
         .arg(dir)
@@ -180,5 +197,5 @@ fn copy_files_from_start_dir_to_test_dir(setting: &Setting) {
         let _ = fs::create_dir_all(parent);
         fs::copy(file_name, new_full_name).unwrap();
     }
-    info!("Copied files to check");
+    info!("Copied files to {}", &setting.test_dir);
 }
