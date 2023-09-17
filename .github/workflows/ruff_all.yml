@@ -150,14 +150,7 @@ jobs:
             cd /opt/POSSIBLY_BROKEN_FILES_DIR
           fi
           
-          for FILE_NAME in "${{ matrix.files }}"; do
-            mkdir "${FILE_NAME}"
-            cd "${FILE_NAME}"
-            wget "https://github.com/qarmin/Automated-Fuzzer/releases/download/test/${FILE_NAME}.zip"
-            unzip "${FILE_NAME}.zip"
-            rm "${FILE_NAME}.zip"
-            cd ..
-          done
+          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
           
           cd $CURR_DIR
 
