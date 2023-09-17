@@ -5,6 +5,7 @@ test_dir2 = "/home/rafal/test/DOWNLOADED/test_dir2/" # Dir to save test results 
 broken_files_dir = "/home/rafal/test/DOWNLOADED/broken_files/" # Dir to save broken_files_results
 mode = "check_difference"
 black_timeout = 1000000 # In seconds, do not allows to run too much app
+depth = 1 # How deep to go in dirs - if in start dir folder to check are directly in start dir, then depth = 1, otherwise setup it to other value
 
 
 # modes

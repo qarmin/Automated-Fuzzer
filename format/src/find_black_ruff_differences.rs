@@ -199,7 +199,7 @@ fn run_ruff(dir: &str) -> Output {
 
 fn run_black(dir: &str, setting: &Setting) {
     info!("Running black");
-    let direct_folders = collect_only_direct_folders(dir);
+    let direct_folders = collect_only_direct_folders(dir, setting.depth);
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
     let all = direct_folders.len();
 

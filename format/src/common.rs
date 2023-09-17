@@ -59,13 +59,15 @@ pub fn check_if_hashes_are_equal(
     items.into_iter().map(|i| i.0).collect()
 }
 
-pub fn collect_only_direct_folders(dir: &str) -> Vec<String> {
-    WalkDir::new(dir)
-        .skip_hidden(false)
-        .max_depth(1)
+pub fn collect_only_direct_folders(dir: &str, depth:usize) -> Vec<String> {
+    let dirs = WalkDir::new(dir)
+        .skip_hidden(false).min_depth(depth)
+        .max_depth(depth)
         .into_iter()
         .flatten()
         .filter(|e| e.path().is_dir())
         .map(|e| e.path().to_str().unwrap().to_string())
-        .collect::<Vec<_>>()
+        .collect::<Vec<_>>();
+    info!("Found {} folders", dirs.len());
+    dirs
 }
