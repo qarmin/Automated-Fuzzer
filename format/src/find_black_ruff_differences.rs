@@ -1,4 +1,4 @@
-use crate::common::{calculate_hashes_of_files, Hash};
+use crate::common::{calculate_hashes_of_files, collect_only_direct_folders, Hash};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
@@ -6,6 +6,7 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 use std::process::{Output, Stdio};
+use rayon::prelude::*;
 
 pub fn check_differences(setting: &Setting) {
     info!(
@@ -20,7 +21,7 @@ pub fn check_differences(setting: &Setting) {
 
     let hashed_files = calculate_hashes_of_files(setting);
 
-    run_black(&setting.test_dir);
+    run_black(&setting.test_dir, setting);
 
     let different_files = find_different_files(&hashed_files, &setting.test_dir);
 
@@ -159,11 +160,8 @@ fn copy_broken_black_files(different_files: Vec<String>, setting: &Setting) {
 
     info!("Starting to copy black files with differences to broken_files_dir");
     for (idx, full_name) in different_files.into_iter().enumerate() {
-        let Some(file_name) = Path::new(&full_name).file_stem() else {
-            continue;
-        };
         let new_full_name = format!("{}{}_black.py", &setting.broken_files_dir, idx);
-        fs::copy(file_name, new_full_name).unwrap();
+        fs::copy(full_name, new_full_name).unwrap();
     }
     info!("Copied black files with differences to broken_files_dir");
 }
@@ -199,18 +197,41 @@ fn run_ruff(dir: &str) -> Output {
     output
 }
 
-fn run_black(dir: &str) -> Output {
+fn run_black(dir: &str, setting: &Setting) {
     info!("Running black");
-    let black_output = std::process::Command::new("black")
-        .arg(dir)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
+    let direct_folders = collect_only_direct_folders(dir);
+    let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
+    let all = direct_folders.len();
+
+    let start_time = std::time::Instant::now();
+    let atomic_bool_stopped_search = std::sync::atomic::AtomicBool::new(false);
+
+    direct_folders.into_par_iter().for_each(|folder| {
+        if start_time.elapsed().as_secs() > setting.black_timeout {
+            if !atomic_bool_stopped_search.load(std::sync::atomic::Ordering::Relaxed) {
+                atomic_bool_stopped_search.store(true, std::sync::atomic::Ordering::Relaxed);
+                info!("Max seconds to run black reached, stopping");
+            }
+            return;
+        }
+
+        let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        if idx % 10 == 0 {
+            info!("_____ {idx} / {all}");
+        }
+        std::process::Command::new("black")
+            .arg(folder)
+            .arg("--workers=1")
+            .stderr(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
+            .wait_with_output()
+            .unwrap();
+    });
+
+
     info!("Black formatted files");
-    black_output
 }
 
 fn copy_files_from_start_dir_to_test_dir(setting: &Setting) {

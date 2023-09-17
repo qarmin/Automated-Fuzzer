@@ -1,6 +1,13 @@
 [general]
-start_dir = "/home/rafal/test/DOWNLOADED/py_files2/" # Dir with files to use to test - this dir will not be touched
+start_dir = "/home/rafal/test/DOWNLOADED/py_files4/" # Dir with files to use to test - this dir will not be touched
 test_dir = "/home/rafal/test/DOWNLOADED/test_dir/" # Dir to save test results
 test_dir2 = "/home/rafal/test/DOWNLOADED/test_dir2/" # Dir to save test results 2
 broken_files_dir = "/home/rafal/test/DOWNLOADED/broken_files/" # Dir to save broken_files_results
-mode = "test_ruff_format_stability"
+mode = "check_difference"
+black_timeout = 1000000 # In seconds, do not allows to run too much app
+
+
+# modes
+# test_ruff_format_stability
+# error_in_format_tool
+# check_difference

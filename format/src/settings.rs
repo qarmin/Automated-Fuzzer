@@ -8,6 +8,7 @@ pub struct Setting {
     pub test_dir: String,
     pub test_dir2: String,
     pub broken_files_dir: String,
+    pub black_timeout: u64,
 }
 pub fn load_settings() -> Setting {
     let settings = Config::builder()
@@ -26,5 +27,6 @@ pub fn load_settings() -> Setting {
         test_dir: general["test_dir"].clone(),
         test_dir2: general["test_dir2"].clone(),
         broken_files_dir: general["broken_files_dir"].clone(),
+        black_timeout: general["black_timeout"].parse::<u64>().unwrap(),
     }
 }

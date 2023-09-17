@@ -4,8 +4,9 @@ test_dir = "/opt/TEST_DIR/" # Dir to save test results
 test_dir2 = "/opt/TEST_DIR2/" # Dir to save test results 2
 broken_files_dir = "/opt/BROKEN_FILES/" # Dir to save broken_files_results
 mode = "check_difference"
+black_timeout = 14400 # In seconds, do not allows to run too much app
 
 # modes
 # test_ruff_format_stability
 # error_in_format_tool
-# check_diffrence
+# check_difference
