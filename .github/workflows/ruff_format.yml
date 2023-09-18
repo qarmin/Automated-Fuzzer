@@ -89,7 +89,7 @@ jobs:
           mv settings_black_difference_ci.toml settings.toml
           target/release/formatter
           mkdir /opt/BLACK_DIFFERENCE
-          zip -r /opt/BLACK_DIFFERENCE/archiwum.zip /opt/BROKEN_FILES/*
+          zip -r /opt/BLACK_DIFFERENCE/archiwum.zip /opt/BROKEN_FILES
           rm -rf /opt/BROKEN_FILES
 
       - name: Store results - black difference
@@ -115,7 +115,7 @@ jobs:
           mv settings_not_stable_ci.toml settings.toml
           target/release/formatter
           mkdir /opt/NOT_STABLE
-          zip -r /opt/NOT_STABLE/archiwum.zip /opt/BROKEN_FILES/*
+          zip -r /opt/NOT_STABLE/archiwum.zip /opt/BROKEN_FILES
           rm -rf /opt/BROKEN_FILES
 
       - name: Store results - not stable
