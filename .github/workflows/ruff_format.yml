@@ -48,8 +48,8 @@ jobs:
         if: matrix.name == 'FINDING_SHORTER'
         run: |
           cat src/apps/ruff.rs
-          sd "black_timeout = 15500" "black_timeout = 100" format/settings_black_difference_ci.toml
-          sd "black_timeout = 15500" "black_timeout = 100" format/settings_not_stable_ci.toml
+          sd "black_timeout = 17999" "black_timeout = 100" format/settings_black_difference_ci.toml
+          sd "black_timeout = 17999" "black_timeout = 100" format/settings_not_stable_ci.toml
 
       - name: Install ruff
         run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
@@ -88,8 +88,11 @@ jobs:
           cd format
           mv settings_black_difference_ci.toml settings.toml
           target/release/formatter
+
+      - name: Zip folders
+        run: |
           mkdir /opt/BLACK_DIFFERENCE
-          zip -r /opt/BLACK_DIFFERENCE/archiwum.zip /opt/BROKEN_FILES
+          zip -r /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip /opt/BROKEN_FILES
           rm -rf /opt/BROKEN_FILES
 
       - name: Store results - black difference
@@ -97,7 +100,7 @@ jobs:
         with:
           if-no-files-found: ignore
           name: BLACK_DIFFERENCE_${{ matrix.name }}
-          path: /opt/BLACK_DIFFERENCE/archiwum.zip
+          path: /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip
 
       - name: Remove all folders except START_DIR
         run: |
@@ -114,8 +117,11 @@ jobs:
           cd format
           mv settings_not_stable_ci.toml settings.toml
           target/release/formatter
+
+      - name: Zip folders
+        run: |
           mkdir /opt/NOT_STABLE
-          zip -r /opt/NOT_STABLE/archiwum.zip /opt/BROKEN_FILES
+          zip -r /opt/NOT_STABLE/${{ matrix.name }}.zip /opt/BROKEN_FILES
           rm -rf /opt/BROKEN_FILES
 
       - name: Store results - not stable
@@ -123,7 +129,7 @@ jobs:
         with:
           if-no-files-found: ignore
           name: NOT_STABLE_${{ matrix.name }}
-          path: /opt/NOT_STABLE/archiwum.zip
+          path: /opt/NOT_STABLE/${{ matrix.name }}.zip
 
       - name: Exit when found broken files
         run: |

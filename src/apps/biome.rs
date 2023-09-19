@@ -4,7 +4,7 @@ use std::process::Child;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
-pub struct RomeStruct {
+pub struct BiomeStruct {
     pub settings: Setting,
 }
 
@@ -15,10 +15,10 @@ const BROKEN_ITEMS: &[&str] = &[
     "is out of bounds of",            // 4323
 ];
 
-impl ProgramConfig for RomeStruct {
+impl ProgramConfig for BiomeStruct {
     fn is_broken(&self, content: &str) -> bool {
         content.contains("RUST_BACKTRACE")
-            || content.contains("Rome encountered an unexpected error")
+            || content.contains("Biome encountered an unexpected error")
                 && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
     }
 

@@ -1,3 +1,4 @@
+use crate::apps::biome::BiomeStruct;
 use crate::apps::dlint::DlintStruct;
 use crate::apps::eslint::EslintStruct;
 use crate::apps::image::ImageStruct;
@@ -7,7 +8,6 @@ use crate::apps::mypy::MypyStruct;
 use crate::apps::oxc::OxcStruct;
 use crate::apps::pdfrs::PdfRsStruct;
 use crate::apps::quick_lint_js::QuickLintStruct;
-use crate::apps::rome::RomeStruct;
 use crate::apps::ruff::RuffStruct;
 use crate::apps::rust_parser::RustParserStruct;
 use crate::apps::rustfmt::RustFmtStruct;
@@ -127,7 +127,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::OXC => Box::new(OxcStruct { settings }),
         MODES::MYPY => Box::new(MypyStruct { settings }),
         MODES::DLINT => Box::new(DlintStruct { settings }),
-        MODES::ROME => Box::new(RomeStruct { settings }),
+        MODES::BIOME => Box::new(BiomeStruct { settings }),
         MODES::RUFF => Box::new(RuffStruct {
             settings,
             ignored_rules: String::new(),
@@ -153,7 +153,7 @@ pub enum MODES {
     #[strum(ascii_case_insensitive)]
     MYPY,
     #[strum(ascii_case_insensitive)]
-    ROME,
+    BIOME,
     #[strum(ascii_case_insensitive)]
     DLINT,
     #[strum(ascii_case_insensitive)]

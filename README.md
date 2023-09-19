@@ -1,6 +1,6 @@
 ## Automated Fuzzer
 
-This repo contains simple tool to create broken files and checking them with special apps(rome, ruff, mypy and many more already are implemented, but it is easy to add support for any different app).
+This repo contains simple tool to create broken files and checking them with special apps(biome, ruff, mypy and many more already are implemented, but it is easy to add support for any different app).
 
 This small tool I created mainly for my own use without much vision, so you can easily compile app without changing source code
 if you want to use already implemented fuzzers, but if you want to test your own app
@@ -23,7 +23,7 @@ cargo install create_broken_files
 ## How this works
 - At start app take n valid files from folder
 - Depending on settings invalid files are created
-- In loop, different app(`ruff`, `rome`, `mypy` etc.) check this file
+- In loop, different app(`ruff`, `biome`, `mypy` etc.) check this file
 - Basing on output messages like `RUST_BACKTRACE`, `crashed`, `error`, `internal bug`, file is checked if caused some bugs(this allow to find not only crashes).
 - If it found it, then this file is copied to special folder
 - If minimization is enabled, app tries to minimize output to produce bug(this may take some time, but output files are usually smaller 2x-100x times)
