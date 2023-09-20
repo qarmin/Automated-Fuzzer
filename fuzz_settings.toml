@@ -141,12 +141,12 @@ broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dlint/Broken"
 tool_type = ""
 binary_mode = false
 
-[rome]
-app_binary = "rome"
+[biome]
+app_binary = "biome"
 app_config = ""
 extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rome/Broken"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/biome/Broken"
 tool_type = ""
 binary_mode = false
 
