@@ -16,11 +16,6 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     let after = AtomicUsize::new(before);
     println!("Found {before} files to check");
     broken_files.into_par_iter().for_each(|full_name| {
-        // TODO uncheck after https://github.com/astral-sh/ruff/issues/7169
-        let content = fs::read_to_string(&full_name).unwrap();
-        let content_with_replaced_non_ascii = content.replace(|c: char| !c.is_ascii(), "R");
-        fs::write(&full_name, content_with_replaced_non_ascii).unwrap();
-
         let is_parsable = check_if_file_is_parsable_by_cpython(&temp_file, &full_name);
 
         if is_parsable {

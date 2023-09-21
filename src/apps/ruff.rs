@@ -16,8 +16,7 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
     "UnnecessaryCollectionCall",       // 6809
     "due to late binding",             // 6842
     "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
-    "Unable to use existing symbol due to incompatible context", // 7060
-    "UnnecessaryMap: Expected tuple for dict comprehension", // 7071
+    "Unable to use existing symbol due to incompatible context", // 6842
 ];
 
 // Try to not add D* rules if you are not really sure that this rule is broken
@@ -39,7 +38,6 @@ const BROKEN_ITEMS_TO_FIND: &[&str] = &[
 
 const INVALID_RULES: &[&str] = &[
     "W292",    // 4406
-    "F601",    // 4897
     "TCH003",  // 5331
     "Q002",    // 6785
     "PTH116",  // 6785
@@ -58,7 +56,6 @@ const INVALID_RULES: &[&str] = &[
     "UP032",   // 7074
     "RET503",  // 7075
     "FURB113", // 7095
-    "PERF102", // 7097
     "UP037",   // 7102
     "COM812",  // 7122
     "PT014",   // 7122
@@ -70,22 +67,16 @@ const INVALID_RULES: &[&str] = &[
     "UP036",   // 7130
     "D202",    // 7172
     "PT027",   // 7198
-    "B006",    // 7455
-    "B009",    // 7455
-    "C402",    // 7455
     "C413",    // 7455
     "C417",    // 7455
     "C418",    // 7455
     "D201",    // 7455
     "D211",    // 7455
-    "E713",    // 7455
     "E714",    // 7455
     "RUF100",  // 7455
     "PLR0133", // 7455
-    "PT009",   // 7455
     "RUF005",  // 7455
     "SIM101",  // 7455
-    "SIM105",  // 7455
     "SIM208",  // 7455
     "TCH001",  // 7455
     "TCH002",  // 7455
@@ -96,7 +87,9 @@ const INVALID_RULES: &[&str] = &[
     "E703",    // 7455
     "F407",    // 7455
     "EM103",   // 7455
-    "PLR1701", // 7455
+    "FURB140", // 7455
+    "RUF013",  // 7455
+    "SIM300",  // 7455
 ];
 
 #[must_use]
