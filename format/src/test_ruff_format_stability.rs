@@ -1,15 +1,15 @@
-use crate::common::{calculate_hashes_of_files, check_if_hashes_are_equal};
+use crate::common::{
+    calculate_hashes_of_files, check_if_hashes_are_equal, copy_files_from_start_dir_to_test_dir,
+};
 use crate::settings::Setting;
-use jwalk::WalkDir;
 use log::{error, info};
 use rand::Rng;
 use std::collections::HashSet;
 use std::fs;
-use std::path::Path;
 use std::process::{Output, Stdio};
 
 pub fn test_ruff_format_stability(setting: &Setting) {
-    copy_files_from_start_dir_to_test_dir(setting);
+    copy_files_from_start_dir_to_test_dir(setting, true);
     run_ruff(&setting.test_dir);
 
     let mut hashset_with_differences = HashSet::new();
@@ -54,23 +54,4 @@ fn run_ruff(dir: &str) -> Output {
         .unwrap();
     info!("Ruff formatted files");
     output
-}
-
-fn copy_files_from_start_dir_to_test_dir(setting: &Setting) {
-    info!("Starting to copy files to check");
-    let _ = fs::remove_dir_all(&setting.test_dir);
-    fs::create_dir_all(&setting.test_dir).unwrap();
-
-    for file in WalkDir::new(&setting.start_dir).into_iter().flatten() {
-        let path = file.path();
-        if path.is_dir() {
-            continue;
-        }
-        let file_name = path.to_str().unwrap();
-        let new_full_name = file_name.replace(&setting.start_dir, &setting.test_dir);
-        let parent = Path::new(&new_full_name).parent().unwrap();
-        let _ = fs::create_dir_all(parent);
-        fs::copy(file_name, new_full_name).unwrap();
-    }
-    info!("Copied files to check");
 }

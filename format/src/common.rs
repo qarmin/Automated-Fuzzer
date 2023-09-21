@@ -4,6 +4,7 @@ use log::{error, info};
 use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs;
+use std::path::Path;
 
 pub type Hash = [u8; 16];
 
@@ -71,4 +72,32 @@ pub fn collect_only_direct_folders(dir: &str, depth: usize) -> Vec<String> {
         .collect::<Vec<_>>();
     info!("Found {} folders", dirs.len());
     dirs
+}
+
+pub fn copy_files_from_start_dir_to_test_dir(setting: &Setting, move_in_ci: bool) {
+    info!("Starting to copy files to check");
+    let moving = setting.ci_run && move_in_ci;
+    let _ = fs::remove_dir_all(&setting.test_dir);
+    fs::create_dir_all(&setting.test_dir).unwrap();
+
+    for file in WalkDir::new(&setting.start_dir).into_iter().flatten() {
+        let path = file.path();
+        if path.is_dir() {
+            continue;
+        }
+        let file_name = path.to_str().unwrap();
+        let new_full_name = file_name.replace(&setting.start_dir, &setting.test_dir);
+        let parent = Path::new(&new_full_name).parent().unwrap();
+        let _ = fs::create_dir_all(parent);
+        if moving {
+            fs::rename(file_name, new_full_name).unwrap();
+        } else {
+            fs::copy(file_name, new_full_name).unwrap();
+        }
+    }
+    if moving {
+        info!("Moved files to {}", &setting.test_dir);
+    } else {
+        info!("Copied files to {}", &setting.test_dir);
+    }
 }

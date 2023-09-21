@@ -1,4 +1,7 @@
-use crate::common::{calculate_hashes_of_files, collect_only_direct_folders, Hash};
+use crate::common::{
+    calculate_hashes_of_files, collect_only_direct_folders, copy_files_from_start_dir_to_test_dir,
+    Hash,
+};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
@@ -16,7 +19,7 @@ pub fn check_differences(setting: &Setting) {
         collect_number_of_files(&setting.start_dir)
     );
 
-    copy_files_from_start_dir_to_test_dir(setting);
+    copy_files_from_start_dir_to_test_dir(setting, false);
 
     run_ruff(&setting.test_dir);
 
@@ -26,13 +29,13 @@ pub fn check_differences(setting: &Setting) {
 
     let different_files = find_different_files(&hashed_files, &setting.test_dir);
 
-    copy_broken_black_files(different_files, setting);
+    move_broken_black_files(different_files, setting);
 
-    copy_broken_files_to_test_dir(setting);
+    move_broken_files_to_test_dir(setting);
 
     run_ruff(&setting.test_dir);
 
-    copy_broken_files_with_ruff(setting);
+    move_broken_files_with_ruff(setting);
 
     run_diff_on_files(setting);
 }
@@ -133,12 +136,12 @@ fn run_diff_on_files(setting: &Setting) {
     info!("Finished running diff on files");
 }
 
-fn copy_broken_files_to_test_dir(setting: &Setting) {
+fn move_broken_files_to_test_dir(setting: &Setting) {
     let _ = fs::remove_dir_all(&setting.test_dir);
     fs::create_dir_all(&setting.test_dir).unwrap();
     info!("Removed and created test_dir");
 
-    info!("Starting to copy files with differences to test_dir, to check them again with ruff");
+    info!("Starting to move files with differences to test_dir, to check them again with ruff");
     for file in WalkDir::new(&setting.broken_files_dir)
         .into_iter()
         .flatten()
@@ -149,27 +152,27 @@ fn copy_broken_files_to_test_dir(setting: &Setting) {
         }
         let file_name = path.to_str().unwrap();
         let new_full_name = file_name.replace(&setting.broken_files_dir, &setting.test_dir);
-        fs::copy(file_name, new_full_name).unwrap();
+        fs::rename(file_name, new_full_name).unwrap();
     }
     info!("Copied files with differences to test_dir");
 }
 
-fn copy_broken_black_files(different_files: Vec<String>, setting: &Setting) {
+fn move_broken_black_files(different_files: Vec<String>, setting: &Setting) {
     let _ = fs::remove_dir_all(&setting.broken_files_dir);
     fs::create_dir_all(&setting.broken_files_dir).unwrap();
     info!("Created broken_files_dir");
 
-    info!("Starting to copy black files with differences to broken_files_dir");
+    info!("Starting to move black files with differences to broken_files_dir");
     let mut rng = rand::thread_rng();
     for full_name in different_files.into_iter() {
         let new_full_name = format!("{}{}_black.py", &setting.broken_files_dir, rng.gen::<u64>());
-        fs::copy(full_name, new_full_name).unwrap();
+        fs::rename(full_name, new_full_name).unwrap();
     }
     info!("Copied black files with differences to broken_files_dir");
 }
 
-fn copy_broken_files_with_ruff(setting: &Setting) {
-    info!("Starting to copy ruff files with differences to broken_files_dir");
+fn move_broken_files_with_ruff(setting: &Setting) {
+    info!("Starting to move ruff files with differences to broken_files_dir");
     for i in WalkDir::new(&setting.test_dir).into_iter().flatten() {
         let path = i.path();
         if path.is_dir() {
@@ -179,7 +182,7 @@ fn copy_broken_files_with_ruff(setting: &Setting) {
         let new_full_name = file_name
             .replace("_black", "_ruff")
             .replace(&setting.test_dir, &setting.broken_files_dir);
-        fs::copy(file_name, new_full_name).unwrap();
+        fs::rename(file_name, new_full_name).unwrap();
     }
     info!("Copied ruff files with differences to broken_files_dir");
 }
@@ -233,23 +236,4 @@ fn run_black(dir: &str, setting: &Setting) {
     });
 
     info!("Black formatted files");
-}
-
-fn copy_files_from_start_dir_to_test_dir(setting: &Setting) {
-    info!("Starting to copy files to check");
-    let _ = fs::remove_dir_all(&setting.test_dir);
-    fs::create_dir_all(&setting.test_dir).unwrap();
-
-    for file in WalkDir::new(&setting.start_dir).into_iter().flatten() {
-        let path = file.path();
-        if path.is_dir() {
-            continue;
-        }
-        let file_name = path.to_str().unwrap();
-        let new_full_name = file_name.replace(&setting.start_dir, &setting.test_dir);
-        let parent = Path::new(&new_full_name).parent().unwrap();
-        let _ = fs::create_dir_all(parent);
-        fs::copy(file_name, new_full_name).unwrap();
-    }
-    info!("Copied files to {}", &setting.test_dir);
 }

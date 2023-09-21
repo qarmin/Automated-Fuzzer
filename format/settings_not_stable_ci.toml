@@ -6,6 +6,7 @@ broken_files_dir = "/opt/BROKEN_FILES/" # Dir to save broken_files_results
 mode = "test_ruff_format_stability"
 black_timeout = 16499 # In seconds, do not allows to run too much app
 depth = 2 # How deep to go in dirs - if in start dir folder to check are directly in start dir, then depth = 1, otherwise setup it to other value
+ci_run = true
 
 # modes
 # test_ruff_format_stability
