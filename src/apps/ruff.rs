@@ -10,6 +10,8 @@ pub struct RuffStruct {
     pub ignored_rules: String,
 }
 
+const DISABLE_ALL_EXCEPTIONS: bool = false;
+
 // This errors are not critical, and can be ignored when found two issues and one with it
 const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
     "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
@@ -94,6 +96,10 @@ const INVALID_RULES: &[&str] = &[
 
 #[must_use]
 pub fn calculate_ignored_rules() -> String {
+    if DISABLE_ALL_EXCEPTIONS {
+        return "".to_string();
+    }
+
     INVALID_RULES
         .iter()
         .filter(|e| &&e.to_uppercase().as_str() == e)
@@ -106,6 +112,10 @@ pub fn calculate_ignored_rules() -> String {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
+        if DISABLE_ALL_EXCEPTIONS {
+            return BROKEN_ITEMS_TO_FIND.iter().any(|e| content.contains(e));
+        }
+
         let mut content = content.to_string();
         if !BROKEN_ITEMS_NOT_CRITICAL.is_empty() {
             // Remove lines that contains not critical errors
@@ -118,6 +128,7 @@ impl ProgramConfig for RuffStruct {
         }
 
         let found_broken_items = BROKEN_ITEMS_TO_FIND.iter().any(|e| content.contains(e));
+
         let found_ignored_item = BROKEN_ITEMS.iter().any(|e| content.contains(e));
 
         // Debug check if properly finding broken items

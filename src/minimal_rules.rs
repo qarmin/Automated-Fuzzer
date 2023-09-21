@@ -142,11 +142,6 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let original_content = fs::read_to_string(&i).unwrap();
             let mut out = String::new();
 
-            if original_content.lines().count() >= 100 {
-                println!("File {new_name} ({i}) is too big and probably cause infinite loop due fixing to much same errors");
-                return None;
-            }
-
             fs::write(&new_name, &original_content).unwrap();
 
             if !check_if_file_is_parsable_by_cpython("", &new_name) {

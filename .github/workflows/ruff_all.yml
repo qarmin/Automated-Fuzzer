@@ -116,7 +116,13 @@ jobs:
         run: cargo install sd
 
       - name: Install ruff
-        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+        run: |
+          git clone https://github.com/astral-sh/ruff.git ruff
+          cd ruff
+          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
+          rm rust-toolchain.toml
+          cargo install --path crates/ruff_cli
+          cd ..
 
       - name: Remove exceptions
         if: ${{ matrix.exceptions == false }}
