@@ -1,8 +1,8 @@
 use std::env::args;
 use std::fs::File;
 
-use lofty::{AudioFile, read_from};
 use lofty::TaggedFileExt;
+use lofty::{read_from, AudioFile};
 
 fn main() {
     let path = args().nth(1).unwrap().clone();

@@ -17,7 +17,7 @@ fn main() {
         }
     };
 
-    let _ = parse_audio_file(file)    ;
+    let _ = parse_audio_file(file);
 }
 
 pub fn parse_audio_file(file_handler: File) -> Result<(), Error> {

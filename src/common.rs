@@ -1,3 +1,4 @@
+use log::{error, info};
 use std::cmp::max;
 use std::collections::HashSet;
 use std::fs;
@@ -42,7 +43,7 @@ pub fn collect_output(output: &Output) -> String {
 pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> bool {
     if setting.copy_broken_files {
         if let Err(e) = fs::copy(full_name, new_name) {
-            eprintln!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
+            error!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
             return true;
         };
         return true;
@@ -53,7 +54,7 @@ pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> b
 #[allow(clippy::borrowed_box)]
 pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let Ok(data) = fs::read_to_string(full_name) else {
-        println!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8");
+        info!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8");
         return;
     };
 
@@ -141,11 +142,11 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     assert!(is_really_broken || obj.is_broken(&output));
 
     if old_line_number == lines.len() {
-        println!(
+        info!(
             "File {full_name}, was not minimized after {tries} attempts, had {old_line_number} lines",
         );
     } else {
-        println!(
+        info!(
             "File {full_name}, minimized from {old_line_number} to {} lines after {tries} attempts",
             lines.len(),
         );
@@ -155,7 +156,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 #[allow(clippy::borrowed_box)]
 pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let Ok(data) = fs::read(full_name) else {
-        println!("INFO: Cannot read content of {full_name}");
+        info!("INFO: Cannot read content of {full_name}");
         return;
     };
 
@@ -227,11 +228,11 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     assert!(is_really_broken || obj.is_broken(&output));
 
     if items_number == old_new_data.len() {
-        println!(
+        info!(
             "File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",
         );
     } else {
-        println!(
+        info!(
             "File {full_name}, minimized from {items_number} to {} bytes after {tries} attempts",
             old_new_data.len(),
         );
@@ -484,7 +485,7 @@ pub fn execute_command_and_connect_output(
 
     if obj.get_settings().error_when_found_signal {
         if let Some(_signal) = output.status.signal() {
-            // println!("Non standard output signal {}", signal);
+            // info!("Non standard output signal {}", signal);
             is_signal_code_timeout_broken = true;
         }
     }
@@ -495,11 +496,11 @@ pub fn execute_command_and_connect_output(
             .allowed_error_statuses
             .contains(&output.status.code().unwrap())
     {
-        // println!("Non standard output status {:?}", output.status.code());
+        // info!("Non standard output status {:?}", output.status.code());
         is_signal_code_timeout_broken = true;
     }
     if obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) {
-        // println!("Timeout found");
+        // info!("Timeout found");
         is_signal_code_timeout_broken = true;
     }
 
@@ -647,9 +648,9 @@ fn test_remove_single_def() {
 
         let ret = remove_single_def(&lines, &mut rng).unwrap();
         if ![&expected2, &expected1].contains(&&ret) {
-            println!("RET {:?}", ret);
-            println!("EXP1 {:?}", expected1);
-            println!("EXP2 {:?}", expected2);
+            info!("RET {:?}", ret);
+            info!("EXP1 {:?}", expected1);
+            info!("EXP2 {:?}", expected2);
             assert!([expected2, expected1].contains(&ret));
         }
     }

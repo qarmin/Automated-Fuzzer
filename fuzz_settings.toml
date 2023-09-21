@@ -1,6 +1,6 @@
 [general]
 loop_number = 5 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file
+broken_files_for_each_file = 10# Number of broken files that will be created for each 1 valid file
 copy_broken_files = true # Copy broken files to broken dir, disable if testing new settings
 generate_files = true # If true will generate broken files and save them to temp_possible_broken_files_dir(this folder will be removed after each run), otherwise it will copy all valid files into BROKEN_FIELS_DIR
 ignore_generate_copy_files_step = false # If true, will only use files inside temp_possible_broken_files_dir, without  copying new files or generating
@@ -11,7 +11,7 @@ minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM
 debug_print_results = false # Debug prints output of commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
-find_minimal_rules = true # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
+find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
 clean_base_files = false # If true, files will be cleaned according to extension e.g. non parsable python files will be removed
 temp_folder = "/home/rafal/test/tmp_folder" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled

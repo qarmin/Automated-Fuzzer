@@ -3,6 +3,7 @@ use crate::common::execute_command_and_connect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
+use log::info;
 use rayon::prelude::*;
 use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
@@ -14,7 +15,7 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     let broken_files: Vec<String> = collect_broken_files(settings);
     let before = broken_files.len();
     let after = AtomicUsize::new(before);
-    println!("Found {before} files to check");
+    info!("Found {before} files to check");
     broken_files.into_par_iter().for_each(|full_name| {
         let is_parsable = check_if_file_is_parsable_by_cpython(&temp_file, &full_name);
 
@@ -23,9 +24,9 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
             if is_really_broken || obj.is_broken(&output) {
                 return;
             };
-            println!("File {full_name} is not broken, and will be removed");
+            info!("File {full_name} is not broken, and will be removed");
         } else {
-            println!("File {full_name} is not parsable, and will be removed");
+            info!("File {full_name} is not parsable, and will be removed");
         }
 
         fs::remove_file(&full_name).unwrap();
@@ -33,7 +34,7 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     });
 
     let after = after.load(Ordering::Relaxed);
-    println!("Removed {} files, left {after} files", before - after);
+    info!("Removed {} files, left {after} files", before - after);
 }
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {

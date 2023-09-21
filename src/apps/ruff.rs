@@ -1,4 +1,10 @@
-use std::process::Child;
+use jwalk::WalkDir;
+use log::info;
+use rand::Rng;
+use rayon::prelude::*;
+use std::fs;
+use std::process::{Child, Command, Stdio};
+use std::sync::atomic::AtomicU32;
 
 use crate::broken_files::{create_broken_files, LANGS};
 use crate::common::{create_new_file_name, try_to_save_file};
@@ -97,7 +103,7 @@ const INVALID_RULES: &[&str] = &[
 #[must_use]
 pub fn calculate_ignored_rules() -> String {
     if DISABLE_ALL_EXCEPTIONS {
-        return "".to_string();
+        return String::new();
     }
 
     INVALID_RULES
@@ -154,8 +160,8 @@ impl ProgramConfig for RuffStruct {
 
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
-        println!("\n_______________ File {full_name} saved to {new_name} _______________________");
-        println!("{output}");
+        info!("\n_______________ File {full_name} saved to {new_name} _______________________");
+        info!("{output}");
 
         if try_to_save_file(self.get_settings(), &full_name, &new_name) {
             let _ = try_to_save_file(self.get_settings(), &full_name, &new_name_not_minimized);
@@ -206,5 +212,66 @@ impl ProgramConfig for RuffStruct {
 
     fn init(&mut self) {
         self.ignored_rules = calculate_ignored_rules();
+    }
+
+    fn remove_non_parsable_files(&self, dir_to_check: &str) {
+        let files_to_check: Vec<_> = WalkDir::new(dir_to_check)
+            .into_iter()
+            .flatten()
+            .filter(|e| e.path().to_str().unwrap().to_lowercase().ends_with(".py"))
+            .collect();
+        let all_files = files_to_check.len();
+
+        let folders: Vec<_> = files_to_check
+            .par_chunks(1000)
+            .map(|files| {
+                let mut rng = rand::thread_rng();
+                let mut folder_name;
+                loop {
+                    folder_name = format!("{}/FDR_{}", dir_to_check, rng.gen::<u64>());
+                    if fs::create_dir_all(&folder_name).is_ok() {
+                        break;
+                    }
+                }
+                for file in files {
+                    let rand_new_name = format!("{}/F_NAME_{}.py", folder_name, rng.gen::<u64>());
+                    if let Err(e) = fs::rename(file.path(), &rand_new_name) {
+                        info!("Failed to copy file: {:?} with error: {}", file.path(), e);
+                        fs::remove_file(file.path()).unwrap();
+                    }
+                }
+                folder_name
+            })
+            .collect();
+
+        let files_to_remove = AtomicU32::new(0);
+        folders.into_par_iter().for_each(|folder_name| {
+            let output = Command::new("ruff")
+                .arg("format")
+                .arg(&folder_name)
+                .arg("--check")
+                .stderr(Stdio::piped())
+                .stdout(Stdio::piped())
+                .spawn()
+                .unwrap()
+                .wait_with_output()
+                .unwrap();
+            let out = String::from_utf8_lossy(&output.stdout);
+            let err = String::from_utf8_lossy(&output.stderr);
+            let all = format!("{out}\n{err}");
+            for i in all.lines() {
+                if let Some(s) = i.strip_prefix("error: Failed to format ") {
+                    if let Some(idx) = s.find(".py") {
+                        files_to_remove.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        let file_name = &s[..idx + 3];
+                        fs::remove_file(file_name).unwrap();
+                    }
+                }
+            }
+        });
+        info!(
+            "Removed {}/{all_files} files",
+            files_to_remove.load(std::sync::atomic::Ordering::Relaxed)
+        );
     }
 }

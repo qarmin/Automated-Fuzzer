@@ -1,5 +1,6 @@
 use crate::settings::Setting;
 use jwalk::WalkDir;
+use log::info;
 use rayon::prelude::*;
 use std::fs;
 use std::process::Command;
@@ -18,18 +19,18 @@ fn remove_non_parsing_python_files(settings: &Setting) {
     let broken_files: Vec<String> = collect_base_files(settings);
     let before = broken_files.len();
     let after = AtomicUsize::new(before);
-    println!("Found {before} python files to check");
+    info!("Found {before} python files to check");
     broken_files.into_par_iter().for_each(|full_name| {
         if !check_if_file_is_parsable_by_cpython(&temp_file, &full_name) {
             return;
         }
-        println!("File {full_name} is not valid python file, and will be removed");
+        info!("File {full_name} is not valid python file, and will be removed");
         fs::remove_file(&full_name).unwrap();
         after.fetch_sub(1, Ordering::Relaxed);
     });
 
     let after = after.load(Ordering::Relaxed);
-    println!(
+    info!(
         "Removed {} python files, left {after} files",
         before - after
     );

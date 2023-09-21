@@ -16,7 +16,7 @@ pub fn error_in_format_ttol(setting: &Setting) {
     files_to_check.into_par_iter().for_each(|original_file_name| {
         let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         if idx % 1000 == 0 {
-            println!("_____ {idx} / {all}");
+            info!("_____ {idx} / {all}");
         }
 
         let output = command_check_output(&original_file_name);
@@ -39,7 +39,7 @@ pub fn error_in_format_ttol(setting: &Setting) {
             let broken_file_folder_name = Path::new(&broken_file_name).parent().unwrap();
             fs::create_dir_all(broken_file_folder_name).unwrap();
             fs::copy(&original_file_name, &broken_file_name).unwrap();
-            println!("_________________________________________\nFound error in file: {original_file_name}\n{all}\n_________________________________________");
+            info!("_________________________________________\nFound error in file: {original_file_name}\n{all}\n_________________________________________");
         }
     });
 }
@@ -53,14 +53,14 @@ fn remove_invalid_files(setting: &Setting) {
     files_to_check.into_par_iter().for_each(|file_name| {
         let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         if idx % 1000 == 0 {
-            println!("_____ {idx} / {all}");
+            info!("_____ {idx} / {all}");
         }
 
         let output = command_check_output(&file_name);
         let all = connect_output(&output).replace("warning: `ruff format` is a work-in-progress, subject to change at any time, and intended only for experimentation.", "");
 
         if is_broken(&all) {
-            println!("_________________________________________\nFound error in file: {file_name}\n{all}\n_________________________________________");
+            info!("_________________________________________\nFound error in file: {file_name}\n{all}\n_________________________________________");
             fs::remove_file(&file_name).unwrap();
         }
     });

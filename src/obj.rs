@@ -1,3 +1,4 @@
+use log::info;
 use std::process::{Child, Command, Stdio};
 
 use crate::common::{create_new_file_name, try_to_save_file};
@@ -8,8 +9,8 @@ pub trait ProgramConfig: Sync {
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
-        println!("\n_______________ File {full_name} saved to {new_name} _______________________");
-        println!("{output}");
+        info!("\n_______________ File {full_name} saved to {new_name} _______________________");
+        info!("{output}");
 
         if try_to_save_file(self.get_settings(), &full_name, &new_name) {
             let _ = try_to_save_file(self.get_settings(), &full_name, &new_name_not_minimized);
@@ -43,4 +44,5 @@ pub trait ProgramConfig: Sync {
     fn broken_file_creator(&self) -> Child;
     fn get_settings(&self) -> &Setting;
     fn init(&mut self) {}
+    fn remove_non_parsable_files(&self, _dir_to_check: &str) {}
 }

@@ -1,6 +1,7 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
 
+use handsome_logger::{ColorChoice, ConfigBuilder, TerminalMode};
 use rand::prelude::*;
 use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
@@ -15,6 +16,7 @@ use crate::common::{
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
+use log::{error, info};
 
 pub mod apps;
 mod broken_files;
@@ -26,6 +28,13 @@ mod remove_non_crashing_files;
 mod settings;
 
 fn main() {
+    handsome_logger::TermLogger::init(
+        ConfigBuilder::new_preset_no_micros_in_time().build(),
+        TerminalMode::Mixed,
+        ColorChoice::Always,
+    )
+    .unwrap();
+
     // rayon::ThreadPoolBuilder::new()
     //     .num_threads(8)
     //     .build_global()
@@ -70,25 +79,27 @@ fn main() {
     };
 
     for i in 1..=loop_number {
-        println!("Starting loop {i} out of all {loop_number}");
+        info!("Starting loop {i} out of all {loop_number}");
 
         if !settings.ignore_generate_copy_files_step {
-            println!("Removing old files");
+            info!("Removing old files");
             let _ = fs::remove_dir_all(&settings.temp_possible_broken_files_dir);
             fs::create_dir_all(&settings.temp_possible_broken_files_dir).unwrap();
             if settings.generate_files {
-                println!("So - generating files from valid input files dir");
+                info!("So - generating files from valid input files dir");
                 generate_files(&obj, &settings);
             } else {
-                println!("So - copying files");
+                info!("So - copying files");
                 // instead creating files, copy them
                 // let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
                 // let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
                 copy_files(&settings);
             }
         } else {
-            println!("So - no copying or generating files");
+            info!("So - no copying or generating files");
         }
+
+        obj.remove_non_parsable_files(&settings.temp_possible_broken_files_dir);
 
         let files = collect_files(&settings);
 
@@ -96,12 +107,12 @@ fn main() {
 
         test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
 
-        println!(
+        info!(
             "\n\nFound {} broken files",
             atomic_broken.load(Ordering::Relaxed)
         );
     }
-    println!(
+    info!(
         "\n\nFound {} broken files in all iterations",
         atomic_all_broken.load(Ordering::Relaxed)
     );
@@ -112,13 +123,13 @@ fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
     let output = command.wait_with_output().unwrap();
     let out = String::from_utf8(output.stdout).unwrap();
     if !output.status.success() {
-        println!("{:?}", output.status);
-        println!("{out}");
-        println!("Failed to generate files");
+        error!("{:?}", output.status);
+        error!("{out}");
+        error!("Failed to generate files");
         process::exit(1);
     }
     if settings.debug_print_broken_files_creator {
-        println!("{out}");
+        info!("{out}");
     };
 }
 
@@ -156,7 +167,7 @@ fn copy_files(settings: &Setting) {
             collected_files.push((s.to_string(), old_name.to_string(), extension.to_string()));
         }
     }
-    println!(
+    info!(
         "Completed collecting files to check({} found files)",
         collected_files.len()
     );
@@ -176,9 +187,9 @@ fn copy_files(settings: &Setting) {
                     settings.temp_possible_broken_files_dir, old_name, random_number, extension
                 );
             }
-            // println!("Copying file {s}  to {new_name:?}");
+            // info!("Copying file {s}  to {new_name:?}");
             if let Err(e) = fs::copy(&s, &new_name) {
-                println!("Failed to copy file {s} to {new_name} with error {e}");
+                error!("Failed to copy file {s} to {new_name} with error {e}");
             };
         });
 }
@@ -235,11 +246,11 @@ fn test_files(
     files.into_par_iter().for_each(|full_name| {
         let number = atomic.fetch_add(1, Ordering::Release);
         if number % 1000 == 0 {
-            println!("_____ {number} / {all}");
+            info!("_____ {number} / {all}");
         }
         let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
         if settings.debug_print_results {
-            println!("{output}");
+            info!("{output}");
         }
         if is_really_broken || obj.is_broken(&output) {
             atomic_broken.fetch_add(1, Ordering::Relaxed);
@@ -258,7 +269,7 @@ fn test_files(
 }
 
 fn check_files_number(name: &str, dir: &str) {
-    println!(
+    info!(
         "{name} - {} - Files Number {}.",
         dir,
         WalkDir::new(dir)

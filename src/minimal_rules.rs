@@ -5,6 +5,7 @@ use std::io::Write;
 use std::process::{Command, Stdio};
 
 use jwalk::WalkDir;
+use log::info;
 use rand::prelude::*;
 use rayon::prelude::*;
 
@@ -49,11 +50,11 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
             let output = obj.get_run_command(&new_name).wait_with_output().unwrap();
             let all_str = collect_output(&output);
             if !obj.is_broken(&all_str) {
-                println!("File {new_name} ({i}) is not broken");
+                info!("File {new_name} ({i}) is not broken");
                 return None;
             }
 
-            println!("File {new_name} ______________ ({i}) is broken",);
+            info!("File {new_name} ______________ ({i}) is broken",);
             Some((file_name.to_string(), i, all_str))
         })
         .collect();
@@ -145,12 +146,12 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             fs::write(&new_name, &original_content).unwrap();
 
             if !check_if_file_is_parsable_by_cpython("", &new_name) {
-                println!("File {new_name} ({i}) is not parsable");
+                info!("File {new_name} ({i}) is not parsable");
                 return None;
             }
 
             if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj).0 {
-                println!("File {new_name} ({i}) is not broken");
+                info!("File {new_name} ({i}) is not broken");
                 return None;
             }
 
@@ -160,7 +161,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let mut to_idx = 100;
             while to_idx != 0 {
                 fs::write(&new_name, &original_content).unwrap();
-                // println!("TO_IDX - {to_idx}");
+                // info!("TO_IDX - {to_idx}");
                 to_idx -= 1;
                 // Almost sure that  this will not crash with more than 4 rules
                 if valid_remove_rules.len() <= 4 {
@@ -187,7 +188,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 if valid_remove_rules.len() <= 1 {
                     break;
                 }
-                // println!("CURR_IDX - {curr_idx}");
+                // info!("CURR_IDX - {curr_idx}");
                 curr_idx -= 1;
                 rules_to_test.remove(curr_idx);
                 let (crashing, output) =
@@ -199,7 +200,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     rules_to_test = valid_remove_rules.clone();
                 }
             }
-            println!(
+            info!(
                 "For file {i} valid rules are: {}",
                 valid_remove_rules.join(",")
             );
@@ -225,7 +226,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         items.push((k, v));
     }
     items.sort_by(|a, b| b.1.cmp(&a.1));
-    println!("{items:?}");
+    info!("{items:?}");
 }
 
 pub fn save_results_to_file(
