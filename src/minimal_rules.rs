@@ -22,7 +22,7 @@ use crate::settings::Setting;
 
 pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     match settings.tool_type.as_str() {
-        "check" => {
+        "lint_check" | "lint_check_fix" => {
             find_minimal_rules(settings, obj);
         }
         "format" => {
@@ -135,6 +135,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let files_to_check = collect_broken_files_dir_files(settings);
 
     let all_ruff_rules = collect_all_ruff_rules();
+    let only_check = settings.tool_type == "lint_check";
     let collected_rules: Vec<_> = files_to_check
         .into_par_iter()
         .filter_map(|i| {
@@ -150,7 +151,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 return None;
             }
 
-            if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj).0 {
+            if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, only_check).0 {
                 info!("File {new_name} ({i}) is not broken");
                 return None;
             }
@@ -169,7 +170,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 }
 
                 let (crashing, output) =
-                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj);
+                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
                     rules_to_test.shuffle(&mut thread_rng());
@@ -192,7 +193,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 curr_idx -= 1;
                 rules_to_test.remove(curr_idx);
                 let (crashing, output) =
-                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj);
+                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
                     out = output;
@@ -331,18 +332,29 @@ fn check_if_rule_file_crashing(
     test_file: &str,
     rules: &[String],
     obj: &Box<dyn ProgramConfig>,
+    only_check: bool,
 ) -> (bool, String) {
     assert!(!rules.is_empty());
     let mut command = Command::new("ruff");
     let ignored_rules = calculate_ignored_rules();
-    let command = command
-        .arg("check")
-        .arg(test_file)
-        .arg("--select")
-        .arg(rules.join(","))
-        .arg("--preview")
-        .arg("--fix")
-        .arg("--no-cache");
+    let command = if only_check {
+        command
+            .arg("check")
+            .arg(test_file)
+            .arg("--select")
+            .arg(rules.join(","))
+            .arg("--preview")
+            .arg("--no-cache")
+    } else {
+        command
+            .arg("check")
+            .arg(test_file)
+            .arg("--select")
+            .arg(rules.join(","))
+            .arg("--preview")
+            .arg("--fix")
+            .arg("--no-cache")
+    };
     if !ignored_rules.is_empty() {
         command.arg("--ignore").arg(&ignored_rules);
     }

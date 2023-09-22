@@ -101,6 +101,20 @@ jobs:
             timeout: 10000
             files: "FILES_21,FILES_22"
 
+          - name: ONLY_CHECK_1
+            generate-broken-files: true
+            exceptions: true
+            config-file: fuzz_settings_ci_only_check.toml
+            timeout: 10000
+            files: "FILES_21"
+
+          - name: DEBUG_1
+            generate-broken-files: true
+            exceptions: true
+            config-file: fuzz_settings_ci_debug.toml
+            timeout: 10000
+            files: "FILES_21"
+
     steps:
       - uses: actions/checkout@v3
 
@@ -116,12 +130,23 @@ jobs:
         run: cargo install sd
 
       - name: Install ruff
+        if: ${{ matrix.name != "DEBUG_1" }}
         run: |
           git clone https://github.com/astral-sh/ruff.git ruff
           cd ruff
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
           cargo install --path crates/ruff_cli
+          cd ..
+
+      - name: Install ruff Debug
+        if: ${{ matrix.name == "DEBUG_1" }}
+        run: |
+          git clone https://github.com/astral-sh/ruff.git ruff
+          cd ruff
+          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
+          rm rust-toolchain.toml
+          cargo install --path crates/ruff_cli --debug
           cd ..
 
       - name: Remove exceptions

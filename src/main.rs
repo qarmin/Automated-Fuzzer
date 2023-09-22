@@ -88,6 +88,7 @@ fn main() {
             if settings.generate_files {
                 info!("So - generating files from valid input files dir");
                 generate_files(&obj, &settings);
+                info!("generated files");
             } else {
                 info!("So - copying files");
                 // instead creating files, copy them
@@ -99,9 +100,13 @@ fn main() {
             info!("So - no copying or generating files");
         }
 
+        info!("Removing non parsable files");
         obj.remove_non_parsable_files(&settings.temp_possible_broken_files_dir);
+        info!("Removed non parsable files");
 
+        info!("Collecting files");
         let files = collect_files(&settings);
+        info!("Collected files");
 
         let atomic_broken = AtomicU32::new(0);
 

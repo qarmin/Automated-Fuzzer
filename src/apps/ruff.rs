@@ -175,7 +175,7 @@ impl ProgramConfig for RuffStruct {
         let mut command = self._get_basic_run_command();
 
         match self.settings.tool_type.as_str() {
-            "check" => {
+            "lint_check_fix" => {
                 command
                     .arg("check")
                     .arg(full_name)
@@ -184,6 +184,18 @@ impl ProgramConfig for RuffStruct {
                     .arg("--preview")
                     .arg("--no-cache")
                     .arg("--fix");
+                if !self.ignored_rules.is_empty() {
+                    command.arg("--ignore").arg(&self.ignored_rules);
+                }
+            }
+            "lint_check" => {
+                command
+                    .arg("check")
+                    .arg(full_name)
+                    .arg("--select")
+                    .arg("ALL,NURSERY")
+                    .arg("--preview")
+                    .arg("--no-cache");
                 if !self.ignored_rules.is_empty() {
                     command.arg("--ignore").arg(&self.ignored_rules);
                 }
