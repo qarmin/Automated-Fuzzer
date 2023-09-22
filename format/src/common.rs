@@ -5,6 +5,7 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
+use std::process::Stdio;
 
 pub type Hash = [u8; 16];
 
@@ -100,4 +101,20 @@ pub fn copy_files_from_start_dir_to_test_dir(setting: &Setting, move_in_ci: bool
     } else {
         info!("Copied files to {}", &setting.test_dir);
     }
+}
+
+pub fn get_diff_between_files(original_file:&str, new_file:&str) -> String {
+    let diff_output = std::process::Command::new("diff")
+        .arg("-u")
+        .arg(original_file)
+        .arg(new_file)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    let out = String::from_utf8_lossy(&diff_output.stdout);
+    let err = String::from_utf8_lossy(&diff_output.stderr);
+    format!("{}\n{}", out, err).trim().to_string()
 }

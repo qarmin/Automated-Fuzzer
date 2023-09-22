@@ -1,14 +1,25 @@
-use crate::common::{
-    calculate_hashes_of_files, check_if_hashes_are_equal, copy_files_from_start_dir_to_test_dir,
-};
+use crate::common::{calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check, copy_files_from_start_dir_to_test_dir, get_diff_between_files};
 use crate::settings::Setting;
+use jwalk::WalkDir;
 use log::{error, info};
-use rand::Rng;
+use rand::{random, Rng};
 use std::collections::HashSet;
 use std::fs;
+use std::fs::OpenOptions;
 use std::process::{Output, Stdio};
+use std::io::Write;
+use std::path::Path;
+
+#[derive(PartialEq)]
+enum CopyMove {
+    Copy,
+    Move,
+}
 
 pub fn test_ruff_format_stability(setting: &Setting) {
+    let _ = fs::remove_dir_all(&setting.broken_files_dir);
+    fs::create_dir_all(&setting.broken_files_dir).unwrap();
+
     copy_files_from_start_dir_to_test_dir(setting, true);
     run_ruff(&setting.test_dir);
 
@@ -27,6 +38,78 @@ pub fn test_ruff_format_stability(setting: &Setting) {
 
     // let idx = 0;
     copy_files_to_broken_files(&hashset_with_differences, setting);
+
+    let files_to_check = collect_files_to_check(&setting.broken_files_dir);
+
+    let new_folder = format!("{}/BD/", setting.broken_files_dir);
+    let _ = fs::remove_dir_all(&new_folder);
+    fs::create_dir_all(&new_folder).unwrap();
+    copy_move_files_from_folder(&setting.broken_files_dir, &new_folder, CopyMove::Move);
+
+    let new_folder2 = format!("{}/BD2/", setting.broken_files_dir);
+    let _ = fs::remove_dir_all(&new_folder2);
+    fs::create_dir_all(&new_folder2).unwrap();
+    copy_move_files_from_folder(&new_folder, &new_folder2, CopyMove::Copy);
+
+    let new_folder3 = format!("{}/BD3/", setting.broken_files_dir);
+    let _ = fs::remove_dir_all(&new_folder3);
+    fs::create_dir_all(&new_folder3).unwrap();
+    copy_move_files_from_folder(&new_folder, &new_folder3, CopyMove::Copy);
+
+
+    run_ruff(&new_folder2);
+
+    run_ruff(&new_folder3);
+    run_ruff(&new_folder3);
+
+    // Must be non unique, to be able to use easily "cat *.txt > diff.txt" when collecting output from multiple directories
+    let mut diff_file = OpenOptions::new()
+        .truncate(true)
+        .create(true)
+        .write(true)
+        .open(format!(
+            "{}/diff{}.txt",
+            setting.broken_files_dir,
+            random::<u64>()
+        ))
+        .unwrap();
+
+    for non_existent in files_to_check {
+        let first_file = format!("{}/BD/{}", setting.broken_files_dir, Path::new(&non_existent).file_name().unwrap().to_str().unwrap());
+        let second_file = first_file.replace("/BD", "/BD2");
+        let third_file = first_file.replace("/BD", "/BD3");
+
+        // let diff1 = get_diff_between_files(&first_file, &second_file);
+        let diff2 = get_diff_between_files(&second_file, &third_file);
+        // writeln!(diff_file, "{}", diff1).unwrap();
+        // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "{}", diff2).unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+    }
+}
+
+
+fn copy_move_files_from_folder(original: &str, new: &str, copy: CopyMove) {
+    let _ = fs::remove_dir_all(new);
+    fs::create_dir_all(new).unwrap();
+
+    for i in WalkDir::new(original).into_iter().flatten() {
+        let path = i.path();
+        if path.is_dir() {
+            continue;
+        }
+        let new_file_name = path.to_str().unwrap().replace(original, new);
+        if copy == CopyMove::Copy {
+            fs::copy(path, new_file_name).unwrap();
+        } else {
+            fs::rename(path, new_file_name).unwrap();
+        }
+    }
 }
 
 fn copy_files_to_broken_files(hashset_with_differences: &HashSet<String>, setting: &Setting) {

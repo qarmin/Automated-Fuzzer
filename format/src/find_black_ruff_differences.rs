@@ -1,7 +1,4 @@
-use crate::common::{
-    calculate_hashes_of_files, collect_only_direct_folders, copy_files_from_start_dir_to_test_dir,
-    Hash,
-};
+use crate::common::{calculate_hashes_of_files, collect_only_direct_folders, copy_files_from_start_dir_to_test_dir, get_diff_between_files, Hash};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
@@ -98,7 +95,7 @@ fn run_diff_on_files(setting: &Setting) {
         .collect();
 
     info!("Starting to run diff on files");
-    black_files.into_iter().for_each(|black_dir_entry| {
+    black_files.into_par_iter().for_each(|black_dir_entry| {
         let black_file = black_dir_entry.path().to_str().unwrap().to_string();
         let ruff_file = black_file.replace("_black", "_ruff");
         let result_file = black_file.replace("_black", "_diff");
@@ -110,19 +107,7 @@ fn run_diff_on_files(setting: &Setting) {
             return;
         }
 
-        let diff_output = std::process::Command::new("diff")
-            .arg("-u")
-            .arg(&black_file)
-            .arg(&ruff_file)
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .unwrap()
-            .wait_with_output()
-            .unwrap();
-        let out = String::from_utf8_lossy(&diff_output.stdout);
-        let err = String::from_utf8_lossy(&diff_output.stderr);
-        let all = format!("{}\n{}", out, err);
+        let all = get_diff_between_files(&black_file, &ruff_file);
 
         if all.trim().is_empty() {
             let _ = fs::remove_file(&black_file);
