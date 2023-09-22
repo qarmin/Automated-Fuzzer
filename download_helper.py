@@ -10,6 +10,6 @@ for file_name in file_names:
     os.chdir(file_name)
     url = f"https://github.com/qarmin/Automated-Fuzzer/releases/download/test/{file_name}.zip"
     subprocess.run(["wget", url])
-    subprocess.run(["unzip", f"{file_name}.zip"])
+    subprocess.run(["unzip", "-q", f"{file_name}.zip"])
     os.remove(f"{file_name}.zip")
     os.chdir('..')

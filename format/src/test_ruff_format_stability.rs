@@ -1,4 +1,7 @@
-use crate::common::{calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check, copy_files_from_start_dir_to_test_dir, get_diff_between_files};
+use crate::common::{
+    calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check,
+    copy_files_from_start_dir_to_test_dir, get_diff_between_files,
+};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::{error, info};
@@ -6,9 +9,9 @@ use rand::{random, Rng};
 use std::collections::HashSet;
 use std::fs;
 use std::fs::OpenOptions;
-use std::process::{Output, Stdio};
 use std::io::Write;
 use std::path::Path;
+use std::process::{Output, Stdio};
 
 #[derive(PartialEq)]
 enum CopyMove {
@@ -56,7 +59,6 @@ pub fn test_ruff_format_stability(setting: &Setting) {
     fs::create_dir_all(&new_folder3).unwrap();
     copy_move_files_from_folder(&new_folder, &new_folder3, CopyMove::Copy);
 
-
     run_ruff(&new_folder2);
 
     run_ruff(&new_folder3);
@@ -75,7 +77,15 @@ pub fn test_ruff_format_stability(setting: &Setting) {
         .unwrap();
 
     for non_existent in files_to_check {
-        let first_file = format!("{}/BD/{}", setting.broken_files_dir, Path::new(&non_existent).file_name().unwrap().to_str().unwrap());
+        let first_file = format!(
+            "{}/BD/{}",
+            setting.broken_files_dir,
+            Path::new(&non_existent)
+                .file_name()
+                .unwrap()
+                .to_str()
+                .unwrap()
+        );
         let second_file = first_file.replace("/BD", "/BD2");
         let third_file = first_file.replace("/BD", "/BD3");
 
@@ -85,14 +95,33 @@ pub fn test_ruff_format_stability(setting: &Setting) {
         // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         writeln!(diff_file, "{}", diff2).unwrap();
-        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
-        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
-        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
-        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
-        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(
+            diff_file,
+            "//////////////////////////////////////////////////////"
+        )
+        .unwrap();
+        writeln!(
+            diff_file,
+            "//////////////////////////////////////////////////////"
+        )
+        .unwrap();
+        writeln!(
+            diff_file,
+            "//////////////////////////////////////////////////////"
+        )
+        .unwrap();
+        writeln!(
+            diff_file,
+            "//////////////////////////////////////////////////////"
+        )
+        .unwrap();
+        writeln!(
+            diff_file,
+            "//////////////////////////////////////////////////////"
+        )
+        .unwrap();
     }
 }
-
 
 fn copy_move_files_from_folder(original: &str, new: &str, copy: CopyMove) {
     let _ = fs::remove_dir_all(new);
@@ -105,9 +134,13 @@ fn copy_move_files_from_folder(original: &str, new: &str, copy: CopyMove) {
         }
         let new_file_name = path.to_str().unwrap().replace(original, new);
         if copy == CopyMove::Copy {
-            fs::copy(path, new_file_name).unwrap();
+            if let Err(e) = fs::copy(&path, &new_file_name) {
+                panic!("Failed to copy file {path:?} to {new_file_name} with error {e}")
+            }
         } else {
-            fs::rename(path, new_file_name).unwrap();
+            if let Err(e) = fs::rename(&path, &new_file_name) {
+                panic!("Failed to copy file {path:?} to {new_file_name} with error {e}")
+            }
         }
     }
 }
