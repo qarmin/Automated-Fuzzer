@@ -98,6 +98,7 @@ const INVALID_RULES: &[&str] = &[
     "FURB140", // 7455
     "RUF013",  // 7455
     "SIM300",  // 7455
+    "D215",    // 7619
 ];
 
 #[must_use]
@@ -224,6 +225,22 @@ impl ProgramConfig for RuffStruct {
 
     fn init(&mut self) {
         self.ignored_rules = calculate_ignored_rules();
+    }
+
+    fn is_parsable(&self, file_to_check: &str) -> bool {
+        let output = Command::new("ruff")
+            .arg("format")
+            .arg(file_to_check)
+            .arg("--check")
+            .stderr(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
+            .wait_with_output()
+            .unwrap();
+        let out = String::from_utf8_lossy(&output.stdout);
+        let err = String::from_utf8_lossy(&output.stderr);
+        !(out.contains("error: Failed to format ") || err.contains("error: Failed to format "))
     }
 
     fn remove_non_parsable_files(&self, dir_to_check: &str) {

@@ -104,6 +104,11 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             break;
         };
 
+        if !obj.is_parsable(full_name) {
+            valid_output = false;
+            continue;
+        }
+
         let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
         if is_really_broken || obj.is_broken(&output) {
             attempts = if is_really_broken {
@@ -189,6 +194,11 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         };
         if new_data.len() == old_new_data.len() {
             break;
+        }
+
+        if !obj.is_parsable(full_name) {
+            valid_output = false;
+            continue;
         }
 
         let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);

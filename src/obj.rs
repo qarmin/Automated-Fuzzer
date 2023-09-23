@@ -45,4 +45,7 @@ pub trait ProgramConfig: Sync {
     fn get_settings(&self) -> &Setting;
     fn init(&mut self) {}
     fn remove_non_parsable_files(&self, _dir_to_check: &str) {}
+    fn is_parsable(&self, _file_to_check: &str) -> bool {
+        true
+    }
 }
