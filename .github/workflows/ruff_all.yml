@@ -67,13 +67,13 @@ jobs:
             exceptions: false
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files: "FILES_21,FILES_22"
+            files: "FILES_21"
           - name: NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
             exceptions: false
             config-file: fuzz_settings_ci.toml
             timeout: 10000
-            files: "FILES_23,FILES_24"
+            files: "FILES_23"
           - name: NO_EXCEPTIONS_NO_GENERATE_3
             generate-broken-files: false
             exceptions: false
@@ -135,6 +135,8 @@ jobs:
           git clone https://github.com/astral-sh/ruff.git ruff
           cd ruff
           sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
           cargo install --path crates/ruff_cli

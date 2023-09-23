@@ -282,7 +282,7 @@ impl ProgramConfig for RuffStruct {
             }
         });
         info!(
-            "Removed {}/{all_files} files",
+            "Removed {}/{all_files} non parsable files",
             files_to_remove.load(std::sync::atomic::Ordering::Relaxed)
         );
     }
