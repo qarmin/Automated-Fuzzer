@@ -52,7 +52,13 @@ jobs:
           sd "black_timeout = 16499" "black_timeout = 100" format/settings_not_stable_ci.toml
 
       - name: Install ruff
-        run: cargo install --git https://github.com/astral-sh/ruff.git ruff_cli
+        run: |
+          git clone https://github.com/astral-sh/ruff.git ruff
+          cd ruff
+          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          rm rust-toolchain.toml
+          cargo install --path crates/ruff_cli
+          cd ..
 
       - name: Install black and check version
         run: |
