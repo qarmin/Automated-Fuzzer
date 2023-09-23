@@ -13,7 +13,6 @@ use zip::write::FileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
-use crate::clean_base_files::check_if_file_is_parsable_by_cpython;
 use crate::common::collect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -82,18 +81,18 @@ pub fn save_results_to_file_format(
         let mut file_content = String::new();
 
         if output.contains("panicked") {
-            file_content += "Format cause panic";
+            file_content += "Panic when formatting file";
         } else {
-            file_content += "Format cause problem";
+            file_content += "Formatter cause problem";
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.0.290 (latest changes from main branch)
+        file_content += &r###"Ruff 0.0.291 (latest changes from main branch)
 ```
 ruff format *.py
 ```
 
-file content(at least simple cpython script shows that this is valid python file):
+file content:
 ```
 $FILE_CONTENT
 ```
@@ -146,7 +145,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
             fs::write(&new_name, &original_content).unwrap();
 
-            if !check_if_file_is_parsable_by_cpython("", &new_name) {
+            if !obj.is_parsable(&new_name) {
                 info!("File {new_name} ({i}) is not parsable");
                 return None;
             }
@@ -268,12 +267,12 @@ pub fn save_results_to_file(
         let _ = fs::create_dir_all(&folder);
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.0.290 (latest changes from main branch)
+        file_content += &r###"Ruff 0.0.291 (latest changes from main branch)
 ```
 ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --preview
 ```
 
-file content(at least simple cpython script shows that this is valid python file):
+file content:
 ```
 $FILE_CONTENT
 ```

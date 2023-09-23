@@ -33,6 +33,8 @@ const BROKEN_ITEMS: &[&str] = &[
     "crates/ruff_source_file/src/line_index.rs", // 4406
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
+    "matches!(paren.kind(), SimpleTokenKind :: LParen", // 7623
+    "Unexpected token between nodes",            // 7624
                                                  // List of items to ignore when reporting, not always it is possible to
                                                  // "Autofix",              // A
                                                  // "Failed to create fix", // B
@@ -231,6 +233,9 @@ impl ProgramConfig for RuffStruct {
     }
 
     fn is_parsable(&self, file_to_check: &str) -> bool {
+        if !self.settings.check_if_file_is_parsable {
+            return true;
+        }
         let output = Command::new("ruff")
             .arg("format")
             .arg(file_to_check)
@@ -247,6 +252,9 @@ impl ProgramConfig for RuffStruct {
     }
 
     fn remove_non_parsable_files(&self, dir_to_check: &str) {
+        if !self.settings.check_if_file_is_parsable {
+            return;
+        }
         let files_to_check: Vec<_> = WalkDir::new(dir_to_check)
             .into_iter()
             .flatten()

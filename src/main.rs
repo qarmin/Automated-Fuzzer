@@ -52,7 +52,7 @@ fn main() {
         return;
     }
     if settings.clean_base_files {
-        clean_base_files::clean_base_files(&settings);
+        clean_base_files::clean_base_files(&settings, &obj);
         return;
     }
     if settings.find_minimal_rules {

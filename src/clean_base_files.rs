@@ -1,3 +1,4 @@
+use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
@@ -6,13 +7,13 @@ use std::fs;
 use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
-pub fn clean_base_files(settings: &Setting) {
+pub fn clean_base_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     if settings.extensions.contains(&".py".to_string()) {
-        remove_non_parsing_python_files(settings);
+        remove_non_parsing_python_files(settings, obj);
     }
 }
 
-fn remove_non_parsing_python_files(settings: &Setting) {
+fn remove_non_parsing_python_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_file = format!("{}/temp_file", settings.temp_folder);
     create_new_python_ast_file(&temp_file);
 
@@ -21,7 +22,7 @@ fn remove_non_parsing_python_files(settings: &Setting) {
     let after = AtomicUsize::new(before);
     info!("Found {before} python files to check");
     broken_files.into_par_iter().for_each(|full_name| {
-        if !check_if_file_is_parsable_by_cpython(&temp_file, &full_name) {
+        if !obj.is_parsable(&full_name) {
             return;
         }
         info!("File {full_name} is not valid python file, and will be removed");
@@ -36,6 +37,7 @@ fn remove_non_parsing_python_files(settings: &Setting) {
     );
 }
 
+#[allow(dead_code)]
 pub fn check_if_file_is_parsable_by_cpython(
     _python_ast_file_name: &str,
     source_code_file_name: &str,
