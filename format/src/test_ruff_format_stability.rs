@@ -1,6 +1,7 @@
 use crate::common::{
     calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check,
-    copy_files_from_start_dir_to_test_dir, get_diff_between_files,
+    copy_files_from_start_dir_to_test_dir, get_diff_between_files, more_detailed_copy,
+    more_detailed_move,
 };
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -24,7 +25,7 @@ pub fn test_ruff_format_stability(setting: &Setting) {
     let _ = fs::remove_dir_all(&setting.broken_files_dir);
     fs::create_dir_all(&setting.broken_files_dir).unwrap();
 
-    copy_files_from_start_dir_to_test_dir(setting, true);
+    copy_files_from_start_dir_to_test_dir(setting, false);
     run_ruff(&setting.test_dir);
 
     let mut hashset_with_differences = HashSet::new();
@@ -145,14 +146,10 @@ fn copy_move_files_from_folder_with_deleting(original: &str, new: &str, copy: Co
         let new_file_name = path.to_str().unwrap().replace(original, new);
         match copy {
             CopyMove::Copy => {
-                if let Err(e) = fs::copy(&path, &new_file_name) {
-                    panic!("Failed to copy file {path:?} to {new_file_name} with error {e}")
-                }
+                more_detailed_copy(&path, &new_file_name, true);
             }
             CopyMove::Move => {
-                if let Err(e) = fs::rename(&path, &new_file_name) {
-                    panic!("Failed to copy file {path:?} to {new_file_name} with error {e}")
-                }
+                more_detailed_move(&path, &new_file_name, true);
             }
         }
     });
@@ -172,7 +169,7 @@ fn copy_files_to_broken_files(hashset_with_differences: &HashSet<String>, settin
     for file_name in hashset_with_differences {
         let start_file = file_name.replace(&setting.test_dir, &setting.start_dir);
         let broken_file = format!("{}/A_{}.py", &setting.broken_files_dir, rng.gen::<u64>());
-        fs::copy(&start_file, &broken_file).unwrap();
+        more_detailed_copy(&start_file, &broken_file, true);
         error!("File with difference: {}", start_file);
     }
     info!(

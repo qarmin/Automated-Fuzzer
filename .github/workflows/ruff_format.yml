@@ -95,7 +95,7 @@ jobs:
           pwd
           cd format
           mv settings_black_difference_ci.toml settings.toml
-          target/release/formatter
+          RUST_BACKTRACE=1 target/release/formatter
 
       - name: Zip folders
         run: |
@@ -124,7 +124,7 @@ jobs:
           pwd
           cd format
           mv settings_not_stable_ci.toml settings.toml
-          target/release/formatter
+          RUST_BACKTRACE=1 target/release/formatter
 
       - name: Zip folders
         run: |

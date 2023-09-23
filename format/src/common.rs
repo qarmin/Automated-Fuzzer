@@ -103,7 +103,7 @@ pub fn copy_files_from_start_dir_to_test_dir(setting: &Setting, move_in_ci: bool
     }
 }
 
-pub fn get_diff_between_files(original_file:&str, new_file:&str) -> String {
+pub fn get_diff_between_files(original_file: &str, new_file: &str) -> String {
     let diff_output = std::process::Command::new("diff")
         .arg("-u")
         .arg(original_file)
@@ -117,4 +117,32 @@ pub fn get_diff_between_files(original_file:&str, new_file:&str) -> String {
     let out = String::from_utf8_lossy(&diff_output.stdout);
     let err = String::from_utf8_lossy(&diff_output.stderr);
     format!("{}\n{}", out, err).trim().to_string()
+}
+
+pub fn more_detailed_copy<P: AsRef<Path> + std::fmt::Debug, Q: AsRef<Path> + std::fmt::Debug>(
+    from: P,
+    to: Q,
+    do_panic: bool,
+) {
+    if let Err(e) = fs::copy(&from, &to) {
+        if do_panic {
+            panic!("Failed to copy file {from:?} to {to:?} with error {e}");
+        } else {
+            error!("Failed to copy file {from:?} to {to:?} with error {e}");
+        }
+    }
+}
+
+pub fn more_detailed_move<P: AsRef<Path> + std::fmt::Debug, Q: AsRef<Path> + std::fmt::Debug>(
+    from: P,
+    to: Q,
+    do_panic: bool,
+) {
+    if let Err(e) = fs::rename(&from, &to) {
+        if do_panic {
+            panic!("Failed to copy file {from:?} to {to:?} with error {e}");
+        } else {
+            error!("Failed to copy file {from:?} to {to:?} with error {e}");
+        }
+    }
 }
