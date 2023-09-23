@@ -130,7 +130,7 @@ jobs:
         run: cargo install sd
 
       - name: Install ruff
-        if: ${{ matrix.name != "DEBUG_1" }}
+        if: matrix.name != 'DEBUG_1'
         run: |
           git clone https://github.com/astral-sh/ruff.git ruff
           cd ruff
@@ -140,7 +140,7 @@ jobs:
           cd ..
 
       - name: Install ruff Debug
-        if: ${{ matrix.name == "DEBUG_1" }}
+        if: matrix.name == 'DEBUG_1'
         run: |
           git clone https://github.com/astral-sh/ruff.git ruff
           cd ruff

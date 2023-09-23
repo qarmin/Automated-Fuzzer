@@ -248,7 +248,7 @@ impl ProgramConfig for RuffStruct {
                 for file in files {
                     let rand_new_name = format!("{}/F_NAME_{}.py", folder_name, rng.gen::<u64>());
                     if let Err(e) = fs::rename(file.path(), &rand_new_name) {
-                        info!("Failed to copy file: {:?} with error: {}", file.path(), e);
+                        info!("Failed to move file: {:?} with error: {}", file.path(), e);
                         fs::remove_file(file.path()).unwrap();
                     }
                 }
