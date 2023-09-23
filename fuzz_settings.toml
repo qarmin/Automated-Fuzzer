@@ -37,8 +37,9 @@ valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FIL
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2"
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3"
 #valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
+#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/TO_MINIMIZE"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
-tool_type = "lint_check" # Also available "format"
+tool_type = "lint_check_fix" # Available "format", "lint_check", "lint_check_fix"
 binary_mode = false
 
 [libcst]
