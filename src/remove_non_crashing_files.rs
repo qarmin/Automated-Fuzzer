@@ -1,4 +1,4 @@
-use crate::clean_base_files::create_new_python_ast_file;
+use crate::clean_base_files::{check_if_file_is_parsable_by_cpython, create_new_python_ast_file};
 use crate::common::execute_command_and_connect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -17,15 +17,16 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     let after = AtomicUsize::new(before);
     info!("Found {before} files to check");
     broken_files.into_par_iter().for_each(|full_name| {
-        let is_parsable = obj.is_parsable(&full_name);
-        if is_parsable {
+        if !obj.is_parsable(&full_name) {
+            info!("File {full_name} is not parsable by ruff format, and will be removed");
+        } else if !check_if_file_is_parsable_by_cpython("", &full_name) {
+            info!("File {full_name} is not parsable by cpython, and will be removed");
+        } else {
             let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
             if is_really_broken || obj.is_broken(&output) {
                 return;
             };
             info!("File {full_name} is not broken, and will be removed");
-        } else {
-            info!("File {full_name} is not parsable, and will be removed");
         }
 
         fs::remove_file(&full_name).unwrap();

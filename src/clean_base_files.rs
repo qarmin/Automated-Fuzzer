@@ -52,6 +52,13 @@ pub fn check_if_file_is_parsable_by_cpython(
         .arg(source_code_file_name)
         .output();
     let output = output.unwrap();
+    log::error!(
+        "{}({})- {}\n{}",
+        source_code_file_name,
+        output.status,
+        String::from_utf8_lossy(&output.stderr),
+        String::from_utf8_lossy(&output.stdout)
+    );
     // dbg!(&source_code_file_name);
     // dbg!(String::from_utf8_lossy(&output.stderr));
     // dbg!(String::from_utf8_lossy(&output.stdout));

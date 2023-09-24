@@ -32,9 +32,8 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS: &[&str] = &[
     "crates/ruff_source_file/src/line_index.rs", // 4406
     "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
-    "ruff_python_parser::string::StringParser::parse_fstring", // 6831
-    "matches!(paren.kind(), SimpleTokenKind :: LParen", // 7623
     "Unexpected token between nodes",            // 7624
+    "ruff_python_parser::string::StringParser::parse_fstring", // 6831
                                                  // List of items to ignore when reporting, not always it is possible to
                                                  // "Autofix",              // A
                                                  // "Failed to create fix", // B
@@ -101,8 +100,6 @@ const INVALID_RULES: &[&str] = &[
     "RUF013",  // 7455
     "SIM300",  // 7455
     "D215",    // 7619
-    "B009",    // 7455
-    "SIM105",  // 7455
     "SIM201",  // 7455
 ];
 

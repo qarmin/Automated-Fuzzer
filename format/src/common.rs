@@ -5,7 +5,7 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-use std::process::Stdio;
+use std::process::{Command, Output, Stdio};
 
 pub type Hash = [u8; 16];
 
@@ -13,7 +13,7 @@ pub fn collect_files_to_check(dir: &str) -> Vec<String> {
     let mut files_to_check = vec![];
     for i in WalkDir::new(dir).into_iter().flatten() {
         let path = i.path();
-        if path.is_dir() {
+        if !(path.is_file() && path.to_string_lossy().ends_with(".py")) {
             continue;
         }
         files_to_check.push(path.to_str().unwrap().to_string());
@@ -114,9 +114,7 @@ pub fn get_diff_between_files(original_file: &str, new_file: &str) -> String {
         .unwrap()
         .wait_with_output()
         .unwrap();
-    let out = String::from_utf8_lossy(&diff_output.stdout);
-    let err = String::from_utf8_lossy(&diff_output.stderr);
-    format!("{}\n{}", out, err).trim().to_string()
+    connect_output(&diff_output)
 }
 
 pub fn more_detailed_copy<P: AsRef<Path> + std::fmt::Debug, Q: AsRef<Path> + std::fmt::Debug>(
@@ -145,4 +143,91 @@ pub fn more_detailed_move<P: AsRef<Path> + std::fmt::Debug, Q: AsRef<Path> + std
             error!("Failed to copy file {from:?} to {to:?} with error {e}");
         }
     }
+}
+
+pub fn run_ruff_format_check(item_to_check: &str, print_info: bool) -> Output {
+    if print_info {
+        info!("Ruff checking format on: {item_to_check}");
+    }
+    let output = std::process::Command::new("ruff")
+        .arg("format")
+        .arg(item_to_check)
+        .arg("--check")
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    if print_info {
+        info!("Ruff checked format on: {item_to_check}");
+    }
+    output
+}
+
+pub fn run_ruff_format(item_to_check: &str, print_info: bool) -> Output {
+    if print_info {
+        info!("Ruff formatted on: {item_to_check}");
+    }
+    let output = std::process::Command::new("ruff")
+        .arg("format")
+        .arg(item_to_check)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    if print_info {
+        info!("Ruff formatted on: {item_to_check}");
+    }
+    output
+}
+
+pub fn find_broken_ruff_files(all: &str) -> Vec<String> {
+    let mut new_files = vec![];
+    for i in all.lines() {
+        if let Some(s) = i.strip_prefix("error: Failed to format ") {
+            if let Some(idx) = s.find(".py") {
+                let file_name = &s[..idx + 3];
+                new_files.push(file_name.to_string());
+            }
+        }
+    }
+    new_files
+}
+
+pub fn connect_output(output: &Output) -> String {
+    let out = String::from_utf8_lossy(&output.stdout);
+    let err = String::from_utf8_lossy(&output.stderr);
+    format!("{}\n{}", out, err)
+}
+pub fn check_if_file_is_parsable_by_cpython(
+    source_code_file_name: &str,
+) -> bool {
+    let output = Command::new("python3")
+        .arg("-m")
+        .arg("py_compile")
+        .arg(source_code_file_name)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    output.status.success()
+}
+
+pub fn copy_into_smaller_folders(source_dir: &str, target_dir: &str, max_elements: usize) {
+    let files_to_copy = collect_files_to_check(source_dir);
+    files_to_copy.par_chunks(max_elements).enumerate().for_each(|(idx, names)|{
+        let target_dir = format!("{}/{}", target_dir, idx);
+        let _ = fs::remove_dir_all(&target_dir);
+        fs::create_dir_all(&target_dir).unwrap();
+        for full_path in names {
+            let file_name = Path::new(full_path).file_name().unwrap().to_str().unwrap();
+            let new_name = format!("{}/{}", target_dir, file_name);
+            fs::copy(full_path, new_name).unwrap();
+        }
+    })
 }

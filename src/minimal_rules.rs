@@ -13,6 +13,7 @@ use zip::write::FileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
+use crate::clean_base_files::check_if_file_is_parsable_by_cpython;
 use crate::common::collect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -146,7 +147,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             fs::write(&new_name, &original_content).unwrap();
 
             if !obj.is_parsable(&new_name) {
-                info!("File {new_name} ({i}) is not parsable");
+                info!("File {new_name} ({i}) is not parsable by ruff format");
+                return None;
+            }
+            if !check_if_file_is_parsable_by_cpython("", &new_name) {
+                info!("File {new_name} ({i}) is not parsable by cpython");
                 return None;
             }
 

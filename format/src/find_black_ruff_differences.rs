@@ -1,4 +1,7 @@
-use crate::common::{calculate_hashes_of_files, collect_only_direct_folders, copy_files_from_start_dir_to_test_dir, get_diff_between_files, Hash};
+use crate::common::{
+    calculate_hashes_of_files, collect_only_direct_folders, copy_files_from_start_dir_to_test_dir,
+    get_diff_between_files, run_ruff_format, Hash,
+};
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::info;
@@ -7,7 +10,7 @@ use rayon::prelude::*;
 use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
-use std::process::{Output, Stdio};
+use std::process::Stdio;
 
 pub fn check_differences(setting: &Setting) {
     info!(
@@ -18,7 +21,7 @@ pub fn check_differences(setting: &Setting) {
 
     copy_files_from_start_dir_to_test_dir(setting, false);
 
-    run_ruff(&setting.test_dir);
+    run_ruff_format(&setting.test_dir, true);
 
     let hashed_files = calculate_hashes_of_files(setting);
 
@@ -30,7 +33,7 @@ pub fn check_differences(setting: &Setting) {
 
     move_broken_files_to_test_dir(setting);
 
-    run_ruff(&setting.test_dir);
+    run_ruff_format(&setting.test_dir, true);
 
     move_broken_files_with_ruff(setting);
 
@@ -170,21 +173,6 @@ fn move_broken_files_with_ruff(setting: &Setting) {
         fs::rename(file_name, new_full_name).unwrap();
     }
     info!("Copied ruff files with differences to broken_files_dir");
-}
-
-fn run_ruff(dir: &str) -> Output {
-    info!("Running ruff on dir: {dir}",);
-    let output = std::process::Command::new("ruff")
-        .arg("format")
-        .arg(dir)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    info!("Ruff formatted files");
-    output
 }
 
 fn run_black(dir: &str, setting: &Setting) {

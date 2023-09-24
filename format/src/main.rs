@@ -1,6 +1,7 @@
 mod common;
 mod error_in_format_tool;
 mod find_black_ruff_differences;
+mod find_parse_difference;
 mod settings;
 mod test_ruff_format_stability;
 
@@ -29,6 +30,8 @@ fn main() {
         error_in_format_ttol(&settings);
     } else if settings.mode == "test_ruff_format_stability" {
         test_ruff_format_stability(&settings);
+    } else if settings.mode == "find_parse_difference" {
+        find_parse_difference::find_parse_difference(&settings);
     } else {
         panic!("Unknown mode: {}", settings.mode);
     }

@@ -1,7 +1,7 @@
 use crate::common::{
     calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check,
     copy_files_from_start_dir_to_test_dir, get_diff_between_files, more_detailed_copy,
-    more_detailed_move,
+    more_detailed_move, run_ruff_format,
 };
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -13,7 +13,6 @@ use std::fs;
 use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
-use std::process::{Output, Stdio};
 
 #[derive(PartialEq)]
 enum CopyMove {
@@ -26,13 +25,13 @@ pub fn test_ruff_format_stability(setting: &Setting) {
     fs::create_dir_all(&setting.broken_files_dir).unwrap();
 
     copy_files_from_start_dir_to_test_dir(setting, false);
-    run_ruff(&setting.test_dir);
+    run_ruff_format(&setting.test_dir, true);
 
     let mut hashset_with_differences = HashSet::new();
     let mut hashmap_with_results = calculate_hashes_of_files(setting);
     for i in 0..3 {
         info!("Iteration: {}", i);
-        run_ruff(&setting.test_dir);
+        run_ruff_format(&setting.test_dir, true);
         let different_files = check_if_hashes_are_equal(&mut hashmap_with_results, setting);
         hashset_with_differences.extend(different_files);
     }
@@ -64,10 +63,10 @@ pub fn test_ruff_format_stability(setting: &Setting) {
     fs::create_dir_all(&new_folder3).unwrap();
     copy_move_files_from_folder_with_deleting(&new_folder, &new_folder3, CopyMove::Copy);
 
-    run_ruff(&new_folder2);
+    run_ruff_format(&new_folder2, true);
 
-    run_ruff(&new_folder3);
-    run_ruff(&new_folder3);
+    run_ruff_format(&new_folder3, true);
+    run_ruff_format(&new_folder3, true);
 
     // Must be non unique, to be able to use easily "cat *.txt > diff.txt" when collecting output from multiple directories
     let mut diff_file = OpenOptions::new()
@@ -176,19 +175,4 @@ fn copy_files_to_broken_files(hashset_with_differences: &HashSet<String>, settin
         "Copied files with differences to {}",
         setting.broken_files_dir
     );
-}
-
-fn run_ruff(dir: &str) -> Output {
-    info!("Running ruff on dir: {dir}");
-    let output = std::process::Command::new("ruff")
-        .arg("format")
-        .arg(dir)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    info!("Ruff formatted files on dir: {dir}");
-    output
 }
