@@ -202,6 +202,41 @@ pub fn connect_output(output: &Output) -> String {
     let err = String::from_utf8_lossy(&output.stderr);
     format!("{}\n{}", out, err)
 }
+
+pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
+    let output = Command::new("python3")
+        .arg("-m")
+        .arg("compileall")
+        .arg(dir_to_check)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    let all = connect_output(&output);
+    // error!("{all}");
+
+    let mut next_file_is_broken = false;
+    let mut broken_files = vec![];
+    for line in all.lines().rev() {
+        if line.starts_with("Compiling '") {
+            if next_file_is_broken {
+                let file_name = line.strip_prefix("Compiling '").unwrap().strip_suffix("'...").unwrap();
+                broken_files.push(file_name.to_string());
+                next_file_is_broken = false;
+            }
+        } else {
+            if line.contains("Error:") {
+                next_file_is_broken = true;
+            }
+        }
+    }
+
+    let _ = fs::remove_dir_all(format!("{dir_to_check}/__pycache__"));
+    broken_files
+}
+
 pub fn check_if_file_is_parsable_by_cpython(
     source_code_file_name: &str,
 ) -> bool {
