@@ -40,10 +40,7 @@ pub fn check_differences(setting: &Setting) {
     run_diff_on_files(setting);
 }
 
-fn find_different_files(
-    hashmap: &HashMap<String, (Hash, usize)>,
-    test_dir: &String,
-) -> Vec<String> {
+fn find_different_files(hashmap: &HashMap<String, (Hash, usize)>, test_dir: &String) -> Vec<String> {
     let different_files: Vec<_> = WalkDir::new(test_dir)
         .into_iter()
         .flatten()
@@ -130,10 +127,7 @@ fn move_broken_files_to_test_dir(setting: &Setting) {
     info!("Removed and created test_dir");
 
     info!("Starting to move files with differences to test_dir, to check them again with ruff");
-    for file in WalkDir::new(&setting.broken_files_dir)
-        .into_iter()
-        .flatten()
-    {
+    for file in WalkDir::new(&setting.broken_files_dir).into_iter().flatten() {
         let path = file.path();
         if path.is_dir() {
             continue;

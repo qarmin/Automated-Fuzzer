@@ -31,17 +31,11 @@ fn remove_non_parsing_python_files(settings: &Setting, obj: &Box<dyn ProgramConf
     });
 
     let after = after.load(Ordering::Relaxed);
-    info!(
-        "Removed {} python files, left {after} files",
-        before - after
-    );
+    info!("Removed {} python files, left {after} files", before - after);
 }
 
 #[allow(dead_code)]
-pub fn check_if_file_is_parsable_by_cpython(
-    _python_ast_file_name: &str,
-    source_code_file_name: &str,
-) -> bool {
+pub fn check_if_file_is_parsable_by_cpython(_python_ast_file_name: &str, source_code_file_name: &str) -> bool {
     // let output = Command::new("python3")
     //     .arg(python_ast_file_name)
     //     .arg(source_code_file_name)

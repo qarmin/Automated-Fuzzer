@@ -10,9 +10,7 @@ pub struct StaticCheckGoStruct {
 
 impl ProgramConfig for StaticCheckGoStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("internal error")
-            || content.contains("panic:")
-            || content.contains("fatal error:")
+        content.contains("internal error") || content.contains("panic:") || content.contains("fatal error:")
     }
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()

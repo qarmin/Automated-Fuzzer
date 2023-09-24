@@ -90,8 +90,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
                 current_alternative_idx = lines.len() as i32 - 1;
             }
             if current_alternative_idx >= 0 {
-                new_lines =
-                    minimize_lines_one_by_one(full_name, &lines, current_alternative_idx as usize);
+                new_lines = minimize_lines_one_by_one(full_name, &lines, current_alternative_idx as usize);
                 current_alternative_idx -= 1;
             } else {
                 break;
@@ -147,9 +146,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     assert!(is_really_broken || obj.is_broken(&output));
 
     if old_line_number == lines.len() {
-        info!(
-            "File {full_name}, was not minimized after {tries} attempts, had {old_line_number} lines",
-        );
+        info!("File {full_name}, was not minimized after {tries} attempts, had {old_line_number} lines",);
     } else {
         info!(
             "File {full_name}, minimized from {old_line_number} to {} lines after {tries} attempts",
@@ -238,9 +235,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     assert!(is_really_broken || obj.is_broken(&output));
 
     if items_number == old_new_data.len() {
-        info!(
-            "File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",
-        );
+        info!("File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",);
     } else {
         info!(
             "File {full_name}, minimized from {items_number} to {} bytes after {tries} attempts",
@@ -481,10 +476,7 @@ fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, 
 }
 
 #[allow(clippy::borrowed_box)]
-pub fn execute_command_and_connect_output(
-    obj: &Box<dyn ProgramConfig>,
-    full_name: &str,
-) -> (bool, String) {
+pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> (bool, String) {
     let content_before = fs::read(full_name).unwrap(); // In each iteration be sure that before and after, file is the same
 
     let command = obj.get_run_command(full_name);

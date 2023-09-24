@@ -1,1 +1,2 @@
-short_array_element_width_threshold=1000000
+short_array_element_width_threshold = 1000000
+max_width = 120

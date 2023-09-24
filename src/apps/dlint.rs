@@ -20,11 +20,7 @@ impl ProgramConfig for DlintStruct {
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
-        self._get_basic_run_command()
-            .arg("run")
-            .arg(full_name)
-            .spawn()
-            .unwrap()
+        self._get_basic_run_command().arg("run").arg(full_name).spawn().unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {

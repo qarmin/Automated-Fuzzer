@@ -40,9 +40,10 @@ jobs:
           sudo apt update
           sudo apt install -y wget pipx
 
-      - name: Install sd
-        if: matrix.name == 'FINDING_SHORTER'
-        run: cargo install sd
+      - name: Install create_broken_files and sd
+        run: |
+          cargo install create_broken_files
+          cargo install sd
 
       - name: Change time
         if: matrix.name == 'FINDING_SHORTER'
@@ -72,6 +73,7 @@ jobs:
           cd format
           cargo build --release
 
+      ###############################################################################################
       - name: Create folders
         run: |
           mkdir /opt/START_DIR/
@@ -109,7 +111,7 @@ jobs:
           if-no-files-found: ignore
           name: BLACK_DIFFERENCE_${{ matrix.name }}
           path: /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip
-
+      ###############################################################################################
       - name: Remove all folders except START_DIR
         run: |
           rm -rf /opt/TEST_DIR/ || true
@@ -138,9 +140,39 @@ jobs:
           if-no-files-found: ignore
           name: NOT_STABLE_${{ matrix.name }}
           path: /opt/NOT_STABLE/${{ matrix.name }}.zip
+      ###############################################################################################
+      - name: Remove all folders except START_DIR
+        run: |
+          rm -rf /opt/TEST_DIR/ || true
+          rm -rf /opt/TEST_DIR2/ || true
+          rm -rf /opt/BROKEN_FILES/ || true
+          mkdir /opt/TEST_DIR/
+          mkdir /opt/TEST_DIR2/
+          mkdir /opt/BROKEN_FILES/
+
+      - name: Run app
+        run: |
+          pwd
+          cd format
+          mv settings_parse_difference.toml settings.toml
+          RUST_BACKTRACE=1 target/release/formatter
+
+      - name: Zip folders
+        run: |
+          mkdir /opt/PARSE_DIFFERENCES
+          zip -r /opt/PARSE_DIFFERENCES/${{ matrix.name }}.zip /opt/BROKEN_FILES
+          rm -rf /opt/BROKEN_FILES
+
+      - name: Store results - not stable
+        uses: actions/upload-artifact@v3
+        with:
+          if-no-files-found: ignore
+          name: PARSE_DIFFERENCES_${{ matrix.name }}
+          path: /opt/PARSE_DIFFERENCES/${{ matrix.name }}.zip
 
       - name: Exit when found broken files
         run: |
           [ "$(ls -A /opt/NOT_STABLE)" ] && exit 1 || true
           [ "$(ls -A /opt/BLACK_DIFFERENCE)" ] && exit 1 || true
+          [ "$(ls -A /opt/PARSE_DIFFERENCES)" ] && exit 1 || true
 

@@ -3,9 +3,7 @@ use rayon::prelude::*;
 use std::fs;
 use std::path::Path;
 
-use crate::common::{
-    collect_files_to_check, connect_output, run_ruff_format, run_ruff_format_check,
-};
+use crate::common::{collect_files_to_check, connect_output, run_ruff_format, run_ruff_format_check};
 use crate::settings::Setting;
 
 // Used to test if ruff format crashes or if cause format error

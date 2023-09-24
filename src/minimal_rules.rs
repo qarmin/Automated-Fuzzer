@@ -65,10 +65,7 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
     save_results_to_file_format(settings, collected_items);
 }
 
-pub fn save_results_to_file_format(
-    settings: &Setting,
-    collected_items: Vec<(String, String, String)>,
-) {
+pub fn save_results_to_file_format(settings: &Setting, collected_items: Vec<(String, String, String)>) {
     for (file_name, name, output) in collected_items {
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
@@ -173,8 +170,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     break;
                 }
 
-                let (crashing, output) =
-                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
+                let (crashing, output) = check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
                     rules_to_test.shuffle(&mut thread_rng());
@@ -196,8 +192,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 // info!("CURR_IDX - {curr_idx}");
                 curr_idx -= 1;
                 rules_to_test.remove(curr_idx);
-                let (crashing, output) =
-                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
+                let (crashing, output) = check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
                     out = output;
@@ -205,10 +200,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     rules_to_test = valid_remove_rules.clone();
                 }
             }
-            info!(
-                "For file {i} valid rules are: {}",
-                valid_remove_rules.join(",")
-            );
+            info!("For file {i} valid rules are: {}", valid_remove_rules.join(","));
 
             Some((valid_remove_rules, file_name.to_string(), i, out))
         })
@@ -234,10 +226,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     info!("{items:?}");
 }
 
-pub fn save_results_to_file(
-    settings: &Setting,
-    rules_with_names: Vec<(Vec<String>, String, String, String)>,
-) {
+pub fn save_results_to_file(settings: &Setting, rules_with_names: Vec<(Vec<String>, String, String, String)>) {
     for (rules, file_name, name, output) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
@@ -304,12 +293,7 @@ $ERROR
 }
 
 pub fn collect_all_ruff_rules() -> Vec<String> {
-    let stdout: Vec<_> = Command::new("ruff")
-        .arg("rule")
-        .arg("--all")
-        .output()
-        .unwrap()
-        .stdout;
+    let stdout: Vec<_> = Command::new("ruff").arg("rule").arg("--all").output().unwrap().stdout;
     let stdout_str = String::from_utf8(stdout).unwrap();
     let lines: Vec<_> = stdout_str
         .split('\n')

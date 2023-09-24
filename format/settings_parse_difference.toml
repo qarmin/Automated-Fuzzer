@@ -1,0 +1,14 @@
+[general]
+start_dir = "/opt/START_DIR/" # Dir with files to use to test - this dir will not be touched
+test_dir = "/opt/TEST_DIR/" # Dir to save test results
+test_dir2 = "/opt/TEST_DIR2/" # Dir to save test results 2
+broken_files_dir = "/opt/BROKEN_FILES/" # Dir to save broken_files_results
+mode = "find_parse_difference"
+black_timeout = 16499 # In seconds, do not allows to run too much app
+depth = 2 # How deep to go in dirs - if in start dir folder to check are directly in start dir, then depth = 1, otherwise setup it to other value
+ci_run = true
+
+# modes
+# test_ruff_format_stability
+# error_in_format_tool
+# check_difference

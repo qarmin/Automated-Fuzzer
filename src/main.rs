@@ -10,9 +10,7 @@ use std::{fs, process};
 
 use rayon::prelude::*;
 
-use crate::common::{
-    execute_command_and_connect_output, minimize_binary_output, minimize_string_output,
-};
+use crate::common::{execute_command_and_connect_output, minimize_binary_output, minimize_string_output};
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
@@ -112,10 +110,7 @@ fn main() {
 
         test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
 
-        info!(
-            "\n\nFound {} broken files",
-            atomic_broken.load(Ordering::Relaxed)
-        );
+        info!("\n\nFound {} broken files", atomic_broken.load(Ordering::Relaxed));
     }
     info!(
         "\n\nFound {} broken files in all iterations",
@@ -164,11 +159,7 @@ fn copy_files(settings: &Setting) {
         let Some(extension) = extension.to_str() else {
             continue;
         };
-        if settings
-            .extensions
-            .iter()
-            .any(|e| s.to_lowercase().ends_with(e))
-        {
+        if settings.extensions.iter().any(|e| s.to_lowercase().ends_with(e)) {
             collected_files.push((s.to_string(), old_name.to_string(), extension.to_string()));
         }
     }
@@ -176,27 +167,22 @@ fn copy_files(settings: &Setting) {
         "Completed collecting files to check({} found files)",
         collected_files.len()
     );
-    collected_files
-        .into_par_iter()
-        .for_each(|(s, old_name, extension)| {
-            let mut rng = thread_rng();
+    collected_files.into_par_iter().for_each(|(s, old_name, extension)| {
+        let mut rng = thread_rng();
 
-            let mut new_name = format!(
-                "{}/{}.{}",
-                settings.temp_possible_broken_files_dir, old_name, extension
+        let mut new_name = format!("{}/{}.{}", settings.temp_possible_broken_files_dir, old_name, extension);
+        while Path::new(&new_name).exists() {
+            let random_number: u64 = rng.gen();
+            new_name = format!(
+                "{}/{}-{}.{}",
+                settings.temp_possible_broken_files_dir, old_name, random_number, extension
             );
-            while Path::new(&new_name).exists() {
-                let random_number: u64 = rng.gen();
-                new_name = format!(
-                    "{}/{}-{}.{}",
-                    settings.temp_possible_broken_files_dir, old_name, random_number, extension
-                );
-            }
-            // info!("Copying file {s}  to {new_name:?}");
-            if let Err(e) = fs::copy(&s, &new_name) {
-                error!("Failed to copy file {s} to {new_name} with error {e}");
-            };
-        });
+        }
+        // info!("Copying file {s}  to {new_name:?}");
+        if let Err(e) = fs::copy(&s, &new_name) {
+            error!("Failed to copy file {s} to {new_name} with error {e}");
+        };
+    });
 }
 
 fn collect_files(settings: &Setting) -> Vec<String> {
@@ -218,11 +204,7 @@ fn collect_files(settings: &Setting) -> Vec<String> {
         let Some(s) = path.to_str() else {
             continue;
         };
-        if settings
-            .extensions
-            .iter()
-            .any(|e| s.to_lowercase().ends_with(e))
-        {
+        if settings.extensions.iter().any(|e| s.to_lowercase().ends_with(e)) {
             files.push(s.to_string());
         }
     }

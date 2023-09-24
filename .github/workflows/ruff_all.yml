@@ -23,7 +23,7 @@ jobs:
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_21"
-          - name: NORMAL_1
+          - name: NORMAL_2
             generate-broken-files: true
             exceptions: true
             config-file: fuzz_settings_ci.toml

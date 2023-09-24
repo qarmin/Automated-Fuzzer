@@ -21,10 +21,7 @@ pub trait ProgramConfig: Sync {
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
-        self._get_basic_run_command()
-            .arg(full_name)
-            .spawn()
-            .unwrap()
+        self._get_basic_run_command().arg(full_name).spawn().unwrap()
     }
     fn _get_basic_run_command(&self) -> Command {
         let timeout = self.get_settings().timeout;

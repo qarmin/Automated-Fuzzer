@@ -16,10 +16,15 @@ pub fn collect_files_to_check(dir: &str) -> Vec<String> {
         if !(path.is_file() && path.to_string_lossy().ends_with(".py")) {
             continue;
         }
-        files_to_check.push(path.to_str().unwrap().to_string());
+
+        if let Some(path) = path.to_str() {
+            let path_str = path.to_string();
+            files_to_check.push(path_str);
+        }
     }
     files_to_check
 }
+
 pub fn calculate_hashes_of_files(setting: &Setting) -> HashMap<String, (Hash, usize)> {
     info!("Starting to calculate hashes of files");
     let files_to_check = collect_files_to_check(&setting.test_dir);
@@ -34,25 +39,28 @@ pub fn calculate_hashes_of_files(setting: &Setting) -> HashMap<String, (Hash, us
     hashmap
 }
 
-pub fn check_if_hashes_are_equal(
-    hashmap: &mut HashMap<String, (Hash, usize)>,
-    setting: &Setting,
-) -> Vec<String> {
+pub fn check_if_hashes_are_equal(hashmap: &mut HashMap<String, (Hash, usize)>, setting: &Setting) -> Vec<String> {
     info!("Starting to verifying hashes of files");
     let files_to_check = collect_files_to_check(&setting.test_dir);
 
-    let items: Vec<_> = files_to_check.into_par_iter().filter_map(|file_name| {
-        let file_content = fs::read(&file_name).unwrap();
-        let size = file_content.len();
-        let hash: Hash = md5::compute(file_content).0;
-        let (original_hash, original_size) = *hashmap.get(&file_name).unwrap();
+    let items: Vec<_> = files_to_check
+        .into_par_iter()
+        .filter_map(|file_name| {
+            let file_content = fs::read(&file_name).unwrap();
+            let size = file_content.len();
+            let hash: Hash = md5::compute(file_content).0;
+            let (original_hash, original_size) = *hashmap.get(&file_name).unwrap();
 
-        if original_hash != hash {
-            error!("Hashes are not equal for file: {} - before len {original_size}, curr len {size}", file_name);
-            return Some((file_name, hash, size));
-        }
-        None
-    }).collect();
+            if original_hash != hash {
+                error!(
+                    "Hashes are not equal for file: {} - before len {original_size}, curr len {size}",
+                    file_name
+                );
+                return Some((file_name, hash, size));
+            }
+            None
+        })
+        .collect();
 
     for i in &items {
         let (file_name, hash, size) = i;
@@ -186,10 +194,14 @@ pub fn run_ruff_format(item_to_check: &str, print_info: bool) -> Output {
 
 pub fn find_broken_ruff_files(all: &str) -> Vec<String> {
     let mut new_files = vec![];
-    for i in all.lines() {
-        if let Some(s) = i.strip_prefix("error: Failed to format ") {
+    for line in all.lines() {
+        if let Some(s) = line.strip_prefix("error: Failed to format ") {
             if let Some(idx) = s.find(".py") {
                 let file_name = &s[..idx + 3];
+                if !Path::new(&file_name).is_file() {
+                    error!("BUG: Invalid missing file name '{file_name}' in line '{line}'");
+                    continue;
+                }
                 new_files.push(file_name.to_string());
             }
         }
@@ -223,13 +235,15 @@ pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
         if line.starts_with("Compiling '") {
             if next_file_is_broken {
                 let file_name = line.strip_prefix("Compiling '").unwrap().strip_suffix("'...").unwrap();
-                broken_files.push(file_name.to_string());
                 next_file_is_broken = false;
+                if !Path::new(&file_name).is_file() {
+                    error!("BUG: Invalid missing file name '{file_name}' in line '{line}'");
+                    continue;
+                }
+                broken_files.push(file_name.to_string());
             }
-        } else {
-            if line.contains("Error:") {
-                next_file_is_broken = true;
-            }
+        } else if line.contains("Error:") {
+            next_file_is_broken = true;
         }
     }
 
@@ -237,9 +251,8 @@ pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
     broken_files
 }
 
-pub fn check_if_file_is_parsable_by_cpython(
-    source_code_file_name: &str,
-) -> bool {
+#[allow(dead_code)]
+pub fn check_if_file_is_parsable_by_cpython(source_code_file_name: &str) -> bool {
     let output = Command::new("python3")
         .arg("-m")
         .arg("py_compile")
@@ -254,15 +267,48 @@ pub fn check_if_file_is_parsable_by_cpython(
 }
 
 pub fn copy_into_smaller_folders(source_dir: &str, target_dir: &str, max_elements: usize) {
+    info!("Starting to copy files into smaller folders from {source_dir} to {target_dir}");
     let files_to_copy = collect_files_to_check(source_dir);
-    files_to_copy.par_chunks(max_elements).enumerate().for_each(|(idx, names)|{
-        let target_dir = format!("{}/{}", target_dir, idx);
-        let _ = fs::remove_dir_all(&target_dir);
-        fs::create_dir_all(&target_dir).unwrap();
-        for full_path in names {
-            let file_name = Path::new(full_path).file_name().unwrap().to_str().unwrap();
-            let new_name = format!("{}/{}", target_dir, file_name);
-            fs::copy(full_path, new_name).unwrap();
-        }
-    })
+    files_to_copy
+        .par_chunks(max_elements)
+        .enumerate()
+        .for_each(|(idx, names)| {
+            let target_dir = format!("{}/{}", target_dir, idx);
+            let _ = fs::remove_dir_all(&target_dir);
+            fs::create_dir_all(&target_dir).unwrap();
+            for full_path in names {
+                let file_name = Path::new(full_path).file_name().unwrap().to_str().unwrap();
+                let new_name = format!("{}/{}", target_dir, file_name);
+                fs::copy(full_path, new_name).unwrap();
+            }
+        });
+    info!("Ended to copy files into smaller folders from {source_dir} to {target_dir}");
+}
+
+const PYTHON_ARGS: &[&str] = &[
+    "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except", "in", "raise",
+    "True", "class", "finally", "is", "return", "and", "continue", "for", "lambda", "float", "int", "bool", "try",
+    "as", "def", "from", "nonlocal", "while", "assert", "del", "global", "not", "with", "async", "elif", "if", "or",
+    "yield", "__init__", "pylint", ":", "?", "[", "\"", "\"\"\"", "\'", "]", "}", "%", "f\"", "f'", "<", "<=", ">=",
+    ">", ".", ",", "==", "!=", "{", "=", "|", "\\", ";", "_", "-", "**", "*", "/", "!", "(", ")", "(True)", "{}", "()",
+    "[]", "\n", "\t", "# fmt: skip", "# fmt: off", "# fmt: on", "# fmt: noqa", "# noqa", "# type:", "is not", "None",
+    "False", "True", "is None", "is not None", "is False", "is True", "is not ", "is not True", "is not False",
+    "is not None", "is False", "is True", "is not True",
+];
+
+pub fn create_broken_files(source_dir: &str, destination_dir: &str, per_file: usize) {
+    info!("Starting to create broken files from {source_dir} to {destination_dir} with {per_file} per file");
+    Command::new("create_broken_files")
+        .args(format!("-i {source_dir} -o {destination_dir} -n {per_file} -c true -s").split(' '))
+        .args(PYTHON_ARGS)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    info!("Ended to create broken files from {source_dir} to {destination_dir} with {per_file} per file");
+
+    // let connect = connect_output(&command);
+    // warn!("{connect}");
 }

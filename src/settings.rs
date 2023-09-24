@@ -71,13 +71,7 @@ pub fn load_settings() -> Setting {
     let extensions = curr_setting["extensions"]
         .split(',')
         .map(str::trim)
-        .filter_map(|e| {
-            if e.is_empty() {
-                None
-            } else {
-                Some(format!(".{e}"))
-            }
-        })
+        .filter_map(|e| if e.is_empty() { None } else { Some(format!(".{e}")) })
         .collect();
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
@@ -86,12 +80,10 @@ pub fn load_settings() -> Setting {
         generate_files: general["generate_files"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
-        minimization_attempts_with_signal_timeout: general
-            ["minimization_attempts_with_signal_timeout"]
+        minimization_attempts_with_signal_timeout: general["minimization_attempts_with_signal_timeout"]
             .parse()
             .unwrap(),
-        remove_non_crashing_items_from_broken_files: general
-            ["remove_non_crashing_items_from_broken_files"]
+        remove_non_crashing_items_from_broken_files: general["remove_non_crashing_items_from_broken_files"]
             .parse()
             .unwrap(),
         current_mode,
@@ -109,13 +101,9 @@ pub fn load_settings() -> Setting {
             .map(|e| e.parse().unwrap())
             .collect(),
         error_when_found_signal: general["error_when_found_signal"].parse().unwrap(),
-        debug_print_broken_files_creator: general["debug_print_broken_files_creator"]
-            .parse()
-            .unwrap(),
+        debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
-        ignore_generate_copy_files_step: general["ignore_generate_copy_files_step"]
-            .parse()
-            .unwrap(),
+        ignore_generate_copy_files_step: general["ignore_generate_copy_files_step"].parse().unwrap(),
         clean_base_files: general["clean_base_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
         find_minimal_rules: general["find_minimal_rules"].parse().unwrap(),

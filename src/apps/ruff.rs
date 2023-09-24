@@ -40,9 +40,8 @@ const BROKEN_ITEMS: &[&str] = &[
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "Failed to create fix", "RUST_BACKTRACE", "catch_unwind::{{closure}}",
-    "This indicates a bug in", "AddressSanitizer:", "LeakSanitizer:",
-    "Autofix introduced a syntax error",
+    "Failed to create fix", "RUST_BACKTRACE", "catch_unwind::{{closure}}", "This indicates a bug in",
+    "AddressSanitizer:", "LeakSanitizer:", "Autofix introduced a syntax error",
 ];
 
 const INVALID_RULES: &[&str] = &[

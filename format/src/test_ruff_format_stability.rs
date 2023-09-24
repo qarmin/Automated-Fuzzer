@@ -1,7 +1,7 @@
 use crate::common::{
     calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check,
-    copy_files_from_start_dir_to_test_dir, get_diff_between_files, more_detailed_copy,
-    more_detailed_move, run_ruff_format,
+    copy_files_from_start_dir_to_test_dir, get_diff_between_files, more_detailed_copy, more_detailed_move,
+    run_ruff_format,
 };
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -35,10 +35,7 @@ pub fn test_ruff_format_stability(setting: &Setting) {
         let different_files = check_if_hashes_are_equal(&mut hashmap_with_results, setting);
         hashset_with_differences.extend(different_files);
     }
-    info!(
-        "Found {} files with differences",
-        hashset_with_differences.len()
-    );
+    info!("Found {} files with differences", hashset_with_differences.len());
 
     copy_files_to_broken_files(&hashset_with_differences, setting);
 
@@ -47,11 +44,7 @@ pub fn test_ruff_format_stability(setting: &Setting) {
     let new_folder = format!("{}BD/", setting.broken_files_dir);
     let _ = fs::remove_dir_all(&new_folder);
     fs::create_dir_all(&new_folder).unwrap();
-    copy_move_files_from_folder_with_deleting(
-        &setting.broken_files_dir,
-        &new_folder,
-        CopyMove::Move,
-    );
+    copy_move_files_from_folder_with_deleting(&setting.broken_files_dir, &new_folder, CopyMove::Move);
 
     let new_folder2 = format!("{}BD2/", setting.broken_files_dir);
     let _ = fs::remove_dir_all(&new_folder2);
@@ -73,22 +66,14 @@ pub fn test_ruff_format_stability(setting: &Setting) {
         .truncate(true)
         .create(true)
         .write(true)
-        .open(format!(
-            "{}/diff{}.txt",
-            setting.broken_files_dir,
-            random::<u64>()
-        ))
+        .open(format!("{}/diff{}.txt", setting.broken_files_dir, random::<u64>()))
         .unwrap();
 
     for non_existent in files_to_check {
         let first_file = format!(
             "{}BD/{}",
             setting.broken_files_dir,
-            Path::new(&non_existent)
-                .file_name()
-                .unwrap()
-                .to_str()
-                .unwrap()
+            Path::new(&non_existent).file_name().unwrap().to_str().unwrap()
         );
         let second_file = first_file.replace("/BD", "/BD2");
         let third_file = first_file.replace("/BD", "/BD3");
@@ -99,31 +84,11 @@ pub fn test_ruff_format_stability(setting: &Setting) {
         // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         writeln!(diff_file, "{}", diff2).unwrap();
-        writeln!(
-            diff_file,
-            "//////////////////////////////////////////////////////"
-        )
-        .unwrap();
-        writeln!(
-            diff_file,
-            "//////////////////////////////////////////////////////"
-        )
-        .unwrap();
-        writeln!(
-            diff_file,
-            "//////////////////////////////////////////////////////"
-        )
-        .unwrap();
-        writeln!(
-            diff_file,
-            "//////////////////////////////////////////////////////"
-        )
-        .unwrap();
-        writeln!(
-            diff_file,
-            "//////////////////////////////////////////////////////"
-        )
-        .unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
+        writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
     }
 }
 
@@ -171,8 +136,5 @@ fn copy_files_to_broken_files(hashset_with_differences: &HashSet<String>, settin
         more_detailed_copy(&start_file, &broken_file, true);
         error!("File with difference: {}", start_file);
     }
-    info!(
-        "Copied files with differences to {}",
-        setting.broken_files_dir
-    );
+    info!("Copied files with differences to {}", setting.broken_files_dir);
 }

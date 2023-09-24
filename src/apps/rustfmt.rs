@@ -10,9 +10,7 @@ pub struct RustFmtStruct {
 
 impl ProgramConfig for RustFmtStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("stack backtrace")
-            && content.contains("RUST_BACKTRACE")
-            && content.contains("panicked at")
+        content.contains("stack backtrace") && content.contains("RUST_BACKTRACE") && content.contains("panicked at")
     }
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()
