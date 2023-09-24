@@ -6,7 +6,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
-use std::process::Output;
+use std::process::{Command, Output, Stdio};
 
 use rand::prelude::ThreadRng;
 use rand::Rng;
@@ -520,6 +520,81 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
     ));
 
     (is_signal_code_timeout_broken, str_out)
+}
+
+pub fn run_ruff_format_check(item_to_check: &str, print_info: bool) -> Output {
+    if print_info {
+        info!("Ruff checking format on: {item_to_check}");
+    }
+    let output = std::process::Command::new("ruff")
+        .arg("format")
+        .arg(item_to_check)
+        .arg("--check")
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    if print_info {
+        info!("Ruff checked format on: {item_to_check}");
+    }
+    output
+}
+
+#[allow(dead_code)]
+pub fn run_ruff_format(item_to_check: &str, print_info: bool) -> Output {
+    if print_info {
+        info!("Ruff formatted on: {item_to_check}");
+    }
+    let output = Command::new("ruff")
+        .arg("format")
+        .arg(item_to_check)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    if print_info {
+        info!("Ruff formatted on: {item_to_check}");
+    }
+    output
+}
+pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
+    let output = Command::new("python3")
+        .arg("-m")
+        .arg("compileall")
+        .arg(dir_to_check)
+        .stderr(Stdio::piped())
+        .stdout(Stdio::piped())
+        .spawn()
+        .unwrap()
+        .wait_with_output()
+        .unwrap();
+    let all = collect_output(&output);
+    // error!("{all}");
+
+    let mut next_file_is_broken = false;
+    let mut broken_files = vec![];
+    for line in all.lines().rev() {
+        if line.starts_with("Compiling '") {
+            if next_file_is_broken {
+                let file_name = line.strip_prefix("Compiling '").unwrap().strip_suffix("'...").unwrap();
+                next_file_is_broken = false;
+                if !Path::new(&file_name).is_file() {
+                    error!("BUG: Invalid missing file name '{file_name}' in line '{line}'");
+                    continue;
+                }
+                broken_files.push(file_name.to_string());
+            }
+        } else if line.contains("Error:") {
+            next_file_is_broken = true;
+        }
+    }
+
+    let _ = fs::remove_dir_all(format!("{dir_to_check}/__pycache__"));
+    broken_files
 }
 
 #[test]

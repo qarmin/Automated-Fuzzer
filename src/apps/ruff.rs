@@ -7,7 +7,9 @@ use std::process::{Child, Command, Stdio};
 use std::sync::atomic::AtomicU32;
 
 use crate::broken_files::{create_broken_files, LANGS};
-use crate::common::{create_new_file_name, try_to_save_file};
+use crate::common::{
+    collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
+};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -280,34 +282,39 @@ impl ProgramConfig for RuffStruct {
             })
             .collect();
 
-        let files_to_remove = AtomicU32::new(0);
-        folders.into_par_iter().for_each(|folder_name| {
-            let output = Command::new("ruff")
-                .arg("format")
-                .arg(&folder_name)
-                .arg("--check")
-                .stderr(Stdio::piped())
-                .stdout(Stdio::piped())
-                .spawn()
-                .unwrap()
-                .wait_with_output()
-                .unwrap();
-            let out = String::from_utf8_lossy(&output.stdout);
-            let err = String::from_utf8_lossy(&output.stderr);
-            let all = format!("{out}\n{err}");
+        let files_to_remove_ruff = AtomicU32::new(0);
+        folders.par_iter().for_each(|folder_name| {
+            let output = run_ruff_format_check(folder_name, false);
+
+            let all = collect_output(&output);
             for i in all.lines() {
                 if let Some(s) = i.strip_prefix("error: Failed to format ") {
                     if let Some(idx) = s.find(".py") {
-                        files_to_remove.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+                        files_to_remove_ruff.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                         let file_name = &s[..idx + 3];
                         fs::remove_file(file_name).unwrap();
                     }
                 }
             }
         });
+
+        let files_to_remove_cpython = AtomicU32::new(0);
+        folders.par_iter().for_each(|folder_name| {
+            let not_parsable_files = find_broken_files_by_cpython(folder_name);
+            for file_name in &not_parsable_files {
+                fs::remove_file(file_name).unwrap();
+            }
+            files_to_remove_cpython.fetch_add(not_parsable_files.len() as u32, std::sync::atomic::Ordering::Relaxed);
+        });
+
+        let files_to_remove_cpython: u32 = files_to_remove_cpython.load(std::sync::atomic::Ordering::Relaxed);
+        let files_to_remove_ruff: u32 = files_to_remove_ruff.load(std::sync::atomic::Ordering::Relaxed);
+
         info!(
-            "Removed {}/{all_files} non parsable files",
-            files_to_remove.load(std::sync::atomic::Ordering::Relaxed)
+            "Removed {}/{all_files} non parsable files - first {} by files, later {} by cpython",
+            files_to_remove_ruff + files_to_remove_cpython,
+            files_to_remove_ruff,
+            files_to_remove_cpython
         );
     }
 }
