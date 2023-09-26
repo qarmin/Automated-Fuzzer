@@ -32,18 +32,17 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
 const BROKEN_ITEMS: &[&str] = &[
-    "crates/ruff_source_file/src/line_index.rs", // 4406
-    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
-    "Unexpected token between nodes",            // 7624
+    "crates/ruff_source_file/src/line_index.rs",               // 4406
+    "Failed to extract expression from source",                // 6809 - probably rust python-parser problem
+    "Unexpected token between nodes",                          // 7624
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
-                                                 // List of items to ignore when reporting, not always it is possible to
-                                                 // "Autofix",              // A
-                                                 // "Failed to create fix", // B
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     "Failed to create fix", "RUST_BACKTRACE", "catch_unwind::{{closure}}", "This indicates a bug in",
-    "AddressSanitizer:", "LeakSanitizer:", "Autofix introduced a syntax error",
+    "AddressSanitizer:", "LeakSanitizer:",
+    "Autofix introduced a syntax error", // TODO Autofix remove after fix will be changed
+    "Fix introduced a syntax error",
 ];
 
 const INVALID_RULES: &[&str] = &[
@@ -160,6 +159,8 @@ impl ProgramConfig for RuffStruct {
             .map(String::from)
             .collect::<Vec<String>>();
         lines.dedup();
+        // Lines contains info about
+        let lines = lines.into_iter().take_while(|e| e != "---").collect::<Vec<_>>();
         let output = lines.join("\n");
 
         let new_name = create_new_file_name(self.get_settings(), &full_name);
