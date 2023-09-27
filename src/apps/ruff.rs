@@ -1,5 +1,5 @@
 use jwalk::WalkDir;
-use log::info;
+use log::{error, info};
 use rand::Rng;
 use rayon::prelude::*;
 use std::fs;
@@ -165,8 +165,7 @@ impl ProgramConfig for RuffStruct {
 
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
-        info!("\n_______________ File {full_name} saved to {new_name} _______________________");
-        info!("{output}");
+        error!("File {full_name} saved to {new_name}\n{output}");
 
         if try_to_save_file(self.get_settings(), &full_name, &new_name) {
             let _ = try_to_save_file(self.get_settings(), &full_name, &new_name_not_minimized);

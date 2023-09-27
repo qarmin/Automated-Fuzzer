@@ -39,7 +39,7 @@ pub fn error_in_format_ttol(setting: &Setting) {
             let broken_file_folder_name = Path::new(&broken_file_name).parent().unwrap();
             fs::create_dir_all(broken_file_folder_name).unwrap();
             fs::copy(&original_file_name, &broken_file_name).unwrap();
-            info!("_________________________________________\nFound error in file: {original_file_name}\n{all}\n_________________________________________");
+            error!("_________________________________________\nFound error in file: {original_file_name}\n{all}\n_________________________________________");
         }
     });
 }

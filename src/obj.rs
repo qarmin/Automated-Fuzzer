@@ -1,4 +1,4 @@
-use log::info;
+use log::error;
 use std::process::{Child, Command, Stdio};
 
 use crate::common::{create_new_file_name, try_to_save_file};
@@ -9,8 +9,7 @@ pub trait ProgramConfig: Sync {
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
-        info!("_______________ File {full_name} saved to {new_name} _______________________");
-        info!("{output}");
+        error!("File {full_name} saved to {new_name}\n{output}");
 
         if try_to_save_file(self.get_settings(), &full_name, &new_name) {
             let _ = try_to_save_file(self.get_settings(), &full_name, &new_name_not_minimized);
