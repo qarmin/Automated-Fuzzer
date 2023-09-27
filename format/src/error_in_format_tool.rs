@@ -1,4 +1,4 @@
-use log::info;
+use log::{error, info};
 use rayon::prelude::*;
 use std::fs;
 use std::path::Path;

@@ -9,18 +9,9 @@ use crate::error_in_format_tool::error_in_format_ttol;
 use crate::find_black_ruff_differences::check_differences;
 use crate::settings::load_settings;
 use crate::test_ruff_format_stability::test_ruff_format_stability;
-use handsome_logger::{format_description, ColorChoice, ConfigBuilder, TerminalMode, TimeFormat};
 
 fn main() {
-    let config = ConfigBuilder::new()
-        .set_time_format(
-            TimeFormat::Custom(format_description!(
-                "[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:3]"
-            )),
-            None,
-        )
-        .build();
-    handsome_logger::TermLogger::init(config, TerminalMode::Mixed, ColorChoice::Always).unwrap();
+    handsome_logger::init().unwrap();
 
     let settings = load_settings();
 

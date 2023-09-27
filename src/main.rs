@@ -1,7 +1,6 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
 
-use handsome_logger::{ColorChoice, ConfigBuilder, TerminalMode};
 use rand::prelude::*;
 use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
@@ -26,12 +25,7 @@ mod remove_non_crashing_files;
 mod settings;
 
 fn main() {
-    handsome_logger::TermLogger::init(
-        ConfigBuilder::new_preset_no_micros_in_time().build(),
-        TerminalMode::Mixed,
-        ColorChoice::Always,
-    )
-    .unwrap();
+    handsome_logger::init().unwrap();
 
     // rayon::ThreadPoolBuilder::new()
     //     .num_threads(8)
