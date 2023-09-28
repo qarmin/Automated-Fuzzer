@@ -92,25 +92,25 @@ jobs:
           
           cd $CURR_DIR
 
-      - name: Run app
-        run: |
-          pwd
-          cd format
-          mv settings_black_difference_ci.toml settings.toml
-          RUST_BACKTRACE=1 target/release/formatter
-
-      - name: Zip folders
-        run: |
-          mkdir /opt/BLACK_DIFFERENCE
-          zip -r /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip /opt/BROKEN_FILES
-          rm -rf /opt/BROKEN_FILES
-
-      - name: Store results - black difference
-        uses: actions/upload-artifact@v3
-        with:
-          if-no-files-found: ignore
-          name: BLACK_DIFFERENCE_${{ matrix.name }}
-          path: /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip
+      #      - name: Run app
+      #        run: |
+      #          pwd
+      #          cd format
+      #          mv settings_black_difference_ci.toml settings.toml
+      #          RUST_BACKTRACE=1 target/release/formatter
+      #
+      #      - name: Zip folders
+      #        run: |
+      #          mkdir /opt/BLACK_DIFFERENCE
+      #          zip -r /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip /opt/BROKEN_FILES
+      #          rm -rf /opt/BROKEN_FILES
+      #
+      #      - name: Store results - black difference
+      #        uses: actions/upload-artifact@v3
+      #        with:
+      #          if-no-files-found: ignore
+      #          name: BLACK_DIFFERENCE_${{ matrix.name }}
+      #          path: /opt/BLACK_DIFFERENCE/${{ matrix.name }}.zip
       ###############################################################################################
       - name: Remove all folders except START_DIR
         run: |

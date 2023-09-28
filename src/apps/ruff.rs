@@ -34,7 +34,6 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS: &[&str] = &[
     "crates/ruff_source_file/src/line_index.rs",               // 4406
     "Failed to extract expression from source",                // 6809 - probably rust python-parser problem
-    "Unexpected token between nodes",                          // 7624
     "ruff_python_parser::string::StringParser::parse_fstring", // 6831
 ];
 
@@ -101,6 +100,9 @@ const INVALID_RULES: &[&str] = &[
     "SIM300",  // 7455
     "D215",    // 7619
     "SIM201",  // 7455
+    "B009",    // 7455
+    "B014",    // 7455
+    "PT009",   // 7455
 ];
 
 #[must_use]
@@ -153,7 +155,9 @@ impl ProgramConfig for RuffStruct {
             .lines()
             .filter(|e| {
                 !((e.contains(".py") && e.matches(':').count() >= 3)
+                    || e.trim().is_empty()
                     || e.starts_with("warning: `")
+                    || e.starts_with("Found: `")
                     || e.starts_with("Ignoring `"))
             })
             .map(String::from)
@@ -184,7 +188,7 @@ impl ProgramConfig for RuffStruct {
                     .arg("check")
                     .arg(full_name)
                     .arg("--select")
-                    .arg("ALL,NURSERY")
+                    .arg("ALL")
                     .arg("--preview")
                     .arg("--no-cache")
                     .arg("--fix");
@@ -197,7 +201,7 @@ impl ProgramConfig for RuffStruct {
                     .arg("check")
                     .arg(full_name)
                     .arg("--select")
-                    .arg("ALL,NURSERY")
+                    .arg("ALL")
                     .arg("--preview")
                     .arg("--no-cache");
                 if !self.ignored_rules.is_empty() {
