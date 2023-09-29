@@ -13,7 +13,6 @@ use zip::write::FileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
-use crate::clean_base_files::check_if_file_is_parsable_by_cpython;
 use crate::common::collect_output;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -129,6 +128,8 @@ pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &str) {
 
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
+
+    obj.remove_non_parsable_files(&settings.broken_files_dir);
     let files_to_check = collect_broken_files_dir_files(settings);
 
     let all_ruff_rules = collect_all_ruff_rules();
@@ -142,15 +143,6 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let mut out = String::new();
 
             fs::write(&new_name, &original_content).unwrap();
-
-            if !obj.is_parsable(&new_name) {
-                info!("File {new_name} ({i}) is not parsable by ruff format");
-                return None;
-            }
-            if !check_if_file_is_parsable_by_cpython("", &new_name) {
-                info!("File {new_name} ({i}) is not parsable by cpython");
-                return None;
-            }
 
             if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, only_check).0 {
                 info!("File {new_name} ({i}) is not broken");

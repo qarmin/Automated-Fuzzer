@@ -32,8 +32,9 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
 const BROKEN_ITEMS: &[&str] = &[
-    "crates/ruff_source_file/src/line_index.rs", // 4406
-    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
+    "crates/ruff_source_file/src/line_index.rs",         // 4406
+    "Failed to extract expression from source",          // 6809 - probably rust python-parser problem
+    "ruff_python_parser::parser::parse_filtered_tokens", // 7711
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
@@ -99,6 +100,9 @@ const INVALID_RULES: &[&str] = &[
     "SIM300",  // 7455
     "D215",    // 7619
     "SIM201",  // 7455
+    "PIE790",  // 7455
+    "PT006",   // 7455
+    "RUF010",  // 7455
 ];
 
 #[must_use]
