@@ -28,5 +28,5 @@ app_config = ""
 extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-tool_type = "fromat"
+tool_type = "format"
 binary_mode = true

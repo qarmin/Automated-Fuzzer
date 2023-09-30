@@ -1,6 +1,7 @@
 use crate::common::{
     collect_only_direct_folders, connect_output, copy_into_smaller_folders, create_broken_files,
-    find_broken_files_by_cpython, find_broken_ruff_files, run_ruff_format_check,
+    find_broken_files_by_cpython, find_broken_ruff_files, remove_empty_folders_from_broken_files_dir,
+    run_ruff_format_check,
 };
 use crate::settings::Setting;
 use log::{error, info};
@@ -78,10 +79,10 @@ pub fn find_parse_difference(settings: &Setting) {
         .count();
 
     if ruff_broken_cpython_not > 0 {
-        fs::create_dir_all(format!("{}/RuffBroken",settings.broken_files_dir)).unwrap( )
+        fs::create_dir_all(format!("{}/RuffBroken", settings.broken_files_dir)).unwrap();
     }
     if cpython_broken_ruff_not > 0 {
-        fs::create_dir_all(format!("{}/Cpython",settings.broken_files_dir)).unwrap( )
+        fs::create_dir_all(format!("{}/Cpython", settings.broken_files_dir)).unwrap();
     }
 
     files.into_par_iter().for_each(|file| match file {
@@ -108,4 +109,5 @@ pub fn find_parse_difference(settings: &Setting) {
             cpython_broken_ruff_not
         );
     }
+    remove_empty_folders_from_broken_files_dir(settings);
 }

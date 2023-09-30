@@ -25,16 +25,24 @@ pub fn collect_files_to_check(dir: &str) -> Vec<String> {
     files_to_check
 }
 
+pub fn remove_empty_folders_from_broken_files_dir(setting: &Setting) {
+    if collect_files_to_check(&setting.broken_files_dir).is_empty() {
+        fs::remove_dir_all(&setting.broken_files_dir).unwrap();
+        fs::create_dir_all(&setting.broken_files_dir).unwrap();
+    };
+}
+
 pub fn calculate_hashes_of_files(setting: &Setting) -> HashMap<String, (Hash, usize)> {
     info!("Starting to calculate hashes of files");
     let files_to_check = collect_files_to_check(&setting.test_dir);
     let mut hashmap = HashMap::new();
-    files_to_check.into_iter().for_each(|file_name| {
+
+    for file_name in files_to_check {
         let file_content = fs::read(&file_name).unwrap();
         let size = file_content.len();
         let hash: Hash = md5::compute(file_content).0;
         hashmap.insert(file_name, (hash, size));
-    });
+    }
     info!("Finished calculating hashes of files");
     hashmap
 }
@@ -212,7 +220,7 @@ pub fn find_broken_ruff_files(all: &str) -> Vec<String> {
 pub fn connect_output(output: &Output) -> String {
     let out = String::from_utf8_lossy(&output.stdout);
     let err = String::from_utf8_lossy(&output.stderr);
-    format!("{}\n{}", out, err)
+    format!("{out}\n{err}")
 }
 
 pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
@@ -273,12 +281,12 @@ pub fn copy_into_smaller_folders(source_dir: &str, target_dir: &str, max_element
         .par_chunks(max_elements)
         .enumerate()
         .for_each(|(idx, names)| {
-            let target_dir = format!("{}/{}", target_dir, idx);
+            let target_dir = format!("{target_dir}/{idx}");
             let _ = fs::remove_dir_all(&target_dir);
             fs::create_dir_all(&target_dir).unwrap();
             for full_path in names {
                 let file_name = Path::new(full_path).file_name().unwrap().to_str().unwrap();
-                let new_name = format!("{}/{}", target_dir, file_name);
+                let new_name = format!("{target_dir}/{file_name}");
                 fs::copy(full_path, new_name).unwrap();
             }
         });

@@ -1,6 +1,6 @@
 use crate::common::{
     calculate_hashes_of_files, collect_only_direct_folders, copy_files_from_start_dir_to_test_dir,
-    get_diff_between_files, run_ruff_format, Hash,
+    get_diff_between_files, remove_empty_folders_from_broken_files_dir, run_ruff_format, Hash,
 };
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -38,6 +38,8 @@ pub fn check_differences(setting: &Setting) {
     move_broken_files_with_ruff(setting);
 
     run_diff_on_files(setting);
+
+    remove_empty_folders_from_broken_files_dir(setting);
 }
 
 fn find_different_files(hashmap: &HashMap<String, (Hash, usize)>, test_dir: &String) -> Vec<String> {
@@ -146,7 +148,7 @@ fn move_broken_black_files(different_files: Vec<String>, setting: &Setting) {
 
     info!("Starting to move black files with differences to broken_files_dir");
     let mut rng = rand::thread_rng();
-    for full_name in different_files.into_iter() {
+    for full_name in different_files {
         let new_full_name = format!("{}{}_black.py", &setting.broken_files_dir, rng.gen::<u64>());
         fs::rename(full_name, new_full_name).unwrap();
     }

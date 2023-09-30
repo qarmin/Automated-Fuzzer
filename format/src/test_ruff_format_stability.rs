@@ -1,7 +1,7 @@
 use crate::common::{
     calculate_hashes_of_files, check_if_hashes_are_equal, collect_files_to_check,
     copy_files_from_start_dir_to_test_dir, get_diff_between_files, more_detailed_copy, more_detailed_move,
-    run_ruff_format,
+    remove_empty_folders_from_broken_files_dir, run_ruff_format,
 };
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -14,7 +14,7 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Copy, Clone)]
 enum CopyMove {
     Copy,
     Move,
@@ -83,13 +83,15 @@ pub fn test_ruff_format_stability(setting: &Setting) {
         // writeln!(diff_file, "{}", diff1).unwrap();
         // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         // writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
-        writeln!(diff_file, "{}", diff2).unwrap();
+        writeln!(diff_file, "{diff2}").unwrap();
         writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
         writeln!(diff_file, "//////////////////////////////////////////////////////").unwrap();
     }
+
+    remove_empty_folders_from_broken_files_dir(setting);
 }
 
 fn copy_move_files_from_folder_with_deleting(original: &str, new: &str, copy: CopyMove) {
