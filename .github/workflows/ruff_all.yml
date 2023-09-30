@@ -212,7 +212,6 @@ jobs:
       # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
         if: ${{ matrix.format == false }}
-        if: ${{ matrix.exceptions == false }}
         run: |
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
