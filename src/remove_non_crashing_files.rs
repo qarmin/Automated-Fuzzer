@@ -25,6 +25,12 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
         after.fetch_sub(1, Ordering::Relaxed);
     });
 
+    // Needed, because CI
+    if collect_broken_files(settings).is_empty() {
+        fs::remove_dir_all(&settings.broken_files_dir).unwrap();
+        fs::create_dir_all(&settings.broken_files_dir).unwrap();
+    }
+
     let after = after.load(Ordering::Relaxed);
     info!("Removed {} files, left {after} files", before - after);
 }

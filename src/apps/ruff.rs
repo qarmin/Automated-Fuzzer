@@ -32,9 +32,8 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
 const BROKEN_ITEMS: &[&str] = &[
-    "crates/ruff_source_file/src/line_index.rs",         // 4406
-    "Failed to extract expression from source",          // 6809 - probably rust python-parser problem
-    "ruff_python_parser::parser::parse_filtered_tokens", // 7711
+    "crates/ruff_source_file/src/line_index.rs", // 4406
+    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
@@ -158,6 +157,7 @@ impl ProgramConfig for RuffStruct {
                     || e.trim().is_empty()
                     || e.starts_with("warning: `")
                     || e.starts_with("Found: `")
+                    || e.starts_with("Found ")
                     || e.starts_with("Ignoring `"))
             })
             .map(String::from)
@@ -315,7 +315,7 @@ impl ProgramConfig for RuffStruct {
         let files_to_remove_ruff: u32 = files_to_remove_ruff.load(std::sync::atomic::Ordering::Relaxed);
 
         info!(
-            "Removed {}/{all_files} non parsable files - first {} by files, later {} by cpython",
+            "Removed {}/{all_files} non parsable files - first {} by ruff, later {} by cpython",
             files_to_remove_ruff + files_to_remove_cpython,
             files_to_remove_ruff,
             files_to_remove_cpython

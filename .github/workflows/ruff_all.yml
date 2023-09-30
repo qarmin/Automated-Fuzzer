@@ -19,18 +19,21 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_21"
           - name: NORMAL_2
             generate-broken-files: true
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_22"
           - name: NORMAL_3
             generate-broken-files: true
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
@@ -38,18 +41,21 @@ jobs:
 
           - name: NO_GENERATE_1
             generate-broken-files: false
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
             files: "FILES_21,FILES_22"
           - name: NO_GENERATE_2
             generate-broken-files: false
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
             files: "FILES_23,FILES_24"
           - name: NO_GENERATE_3
             generate-broken-files: false
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
@@ -57,6 +63,7 @@ jobs:
 
           - name: SHORT_NORMAL_1
             generate-broken-files: true
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci.toml
             timeout: 120
@@ -64,18 +71,21 @@ jobs:
 
           - name: NO_EXCEPTIONS_NORMAL_1
             generate-broken-files: true
+            format: false
             exceptions: false
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_21"
           - name: NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
+            format: false
             exceptions: false
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_23"
           - name: NO_EXCEPTIONS_NO_GENERATE_3
             generate-broken-files: false
+            format: false
             exceptions: false
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
@@ -83,12 +93,14 @@ jobs:
 
           - name: BINARY_NORMAL_1
             generate-broken-files: true
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
             files: "FILES_21"
           - name: BINARY_NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
+            format: false
             exceptions: false
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
@@ -96,6 +108,7 @@ jobs:
 
           - name: FORMAT_NO_GENERATE_1
             generate-broken-files: false
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci_alt_format.toml
             timeout: 10000
@@ -103,6 +116,7 @@ jobs:
 
           - name: ONLY_CHECK_1
             generate-broken-files: true
+            format: true
             exceptions: true
             config-file: fuzz_settings_ci_only_check.toml
             timeout: 10000
@@ -110,6 +124,7 @@ jobs:
 
           - name: DEBUG_1
             generate-broken-files: true
+            format: false
             exceptions: true
             config-file: fuzz_settings_ci_debug.toml
             timeout: 10000
@@ -196,8 +211,15 @@ jobs:
 
       # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
+        if: ${{ matrix.format != false }}
         run: |
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
+          RUST_BACKTRACE=1 target/release/automated_fuzzer
+
+      - name: Remove non crashing files
+        if: ${{ matrix.format == false }}
+        run: |
+          mv fuzz_settings_ci_remove_files_format.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
       - name: Remove pycache

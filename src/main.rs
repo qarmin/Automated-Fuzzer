@@ -104,12 +104,16 @@ fn main() {
 
         test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
 
-        info!("\n\nFound {} broken files", atomic_broken.load(Ordering::Relaxed));
+        info!("");
+        info!("Found {} broken files", atomic_broken.load(Ordering::Relaxed));
+        info!("");
     }
+    info!("");
     info!(
-        "\n\nFound {} broken files in all iterations",
+        "Found {} broken files in all iterations",
         atomic_all_broken.load(Ordering::Relaxed)
     );
+    info!("");
 }
 
 fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
