@@ -1,3 +1,4 @@
+use jwalk::WalkDir;
 use log::error;
 use std::process::{Child, Command, Stdio};
 
@@ -36,6 +37,34 @@ pub trait ProgramConfig: Sync {
         };
         comm.stderr(Stdio::piped()).stdout(Stdio::piped());
         comm
+    }
+
+    fn collect_files_in_dir_with_extension(&self, dir_to_check: &str) -> Vec<String> {
+        let mut files_to_check = Vec::new();
+        for i in WalkDir::new(dir_to_check).into_iter().flatten() {
+            let path = i.path();
+            if !path.is_file() {
+                continue;
+            }
+            let Some(file_name) = path.file_name() else {
+                continue;
+            };
+            let Some(file_name) = file_name.to_str() else {
+                continue;
+            };
+            let small_file_name = file_name.to_lowercase();
+
+            if !self
+                .get_settings()
+                .extensions
+                .iter()
+                .any(|x| small_file_name.ends_with(x))
+            {
+                continue;
+            }
+            files_to_check.push(file_name.to_string());
+        }
+        files_to_check
     }
     fn broken_file_creator(&self) -> Child;
     fn get_settings(&self) -> &Setting;

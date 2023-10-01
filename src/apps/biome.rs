@@ -8,7 +8,7 @@ pub struct BiomeStruct {
     pub settings: Setting,
 }
 
-const BROKEN_ITEMS: &[&str] = &[
+const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
     "begin <= end (1 <= 0) ",         // 4323
     "assertion failed: start <= end", // 4323
     "is not a char boundary",         // 4323
@@ -19,7 +19,7 @@ impl ProgramConfig for BiomeStruct {
     fn is_broken(&self, content: &str) -> bool {
         content.contains("RUST_BACKTRACE")
             || content.contains("Biome encountered an unexpected error")
-                && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
+                && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {

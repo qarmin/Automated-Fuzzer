@@ -259,21 +259,6 @@ pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
     broken_files
 }
 
-#[allow(dead_code)]
-pub fn check_if_file_is_parsable_by_cpython(source_code_file_name: &str) -> bool {
-    let output = Command::new("python3")
-        .arg("-m")
-        .arg("py_compile")
-        .arg(source_code_file_name)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    output.status.success()
-}
-
 pub fn copy_into_smaller_folders(source_dir: &str, target_dir: &str, max_elements: usize) {
     info!("Starting to copy files into smaller folders from {source_dir} to {target_dir}");
     let files_to_copy = collect_files_to_check(source_dir);

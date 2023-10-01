@@ -172,11 +172,11 @@ jobs:
         if: ${{ matrix.exceptions == false }}
         run: |
           cat src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/ruff.rs
+          sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/ruff.rs
           sd 'const INVALID_RULES: &\[&str\] = &\[[^]]+];' 'const INVALID_RULES: &[&str] = &[];' src/apps/ruff.rs
           sd 'const BROKEN_ITEMS_NOT_CRITICAL: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[];' src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/dlint.rs
-          sd 'const BROKEN_ITEMS: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS: &[&str] = &[];' src/apps/biome.rs
+          sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/dlint.rs
+          sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/biome.rs
           cat src/apps/ruff.rs
 
       - name: Build

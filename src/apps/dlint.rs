@@ -8,7 +8,7 @@ pub struct DlintStruct {
     pub settings: Setting,
 }
 
-const BROKEN_ITEMS: &[&str] = &[
+const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
     "Parser should not call bump()",                  // 1145
     "on a `None` value', src/rules/getter_return.rs", // 1145
     "on a `None` value', src/js_regex/validator.rs",  // 1145
@@ -16,7 +16,7 @@ const BROKEN_ITEMS: &[&str] = &[
 
 impl ProgramConfig for DlintStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE") && !BROKEN_ITEMS.iter().any(|e| content.contains(e))
+        content.contains("RUST_BACKTRACE") && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {

@@ -31,9 +31,13 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
-const BROKEN_ITEMS: &[&str] = &[
-    "crates/ruff_source_file/src/line_index.rs", // 4406
-    "Failed to extract expression from source",  // 6809 - probably rust python-parser problem
+const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
+    "crates/ruff_source_file/src/line_index.rs",                   // 4406
+    "Failed to extract expression from source",                    // 6809 - probably rust python-parser problem
+    "line terminator character but text must only use line feeds", // 7734
+    "Expected the keyword token Def but found",                    // 7735
+    "start_locations.is_empty",                                    // 7736
+    "assertion failed: `(left == right)",                          // 7737
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
@@ -102,6 +106,9 @@ const INVALID_RULES: &[&str] = &[
     "PIE790",  // 7455
     "PT006",   // 7455
     "RUF010",  // 7455
+    "RUF017",  // 7718
+    "PLE2513", // 7455
+    "PLE2512", // 7455
 ];
 
 #[must_use]
@@ -139,11 +146,11 @@ impl ProgramConfig for RuffStruct {
 
         let found_broken_items = BROKEN_ITEMS_TO_FIND.iter().any(|e| content.contains(e));
 
-        let found_ignored_item = BROKEN_ITEMS.iter().any(|e| content.contains(e));
+        let found_ignored_item = BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e));
 
         // Debug check if properly finding broken items
         // dbg!(
-        //     BROKEN_ITEMS.iter().find(|e| content.contains(*e)),
+        //     BROKEN_ITEMS_TO_IGNORE.iter().find(|e| content.contains(*e)),
         //     found_broken_items
         // );
         found_broken_items && !found_ignored_item
