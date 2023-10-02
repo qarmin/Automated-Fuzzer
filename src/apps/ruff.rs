@@ -25,19 +25,15 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
     "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
     "UnnecessaryCollectionCall",       // 6809
     "due to late binding",             // 6842
-    "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717
+    "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717 - UP030
     "Unable to use existing symbol due to incompatible context", // 6842
 ];
 
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
-    "crates/ruff_source_file/src/line_index.rs",                   // 4406
-    "Failed to extract expression from source",                    // 6809 - probably rust python-parser problem
-    "line terminator character but text must only use line feeds", // 7734
-    "Expected the keyword token Def but found",                    // 7735
-    "start_locations.is_empty",                                    // 7736
-    "assertion failed: `(left == right)",                          // 7737
+    "Expected the keyword token Def but found", // 7735
+    "start_locations.is_empty",                 // 7736
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
@@ -52,24 +48,12 @@ const INVALID_RULES: &[&str] = &[
     "TCH003",  // 5331
     "Q002",    // 6785
     "PTH116",  // 6785
-    "ICN001",  // 6786
-    "EM101",   // 6811
-    "ERA001",  // 6831
-    "F632",    // 6891
-    "E712",    // 6891
     "ANN401",  // 6987
     "W605",    // 6987
     "EM102",   // 6988
-    "E231",    // 6890
-    "E202",    // 6890
-    "E203",    // 7070
-    "E231",    // 7070
     "UP032",   // 7074
-    "RET503",  // 7075
     "FURB113", // 7095
     "UP037",   // 7102
-    "COM812",  // 7122
-    "PT014",   // 7122
     "SIM222",  // 7127
     "F841",    // 7128
     "Q000",    // 7128
@@ -83,32 +67,16 @@ const INVALID_RULES: &[&str] = &[
     "C418",    // 7455
     "D201",    // 7455
     "D211",    // 7455
+    "E703",    // 7455
     "E714",    // 7455
-    "RUF100",  // 7455
+    "EM103",   // 7455
+    "F407",    // 7455
     "PLR0133", // 7455
     "RUF005",  // 7455
-    "SIM101",  // 7455
-    "SIM208",  // 7455
-    "TCH001",  // 7455
-    "TCH002",  // 7455
-    "UP003",   // 7455
-    "UP012",   // 7455
-    "UP025",   // 7455
-    "UP028",   // 7455
-    "E703",    // 7455
-    "F407",    // 7455
-    "EM103",   // 7455
-    "FURB140", // 7455
-    "RUF013",  // 7455
-    "SIM300",  // 7455
-    "D215",    // 7619
+    "RUF100",  // 7455
     "SIM201",  // 7455
-    "PIE790",  // 7455
-    "PT006",   // 7455
-    "RUF010",  // 7455
-    "RUF017",  // 7718
-    "PLE2513", // 7455
-    "PLE2512", // 7455
+    "SIM208",  // 7455
+    "UP028",   // 7455
 ];
 
 #[must_use]
