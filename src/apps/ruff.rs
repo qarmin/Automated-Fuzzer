@@ -23,8 +23,10 @@ const DISABLE_ALL_EXCEPTIONS: bool = false;
 // This errors are not critical, and can be ignored when found two issues and one with it
 const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
     "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
+    "Failed to create fix for UnnecessaryLiteralDict", // Mostly expected 7455
+    "ReimplementedStarmap",            // Mostly expected 7455
+    "due to late binding",             // Mostly expected 6842
     "UnnecessaryCollectionCall",       // 6809
-    "due to late binding",             // 6842
     "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717 - UP030
     "Unable to use existing symbol due to incompatible context", // 6842
 ];
@@ -77,6 +79,16 @@ const INVALID_RULES: &[&str] = &[
     "SIM201",  // 7455
     "SIM208",  // 7455
     "UP028",   // 7455
+    "ERA001",  // 7455
+    "EM101",   // 7455
+    "FURB140", // 7455
+    "PT014",   // 7455
+    "PT006",   // 7455
+    "RUF010",  // 7455
+    "RUF013",  // 7455
+    "RET503",  // 7455
+    "SIM108",  // 7455
+    "TCH002",  // 5331
 ];
 
 #[must_use]
