@@ -172,9 +172,7 @@ jobs:
         if: ${{ matrix.exceptions == false }}
         run: |
           cat src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/ruff.rs
-          sd 'const INVALID_RULES: &\[&str\] = &\[[^]]+];' 'const INVALID_RULES: &[&str] = &[];' src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS_NOT_CRITICAL: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[];' src/apps/ruff.rs
+          sd 'const DISABLE_EXCEPTIONS: bool = false;' 'const DISABLE_EXCEPTIONS: bool = true;' src/apps/ruff.rs
           sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/dlint.rs
           sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/biome.rs
           cat src/apps/ruff.rs
