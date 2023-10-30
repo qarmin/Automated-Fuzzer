@@ -255,7 +255,7 @@ pub fn save_results_to_file(settings: &Setting, rules_with_names: Vec<(Vec<Strin
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r###"Ruff 0.1.3 (latest changes from main branch)
 ```
-ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --preview
+ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --isolated
 ```
 
 file content:
