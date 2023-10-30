@@ -89,6 +89,7 @@ const INVALID_RULES: &[&str] = &[
     "RET503",  // 7455
     "SIM108",  // 7455
     "TCH002",  // 5331
+    "E274",    // 7455
 ];
 
 #[must_use]
