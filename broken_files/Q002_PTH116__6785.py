@@ -1,0 +1,1 @@
+﻿''"assert" ' SAM macro definitions '''
