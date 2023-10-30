@@ -110,7 +110,7 @@ pub fn calculate_ignored_rules() -> String {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
-        if DISABLE_EXCEPTIONS {
+        if DISABLE_EXCEPTIONS || self.settings.verify_if_files_are_still_broken {
             return BROKEN_ITEMS_TO_FIND
                 .iter()
                 .filter(|line| !BROKEN_ITEMS_NOT_CRITICAL.iter().any(|e2| line.contains(e2)))
@@ -182,7 +182,9 @@ impl ProgramConfig for RuffStruct {
                     .arg("ALL")
                     .arg("--preview")
                     .arg("--no-cache")
-                    .arg("--fix");
+                    .arg("--fix")
+                    .arg("--unsafe-fixes")
+                    .arg("--isolated");
                 if !self.ignored_rules.is_empty() {
                     command.arg("--ignore").arg(&self.ignored_rules);
                 }

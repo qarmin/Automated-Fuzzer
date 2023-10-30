@@ -52,6 +52,7 @@ pub struct Setting {
     pub ignore_generate_copy_files_step: bool,
     pub find_minimal_rules: bool,
     pub check_if_file_is_parsable: bool,
+    pub verify_if_files_are_still_broken: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -109,6 +110,7 @@ pub fn load_settings() -> Setting {
         find_minimal_rules: general["find_minimal_rules"].parse().unwrap(),
         tool_type: curr_setting["tool_type"].clone(),
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
+        verify_if_files_are_still_broken: general["verify_if_files_are_still_broken"].parse().unwrap(),
     }
 }
 

@@ -84,7 +84,7 @@ pub fn save_results_to_file_format(settings: &Setting, collected_items: Vec<(Str
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.0.292 (latest changes from main branch)
+        file_content += &r###"Ruff 0.1.3 (latest changes from main branch)
 ```
 ruff format *.py
 ```
@@ -253,7 +253,7 @@ pub fn save_results_to_file(settings: &Setting, rules_with_names: Vec<(Vec<Strin
         let _ = fs::create_dir_all(&folder);
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.0.292 (latest changes from main branch)
+        file_content += &r###"Ruff 0.1.3 (latest changes from main branch)
 ```
 ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --preview
 ```
@@ -333,6 +333,8 @@ fn check_if_rule_file_crashing(
             .arg(rules.join(","))
             .arg("--preview")
             .arg("--fix")
+            .arg("--unsafe-fixes")
+            .arg("--isolated")
             .arg("--no-cache")
     };
     if !ignored_rules.is_empty() {
@@ -353,7 +355,7 @@ fn check_if_rule_file_crashing(
     (obj.is_broken(&all_std), all_std)
 }
 
-fn collect_broken_files_dir_files(settings: &Setting) -> Vec<String> {
+pub fn collect_broken_files_dir_files(settings: &Setting) -> Vec<String> {
     WalkDir::new(&settings.broken_files_dir)
         .into_iter()
         .flatten()

@@ -23,6 +23,7 @@ mod minimal_rules;
 mod obj;
 mod remove_non_crashing_files;
 mod settings;
+mod verify_reported_broken_files;
 
 fn main() {
     handsome_logger::init().unwrap();
@@ -49,6 +50,10 @@ fn main() {
     }
     if settings.find_minimal_rules {
         minimal_rules::check_code(&settings, &obj);
+        return;
+    }
+    if settings.verify_if_files_are_still_broken {
+        verify_reported_broken_files::verify_if_files_are_still_broken(&settings, &obj);
         return;
     }
 

@@ -12,6 +12,7 @@ debug_print_results = false # Debug prints output of commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
 find_minimal_rules = true # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
+verify_if_files_are_still_broken = true # If true, will verify if files are still broken, if not, then will be removed
 clean_base_files = false # If true, files will be cleaned according to extension e.g. non parsable python files will be removed
 temp_folder = "/home/rafal/test/tmp_folder" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled
