@@ -1,0 +1,1 @@
+'count' in [*records]

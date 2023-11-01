@@ -1,4 +1,5 @@
 use crate::common::collect_output;
+use log::info;
 use rayon::prelude::*;
 use std::path::Path;
 use std::process::{Command, Stdio};
@@ -9,6 +10,7 @@ use crate::settings::Setting;
 
 pub fn verify_if_files_are_still_broken(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let used_rules = find_used_rules(settings);
+    info!("Found {} files to check", used_rules.len());
     used_rules.into_par_iter().for_each(|(full_name, rules, issue)| {
         let file_content = std::fs::read_to_string(&full_name).unwrap();
         if check_if_rule_file_crashing(&full_name, &rules, obj).0 {

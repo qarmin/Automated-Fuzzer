@@ -34,8 +34,7 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
-    "Expected the keyword token Def but found", // 7735
-    "start_locations.is_empty",                 // 7736
+    "start_locations.is_empty", // 7736
 ];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
@@ -46,8 +45,6 @@ const BROKEN_ITEMS_TO_FIND: &[&str] = &[
 ];
 
 const INVALID_RULES: &[&str] = &[
-    "W292",    // 4406
-    "TCH003",  // 5331
     "Q002",    // 6785
     "PTH116",  // 6785
     "ANN401",  // 6987
@@ -79,7 +76,6 @@ const INVALID_RULES: &[&str] = &[
     "SIM201",  // 7455
     "SIM208",  // 7455
     "UP028",   // 7455
-    "ERA001",  // 7455
     "EM101",   // 7455
     "FURB140", // 7455
     "PT014",   // 7455
@@ -90,6 +86,12 @@ const INVALID_RULES: &[&str] = &[
     "SIM108",  // 7455
     "TCH002",  // 5331
     "E274",    // 7455
+    "D300",    // 8402
+    "E223",    // 8402
+    "D301",    // 8402
+    "FURB171", // 8402
+    "PIE804",  // 8402
+    "UP014",   // 8402
 ];
 
 #[must_use]
