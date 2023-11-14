@@ -33,9 +33,7 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
-const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
-    "start_locations.is_empty", // 7736
-];
+const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     "Failed to create fix", "RUST_BACKTRACE", "catch_unwind::{{closure}}", "This indicates a bug in",
@@ -49,7 +47,6 @@ const INVALID_RULES: &[&str] = &[
     "PTH116",  // 6785
     "ANN401",  // 6987
     "W605",    // 6987
-    "EM102",   // 6988
     "UP032",   // 7074
     "FURB113", // 7095
     "UP037",   // 7102
@@ -66,10 +63,8 @@ const INVALID_RULES: &[&str] = &[
     "C418",    // 7455
     "D201",    // 7455
     "D211",    // 7455
-    "E703",    // 7455
     "E714",    // 7455
     "EM103",   // 7455
-    "F407",    // 7455
     "PLR0133", // 7455
     "RUF005",  // 7455
     "RUF100",  // 7455
@@ -86,9 +81,16 @@ const INVALID_RULES: &[&str] = &[
     "SIM108",  // 7455
     "TCH002",  // 5331
     "E274",    // 7455
-    "D300",    // 8402
-    "D301",    // 8402
     "PIE804",  // 8402
+    "TCH003",  // 5331
+    "UP025",   // 8680
+    "PLR1706", // 8402
+    "PD002",   // 8402
+    "FURB171", // 8402
+    "E223",    // 8402
+    "RUF015",  // 8402
+    "C405",    // 8402
+    "TRIO115", // 8402
 ];
 
 #[must_use]
