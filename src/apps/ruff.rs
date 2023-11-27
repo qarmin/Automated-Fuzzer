@@ -83,14 +83,13 @@ const INVALID_RULES: &[&str] = &[
     "E274",    // 7455
     "PIE804",  // 8402
     "TCH003",  // 5331
-    "UP025",   // 8680
     "PLR1706", // 8402
     "PD002",   // 8402
     "FURB171", // 8402
     "E223",    // 8402
     "RUF015",  // 8402
     "C405",    // 8402
-    "TRIO115", // 8402
+    "D208",    // 8844
 ];
 
 #[must_use]
@@ -111,7 +110,7 @@ pub fn calculate_ignored_rules() -> String {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
-        if DISABLE_EXCEPTIONS || self.settings.verify_if_files_are_still_broken {
+        if DISABLE_EXCEPTIONS || self.settings.disable_exceptions {
             return BROKEN_ITEMS_TO_FIND
                 .iter()
                 .filter(|line| !BROKEN_ITEMS_NOT_CRITICAL.iter().any(|e2| line.contains(e2)))

@@ -5,11 +5,10 @@ use rayon::prelude::*;
 use std::path::Path;
 use std::process::{Command, Stdio};
 
-use crate::minimal_rules::collect_broken_files_dir_files;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
-pub fn verify_if_files_are_still_broken(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+pub fn verify_if_files_are_still_broken(_settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let used_rules = find_used_rules();
     info!("Found {} files to check", used_rules.len());
     let mut res = used_rules

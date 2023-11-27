@@ -53,6 +53,7 @@ pub struct Setting {
     pub find_minimal_rules: bool,
     pub check_if_file_is_parsable: bool,
     pub verify_if_files_are_still_broken: bool,
+    pub disable_exceptions: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -74,6 +75,12 @@ pub fn load_settings() -> Setting {
         .map(str::trim)
         .filter_map(|e| if e.is_empty() { None } else { Some(format!(".{e}")) })
         .collect();
+    let verify_if_files_are_still_broken = general["verify_if_files_are_still_broken"].parse().unwrap();
+    let find_minimal_rules = general["find_minimal_rules"].parse().unwrap();
+    let remove_non_crashing_items_from_broken_files =
+        general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
+    let disable_exceptions =
+        verify_if_files_are_still_broken && !(find_minimal_rules || remove_non_crashing_items_from_broken_files);
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
@@ -84,9 +91,7 @@ pub fn load_settings() -> Setting {
         minimization_attempts_with_signal_timeout: general["minimization_attempts_with_signal_timeout"]
             .parse()
             .unwrap(),
-        remove_non_crashing_items_from_broken_files: general["remove_non_crashing_items_from_broken_files"]
-            .parse()
-            .unwrap(),
+        remove_non_crashing_items_from_broken_files,
         current_mode,
         extensions,
         timeout: general["timeout"].parse().unwrap(),
@@ -107,10 +112,11 @@ pub fn load_settings() -> Setting {
         ignore_generate_copy_files_step: general["ignore_generate_copy_files_step"].parse().unwrap(),
         clean_base_files: general["clean_base_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
-        find_minimal_rules: general["find_minimal_rules"].parse().unwrap(),
+        find_minimal_rules,
         tool_type: curr_setting["tool_type"].clone(),
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
-        verify_if_files_are_still_broken: general["verify_if_files_are_still_broken"].parse().unwrap(),
+        verify_if_files_are_still_broken,
+        disable_exceptions,
     }
 }
 
