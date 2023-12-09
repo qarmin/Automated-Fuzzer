@@ -131,12 +131,19 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
     obj.remove_non_parsable_files(&settings.broken_files_dir);
     let files_to_check = collect_broken_files_dir_files(settings);
+    // files_to_check.truncate(100);
 
     let all_ruff_rules = collect_all_ruff_rules();
     let only_check = settings.tool_type == "lint_check";
+    let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
+    let all = files_to_check.len();
     let collected_rules: Vec<_> = files_to_check
         .into_par_iter()
         .filter_map(|i| {
+            let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+            if idx % 100 == 0 {
+                info!("_____ Processsed already {idx} / {all}");
+            }
             let file_name = i.split('/').last().unwrap();
             let new_name = format!("{temp_folder}/{file_name}");
             let original_content = fs::read_to_string(&i).unwrap();

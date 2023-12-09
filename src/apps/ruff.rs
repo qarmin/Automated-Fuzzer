@@ -36,8 +36,8 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "Failed to create fix", "RUST_BACKTRACE", "catch_unwind::{{closure}}", "This indicates a bug in",
-    "AddressSanitizer:", "LeakSanitizer:",
+    "RUST_BACKTRACE", "catch_unwind::{{closure}}", "This indicates a bug in", "AddressSanitizer:", "LeakSanitizer:",
+    // "Failed to create fix", // Do not report that, probably not worth to fix
     "Autofix introduced a syntax error", // TODO Autofix remove after fix will be changed
     "Fix introduced a syntax error",
 ];
@@ -82,14 +82,13 @@ const INVALID_RULES: &[&str] = &[
     "TCH002",  // 5331
     "E274",    // 7455
     "PIE804",  // 8402
-    "TCH003",  // 5331
     "PLR1706", // 8402
     "PD002",   // 8402
     "FURB171", // 8402
     "E223",    // 8402
     "RUF015",  // 8402
     "C405",    // 8402
-    "D208",    // 8844
+    "TCH003",  // 5331 - crash
 ];
 
 #[must_use]
