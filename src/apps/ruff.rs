@@ -36,59 +36,65 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "RUST_BACKTRACE", "catch_unwind::{{closure}}", "This indicates a bug in", "AddressSanitizer:", "LeakSanitizer:",
+    "RUST_BACKTRACE", "catch_unwind::{{closure}}",
+    "This indicates a bug in",
+    // "AddressSanitizer:",
+    // "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
-    "Autofix introduced a syntax error", // TODO Autofix remove after fix will be changed
-    "Fix introduced a syntax error",
+    // "Autofix introduced a syntax error", // TODO Autofix remove after fix will be changed
+    // "Fix introduced a syntax error",
 ];
 
 const INVALID_RULES: &[&str] = &[
-    "Q002",    // 6785
-    "PTH116",  // 6785
-    "ANN401",  // 6987
-    "W605",    // 6987
-    "UP032",   // 7074
-    "FURB113", // 7095
-    "UP037",   // 7102
-    "SIM222",  // 7127
-    "F841",    // 7128
-    "Q000",    // 7128
-    "I001",    // 7130
-    "PLR1722", // 7130
-    "UP036",   // 7130
-    "D202",    // 7172
-    "PT027",   // 7198
-    "C413",    // 7455
-    "C417",    // 7455
-    "C418",    // 7455
-    "D201",    // 7455
-    "D211",    // 7455
-    "E714",    // 7455
-    "EM103",   // 7455
-    "PLR0133", // 7455
-    "RUF005",  // 7455
-    "RUF100",  // 7455
-    "SIM201",  // 7455
-    "SIM208",  // 7455
-    "UP028",   // 7455
-    "EM101",   // 7455
-    "FURB140", // 7455
-    "PT014",   // 7455
-    "PT006",   // 7455
-    "RUF010",  // 7455
-    "RUF013",  // 7455
-    "RET503",  // 7455
-    "SIM108",  // 7455
-    "TCH002",  // 5331
-    "E274",    // 7455
-    "PIE804",  // 8402
-    "PLR1706", // 8402
-    "PD002",   // 8402
-    "FURB171", // 8402
-    "E223",    // 8402
-    "RUF015",  // 8402
-    "C405",    // 8402
-    "TCH003",  // 5331 - crash
+    // "Q002",    // 6785
+    // "PTH116",  // 6785
+    // "ANN401",  // 6987
+    // "W605",    // 6987
+    // "UP032",   // 7074
+    // "FURB113", // 7095
+    // "UP037",   // 7102
+    // "SIM222",  // 7127
+    // "F841",    // 7128
+    // "Q000",    // 7128
+    // "I001",    // 7130
+    // "PLR1722", // 7130
+    // "UP036",   // 7130
+    // "D202",    // 7172
+    // "PT027",   // 7198
+    // "C413",    // 7455
+    // "C417",    // 7455
+    // "C418",    // 7455
+    // "D201",    // 7455
+    // "D211",    // 7455
+    // "E714",    // 7455
+    // "EM103",   // 7455
+    // "PLR0133", // 7455
+    // "RUF005",  // 7455
+    // "RUF100",  // 7455
+    // "SIM201",  // 7455
+    // "SIM208",  // 7455
+    // "UP028",   // 7455
+    // "EM101",   // 7455
+    // "FURB140", // 7455
+    // "PT014",   // 7455
+    // "PT006",   // 7455
+    // "RUF010",  // 7455
+    // "RUF013",  // 7455
+    // "RET503",  // 7455
+    // "SIM108",  // 7455
+    // "TCH002",  // 5331
+    // "E274",    // 7455
+    // "PIE804",  // 8402
+    // "PLR1706", // 8402
+    // "PD002",   // 8402
+    // "FURB171", // 8402
+    // "E223",    // 8402
+    // "RUF015",  // 8402
+    // "C405",    // 8402
+    "TCH003", // 5331 - crash
+    "D208",   // 9080 - crash
+    "TCH002", // 9079 - crash
+    "FA102",  // 9079 - crash
 ];
 
 #[must_use]
