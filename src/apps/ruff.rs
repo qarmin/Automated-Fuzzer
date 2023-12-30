@@ -36,8 +36,9 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "RUST_BACKTRACE", "catch_unwind::{{closure}}",
-    "This indicates a bug in",
+    "RUST_BACKTRACE",
+    "catch_unwind::{{closure}}",
+    // "This indicates a bug in",
     // "AddressSanitizer:",
     // "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
@@ -91,10 +92,7 @@ const INVALID_RULES: &[&str] = &[
     // "E223",    // 8402
     // "RUF015",  // 8402
     // "C405",    // 8402
-    "TCH003", // 5331 - crash
-    "D208",   // 9080 - crash
-    "TCH002", // 9079 - crash
-    "FA102",  // 9079 - crash
+    "W293", // 9323
 ];
 
 #[must_use]
