@@ -21,6 +21,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_21"
@@ -28,6 +29,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_22"
@@ -35,6 +37,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_23"
@@ -43,6 +46,7 @@ jobs:
             generate-broken-files: false
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
             files: "FILES_21,FILES_22"
@@ -50,6 +54,7 @@ jobs:
             generate-broken-files: false
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
             files: "FILES_23,FILES_24"
@@ -57,6 +62,7 @@ jobs:
             generate-broken-files: false
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
             files: "FILES_25,FILES_26"
@@ -65,6 +71,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
             timeout: 120
             files: "FILES_25"
@@ -73,6 +80,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: false
+            remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_21"
@@ -80,6 +88,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: false
+            remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
             timeout: 10000
             files: "FILES_23"
@@ -87,6 +96,7 @@ jobs:
             generate-broken-files: false
             format: false
             exceptions: false
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_alt.toml
             timeout: 10000
             files: "FILES_25,FILES_26"
@@ -95,6 +105,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
             files: "FILES_21"
@@ -102,6 +113,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: false
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_binary.toml
             timeout: 10000
             files: "FILES_22"
@@ -110,6 +122,7 @@ jobs:
             generate-broken-files: false
             format: true
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_alt_format.toml
             timeout: 10000
             files: "FILES_21,FILES_22"
@@ -118,6 +131,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_only_check.toml
             timeout: 10000
             files: "FILES_21"
@@ -126,6 +140,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: true
             config-file: fuzz_settings_ci_debug.toml
             timeout: 10000
             files: "FILES_21"
@@ -134,6 +149,7 @@ jobs:
             generate-broken-files: true
             format: false
             exceptions: true
+            remove_invalid_files: false
             config-file: fuzz_settings_ci_not_parsable.toml
             timeout: 10000
             files: "FILES_21"
@@ -217,13 +233,13 @@ jobs:
 
       # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
-        if: ${{ matrix.format == false }}
+        if: ${{ matrix.format == false && matrix.remove_invalid_files == true }}
         run: |
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
       - name: Remove non crashing files
-        if: ${{ matrix.format != false }}
+        if: ${{ matrix.format != false && matrix.remove_invalid_files == true }}
         run: |
           mv fuzz_settings_ci_remove_files_format.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
