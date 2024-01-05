@@ -130,6 +130,14 @@ jobs:
             timeout: 10000
             files: "FILES_21"
 
+          - name: NOT_PARSABLE
+            generate-broken-files: true
+            format: false
+            exceptions: true
+            config-file: fuzz_settings_ci_not_parsable.toml
+            timeout: 10000
+            files: "FILES_21"
+
     steps:
       - uses: actions/checkout@v3
 
