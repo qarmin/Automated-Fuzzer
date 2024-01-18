@@ -60,7 +60,7 @@ jobs:
           sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug = true' Cargo.toml
           rm rust-toolchain.toml
-          cargo install --path crates/ruff_cli
+          cargo install --path crates/ruff
           cd ..
 
       - name: Install black and check version
