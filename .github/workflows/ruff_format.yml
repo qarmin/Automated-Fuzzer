@@ -33,7 +33,7 @@ jobs:
             files: "FILES_999"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -108,7 +108,7 @@ jobs:
       #                rm -rf /opt/BROKEN_FILES
       #
       #      - name: Store results - black difference
-      #        uses: actions/upload-artifact@v3
+      #        uses: actions/upload-artifact@v4
       #        with:
       #          if-no-files-found: ignore
       #          name: BLACK_DIFFERENCE_${{ matrix.name }}
@@ -139,7 +139,7 @@ jobs:
           rm -rf /opt/BROKEN_FILES
 
       - name: Store results - not stable
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
           name: NOT_STABLE_${{ matrix.name }}
@@ -170,7 +170,7 @@ jobs:
           rm -rf /opt/BROKEN_FILES
 
       - name: Store results - not stable
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
           name: PARSE_DIFFERENCES_${{ matrix.name }}

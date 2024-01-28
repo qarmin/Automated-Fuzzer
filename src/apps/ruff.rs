@@ -36,14 +36,13 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "RUST_BACKTRACE",
-    "catch_unwind::{{closure}}",
+    "RUST_BACKTRACE", "catch_unwind::{{closure}}",
     // "This indicates a bug in",
     // "AddressSanitizer:",
     // "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
     // "Autofix introduced a syntax error", // TODO Autofix remove after fix will be changed
-    // "Fix introduced a syntax error",
+    "Fix introduced a syntax error",
 ];
 
 const INVALID_RULES: &[&str] = &[

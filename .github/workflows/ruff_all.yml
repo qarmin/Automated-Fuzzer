@@ -155,7 +155,7 @@ jobs:
             files: "FILES_21"
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install dependencies
         run: |
@@ -244,12 +244,24 @@ jobs:
           mv fuzz_settings_ci_remove_files_format.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
+      - name: Find minimal rules
+        run: |
+          sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
+          RUST_BACKTRACE=1 target/release/automated_fuzzer
+          
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: reports-${{ matrix.name }}
+          path: /opt/tmp_folder
+
       - name: Remove pycache
         run: |
           rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
 
       - name: Store results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
           name: ${{ matrix.name }}
