@@ -231,6 +231,11 @@ jobs:
           mv ${{ matrix.config-file }} fuzz_settings.toml
           RUST_BACKTRACE=1 timeout ${{ matrix.timeout }} target/release/automated_fuzzer || true
 
+      - name: Move settings for remove non crashing files
+        if: ${{ matrix.remove_invalid_files == true }}
+        run: |
+          mv fuzz_settings.toml settings.toml.temp
+
       # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
         if: ${{ matrix.format == false && matrix.remove_invalid_files == true }}
@@ -246,6 +251,9 @@ jobs:
 
       - name: Find minimal rules
         run: |
+          if [ -f settings.toml.temp ]; then
+            mv settings.toml.temp fuzz_settings.toml
+          fi
           sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
           
