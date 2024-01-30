@@ -75,6 +75,14 @@ jobs:
             config-file: fuzz_settings_ci.toml
             timeout: 120
             files: "FILES_25"
+          - name: SHORT_LONGER_NORMAL_1
+            generate-broken-files: true
+            format: false
+            exceptions: true
+            remove_invalid_files: true
+            config-file: fuzz_settings_ci.toml
+            timeout: 3600
+            files: "FILES_25"
 
           - name: NO_EXCEPTIONS_NORMAL_1
             generate-broken-files: true
