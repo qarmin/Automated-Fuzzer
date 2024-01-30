@@ -247,6 +247,26 @@ impl ProgramConfig for RuffStruct {
         !(out.contains("error: Failed to format ") || err.contains("error: Failed to format "))
     }
 
+    fn get_version(&self) -> String {
+        let output = Command::new("ruff")
+            .arg("--version")
+            .stderr(Stdio::piped())
+            .stdout(Stdio::piped())
+            .spawn()
+            .unwrap()
+            .wait_with_output()
+            .unwrap();
+        let out = String::from_utf8_lossy(&output.stdout);
+        let err = String::from_utf8_lossy(&output.stderr);
+        if !out.is_empty() {
+            return out.to_string();
+        }
+        if !err.is_empty() {
+            return err.to_string();
+        }
+        String::new()
+    }
+
     fn remove_non_parsable_files(&self, dir_to_check: &str) {
         if !self.settings.check_if_file_is_parsable {
             return;

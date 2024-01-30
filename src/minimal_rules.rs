@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
+use std::path::Path;
 use std::process::{Command, Stdio};
 
 use jwalk::WalkDir;
@@ -18,6 +19,8 @@ use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
 // THIS ONLY WORKS WITH RUFF
+
+pub const MAX_FILE_SIZE: u64 = 500; // Bytes
 
 pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     match settings.tool_type.as_str() {
@@ -36,6 +39,8 @@ pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
     let files_to_check = collect_broken_files_dir_files(settings);
+
+    let ruff_version = obj.get_version();
 
     let collected_items: Vec<_> = files_to_check
         .into_par_iter()
@@ -61,10 +66,14 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
     fs::remove_dir_all(&temp_folder).unwrap();
     fs::create_dir_all(&temp_folder).unwrap();
 
-    save_results_to_file_format(settings, collected_items);
+    save_results_to_file_format(settings, collected_items, ruff_version);
 }
 
-pub fn save_results_to_file_format(settings: &Setting, collected_items: Vec<(String, String, String)>) {
+pub fn save_results_to_file_format(
+    settings: &Setting,
+    collected_items: Vec<(String, String, String)>,
+    ruff_version: String,
+) {
     for (file_name, name, output) in collected_items {
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
@@ -84,7 +93,7 @@ pub fn save_results_to_file_format(settings: &Setting, collected_items: Vec<(Str
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.1.5 (latest changes from main branch)
+        file_content += &r###"Ruff $RUFF_VERSION (latest changes from main branch)
 ```
 ruff format *.py
 ```
@@ -103,6 +112,7 @@ $ERROR
 "###
         .replace("$FILE_CONTENT", &file_code)
         .replace("$ERROR", &output)
+        .replace("$RUFF_VERSION", &ruff_version)
         .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
@@ -132,6 +142,20 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
     let files_to_check = collect_broken_files_dir_files(settings);
     // files_to_check.truncate(100);
+
+    let files_to_check_new: Vec<_> = files_to_check
+        .iter()
+        .cloned()
+        .filter(|e| Path::new(&e).metadata().ok().map(|e| e.len()).unwrap_or(u64::MAX) < MAX_FILE_SIZE)
+        .collect();
+
+    info!(
+        "Using only {} files from {} files, that are smaller than {} bytes",
+        files_to_check_new.len(),
+        files_to_check.len(),
+        MAX_FILE_SIZE
+    );
+    let files_to_check = files_to_check_new;
 
     let all_ruff_rules = collect_all_ruff_rules();
     let only_check = settings.tool_type == "lint_check";

@@ -73,4 +73,7 @@ pub trait ProgramConfig: Sync {
     fn is_parsable(&self, _file_to_check: &str) -> bool {
         true
     }
+    fn get_version(&self) -> String {
+        panic!()
+    }
 }
