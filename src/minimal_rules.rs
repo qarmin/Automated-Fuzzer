@@ -232,7 +232,8 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     fs::remove_dir_all(&temp_folder).unwrap();
     fs::create_dir_all(&temp_folder).unwrap();
 
-    save_results_to_file(settings, collected_rules.clone());
+    let ruff_version = obj.get_version();
+    save_results_to_file(settings, collected_rules.clone(), ruff_version);
 
     let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
     for (rules, _, _, _) in collected_rules {
@@ -249,7 +250,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     info!("{items:?}");
 }
 
-pub fn save_results_to_file(settings: &Setting, rules_with_names: Vec<(Vec<String>, String, String, String)>) {
+pub fn save_results_to_file(
+    settings: &Setting,
+    rules_with_names: Vec<(Vec<String>, String, String, String)>,
+    ruff_version: String,
+) {
     for (rules, file_name, name, output) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
@@ -284,9 +289,9 @@ pub fn save_results_to_file(settings: &Setting, rules_with_names: Vec<(Vec<Strin
         let _ = fs::create_dir_all(&folder);
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff 0.1.5 (latest changes from main branch)
+        file_content += &r###"Ruff $RUFF_VERSION (latest changes from main branch)
 ```
-ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --isolated
+ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --output-format concise --isolated
 ```
 
 file content:
@@ -303,6 +308,7 @@ $ERROR
 "###
         .replace("$RULES_TO_REPLACE", &rules.join(","))
         .replace("$FILE_CONTENT", &file_code)
+        .replace("$RUFF_VERSION", &ruff_version)
         .replace("$ERROR", &output)
         .replace("\n\n```", "\n```");
 
@@ -355,6 +361,8 @@ fn check_if_rule_file_crashing(
             .arg("--select")
             .arg(rules.join(","))
             .arg("--preview")
+            .arg("--output-format")
+            .arg("concise")
             .arg("--no-cache")
     } else {
         command
@@ -363,6 +371,8 @@ fn check_if_rule_file_crashing(
             .arg("--select")
             .arg(rules.join(","))
             .arg("--preview")
+            .arg("--output-format")
+            .arg("concise")
             .arg("--fix")
             .arg("--unsafe-fixes")
             .arg("--isolated")

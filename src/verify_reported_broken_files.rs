@@ -64,6 +64,8 @@ fn check_if_rule_file_crashing(test_file: &str, rules: &[String], obj: &Box<dyn 
         .arg("--select")
         .arg(rules.join(","))
         .arg("--preview")
+        .arg("--output-format")
+        .arg("concise")
         .arg("--fix")
         .arg("--unsafe-fixes")
         .arg("--isolated")

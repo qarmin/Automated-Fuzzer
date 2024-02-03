@@ -188,6 +188,10 @@ impl ProgramConfig for RuffStruct {
                     .arg("--select")
                     .arg("ALL")
                     .arg("--preview")
+                    .arg("--output-format")
+                    .arg("concise")
+                    .arg("--output-format")
+                    .arg("concise")
                     .arg("--no-cache")
                     .arg("--fix")
                     .arg("--unsafe-fixes")
@@ -203,6 +207,8 @@ impl ProgramConfig for RuffStruct {
                     .arg("--select")
                     .arg("ALL")
                     .arg("--preview")
+                    .arg("--output-format")
+                    .arg("concise")
                     .arg("--no-cache");
                 if !self.ignored_rules.is_empty() {
                     command.arg("--ignore").arg(&self.ignored_rules);
