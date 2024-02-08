@@ -175,7 +175,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
             fs::write(&new_name, &original_content).unwrap();
 
-            if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, only_check).0 {
+            if !check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, only_check, settings).0 {
                 info!("File {new_name} ({i}) is not broken");
                 return None;
             }
@@ -193,7 +193,8 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     break;
                 }
 
-                let (crashing, output) = check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
+                let (crashing, output) =
+                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
                     rules_to_test.shuffle(&mut thread_rng());
@@ -215,7 +216,8 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 // info!("CURR_IDX - {curr_idx}");
                 curr_idx -= 1;
                 rules_to_test.remove(curr_idx);
-                let (crashing, output) = check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check);
+                let (crashing, output) =
+                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
                     out = output;
@@ -326,7 +328,9 @@ pub fn collect_all_ruff_rules() -> Vec<String> {
     let stdout_str = String::from_utf8(stdout).unwrap();
     let lines: Vec<_> = stdout_str
         .split('\n')
-        .filter(|e| e.starts_with("# ") && e.ends_with(')'))
+        .filter(|e| {
+            e.starts_with("## Removal") || e.starts_with("## Deprecation") || (e.starts_with("# ") && e.ends_with(')'))
+        })
         .map(ToString::to_string)
         .collect();
     let mut rules = Vec::new();
@@ -340,6 +344,9 @@ pub fn collect_all_ruff_rules() -> Vec<String> {
                 rules.push(rule.to_string());
             }
         }
+        if line.starts_with("## Removal") || line.starts_with("## Deprecation") {
+            rules.pop();
+        }
     }
     rules.sort();
     rules
@@ -350,6 +357,7 @@ fn check_if_rule_file_crashing(
     rules: &[String],
     obj: &Box<dyn ProgramConfig>,
     only_check: bool,
+    settings: &Setting,
 ) -> (bool, String) {
     assert!(!rules.is_empty());
     let mut command = Command::new("ruff");
@@ -384,6 +392,9 @@ fn check_if_rule_file_crashing(
     command.stderr(Stdio::piped()).stdout(Stdio::piped());
     let output = command.spawn().unwrap().wait_with_output().unwrap();
     let all_std = collect_output(&output);
+    if settings.debug_print_results {
+        info!("{all_std}");
+    }
     // Debug save results
     // dbg!(&all_std);
     // let mut file = OpenOptions::new()
