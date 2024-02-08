@@ -44,51 +44,6 @@ const BROKEN_ITEMS_TO_FIND: &[&str] = &[
 ];
 
 const INVALID_RULES: &[&str] = &[
-    // "Q002",    // 6785
-    // "PTH116",  // 6785
-    // "ANN401",  // 6987
-    // "W605",    // 6987
-    // "UP032",   // 7074
-    // "FURB113", // 7095
-    // "UP037",   // 7102
-    // "SIM222",  // 7127
-    // "F841",    // 7128
-    // "Q000",    // 7128
-    // "I001",    // 7130
-    // "PLR1722", // 7130
-    // "UP036",   // 7130
-    // "D202",    // 7172
-    // "PT027",   // 7198
-    // "C413",    // 7455
-    // "C417",    // 7455
-    // "C418",    // 7455
-    // "D201",    // 7455
-    // "D211",    // 7455
-    // "E714",    // 7455
-    // "EM103",   // 7455
-    // "PLR0133", // 7455
-    // "RUF005",  // 7455
-    // "RUF100",  // 7455
-    // "SIM201",  // 7455
-    // "SIM208",  // 7455
-    // "UP028",   // 7455
-    // "EM101",   // 7455
-    // "FURB140", // 7455
-    // "PT014",   // 7455
-    // "PT006",   // 7455
-    // "RUF010",  // 7455
-    // "RUF013",  // 7455
-    // "RET503",  // 7455
-    // "SIM108",  // 7455
-    // "TCH002",  // 5331
-    // "E274",    // 7455
-    // "PIE804",  // 8402
-    // "PLR1706", // 8402
-    // "PD002",   // 8402
-    // "FURB171", // 8402
-    // "E223",    // 8402
-    // "RUF015",  // 8402
-    // "C405",    // 8402
     "FURB171", // 8402
     "E223",    // 8402
     "RUF015",  // 8402
@@ -97,6 +52,13 @@ const INVALID_RULES: &[&str] = &[
     "RUF023",  // 8402
     // "PLR1706", // 8402
     "C413", // 8402
+    //
+    "PGH001",                        // Remapped
+    "PGH002",                        // Remapped
+    "RUF011",                        // Remapped
+    "TRY200",                        // Remapped
+    "one-blank-line-before-class",   // incompatible with "no-blank-line-before-class"
+    "multi-line-summary-first-line", // incompatible with "multi-line-summary-second-line"
 ];
 
 #[must_use]
@@ -147,6 +109,22 @@ impl ProgramConfig for RuffStruct {
         found_broken_items && !found_ignored_item
     }
 
+    fn remove_not_needed_lines_from_output(&self, output: String) -> String {
+        output
+            .lines()
+            .filter(|e| {
+                !((e.contains(".py") && e.matches(':').count() >= 3)
+                    || e.trim().is_empty()
+                    || e.starts_with("warning: `")
+                    || e.starts_with("Found: `")
+                    || e.starts_with("Found ")
+                    || e.starts_with("Ignoring `"))
+            })
+            .map(String::from)
+            .collect::<Vec<String>>()
+            .join("\n")
+    }
+
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let mut lines = output
             .lines()
@@ -188,8 +166,6 @@ impl ProgramConfig for RuffStruct {
                     .arg("--select")
                     .arg("ALL")
                     .arg("--preview")
-                    .arg("--output-format")
-                    .arg("concise")
                     .arg("--output-format")
                     .arg("concise")
                     .arg("--no-cache")

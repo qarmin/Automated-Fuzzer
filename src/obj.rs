@@ -76,4 +76,7 @@ pub trait ProgramConfig: Sync {
     fn get_version(&self) -> String {
         panic!()
     }
+    fn remove_not_needed_lines_from_output(&self, output: String) -> String {
+        output
+    }
 }
