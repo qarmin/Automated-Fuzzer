@@ -296,7 +296,7 @@ pub fn save_results_to_file(
             .join("\n");
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff $RUFF_VERSION (latest changes from main branch)
+        file_content += &r###"$RUFF_VERSION (latest changes from main branch)
 ```
 ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --output-format concise --isolated
 ```
