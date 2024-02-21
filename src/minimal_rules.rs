@@ -289,6 +289,11 @@ pub fn save_results_to_file(
             file_steam,
         );
         let _ = fs::create_dir_all(&folder);
+        let output = output
+            .lines()
+            .filter(|e| !e.contains("has been remapped to"))
+            .collect::<Vec<_>>()
+            .join("\n");
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r###"Ruff $RUFF_VERSION (latest changes from main branch)

@@ -59,8 +59,6 @@ const INVALID_RULES: &[&str] = &[
     "TRY200",                        // Remapped
     "one-blank-line-before-class",   // incompatible with "no-blank-line-before-class"
     "multi-line-summary-first-line", // incompatible with "multi-line-summary-second-line"
-    // Crashes
-    "RUF027", // 9895
 ];
 
 #[must_use]
