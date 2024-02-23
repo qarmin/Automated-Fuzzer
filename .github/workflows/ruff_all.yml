@@ -283,6 +283,19 @@ jobs:
           name: ${{ matrix.name }}
           path: /opt/BROKEN_FILES_DIR
 
+      - name: Zip and send it
+        run: |
+          if [ -d "/opt/tmp_folder" ]; then
+            zip_file="src.zip"
+            zip -r "$zip_file" /opt/tmp_folder
+            curl -X POST -H "Content-Type: multipart/form-data" -H "Authorization: ${{ secrets.SECRET_KEY }}" -F "file=@$zip_file" http://${{ secrets.IP_ADDRESS }}:2222/upload/zip
+          fi
+          if [ -d "/opt/BROKEN_FILES_DIR" ]; then
+            zip_file="src.zip"
+            zip -r "$zip_file" /opt/BROKEN_FILES_DIR
+            curl -X POST -H "Content-Type: multipart/form-data" -H "Authorization: ${{ secrets.SECRET_KEY }}" -F "file=@$zip_file" http://${{ secrets.IP_ADDRESS }}:2222/upload/zip
+          fi
+
       - name: Remove all folders
         run: |
           rm -rf /opt/VALID_FILES_DIR || true
