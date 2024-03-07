@@ -334,7 +334,10 @@ pub fn collect_all_ruff_rules() -> Vec<String> {
     let lines: Vec<_> = stdout_str
         .split('\n')
         .filter(|e| {
-            e.starts_with("## Removal") || e.starts_with("## Deprecation") || (e.starts_with("# ") && e.ends_with(')'))
+            e.starts_with("## Removal")
+                || e.starts_with("## Removed")
+                || e.starts_with("## Deprecation")
+                || (e.starts_with("# ") && e.ends_with(')'))
         })
         .map(ToString::to_string)
         .collect();
@@ -349,10 +352,11 @@ pub fn collect_all_ruff_rules() -> Vec<String> {
                 rules.push(rule.to_string());
             }
         }
-        if line.starts_with("## Removal") || line.starts_with("## Deprecation") {
+        if line.starts_with("## Removal") || line.starts_with("## Removed") || line.starts_with("## Deprecation") {
             rules.pop();
         }
     }
+    dbg!(&rules.contains(&"S410".to_string()));
     rules.sort();
     rules
 }
@@ -401,7 +405,7 @@ fn check_if_rule_file_crashing(
         info!("{all_std}");
     }
     // Debug save results
-    // dbg!(&all_std);
+    dbg!(&all_std);
     // let mut file = OpenOptions::new()
     //     .write(true)
     //     .append(true)
