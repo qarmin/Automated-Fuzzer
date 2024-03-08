@@ -283,7 +283,8 @@ pub fn save_results_to_file(
     for (rules, file_name, name, output) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
-        let rule_str = rules.join("_");
+        // Max 10 rules
+        let rule_str = rules.iter().take(10).to_owned().cloned().collect::<Vec<_>>().join("_");
 
         let mut file_content = String::new();
         let type_of_problem;
