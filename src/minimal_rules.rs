@@ -250,6 +250,29 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     }
     items.sort_by(|a, b| b.1.cmp(&a.1));
     info!("{items:?}");
+
+    draw_table(items, &temp_folder).unwrap();
+}
+
+pub fn draw_table(items: Vec<(String, u32)>, temp_folder: &str) -> Result<(), std::io::Error> {
+    let file_name = format!("{temp_folder}/table.txt");
+    let mut file = File::create(file_name)?;
+
+    let mut str_buf = String::new();
+    str_buf += "+--------------+----------------+\n";
+    str_buf += "| Rule         | Number         |\n";
+    str_buf += "+--------------+----------------+\n";
+
+    for (rule, number) in items {
+        str_buf += &format!("| {rule:<12} | {number:<14} |\n");
+    }
+
+    str_buf += "+--------------+----------------+\n";
+
+    writeln!(file, "{}", str_buf)?;
+    println!("{}", str_buf);
+
+    Ok(())
 }
 
 pub fn save_results_to_file(
@@ -356,7 +379,6 @@ pub fn collect_all_ruff_rules() -> Vec<String> {
             rules.pop();
         }
     }
-    dbg!(&rules.contains(&"S410".to_string()));
     rules.sort();
     rules
 }
