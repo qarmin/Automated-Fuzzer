@@ -405,7 +405,7 @@ fn check_if_rule_file_crashing(
         info!("{all_std}");
     }
     // Debug save results
-    dbg!(&all_std);
+    // dbg!(&all_std);
     // let mut file = OpenOptions::new()
     //     .write(true)
     //     .append(true)
