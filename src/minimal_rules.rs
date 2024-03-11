@@ -169,7 +169,8 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 info!("_____ Processsed already {idx} / {all}");
             }
             let file_name = i.split('/').last().unwrap();
-            let new_name = format!("{temp_folder}/{file_name}");
+            let new_name = thread_rng().gen::<u64>().to_string();
+            let new_name = format!("{temp_folder}/{new_name}.py");
             let original_content = fs::read_to_string(&i).unwrap();
             let mut out = String::new();
 
@@ -251,7 +252,9 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     items.sort_by(|a, b| b.1.cmp(&a.1));
     info!("{items:?}");
 
-    draw_table(items, &temp_folder).unwrap();
+    if !items.is_empty() {
+        draw_table(items, &temp_folder).unwrap();
+    }
 }
 
 pub fn draw_table(items: Vec<(String, u32)>, temp_folder: &str) -> Result<(), std::io::Error> {
@@ -282,7 +285,6 @@ pub fn save_results_to_file(
 ) {
     for (rules, file_name, name, output) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
-        let file_steam = file_name.split('.').next().unwrap();
         // Max 10 rules
         let rule_str = rules.iter().take(10).to_owned().cloned().collect::<Vec<_>>().join("_");
 
@@ -310,7 +312,7 @@ pub fn save_results_to_file(
             rule_str,
             type_of_problem,
             file_code.len(),
-            file_steam,
+            rand::thread_rng().gen::<u64>()
         );
         let _ = fs::create_dir_all(&folder);
         let output = output
@@ -428,7 +430,7 @@ fn check_if_rule_file_crashing(
         info!("{all_std}");
     }
     // Debug save results
-    // dbg!(&all_std);
+    // dbg!(&all_std, &rules, obj.is_broken(&all_std));
     // let mut file = OpenOptions::new()
     //     .write(true)
     //     .append(true)
