@@ -36,7 +36,7 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "RUST_BACKTRACE", "catch_unwind::{{closure}}",
+    "std::rt::lang_start_internal", "catch_unwind::{{closure}}",
     // "AddressSanitizer:",
     // "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
@@ -44,14 +44,14 @@ const BROKEN_ITEMS_TO_FIND: &[&str] = &[
 ];
 
 const INVALID_RULES: &[&str] = &[
-    "FURB171", // 8402
-    "E223",    // 8402
-    "RUF015",  // 8402
-    "C405",    // 8402
-    "RUF022",  // 8402
-    "RUF023",  // 8402
-    // "PLR1706", // 8402
-    "C413", // 8402
+    // "FURB171", // 8402
+    // "E223",    // 8402
+    // "RUF015",  // 8402
+    // "C405",    // 8402
+    // "RUF022",  // 8402
+    // "RUF023",  // 8402
+    // // "PLR1706", // 8402
+    // "C413", // 8402
     //
     "PGH001",                        // Remapped
     "PGH002",                        // Remapped
@@ -247,10 +247,10 @@ impl ProgramConfig for RuffStruct {
         let out = String::from_utf8_lossy(&output.stdout);
         let err = String::from_utf8_lossy(&output.stderr);
         if !out.is_empty() {
-            return out.to_string();
+            return out.to_string().trim().to_string();
         }
         if !err.is_empty() {
-            return err.to_string();
+            return err.to_string().trim().to_string();
         }
         String::new()
     }
