@@ -10,10 +10,10 @@ license = "MIT"
 jwalk = "0.8"
 rayon = "1.8"
 rand = "0.8"
-config = "0.13"
+config = "0.14"
 zip = "0.6"
 handsome_logger = "0.8"
 log = "0.4"
 
-strum_macros = "0.25"
-strum = { version = "0.25", features = ["derive"] }
+strum_macros = "0.26"
+strum = { version = "0.26", features = ["derive"] }
