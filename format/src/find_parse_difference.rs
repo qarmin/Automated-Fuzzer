@@ -11,7 +11,7 @@ use std::fs;
 use std::path::Path;
 use std::sync::atomic::AtomicUsize;
 
-const MAX_FILES_TO_TAKE: usize = 10000;
+const MAX_FILES_TO_TAKE: usize = 0; // TODO change to bigger value when cpython will be needed
 
 #[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
 enum Broken {
@@ -60,7 +60,7 @@ pub fn find_parse_difference(settings: &Setting) {
                 differences.push(Broken::RuffBrokenCpythonNot(broken_ruff.to_string()));
             }
 
-            if current_cpython_files.load(std::sync::atomic::Ordering::Relaxed) > MAX_FILES_TO_TAKE {
+            if current_cpython_files.load(std::sync::atomic::Ordering::Relaxed) >= MAX_FILES_TO_TAKE {
                 return differences;
             }
             let mut different_cpython = 0;

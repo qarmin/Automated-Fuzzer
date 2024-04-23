@@ -133,7 +133,7 @@ jobs:
       - name: Zip folders
         run: |
           mkdir /opt/NOT_STABLE
-          if [ "$(ls -A /opt/BROKEN_FILES)" ]; then
+          if [ -d "/opt/BROKEN_FILES" ] && [ "$(ls -A /opt/BROKEN_FILES)" ]; then
             zip -r /opt/NOT_STABLE/${{ matrix.name }}.zip /opt/BROKEN_FILES
           fi
           rm -rf /opt/BROKEN_FILES
@@ -164,7 +164,7 @@ jobs:
       - name: Zip folders
         run: |
           mkdir /opt/PARSE_DIFFERENCES
-          if [ "$(ls -A /opt/BROKEN_FILES)" ]; then
+          if [ -d "/opt/BROKEN_FILES" ] && [ "$(ls -A /opt/BROKEN_FILES)" ]; then
             zip -r /opt/PARSE_DIFFERENCES/${{ matrix.name }}.zip /opt/BROKEN_FILES
           fi
           rm -rf /opt/BROKEN_FILES
@@ -178,7 +178,7 @@ jobs:
 
       - name: Exit when found broken files
         run: |
-          [ "$(ls -A /opt/NOT_STABLE)" ] && exit 1 || true
-          [ "$(ls -A /opt/BLACK_DIFFERENCE)" ] && exit 1 || true
-          [ "$(ls -A /opt/PARSE_DIFFERENCES)" ] && exit 1 || true
+          [ -d "/opt/NOT_STABLE" ] && [ "$(ls -A /opt/NOT_STABLE)" ] && exit 1 || exit 0
+          [ -d "/opt/BLACK_DIFFERENCE" ] && [ "$(ls -A /opt/BLACK_DIFFERENCE)" ] && exit 1 || exit 0
+          [ -d "/opt/PARSE_DIFFERENCES" ] && [ "$(ls -A /opt/PARSE_DIFFERENCES)" ] && exit 1 || exit 0
 
