@@ -9,6 +9,9 @@ use rayon::prelude::*;
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
+use std::sync::atomic::AtomicUsize;
+
+const MAX_FILES_TO_TAKE: usize = 10000;
 
 #[derive(Debug, Ord, PartialOrd, Eq, PartialEq)]
 enum Broken {
@@ -33,7 +36,8 @@ pub fn find_parse_difference(settings: &Setting) {
 
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
 
-    let mut files: Vec<_> = folders_to_check
+    let current_cpython_files = AtomicUsize::new(0);
+    let mut files = folders_to_check
         .into_par_iter()
         .flat_map(|folder_name| {
             let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
@@ -56,12 +60,18 @@ pub fn find_parse_difference(settings: &Setting) {
                 differences.push(Broken::RuffBrokenCpythonNot(broken_ruff.to_string()));
             }
 
+            if current_cpython_files.load(std::sync::atomic::Ordering::Relaxed) > MAX_FILES_TO_TAKE {
+                return differences;
+            }
+            let mut different_cpython = 0;
             for broken_cpython in &broken_files_cpython {
                 if broken_files_ruff.contains(broken_cpython) {
                     continue;
                 }
                 differences.push(Broken::CpythonBrokenRuffNot(broken_cpython.to_string()));
+                different_cpython += 1;
             }
+            current_cpython_files.fetch_add(different_cpython, std::sync::atomic::Ordering::Relaxed);
 
             differences
         })
