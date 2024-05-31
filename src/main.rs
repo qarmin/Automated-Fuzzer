@@ -39,6 +39,7 @@ fn main() {
     obj.init();
 
     let _ = fs::create_dir_all(&settings.temp_folder);
+    let _ = fs::create_dir_all(&settings.broken_files_dir);
 
     if settings.remove_non_crashing_items_from_broken_files {
         remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);

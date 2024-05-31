@@ -1,4 +1,5 @@
 pub mod biome;
+pub mod dicom;
 pub mod dlint;
 pub mod eslint;
 pub mod image;
@@ -13,4 +14,6 @@ pub mod rust_parser;
 pub mod rustfmt;
 pub mod selene;
 pub mod staticheckgo;
+pub mod swc;
 pub mod symphonia;
+pub mod zip;

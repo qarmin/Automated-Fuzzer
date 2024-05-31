@@ -2,7 +2,6 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
-use std::path::Path;
 use std::process::{Command, Stdio};
 
 use jwalk::WalkDir;
@@ -146,7 +145,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let files_to_check_new: Vec<_> = files_to_check
         .iter()
         .cloned()
-        .filter(|e| Path::new(&e).metadata().ok().map(|e| e.len()).unwrap_or(u64::MAX) < MAX_FILE_SIZE)
+        // .filter(|e| Path::new(&e).metadata().ok().map(|e| e.len()).unwrap_or(u64::MAX) < MAX_FILE_SIZE)
         .collect();
 
     info!(

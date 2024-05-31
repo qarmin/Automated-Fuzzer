@@ -1,4 +1,11 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+
+use config::Config;
+use strum_macros::EnumString;
+
 use crate::apps::biome::BiomeStruct;
+use crate::apps::dicom::DicomStruct;
 use crate::apps::dlint::DlintStruct;
 use crate::apps::eslint::EslintStruct;
 use crate::apps::image::ImageStruct;
@@ -13,12 +20,10 @@ use crate::apps::rust_parser::RustParserStruct;
 use crate::apps::rustfmt::RustFmtStruct;
 use crate::apps::selene::SeleneStruct;
 use crate::apps::staticheckgo::StaticCheckGoStruct;
+use crate::apps::swc::SwcStruct;
 use crate::apps::symphonia::SymphoniaStruct;
+use crate::apps::zip::ZipStruct;
 use crate::obj::ProgramConfig;
-use config::Config;
-use std::collections::HashMap;
-use std::str::FromStr;
-use strum_macros::EnumString;
 
 pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
 
@@ -141,6 +146,9 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::RUSTFMT => Box::new(RustFmtStruct { settings }),
         MODES::ESLINT => Box::new(EslintStruct { settings }),
         MODES::RUSTPARSER => Box::new(RustParserStruct { settings }),
+        MODES::DICOM => Box::new(DicomStruct { settings }),
+        MODES::SWC => Box::new(SwcStruct { settings }),
+        MODES::ZIP => Box::new(ZipStruct { settings }),
     }
 }
 
@@ -178,4 +186,10 @@ pub enum MODES {
     RUSTPARSER,
     #[strum(ascii_case_insensitive)]
     LIBCST,
+    #[strum(ascii_case_insensitive)]
+    DICOM,
+    #[strum(ascii_case_insensitive)]
+    SWC,
+    #[strum(ascii_case_insensitive)]
+    ZIP,
 }
