@@ -77,10 +77,11 @@ pub fn save_results_to_file_format(
         let file_code = fs::read_to_string(&name).unwrap();
         let file_steam = file_name.split('.').next().unwrap();
         let folder = format!(
-            "{}/FORMAT_({} bytes) - {}",
+            "{}/FORMAT_({} bytes) - {} __ {}",
             settings.temp_folder,
             file_code.len(),
             file_steam,
+            random::<u64>()
         );
         let _ = fs::create_dir_all(&folder);
         let mut file_content = String::new();
@@ -92,12 +93,12 @@ pub fn save_results_to_file_format(
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff $RUFF_VERSION (latest changes from main branch)
+        file_content += &r###"Ruff $RUFF_VERSION
 ```
 ruff format *.py
 ```
 
-file content:
+file content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work properly):
 ```
 $FILE_CONTENT
 ```
@@ -109,16 +110,16 @@ $ERROR
 
 
 "###
-        .replace("$FILE_CONTENT", &file_code)
-        .replace("$ERROR", &output)
-        .replace("$RUFF_VERSION", &ruff_version)
-        .replace("\n\n```", "\n```");
+            .replace("$FILE_CONTENT", &file_code)
+            .replace("$ERROR", &output)
+            .replace("$RUFF_VERSION", &ruff_version)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
         fs::write(format!("{folder}/python_code.py"), &file_code).unwrap();
 
-        let zip_filename = format!("{folder}/python_compressed.zip");
+        let zip_filename = format!("{folder}/raw_file.zip");
         zip_file(&zip_filename, &file_name, &file_code);
     }
 }
@@ -311,7 +312,7 @@ pub fn save_results_to_file(
             rule_str,
             type_of_problem,
             file_code.len(),
-            rand::thread_rng().gen::<u64>()
+            random::<u64>()
         );
         let _ = fs::create_dir_all(&folder);
         let output = output
@@ -338,11 +339,11 @@ $ERROR
 
 
 "###
-        .replace("$RULES_TO_REPLACE", &rules.join(","))
-        .replace("$FILE_CONTENT", &file_code)
-        .replace("$RUFF_VERSION", &ruff_version)
-        .replace("$ERROR", &output)
-        .replace("\n\n```", "\n```");
+            .replace("$RULES_TO_REPLACE", &rules.join(","))
+            .replace("$FILE_CONTENT", &file_code)
+            .replace("$RUFF_VERSION", &ruff_version)
+            .replace("$ERROR", &output)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
@@ -416,9 +417,14 @@ fn check_if_rule_file_crashing(
             .arg("concise")
             .arg("--fix")
             .arg("--unsafe-fixes")
-            .arg("--isolated")
             .arg("--no-cache")
     };
+    if !settings.app_config.is_empty() {
+        command.arg("--config").arg(&settings.app_config);
+    } else {
+        command.arg("--isolated");
+    }
+
     if !ignored_rules.is_empty() {
         command.arg("--ignore").arg(&ignored_rules);
     }

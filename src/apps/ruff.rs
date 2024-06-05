@@ -170,8 +170,14 @@ impl ProgramConfig for RuffStruct {
                     .arg("concise")
                     .arg("--no-cache")
                     .arg("--fix")
-                    .arg("--unsafe-fixes")
-                    .arg("--isolated");
+                    .arg("--unsafe-fixes");
+
+                if !self.get_settings().app_config.is_empty() {
+                    command.arg("--config").arg(&self.get_settings().app_config);
+                } else {
+                    command.arg("--isolated");
+                }
+
                 if !self.ignored_rules.is_empty() {
                     command.arg("--ignore").arg(&self.ignored_rules);
                 }
@@ -237,7 +243,7 @@ impl ProgramConfig for RuffStruct {
 
     fn get_version(&self) -> String {
         let output = Command::new("ruff")
-            .arg("--version")
+            .arg("version")
             .stderr(Stdio::piped())
             .stdout(Stdio::piped())
             .spawn()

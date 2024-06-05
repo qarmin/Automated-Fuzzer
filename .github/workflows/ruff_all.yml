@@ -23,6 +23,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_21"
           - name: NORMAL_2
@@ -31,6 +32,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_22"
           - name: NORMAL_3
@@ -39,33 +41,46 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_23"
 
-          - name: NO_GENERATE_1
-            generate-broken-files: false
+          - name: CONFIG_1
+            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
-            config-file: fuzz_settings_ci_alt.toml
+            config-file: fuzz_settings_ci_config.toml
+            ruff-config: "ruff_config.toml"
             timeout: 10000
-            files: "FILES_21,FILES_22"
-          - name: NO_GENERATE_2
-            generate-broken-files: false
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_alt.toml
-            timeout: 10000
-            files: "FILES_23,FILES_24"
-          - name: NO_GENERATE_3
-            generate-broken-files: false
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_alt.toml
-            timeout: 10000
-            files: "FILES_25,FILES_26"
+            files: "FILES_21"
+          #          - name: NO_GENERATE_1
+          #            generate-broken-files: false
+          #            format: false
+          #            exceptions: true
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_alt.toml
+          #            ruff-config: ""
+          #            timeout: 10000
+          #            files: "FILES_21,FILES_22"
+          #          - name: NO_GENERATE_2
+          #            generate-broken-files: false
+          #            format: false
+          #            exceptions: true
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_alt.toml
+          #            ruff-config: ""
+          #            timeout: 10000
+          #            files: "FILES_23,FILES_24"
+          #          - name: NO_GENERATE_3
+          #            generate-broken-files: false
+          #            format: false
+          #            exceptions: true
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_alt.toml
+          #            ruff-config: ""
+          #            timeout: 10000
+          #            files: "FILES_25,FILES_26"
 
           - name: SHORT_NORMAL_1
             generate-broken-files: true
@@ -73,6 +88,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 120
             files: "FILES_25"
           - name: SHORT_A_LITTLE_LONGER_NORMAL_1
@@ -81,6 +97,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 800
             files: "FILES_25"
           - name: SHORT_A_LITTLE_LONGER_NORMAL_DEBUG_INFO_1
@@ -89,6 +106,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci_debug_info.toml
+            ruff-config: ""
             timeout: 800
             files: "FILES_25"
           - name: SHORT_LONGER_NORMAL_1
@@ -97,6 +115,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 3600
             files: "FILES_25"
 
@@ -106,6 +125,7 @@ jobs:
             exceptions: false
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_21"
           - name: NO_EXCEPTIONS_NORMAL_2
@@ -114,16 +134,18 @@ jobs:
             exceptions: false
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_23"
-          - name: NO_EXCEPTIONS_NO_GENERATE_3
-            generate-broken-files: false
-            format: false
-            exceptions: false
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_alt.toml
-            timeout: 10000
-            files: "FILES_25,FILES_26"
+          #          - name: NO_EXCEPTIONS_NO_GENERATE_3
+          #            generate-broken-files: false
+          #            format: false
+          #            exceptions: false
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_alt.toml
+          #            ruff-config: ""
+          #            timeout: 10000
+          #            files: "FILES_25,FILES_26"
 
           - name: BINARY_NORMAL_1
             generate-broken-files: true
@@ -131,6 +153,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci_binary.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_21"
           - name: BINARY_NO_EXCEPTIONS_NORMAL_2
@@ -139,17 +162,19 @@ jobs:
             exceptions: false
             remove_invalid_files: true
             config-file: fuzz_settings_ci_binary.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_22"
 
-          - name: FORMAT_NO_GENERATE_1
-            generate-broken-files: false
-            format: true
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_alt_format.toml
-            timeout: 10000
-            files: "FILES_21,FILES_22"
+          #          - name: FORMAT_NO_GENERATE_1
+          #            generate-broken-files: false
+          #            format: true
+          #            exceptions: true
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_alt_format.toml
+          #            ruff-config: ""
+          #            timeout: 10000
+          #            files: "FILES_21,FILES_22"
 
           - name: ONLY_CHECK_1
             generate-broken-files: true
@@ -157,6 +182,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci_only_check.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_21"
 
@@ -166,6 +192,7 @@ jobs:
             exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci_debug.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_21"
 
@@ -175,6 +202,7 @@ jobs:
             exceptions: true
             remove_invalid_files: false
             config-file: fuzz_settings_ci_not_parsable.toml
+            ruff-config: ""
             timeout: 10000
             files: "FILES_21"
 
@@ -230,6 +258,13 @@ jobs:
 
       - name: Create folders
         run: |
+          # if ${{ matrix.ruff-config }} is not empty, then move it to /opt/ruff_config.toml
+          if [ -n "${{ matrix.ruff-config }}" ]; then
+            mv "${{ matrix.ruff-config }}" /opt/ruff_config.toml
+            echo "AAAAAAAAAAAAAAA"
+            echo "Using config file"
+            echo "AAAAAAAAAAAAAAA"
+          fi
           mkdir /opt/VALID_FILES_DIR
           mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
           mkdir /opt/BROKEN_FILES_DIR
@@ -280,7 +315,7 @@ jobs:
           fi
           sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
-          
+
       - name: Store Reports
         uses: actions/upload-artifact@v4
         with:
