@@ -230,7 +230,7 @@ jobs:
           sed -i '/\[profile.release\]/a debug = true' Cargo.toml
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
-          cargo install --path crates/ruff
+          cargo install --path crates/ruff --locked
           cd ..
 
       - name: Install ruff Debug
@@ -241,7 +241,7 @@ jobs:
           sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
-          cargo install --path crates/ruff --debug
+          cargo install --path crates/ruff --debug  --locked
           cd ..
 
       - name: Remove exceptions
