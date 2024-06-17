@@ -59,6 +59,7 @@ pub struct Setting {
     pub check_if_file_is_parsable: bool,
     pub verify_if_files_are_still_broken: bool,
     pub disable_exceptions: bool,
+    pub ignore_timeout_errors: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -86,6 +87,7 @@ pub fn load_settings() -> Setting {
         general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
     let disable_exceptions =
         verify_if_files_are_still_broken && !(find_minimal_rules || remove_non_crashing_items_from_broken_files);
+    let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
@@ -122,6 +124,7 @@ pub fn load_settings() -> Setting {
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
         verify_if_files_are_still_broken,
         disable_exceptions,
+        ignore_timeout_errors,
     }
 }
 

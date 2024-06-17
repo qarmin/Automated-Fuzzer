@@ -17,6 +17,7 @@ clean_base_files = false # If true, files will be cleaned according to extension
 temp_folder = "/opt/tmp_folder" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled
 allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
+ignore_timeout_errors = false
 error_when_found_signal = true # Errors, when app was killed by OS or used
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed

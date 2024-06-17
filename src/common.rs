@@ -440,16 +440,16 @@ pub fn remove_code_between_empty_lines(rng: &mut ThreadRng, orig: &[String]) -> 
 }
 
 pub fn remove_random_from_middle<T>(rng: &mut ThreadRng, orig: &[T]) -> Vec<T>
-    where
-        T: Clone,
+where
+    T: Clone,
 {
     let limits = get_two_random_not_equal_ints(rng, orig.len());
     orig[(limits.0)..(limits.1)].to_vec()
 }
 
 pub fn remove_random_items<T>(rng: &mut ThreadRng, orig: &[T], limit: usize) -> Vec<T>
-    where
-        T: Clone,
+where
+    T: Clone,
 {
     let content = orig.to_vec();
     let mut indexes_to_remove = HashSet::new();
@@ -505,7 +505,7 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
         // info!("Non standard output status {:?}", output.status.code());
         is_signal_code_timeout_broken = true;
     }
-    if obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) {
+    if obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) && !obj.get_settings().ignore_timeout_errors {
         // info!("Timeout found");
         is_signal_code_timeout_broken = true;
     }
