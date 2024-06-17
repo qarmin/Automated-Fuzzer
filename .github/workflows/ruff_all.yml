@@ -335,7 +335,7 @@ jobs:
           path: /opt/BROKEN_FILES_DIR
 
       - name: Zip and send it
-        if: ${{ matrix.ruff-config != '' }}
+        if: ${{ matrix.ruff-config == '' }}
         run: |
           if [ -d "/opt/tmp_folder" ]; then
             zip_file="src.zip"
