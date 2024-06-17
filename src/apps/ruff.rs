@@ -199,6 +199,9 @@ impl ProgramConfig for RuffStruct {
             "format" => {
                 command.arg("format").arg(full_name).arg("--check");
             }
+            "red_knot" => {
+                command.arg(full_name);
+            }
             _ => {
                 panic!("Unknown tool type: {}", self.settings.tool_type);
             }

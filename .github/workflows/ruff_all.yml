@@ -45,6 +45,24 @@ jobs:
             timeout: 10000
             files: "FILES_23"
 
+          - name: RED_KNOT
+            generate-broken-files: true
+            format: false
+            exceptions: false
+            remove_invalid_files: true
+            config-file: fuzz_settings_ci_red_knot.toml
+            ruff-config: ""
+            timeout: 10000
+            files: "FILES_21"
+          - name: RED_KNOT_SHORT
+            generate-broken-files: true
+            format: false
+            exceptions: false
+            remove_invalid_files: true
+            config-file: fuzz_settings_ci_red_knot.toml
+            ruff-config: ""
+            timeout: 1800
+            files: "FILES_25"
           - name: CONFIG_1
             generate-broken-files: true
             format: false
@@ -231,6 +249,7 @@ jobs:
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
           cargo install --path crates/ruff --locked
+          cargo install --path crates/red_knot/ --force --locked
           cd ..
 
       - name: Install ruff Debug
