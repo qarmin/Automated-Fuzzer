@@ -29,6 +29,10 @@ pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         "format" => {
             report_problem_with_format(settings, obj);
         }
+        "red_knot" => {
+            // Nothing to do
+            // there is
+        }
         _ => {
             panic!("Unknown tool type: {}", settings.tool_type);
         }
