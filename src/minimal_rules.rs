@@ -326,13 +326,13 @@ pub fn save_results_to_file(
             .join("\n");
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"$RUFF_VERSION (latest changes from main branch)
+        file_content += &r###"$RUFF_VERSION
 ```
 ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --output-format concise --isolated
 ```
 
-file content:
-```
+file content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):
+
 $FILE_CONTENT
 ```
 
