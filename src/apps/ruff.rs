@@ -303,10 +303,13 @@ impl ProgramConfig for RuffStruct {
 
             let all = collect_output(&output);
             for i in all.lines() {
-                if let Some(s) = i.strip_prefix("error: Failed to format ") {
+                if let Some(s) = i.strip_prefix("error: Failed to parse ") {
                     if let Some(idx) = s.find(".py") {
-                        files_to_remove_ruff.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                         let file_name = &s[..idx + 3];
+                        if file_name.contains(" ") {
+                            continue;
+                        }
+                        files_to_remove_ruff.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                         fs::remove_file(file_name).unwrap();
                     }
                 }
@@ -326,10 +329,9 @@ impl ProgramConfig for RuffStruct {
         let files_to_remove_ruff: u32 = files_to_remove_ruff.load(std::sync::atomic::Ordering::Relaxed);
 
         info!(
-            "Removed {}/{all_files} non parsable files - first {} by ruff, later {} by cpython",
+            "Removed {}/{all_files} non parsable files - first {files_to_remove_ruff} by ruff, later {files_to_remove_cpython} by cpython",
             files_to_remove_ruff + files_to_remove_cpython,
-            files_to_remove_ruff,
-            files_to_remove_cpython
+
         );
     }
 }
