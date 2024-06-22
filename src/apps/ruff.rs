@@ -109,21 +109,21 @@ impl ProgramConfig for RuffStruct {
         found_broken_items && !found_ignored_item
     }
 
-    fn remove_not_needed_lines_from_output(&self, output: String) -> String {
-        output
-            .lines()
-            .filter(|e| {
-                !((e.contains(".py") && e.matches(':').count() >= 3)
-                    || e.trim().is_empty()
-                    || e.starts_with("warning: `")
-                    || e.starts_with("Found: `")
-                    || e.starts_with("Found ")
-                    || e.starts_with("Ignoring `"))
-            })
-            .map(String::from)
-            .collect::<Vec<String>>()
-            .join("\n")
-    }
+    // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
+    //     output
+    //         .lines()
+    //         .filter(|e| {
+    //             !((e.contains(".py") && e.matches(':').count() >= 3)
+    //                 || e.trim().is_empty()
+    //                 || e.starts_with("warning: `")
+    //                 || e.starts_with("Found: `")
+    //                 || e.starts_with("Found ")
+    //                 || e.starts_with("Ignoring `"))
+    //         })
+    //         .map(String::from)
+    //         .collect::<Vec<String>>()
+    //         .join("\n")
+    // }
 
     fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
         let mut lines = output
@@ -306,7 +306,7 @@ impl ProgramConfig for RuffStruct {
                 if let Some(s) = i.strip_prefix("error: Failed to parse ") {
                     if let Some(idx) = s.find(".py") {
                         let file_name = &s[..idx + 3];
-                        if file_name.contains(" ") {
+                        if file_name.contains(' ') {
                             continue;
                         }
                         files_to_remove_ruff.fetch_add(1, std::sync::atomic::Ordering::Relaxed);

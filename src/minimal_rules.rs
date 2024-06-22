@@ -97,7 +97,7 @@ pub fn save_results_to_file_format(
         }
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"Ruff $RUFF_VERSION
+        file_content += &r"Ruff $RUFF_VERSION
 ```
 ruff format *.py
 ```
@@ -113,7 +113,7 @@ $ERROR
 ```
 
 
-"###
+"
             .replace("$FILE_CONTENT", &file_code)
             .replace("$ERROR", &output)
             .replace("$RUFF_VERSION", &ruff_version)
@@ -290,7 +290,7 @@ pub fn save_results_to_file(
     for (rules, file_name, name, output) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
         // Max 10 rules
-        let rule_str = rules.iter().take(10).to_owned().cloned().collect::<Vec<_>>().join("_");
+        let rule_str = rules.iter().take(10).clone().cloned().collect::<Vec<_>>().join("_");
 
         let mut file_content = String::new();
         let type_of_problem;

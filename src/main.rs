@@ -6,14 +6,16 @@ use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::{fs, process};
+use std::collections::HashMap;
+use std::time::Instant;
 
 use rayon::prelude::*;
 
-use crate::common::{execute_command_and_connect_output, minimize_binary_output, minimize_string_output};
+use crate::common::{execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output};
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
-use log::{error, info};
+use log::{debug, error, info};
 
 pub mod apps;
 mod broken_files;
@@ -103,9 +105,17 @@ fn main() {
         info!("Removed non parsable files");
 
         info!("Collecting files");
-        let files = collect_files(&settings);
-        info!("Collected files");
+        let mut files = collect_files(&settings);
+        let start_file_size = files.len();
+        info!("Collected {start_file_size} files");
 
+        if settings.grouping > 1 {
+            info!("Started to check files in groups of {} elements", settings.grouping);
+            files = test_files_in_group(files, &settings, &obj);
+            info!("After grouping left {} files to check out of all {start_file_size}", files.len());
+        } else {
+            info!("No grouping");
+        }
         let atomic_broken = AtomicU32::new(0);
 
         test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
@@ -222,6 +232,51 @@ fn collect_files(settings: &Setting) -> Vec<String> {
     }
 
     files
+}
+
+fn test_files_in_group(
+    files: Vec<String>,
+    settings: &Setting,
+    obj: &Box<dyn ProgramConfig>) -> Vec<String> {
+    let all_chunks_number = files.len() / settings.grouping as usize + 1;
+    let atomic = AtomicU32::new(0);
+    info!("Started to check files in groups of {} elements, {} groups", settings.grouping, all_chunks_number);
+    let res = files.chunks(settings.grouping as usize).filter_map(|group| {
+        let number = atomic.fetch_add(1, Ordering::Release);
+        if number % 10 == 0 {
+            info!("+++++ {number} / {all_chunks_number}");
+        }
+
+        let temp_folder = &settings.temp_folder;
+        let mut map = HashMap::new();
+        let random_folder = format!("{temp_folder}/{}", random::<u64>());
+        fs::create_dir_all(&random_folder).expect("Failed to create random folder");
+        for (idx, file_name) in group.iter().enumerate() {
+            let temp_name = format!("{random_folder}/{idx}.py");
+            fs::copy(file_name, &temp_name).expect("Failed to copy file");
+            map.insert(file_name, temp_name);
+        }
+
+        let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &random_folder);
+
+        fs::remove_dir_all(&random_folder).expect("Failed to remove random folder");
+
+        if settings.debug_print_results {
+            info!("{output}");
+        }
+
+        info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
+
+        if is_really_broken || obj.is_broken(&output) {
+            Some(group.to_vec())
+        } else {
+            None
+        }
+    }).flatten().collect();
+
+    let _ = fs::remove_dir_all(&settings.temp_folder);
+    let _ = fs::create_dir_all(&settings.temp_folder);
+    res
 }
 
 fn test_files(

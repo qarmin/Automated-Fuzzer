@@ -246,7 +246,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     }
 }
 
-pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -> Option<Vec<u8>> {
+pub fn minimize_binaries(full_name: &str, data: &[u8], rng: &mut ThreadRng) -> Option<Vec<u8>> {
     let mut output_file = OpenOptions::new()
         .write(true)
         .truncate(true)
@@ -258,7 +258,7 @@ pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -
         if data.len() == 1 {
             return None;
         }
-        let mut temp_data = data.clone();
+        let mut temp_data = data.to_vec();
         temp_data.remove(rng.gen_range(0..data.len()));
         output_file.write_all(&temp_data).unwrap();
         return Some(temp_data);
@@ -284,7 +284,7 @@ pub fn minimize_binaries(full_name: &str, data: &Vec<u8>, rng: &mut ThreadRng) -
     Some(content)
 }
 
-pub fn remove_single_def(lines: &Vec<String>, rng: &mut ThreadRng) -> Option<Vec<String>> {
+pub fn remove_single_def(lines: &[String], rng: &mut ThreadRng) -> Option<Vec<String>> {
     let mut list_def = Vec::new();
     for (idx, line) in lines.iter().enumerate() {
         if line.trim().starts_with("def ") {
@@ -477,6 +477,31 @@ fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, 
         }
         return (limits.0, limits.1);
     }
+}
+
+pub fn execute_command_on_pack_of_files(obj: &Box<dyn ProgramConfig>, folder_name: &str) -> (bool, String) {
+    let command = obj.get_run_command(folder_name);
+    let start_time = std::time::Instant::now();
+    let output = command.wait_with_output().unwrap();
+    info!("Command took: {:?}", start_time.elapsed());
+    let mut is_signal_code_timeout_broken = false;
+
+    let mut str_out = collect_output(&output);
+
+    if obj.get_settings().error_when_found_signal {
+        if let Some(_signal) = output.status.signal() {
+            // info!("Non standard output signal {}", signal);
+            is_signal_code_timeout_broken = true;
+        }
+    }
+
+    str_out.push_str(&format!(
+        "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
+        output.status.code(),
+        output.status.signal()
+    ));
+
+    (is_signal_code_timeout_broken, str_out)
 }
 
 #[allow(clippy::borrowed_box)]
