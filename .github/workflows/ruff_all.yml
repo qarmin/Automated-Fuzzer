@@ -370,7 +370,9 @@ jobs:
                 exit 1
               fi
               sleep 1
+            done
           fi
+          
           if [ -d "/opt/BROKEN_FILES_DIR" ]; then
             zip_file="src.zip"
             zip -q -r "$zip_file" /opt/BROKEN_FILES_DIR
@@ -385,6 +387,7 @@ jobs:
                 exit 1
               fi
               sleep 1
+            done
           fi
 
       - name: Remove all folders
