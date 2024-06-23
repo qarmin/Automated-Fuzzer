@@ -76,6 +76,9 @@ pub trait ProgramConfig: Sync {
     fn get_version(&self) -> String {
         panic!()
     }
+    fn check_if_can_check_files_in_group(&self) -> bool {
+        false
+    }
     // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
     //     output
     // }

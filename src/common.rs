@@ -481,9 +481,9 @@ fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, 
 
 pub fn execute_command_on_pack_of_files(obj: &Box<dyn ProgramConfig>, folder_name: &str) -> (bool, String) {
     let command = obj.get_run_command(folder_name);
-    let start_time = std::time::Instant::now();
+    // let start_time = std::time::Instant::now();
     let output = command.wait_with_output().unwrap();
-    info!("Command took: {:?}", start_time.elapsed());
+    // info!("Command took: {:?}", start_time.elapsed());
     let mut is_signal_code_timeout_broken = false;
 
     let mut str_out = collect_output(&output);

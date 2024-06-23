@@ -334,4 +334,11 @@ impl ProgramConfig for RuffStruct {
 
         );
     }
+    fn check_if_can_check_files_in_group(&self) -> bool {
+        match self.settings.tool_type.as_str() {
+            "lint_check_fix" | "lint_check" | "format" => true,
+            "red_knot" => false,
+            _ => false,
+        }
+    }
 }
