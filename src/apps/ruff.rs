@@ -40,7 +40,7 @@ const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     // "AddressSanitizer:",
     // "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
-    "Fix introduced a syntax error", "Fix introduced a syntax error", "This indicates a bug in",
+    // "Fix introduced a syntax error", "Fix introduced a syntax error", "This indicates a bug in",
 ];
 
 const INVALID_RULES: &[&str] = &[
