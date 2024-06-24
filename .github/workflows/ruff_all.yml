@@ -377,8 +377,10 @@ jobs:
             zip_file="src.zip"
             zip -q -r "$zip_file" /opt/BROKEN_FILES_DIR
             for attempt in {1..3}; do
-              curl -X POST -H "Content-Type: multipart/form-data" -H "Authorization: ${{ secrets.SECRET_KEY }}" -F "file=@$zip_file" http://${{ secrets.IP_ADDRESS }}:2222/upload/zip
-              if [ $? -eq 0 ]; then
+              curl -X POST -H "Content-Type: multipart/form-data" -H "Authorization: ${{ secrets.SECRET_KEY }}" -F "file=@$zip_file" http://${{ secrets.IP_ADDRESS }}:2222/upload/zip > a.txt || true
+              if grep -q "Send failure\|Broken pipe" a.txt; then
+                echo "Upload failed due to Send failure or Broken pipe. Retrying..."
+              else
                 echo "Upload succeeded."
                 break
               fi
