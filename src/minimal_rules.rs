@@ -236,8 +236,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         })
         .collect();
 
-    fs::remove_dir_all(&temp_folder).unwrap();
-    fs::create_dir_all(&temp_folder).unwrap();
+    // Remove temp folder(twice, because sometimes it is not removed at first time)
+    // Second time probably also will not work, but it is worth to try
+    let _ = fs::remove_dir_all(&temp_folder);
+    let _ = fs::remove_dir_all(&temp_folder);
+    let _ = fs::create_dir_all(&temp_folder);
 
     let ruff_version = obj.get_version();
     save_results_to_file(settings, collected_rules.clone(), ruff_version);
@@ -332,7 +335,7 @@ ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview 
 ```
 
 file content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):
-
+```
 $FILE_CONTENT
 ```
 
