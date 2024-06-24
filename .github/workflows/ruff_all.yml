@@ -356,24 +356,7 @@ jobs:
       - name: Zip and send it
         if: ${{ matrix.ruff-config == '' }}
         run: |
-          if [ -d "/opt/tmp_folder" ]; then
-            zip_file="src.zip"
-            zip -q -r "$zip_file" /opt/tmp_folder
-            for attempt in {1..3}; do
-              curl -X POST -H "Content-Type: multipart/form-data" -H "Authorization: ${{ secrets.SECRET_KEY }}" -F "file=@$zip_file" http://${{ secrets.IP_ADDRESS }}:2222/upload/zip
-              if [ $? -eq 0 ]; then
-                echo "Upload succeeded."
-                break
-              fi
-              if [ $attempt -eq 3 ]; then
-                echo "Upload failed after 3 attempts."
-                exit 1
-              fi
-              sleep 1
-            done
-          fi
-          
-          for dir in ["/opt/BROKEN_FILES_DIR", "/opt/tmp_folder" ] do
+          for dir in "/opt/BROKEN_FILES_DIR" "/opt/tmp_folder"; do
             if [ -d "$dir" ]; then
               zip_file="src.zip"
               zip -q -r "$zip_file" "$dir"
