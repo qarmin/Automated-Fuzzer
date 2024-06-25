@@ -69,13 +69,13 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
     fs::remove_dir_all(&temp_folder).unwrap();
     fs::create_dir_all(&temp_folder).unwrap();
 
-    save_results_to_file_format(settings, collected_items, ruff_version);
+    save_results_to_file_format(settings, collected_items, &ruff_version);
 }
 
 pub fn save_results_to_file_format(
     settings: &Setting,
     collected_items: Vec<(String, String, String)>,
-    ruff_version: String,
+    ruff_version: &str,
 ) {
     for (file_name, name, output) in collected_items {
         let file_code = fs::read_to_string(&name).unwrap();
@@ -116,7 +116,7 @@ $ERROR
 "
             .replace("$FILE_CONTENT", &file_code)
             .replace("$ERROR", &output)
-            .replace("$RUFF_VERSION", &ruff_version)
+            .replace("$RUFF_VERSION", ruff_version)
             .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
@@ -185,6 +185,14 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 return None;
             }
 
+            if !only_check {
+                let (is_broken, output) = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, true, settings);
+                if is_broken {
+                    info!("File {new_name} ({i}) is when only checking for broken files");
+                    return Some((vec!["ALL_CHECK".to_string()], file_name.to_string(), i, output));
+                }
+            }
+
             let mut valid_remove_rules = all_ruff_rules.clone();
             let mut rules_to_test = all_ruff_rules.clone();
 
@@ -232,6 +240,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             }
             info!("For file {i} valid rules are: {}", valid_remove_rules.join(","));
 
+
+            if only_check {
+                valid_remove_rules = valid_remove_rules.into_iter().map(|e| format!("{e}_CHECK")).collect();
+            }
+
             Some((valid_remove_rules, file_name.to_string(), i, out))
         })
         .collect();
@@ -243,7 +256,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let _ = fs::create_dir_all(&temp_folder);
 
     let ruff_version = obj.get_version();
-    save_results_to_file(settings, collected_rules.clone(), ruff_version);
+    save_results_to_file(settings, collected_rules.clone(), ruff_version, only_check);
 
     let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
     for (rules, _, _, _) in collected_rules {
@@ -279,8 +292,8 @@ pub fn draw_table(items: Vec<(String, u32)>, temp_folder: &str) -> Result<(), st
 
     str_buf += "+--------------+----------------+\n";
 
-    writeln!(file, "{}", str_buf)?;
-    println!("{}", str_buf);
+    writeln!(file, "{str_buf}")?;
+    println!("{str_buf}");
 
     Ok(())
 }
@@ -289,6 +302,7 @@ pub fn save_results_to_file(
     settings: &Setting,
     rules_with_names: Vec<(Vec<String>, String, String, String)>,
     ruff_version: String,
+    only_check: bool,
 ) {
     for (rules, file_name, name, output) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
@@ -302,22 +316,24 @@ pub fn save_results_to_file(
         } else {
             file_content += "Rules";
         }
+
+        let joined_rules = rules.iter().map(|e| e.strip_suffix("CHECK").map(ToString::to_string).unwrap_or(e.to_string())).collect::<Vec<_>>().join(", ");
         if output.contains("Failed to converge after") {
-            file_content += &format!(" {} cause infinite loop", rules.join(", "));
+            file_content += &format!(" {joined_rules} cause infinite loop");
             type_of_problem = "loop";
         } else if output.contains("panicked") {
-            file_content += &format!(" {} cause panic", rules.join(", "));
+            file_content += &format!(" {joined_rules} cause panic");
             type_of_problem = "panic";
         } else {
-            file_content += &format!(" {} cause autofix error", rules.join(", "));
+            file_content += &format!(" {joined_rules} cause autofix error");
             type_of_problem = "autofix";
         }
 
+        let start_text = if only_check { "CHECK" } else { "FIX" };
+
         let folder = format!(
-            "{}/CHECK_{}_{}___({} bytes) - {}",
+            "{}/{start_text}_{rule_str}_{type_of_problem}___({} bytes) - {}",
             settings.temp_folder,
-            rule_str,
-            type_of_problem,
             file_code.len(),
             random::<u64>()
         );
@@ -329,7 +345,7 @@ pub fn save_results_to_file(
             .join("\n");
 
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
-        file_content += &r###"$RUFF_VERSION
+        file_content += &r"$RUFF_VERSION
 ```
 ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --output-format concise --isolated
 ```
@@ -345,7 +361,7 @@ $ERROR
 ```
 
 
-"###
+"
             .replace("$RULES_TO_REPLACE", &rules.join(","))
             .replace("$FILE_CONTENT", &file_code)
             .replace("$RUFF_VERSION", &ruff_version)
