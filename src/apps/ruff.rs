@@ -36,7 +36,8 @@ const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
 const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "stack backtrace:", "0: rust_begin_unwind",
+    "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "stack backtrace:",
+    "0: rust_begin_unwind",
     // "AddressSanitizer:",
     // "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix

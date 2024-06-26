@@ -8,7 +8,6 @@ use jwalk::WalkDir;
 use log::info;
 use rand::prelude::*;
 use rayon::prelude::*;
-
 use zip::write::FileOptions;
 use zip::ZipWriter;
 
@@ -240,7 +239,6 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             }
             info!("For file {i} valid rules are: {}", valid_remove_rules.join(","));
 
-
             if only_check {
                 valid_remove_rules = valid_remove_rules.into_iter().map(|e| format!("{e}_CHECK")).collect();
             }
@@ -256,7 +254,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let _ = fs::create_dir_all(&temp_folder);
 
     let ruff_version = obj.get_version();
-    save_results_to_file(settings, collected_rules.clone(), ruff_version, only_check);
+    save_results_to_file(settings, collected_rules.clone(), ruff_version);
 
     let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
     for (rules, _, _, _) in collected_rules {
@@ -302,9 +300,9 @@ pub fn save_results_to_file(
     settings: &Setting,
     rules_with_names: Vec<(Vec<String>, String, String, String)>,
     ruff_version: String,
-    only_check: bool,
 ) {
     for (rules, file_name, name, output) in rules_with_names {
+        let only_check = rules.iter().any(|e| e.ends_with("_CHECK"));
         let file_code = fs::read_to_string(&name).unwrap();
         // Max 10 rules
         let rule_str = rules.iter().take(10).clone().cloned().collect::<Vec<_>>().join("_");
@@ -317,7 +315,15 @@ pub fn save_results_to_file(
             file_content += "Rules";
         }
 
-        let joined_rules = rules.iter().map(|e| e.strip_suffix("CHECK").map(ToString::to_string).unwrap_or(e.to_string())).collect::<Vec<_>>().join(", ");
+        let joined_rules = rules
+            .iter()
+            .map(|e| {
+                e.strip_suffix("_CHECK")
+                    .map(ToString::to_string)
+                    .unwrap_or(e.to_string())
+            })
+            .collect::<Vec<_>>()
+            .join(", ");
         if output.contains("Failed to converge after") {
             file_content += &format!(" {joined_rules} cause infinite loop");
             type_of_problem = "loop";
@@ -344,10 +350,12 @@ pub fn save_results_to_file(
             .collect::<Vec<_>>()
             .join("\n");
 
+        let fix_needed = if only_check { "" } else { " --fix " };
+
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r"$RUFF_VERSION
 ```
-ruff  *.py --select $RULES_TO_REPLACE --no-cache --fix --unsafe-fixes --preview --output-format concise --isolated
+ruff  *.py --select $RULES_TO_REPLACE --no-cache $RUFF_FIX --unsafe-fixes --preview --output-format concise --isolated
 ```
 
 file content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):
@@ -362,6 +370,7 @@ $ERROR
 
 
 "
+            .replace("$RUFF_FIX", fix_needed)
             .replace("$RULES_TO_REPLACE", &rules.join(","))
             .replace("$FILE_CONTENT", &file_code)
             .replace("$RUFF_VERSION", &ruff_version)

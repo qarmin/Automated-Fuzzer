@@ -15,18 +15,17 @@ pub fn verify_if_files_are_still_broken(_settings: &Setting, obj: &Box<dyn Progr
         .into_par_iter()
         .map(|(full_name, rules, issue)| {
             let file_content = std::fs::read_to_string(&full_name).unwrap();
-            let res =
-                if check_if_rule_file_crashing(&full_name, &rules, obj).0 {
-                    format!(
-                        "File {full_name}, from issue {issue} with rules {} is still broken",
-                        rules.join(",")
-                    )
-                } else {
-                    format!(
-                        "[NOT BROKEN]File {full_name}, from issue {issue} with rules {} is not broken",
-                        rules.join(",")
-                    )
-                };
+            let res = if check_if_rule_file_crashing(&full_name, &rules, obj).0 {
+                format!(
+                    "File {full_name}, from issue {issue} with rules {} is still broken",
+                    rules.join(",")
+                )
+            } else {
+                format!(
+                    "[NOT BROKEN]File {full_name}, from issue {issue} with rules {} is not broken",
+                    rules.join(",")
+                )
+            };
             // Save content to same file
             std::fs::write(&full_name, file_content).unwrap();
             res
