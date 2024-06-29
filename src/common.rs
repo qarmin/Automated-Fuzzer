@@ -1,4 +1,4 @@
-use log::{debug, error, info};
+use log::{error, info};
 use std::cmp::max;
 use std::collections::HashSet;
 use std::fs;
@@ -7,7 +7,9 @@ use std::io::Write;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
+use std::time::Instant;
 use jwalk::WalkDir;
+use once_cell::sync::{Lazy, OnceCell};
 use rand::prelude::ThreadRng;
 use rand::Rng;
 
@@ -15,6 +17,21 @@ use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
 pub const STRING_MINIMIZATION_LIMIT: usize = 3;
+pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
+pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
+
+pub fn check_if_app_ends() -> bool {
+    let elapsed = START_TIME.elapsed().as_secs();
+    let timeout = TIMEOUT_SECS.get().unwrap();
+    return elapsed > *timeout;
+}
+
+pub fn close_app_if_timeouts() {
+    if check_if_app_ends() {
+        info!("Timeout reached, closing app");
+        std::process::exit(0);
+    }
+}
 
 pub fn remove_and_create_entire_folder(folder_name: &str) {
     if Path::new(folder_name).exists() {

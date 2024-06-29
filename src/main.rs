@@ -7,10 +7,9 @@ use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::{fs, process};
-
 use rayon::prelude::*;
 
-use crate::common::{execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output, remove_and_create_entire_folder};
+use crate::common::{check_if_app_ends, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, TIMEOUT_SECS};
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
@@ -26,8 +25,13 @@ mod remove_non_crashing_files;
 mod settings;
 mod verify_reported_broken_files;
 
+
 fn main() {
     handsome_logger::init().unwrap();
+
+    let first_arg: u64 = std::env::args().nth(1).map(|x| x.parse().unwrap()).unwrap_or(999999999999999);
+    info!("Timeout set to {first_arg} seconds");
+    TIMEOUT_SECS.set(first_arg).unwrap();
 
     // rayon::ThreadPoolBuilder::new()
     //     .num_threads(8)
@@ -80,6 +84,11 @@ fn main() {
     for i in 1..=loop_number {
         info!("Starting loop {i} out of all {loop_number}");
 
+        if close_app_if_timeouts() {
+            info!("Timeout reached, exiting");
+            break;
+        };
+
         if !settings.ignore_generate_copy_files_step {
             info!("Removing old files");
             remove_and_create_entire_folder(&settings.temp_possible_broken_files_dir);
@@ -97,11 +106,19 @@ fn main() {
         } else {
             info!("So - no copying or generating files");
         }
+        if close_app_if_timeouts() {
+            info!("Timeout reached, exiting");
+            break;
+        };
 
         info!("Removing non parsable files");
         obj.remove_non_parsable_files(&settings.temp_possible_broken_files_dir);
         info!("Removed non parsable files");
 
+        if close_app_if_timeouts() {
+            info!("Timeout reached, exiting");
+            break;
+        };
         info!("Collecting files");
         let mut files = collect_files(&settings);
         let start_file_size = files.len();
@@ -119,6 +136,10 @@ fn main() {
         }
         let atomic_broken = AtomicU32::new(0);
 
+        if close_app_if_timeouts() {
+            info!("Timeout reached, exiting");
+            break;
+        };
         test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
 
         info!("");
@@ -255,6 +276,10 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
                 info!("+++++ {number} / {all_chunks_number}");
             }
 
+            if check_if_app_ends() {
+                return None;
+            }
+
             let temp_folder = &settings.temp_folder;
             let mut map = HashMap::new();
             let random_folder = format!("{temp_folder}/{}", random::<u64>());
@@ -276,13 +301,16 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             // info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
 
             if is_really_broken || obj.is_broken(&output) {
-                Some(group)
+                Some(Some(group))
             } else {
-                None
+                Some(None)
             }
         })
+        .while_some()
         .flatten()
         .collect();
+
+    close_app_if_timeouts();
 
     remove_and_create_entire_folder(&settings.temp_folder);
     res
