@@ -330,7 +330,7 @@ jobs:
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
-          RUST_BACKTRACE=1 timeout ${{ matrix.timeout }} target/release/automated_fuzzer || true
+          RUST_BACKTRACE=1 timeout --signal=KILL "${{ matrix.timeout }}s" target/release/automated_fuzzer || true
           mkdir -p ${{ matrix.tmp_folder }} || true
           rm -rf ${{ matrix.tmp_folder }}
 
