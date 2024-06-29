@@ -23,7 +23,7 @@ pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
 pub fn check_if_app_ends() -> bool {
     let elapsed = START_TIME.elapsed().as_secs();
     let timeout = TIMEOUT_SECS.get().unwrap();
-    return elapsed > *timeout;
+    elapsed > *timeout
 }
 
 pub fn close_app_if_timeouts() {

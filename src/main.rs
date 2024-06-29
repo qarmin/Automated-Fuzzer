@@ -29,7 +29,7 @@ mod verify_reported_broken_files;
 fn main() {
     handsome_logger::init().unwrap();
 
-    let first_arg: u64 = std::env::args().nth(1).map(|x| x.parse().unwrap()).unwrap_or(999999999999999);
+    let first_arg: u64 = std::env::args().nth(1).map_or(999_999_999_999_999, |x| x.parse().unwrap());
     info!("Timeout set to {first_arg} seconds");
     TIMEOUT_SECS.set(first_arg).unwrap();
 
@@ -84,7 +84,7 @@ fn main() {
     for i in 1..=loop_number {
         info!("Starting loop {i} out of all {loop_number}");
 
-        if close_app_if_timeouts() {
+        if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
         };
@@ -106,7 +106,7 @@ fn main() {
         } else {
             info!("So - no copying or generating files");
         }
-        if close_app_if_timeouts() {
+        if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
         };
@@ -115,7 +115,7 @@ fn main() {
         obj.remove_non_parsable_files(&settings.temp_possible_broken_files_dir);
         info!("Removed non parsable files");
 
-        if close_app_if_timeouts() {
+        if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
         };
@@ -136,7 +136,7 @@ fn main() {
         }
         let atomic_broken = AtomicU32::new(0);
 
-        if close_app_if_timeouts() {
+        if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
         };
