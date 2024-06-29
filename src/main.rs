@@ -10,10 +10,7 @@ use std::{fs, process};
 
 use rayon::prelude::*;
 
-use crate::common::{
-    execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output,
-    minimize_string_output,
-};
+use crate::common::{execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output, remove_and_create_entire_folder};
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
@@ -85,8 +82,7 @@ fn main() {
 
         if !settings.ignore_generate_copy_files_step {
             info!("Removing old files");
-            let _ = fs::remove_dir_all(&settings.temp_possible_broken_files_dir);
-            fs::create_dir_all(&settings.temp_possible_broken_files_dir).unwrap();
+            remove_and_create_entire_folder(&settings.temp_possible_broken_files_dir);
             if settings.generate_files {
                 info!("So - generating files from valid input files dir");
                 generate_files(&obj, &settings);
@@ -288,8 +284,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
         .flatten()
         .collect();
 
-    let _ = fs::remove_dir_all(&settings.temp_folder);
-    let _ = fs::create_dir_all(&settings.temp_folder);
+    remove_and_create_entire_folder(&settings.temp_folder);
     res
 }
 

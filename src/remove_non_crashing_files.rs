@@ -1,4 +1,4 @@
-use crate::common::execute_command_and_connect_output;
+use crate::common::{execute_command_and_connect_output, remove_and_create_entire_folder};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -15,10 +15,10 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     let after = AtomicUsize::new(before);
     info!("Found {before} files to check");
 
-    let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
+    let atomic_counter = AtomicUsize::new(0);
     let all = broken_files.len();
     broken_files.into_par_iter().for_each(|full_name| {
-        let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
         if idx % 100 == 0 {
             info!("_____ Processsed already {idx} / {all}");
         }
@@ -34,8 +34,7 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
 
     // Needed, because CI
     if collect_broken_files(settings).is_empty() {
-        fs::remove_dir_all(&settings.broken_files_dir).unwrap();
-        fs::create_dir_all(&settings.broken_files_dir).unwrap();
+        remove_and_create_entire_folder(&settings.broken_files_dir);
     }
 
     let after = after.load(Ordering::Relaxed);

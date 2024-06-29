@@ -12,7 +12,7 @@ use zip::write::FileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
-use crate::common::collect_output;
+use crate::common::{collect_output, remove_and_create_entire_folder};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -39,7 +39,6 @@ pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 }
 
 pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
-    let temp_folder = settings.temp_folder.clone();
     let files_to_check = collect_broken_files_dir_files(settings);
 
     let ruff_version = obj.get_version();
@@ -48,7 +47,7 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
         .into_par_iter()
         .filter_map(|i| {
             let file_name = i.split('/').last().unwrap();
-            let new_name = format!("{temp_folder}/{file_name}");
+            let new_name = format!("{}/{file_name}", settings.temp_folder);
             let original_content = fs::read_to_string(&i).unwrap();
 
             fs::write(&new_name, original_content).unwrap();
@@ -65,8 +64,7 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
         })
         .collect();
 
-    fs::remove_dir_all(&temp_folder).unwrap();
-    fs::create_dir_all(&temp_folder).unwrap();
+    remove_and_create_entire_folder(&settings.temp_folder);
 
     save_results_to_file_format(settings, collected_items, &ruff_version);
 }
@@ -141,6 +139,9 @@ pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &str) {
 
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let temp_folder = settings.temp_folder.clone();
+
+    // Clean temp folder
+    remove_and_create_entire_folder(&settings.temp_folder);
 
     obj.remove_non_parsable_files(&settings.broken_files_dir);
     let files_to_check = collect_broken_files_dir_files(settings);
@@ -247,8 +248,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         })
         .collect();
 
-    fs::remove_dir_all(&temp_folder).unwrap();
-    fs::create_dir_all(&temp_folder).unwrap();
+    remove_and_create_entire_folder(&settings.temp_folder);
 
     let ruff_version = obj.get_version();
     save_results_to_file(settings, collected_rules.clone(), ruff_version);

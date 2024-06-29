@@ -1,4 +1,4 @@
-use log::{error, info};
+use log::{debug, error, info};
 use std::cmp::max;
 use std::collections::HashSet;
 use std::fs;
@@ -7,7 +7,7 @@ use std::io::Write;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
-
+use jwalk::WalkDir;
 use rand::prelude::ThreadRng;
 use rand::Rng;
 
@@ -15,6 +15,26 @@ use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
 pub const STRING_MINIMIZATION_LIMIT: usize = 3;
+
+pub fn remove_and_create_entire_folder(folder_name: &str) {
+    if Path::new(folder_name).exists() {
+        debug!("Removing folder {folder_name}");
+        if let Err(e) = fs::remove_dir_all(folder_name) {
+            let number_of_files = WalkDir::new(folder_name).max_depth(999).into_iter()
+                .count();
+            panic!("Failed to remove folder {folder_name} (number of files {number_of_files}), reason {e}");
+        }
+        fs::remove_dir_all(folder_name).unwrap();
+        debug!("Folder {folder_name} removed");
+    } else {
+        debug!("Folder {folder_name} not exists, so not removing it");
+    }
+
+
+    debug!("Creating folder {folder_name}");
+    fs::create_dir_all(folder_name).unwrap();
+    debug!("Folder {folder_name} created");
+}
 
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     loop {
@@ -527,9 +547,9 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
     if !obj.get_settings().allowed_error_statuses.is_empty()
         && output.status.code().is_some()
         && !obj
-            .get_settings()
-            .allowed_error_statuses
-            .contains(&output.status.code().unwrap())
+        .get_settings()
+        .allowed_error_statuses
+        .contains(&output.status.code().unwrap())
     {
         // info!("Non standard output status {:?}", output.status.code());
         is_signal_code_timeout_broken = true;
@@ -643,16 +663,16 @@ fn test_remove_single_docstring() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -674,9 +694,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected1 = r###"
     def function():
         pass
@@ -686,9 +706,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected2 = r###"
     """
     DOCSTRING
@@ -698,9 +718,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         let result = remove_single_docstring(&lines, &mut rng).unwrap();
         assert!([expected1, expected2].contains(&result));
@@ -716,16 +736,16 @@ fn test_remove_single_docstring3() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -741,23 +761,23 @@ fn test_remove_single_def() {
     def function2():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected1 = r###"
     def function2():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected2 = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         let ret = remove_single_def(&lines, &mut rng).unwrap();
         if ![&expected2, &expected1].contains(&&ret) {
@@ -776,16 +796,16 @@ fn test_remove_all_comments() {
     def function():
         pass
     "###
-    .split("\n")
-    .map(String::from)
-    .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
     let expected = r###"
     def function():
         pass
     "###
-    .split("\n")
-    .map(String::from)
-    .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
     assert_eq!(remove_all_comments(&lines), expected);
 }

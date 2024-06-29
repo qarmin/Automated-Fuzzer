@@ -17,3 +17,6 @@ log = "0.4"
 
 strum_macros = "0.26"
 strum = { version = "0.26", features = ["derive"] }
+
+[profile.release]
+debug = true
