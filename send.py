@@ -23,6 +23,9 @@ def upload_file(secret_key: str, ip_address: str, folder_to_pack: str) -> bool:
             print("Upload succeeded.")
             return True
 
+        print(f"Upload failed. Retrying... (Attempt {attempt + 1}/3)")
+        print(response.text)
+
         time.sleep(1)
 
     return False
