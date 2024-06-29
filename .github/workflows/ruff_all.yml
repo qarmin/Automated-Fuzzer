@@ -26,7 +26,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/normal_1"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: NORMAL_2
             generate-broken-files: true
             format: false
@@ -36,7 +36,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_22"
-            tmp_folder: "/opt/tmp_folder/normal_2"
+            tmp_folder: "/tmp/tmp_folder/normal_2"
           - name: NORMAL_3
             generate-broken-files: true
             format: false
@@ -46,7 +46,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_23"
-            tmp_folder: "/opt/tmp_folder/normal_3"
+            tmp_folder: "/tmp/tmp_folder/normal_3"
 
           - name: RED_KNOT
             generate-broken-files: true
@@ -57,7 +57,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/red_knot"
+            tmp_folder: "/tmp/tmp_folder/red_knot"
           - name: RED_KNOT_SHORT
             generate-broken-files: true
             format: false
@@ -67,7 +67,7 @@ jobs:
             ruff-config: ""
             timeout: 1800
             files: "FILES_25"
-            tmp_folder: "/opt/tmp_folder/red_knot_short"
+            tmp_folder: "/tmp/tmp_folder/red_knot_short"
           - name: CONFIG_1
             generate-broken-files: true
             format: false
@@ -77,7 +77,7 @@ jobs:
             ruff-config: "ruff_config.toml"
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/config_1"
+            tmp_folder: "/tmp/tmp_folder/config_1"
           #          - name: NO_GENERATE_1
           #            generate-broken-files: false
           #            format: false
@@ -87,7 +87,7 @@ jobs:
           #            ruff-config: ""
           #            timeout: 10000
           #            files: "FILES_21,FILES_22"
-          #            tmp_folder: "/opt/tmp_folder/no_generate_1"
+          #            tmp_folder: "/tmp/tmp_folder/no_generate_1"
           #          - name: NO_GENERATE_2
           #            generate-broken-files: false
           #            format: false
@@ -97,7 +97,7 @@ jobs:
           #            ruff-config: ""
           #            timeout: 10000
           #            files: "FILES_23,FILES_24"
-          #            tmp_folder: "/opt/tmp_folder/no_generate_2"
+          #            tmp_folder: "/tmp/tmp_folder/no_generate_2"
           #          - name: NO_GENERATE_3
           #            generate-broken-files: false
           #            format: false
@@ -107,7 +107,7 @@ jobs:
           #            ruff-config: ""
           #            timeout: 10000
           #            files: "FILES_25,FILES_26"
-          #            tmp_folder: "/opt/tmp_folder/no_generate_3"
+          #            tmp_folder: "/tmp/tmp_folder/no_generate_3"
 
           - name: SHORT_NORMAL_1
             generate-broken-files: true
@@ -118,7 +118,7 @@ jobs:
             ruff-config: ""
             timeout: 120
             files: "FILES_25"
-            tmp_folder: "/opt/tmp_folder/short_normal_1"
+            tmp_folder: "/tmp/tmp_folder/short_normal_1"
           - name: SHORT_A_LITTLE_LONGER_NORMAL_1
             generate-broken-files: true
             format: false
@@ -128,7 +128,7 @@ jobs:
             ruff-config: ""
             timeout: 800
             files: "FILES_25"
-            tmp_folder: "/opt/tmp_folder/short_a_little_longer_normal_1"
+            tmp_folder: "/tmp/tmp_folder/short_a_little_longer_normal_1"
           - name: SHORT_A_LITTLE_LONGER_NORMAL_DEBUG_INFO_1
             generate-broken-files: true
             format: false
@@ -138,7 +138,7 @@ jobs:
             ruff-config: ""
             timeout: 800
             files: "FILES_25"
-            tmp_folder: "/opt/tmp_folder/short_a_little_longer_normal_debug_info_1"
+            tmp_folder: "/tmp/tmp_folder/short_a_little_longer_normal_debug_info_1"
           - name: SHORT_LONGER_NORMAL_1
             generate-broken-files: true
             format: false
@@ -148,7 +148,7 @@ jobs:
             ruff-config: ""
             timeout: 3600
             files: "FILES_25"
-            tmp_folder: "/opt/tmp_folder/short_longer_normal_1"
+            tmp_folder: "/tmp/tmp_folder/short_longer_normal_1"
 
           - name: NO_EXCEPTIONS_NORMAL_1
             generate-broken-files: true
@@ -159,7 +159,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/no_exceptions_normal_1"
+            tmp_folder: "/tmp/tmp_folder/no_exceptions_normal_1"
           - name: NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
             format: false
@@ -169,7 +169,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_23"
-            tmp_folder: "/opt/tmp_folder/no_exceptions_normal_2"
+            tmp_folder: "/tmp/tmp_folder/no_exceptions_normal_2"
           #          - name: NO_EXCEPTIONS_NO_GENERATE_3
           #            generate-broken-files: false
           #            format: false
@@ -179,7 +179,7 @@ jobs:
           #            ruff-config: ""
           #            timeout: 10000
           #            files: "FILES_25,FILES_26"
-          #            tmp_folder: "/opt/tmp_folder/no_exceptions_no_generate_3"
+          #            tmp_folder: "/tmp/tmp_folder/no_exceptions_no_generate_3"
 
           - name: BINARY_NORMAL_1
             generate-broken-files: true
@@ -190,7 +190,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/binary_normal_1"
+            tmp_folder: "/tmp/tmp_folder/binary_normal_1"
           - name: BINARY_NO_EXCEPTIONS_NORMAL_2
             generate-broken-files: true
             format: false
@@ -200,7 +200,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_22"
-            tmp_folder: "/opt/tmp_folder/binary_no_exceptions_normal_2"
+            tmp_folder: "/tmp/tmp_folder/binary_no_exceptions_normal_2"
 
           #          - name: FORMAT_NO_GENERATE_1
           #            generate-broken-files: false
@@ -211,7 +211,7 @@ jobs:
           #            ruff-config: ""
           #            timeout: 10000
           #            files: "FILES_21,FILES_22"
-          #            tmp_folder: "/opt/tmp_folder/format_no_generate_1"
+          #            tmp_folder: "/tmp/tmp_folder/format_no_generate_1"
 
           - name: ONLY_CHECK_1
             generate-broken-files: true
@@ -222,7 +222,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/only_check_1"
+            tmp_folder: "/tmp/tmp_folder/only_check_1"
 
           - name: DEBUG_1
             generate-broken-files: true
@@ -233,7 +233,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/debug_1"
+            tmp_folder: "/tmp/tmp_folder/debug_1"
 
           - name: NOT_PARSABLE
             generate-broken-files: true
@@ -244,7 +244,7 @@ jobs:
             ruff-config: ""
             timeout: 10000
             files: "FILES_21"
-            tmp_folder: "/opt/tmp_folder/not_parsable"
+            tmp_folder: "/tmp/tmp_folder/not_parsable"
 
     steps:
       - uses: actions/checkout@v4
