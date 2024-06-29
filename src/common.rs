@@ -18,22 +18,21 @@ pub const STRING_MINIMIZATION_LIMIT: usize = 3;
 
 pub fn remove_and_create_entire_folder(folder_name: &str) {
     if Path::new(folder_name).exists() {
-        debug!("Removing folder {folder_name}");
+        info!("Removing folder {folder_name}");
         if let Err(e) = fs::remove_dir_all(folder_name) {
             let number_of_files = WalkDir::new(folder_name).max_depth(999).into_iter()
                 .count();
             panic!("Failed to remove folder {folder_name} (number of files {number_of_files}), reason {e}");
         }
-        fs::remove_dir_all(folder_name).unwrap();
-        debug!("Folder {folder_name} removed");
+        info!("Folder {folder_name} removed");
     } else {
-        debug!("Folder {folder_name} not exists, so not removing it");
+        info!("Folder {folder_name} not exists, so not removing it");
     }
 
 
-    debug!("Creating folder {folder_name}");
+    info!("Creating folder {folder_name}");
     fs::create_dir_all(folder_name).unwrap();
-    debug!("Folder {folder_name} created");
+    info!("Folder {folder_name} created");
 }
 
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
