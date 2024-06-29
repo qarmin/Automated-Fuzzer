@@ -331,8 +331,7 @@ jobs:
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
           RUST_BACKTRACE=1 timeout --signal=KILL "${{ matrix.timeout }}s" target/release/automated_fuzzer || true
-          mkdir -p ${{ matrix.tmp_folder }} || true
-          rm -rf ${{ matrix.tmp_folder }}
+          sleep 10 # Allow the app to finish writing files etc.
 
       - name: Move settings for remove non crashing files
         if: ${{ matrix.remove_invalid_files == true }}
