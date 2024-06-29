@@ -247,11 +247,8 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         })
         .collect();
 
-    // Remove temp folder(twice, because sometimes it is not removed at first time)
-    // Second time probably also will not work, but it is worth to try
-    let _ = fs::remove_dir_all(&temp_folder);
-    let _ = fs::remove_dir_all(&temp_folder);
-    let _ = fs::create_dir_all(&temp_folder);
+    fs::remove_dir_all(&temp_folder).unwrap();
+    fs::create_dir_all(&temp_folder).unwrap();
 
     let ruff_version = obj.get_version();
     save_results_to_file(settings, collected_rules.clone(), ruff_version);
