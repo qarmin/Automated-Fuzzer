@@ -245,6 +245,8 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 valid_remove_rules = valid_remove_rules.into_iter().map(|e| format!("{e}_CHECK")).collect();
             }
 
+            fs::write(&new_name, &original_content).unwrap();
+
             Some((valid_remove_rules, file_name.to_string(), i, out))
         })
         .collect();
