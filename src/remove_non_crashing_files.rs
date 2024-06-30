@@ -32,7 +32,7 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
         after.fetch_sub(1, Ordering::Relaxed);
     });
 
-    // Needed, because CI
+    // TODO - why is this here?
     if collect_broken_files(settings).is_empty() {
         remove_and_create_entire_folder(&settings.broken_files_dir);
     }
@@ -46,9 +46,17 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
         .into_iter()
         .flatten()
         .filter_map(|entry| {
-            if entry.file_type().is_file() && entry.path().to_string_lossy().ends_with(".py") {
-                return Some(entry.path().to_string_lossy().to_string());
+            if !entry.file_type().is_file() {
+                return None;
             }
+
+            let path = entry.path().to_string_lossy().to_string();
+            let path_to_lowercase = path.to_lowercase();
+
+            if settings.extensions.iter().any(|e| path_to_lowercase.ends_with(e)) {
+                return Some(path);
+            }
+            
             None
         })
         .collect()
