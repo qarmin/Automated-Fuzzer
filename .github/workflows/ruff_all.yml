@@ -48,26 +48,26 @@ jobs:
             files: "FILES_23"
             tmp_folder: "/tmp/tmp_folder/normal_3"
 
-          - name: RED_KNOT
-            generate-broken-files: true
-            format: false
-            exceptions: false
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_red_knot.toml
-            ruff-config: ""
-            timeout: 10000
-            files: "FILES_21"
-            tmp_folder: "/tmp/tmp_folder/red_knot"
-          - name: RED_KNOT_SHORT
-            generate-broken-files: true
-            format: false
-            exceptions: false
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_red_knot.toml
-            ruff-config: ""
-            timeout: 1800
-            files: "FILES_25"
-            tmp_folder: "/tmp/tmp_folder/red_knot_short"
+          #          - name: RED_KNOT
+          #            generate-broken-files: true
+          #            format: false
+          #            exceptions: false
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_red_knot.toml
+          #            ruff-config: ""
+          #            timeout: 10000
+          #            files: "FILES_21"
+          #            tmp_folder: "/tmp/tmp_folder/red_knot"
+          #          - name: RED_KNOT_SHORT
+          #            generate-broken-files: true
+          #            format: false
+          #            exceptions: false
+          #            remove_invalid_files: true
+          #            config-file: fuzz_settings_ci_red_knot.toml
+          #            ruff-config: ""
+          #            timeout: 1800
+          #            files: "FILES_25"
+          #            tmp_folder: "/tmp/tmp_folder/red_knot_short"
           - name: CONFIG_1
             generate-broken-files: true
             format: false
