@@ -326,10 +326,13 @@ fn test_files(
     let atomic = AtomicU32::new(0);
     let all = files.len();
 
-    files.into_par_iter().for_each(|full_name| {
+    files.into_par_iter().map(|full_name| {
         let number = atomic.fetch_add(1, Ordering::Release);
         if number % 1000 == 0 {
             info!("_____ {number} / {all}");
+            if check_if_app_ends() {
+                return None;
+            }
         }
         let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
         if settings.debug_print_results {
@@ -347,8 +350,9 @@ fn test_files(
                     }
                 }
             };
-        }
-    });
+        };
+        Some(())
+    }).while_some().collect::<()>();
 }
 
 fn check_files_number(name: &str, dir: &str) {
