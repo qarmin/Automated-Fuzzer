@@ -7,7 +7,10 @@ use std::process::{Child, Command, Stdio};
 use std::sync::atomic::AtomicU32;
 
 use crate::broken_files::{create_broken_files, LANGS};
-use crate::common::{CheckGroupFileMode, collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file};
+use crate::common::{
+    collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
+    CheckGroupFileMode,
+};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -86,6 +89,7 @@ impl ProgramConfig for RuffStruct {
         }
 
         let mut content = content.to_string();
+        #[allow(clippy::const_is_empty)]
         if !BROKEN_ITEMS_NOT_CRITICAL.is_empty() {
             // Remove lines that contains not critical errors
             content = content

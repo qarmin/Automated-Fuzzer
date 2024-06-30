@@ -2,14 +2,17 @@
 #![allow(clippy::borrowed_box)]
 
 use rand::prelude::*;
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::os::unix::prelude::PermissionsExt;
 use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::{fs, process};
-use rayon::prelude::*;
 
-use crate::common::{check_if_app_ends, CheckGroupFileMode, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, TIMEOUT_SECS};
+use crate::common::{
+    check_if_app_ends, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files,
+    minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, CheckGroupFileMode, TIMEOUT_SECS,
+};
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
@@ -25,11 +28,12 @@ mod remove_non_crashing_files;
 mod settings;
 mod verify_reported_broken_files;
 
-
 fn main() {
     handsome_logger::init().unwrap();
 
-    let first_arg: u64 = std::env::args().nth(1).map_or(999_999_999_999_999, |x| x.parse().unwrap());
+    let first_arg: u64 = std::env::args()
+        .nth(1)
+        .map_or(999_999_999_999_999, |x| x.parse().unwrap());
     info!("Timeout set to {first_arg} seconds");
     TIMEOUT_SECS.set(first_arg).unwrap();
 
@@ -294,7 +298,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             }
 
             if obj.get_files_group_mode() == CheckGroupFileMode::ByFilesGroup {
-                all_temp_files = map.values().map(|x| x.to_string()).collect();
+                all_temp_files = map.values().map(ToString::to_string).collect();
             }
             // let count = WalkDir::new(&random_folder).max_depth(999).into_iter().flatten().count();
             // warn!("{:?} {:?} {}", all_temp_files.len(), random_folder, count);
@@ -335,33 +339,37 @@ fn test_files(
     let atomic = AtomicU32::new(0);
     let all = files.len();
 
-    files.into_par_iter().map(|full_name| {
-        let number = atomic.fetch_add(1, Ordering::Release);
-        if number % 1000 == 0 {
-            info!("_____ {number} / {all}");
-            if check_if_app_ends() {
-                return None;
-            }
-        }
-        let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
-        if settings.debug_print_results {
-            info!("{output}");
-        }
-        if is_really_broken || obj.is_broken(&output) {
-            atomic_broken.fetch_add(1, Ordering::Relaxed);
-            atomic_all_broken.fetch_add(1, Ordering::Relaxed);
-            if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, output) {
-                if settings.minimize_output {
-                    if settings.binary_mode {
-                        minimize_binary_output(obj, &new_file_name);
-                    } else {
-                        minimize_string_output(obj, &new_file_name);
-                    }
+    files
+        .into_par_iter()
+        .map(|full_name| {
+            let number = atomic.fetch_add(1, Ordering::Release);
+            if number % 1000 == 0 {
+                info!("_____ {number} / {all}");
+                if check_if_app_ends() {
+                    return None;
                 }
+            }
+            let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
+            if settings.debug_print_results {
+                info!("{output}");
+            }
+            if is_really_broken || obj.is_broken(&output) {
+                atomic_broken.fetch_add(1, Ordering::Relaxed);
+                atomic_all_broken.fetch_add(1, Ordering::Relaxed);
+                if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, output) {
+                    if settings.minimize_output {
+                        if settings.binary_mode {
+                            minimize_binary_output(obj, &new_file_name);
+                        } else {
+                            minimize_string_output(obj, &new_file_name);
+                        }
+                    }
+                };
             };
-        };
-        Some(())
-    }).while_some().collect::<()>();
+            Some(())
+        })
+        .while_some()
+        .collect::<()>();
 }
 
 fn check_files_number(name: &str, dir: &str) {

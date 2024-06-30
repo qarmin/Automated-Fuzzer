@@ -56,7 +56,7 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
             if settings.extensions.iter().any(|e| path_to_lowercase.ends_with(e)) {
                 return Some(path);
             }
-            
+
             None
         })
         .collect()

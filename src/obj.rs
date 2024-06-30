@@ -2,7 +2,7 @@ use jwalk::WalkDir;
 use log::error;
 use std::process::{Child, Command, Stdio};
 
-use crate::common::{CheckGroupFileMode, create_new_file_name, try_to_save_file};
+use crate::common::{create_new_file_name, try_to_save_file, CheckGroupFileMode};
 use crate::settings::Setting;
 
 pub trait ProgramConfig: Sync {
