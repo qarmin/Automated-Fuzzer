@@ -383,7 +383,6 @@ jobs:
             if [ -d "$dir" ]; then
               #python3 send.py "${{ secrets.SECRET_KEY }}" "${{ secrets.IP_ADDRESS }}" "$dir"
               zip_file="src.zip"
-              python3 send.py "${{ secrets.SECRET_KEY }}" "${{ secrets.IP_ADDRESS }}" "$dir"
               zip -q -r "$zip_file" "$dir"
               curl -X POST -H "Content-Type: multipart/form-data" -H "Authorization: ${{ secrets.SECRET_KEY }}" -F "file=@$zip_file" http://${{ secrets.IP_ADDRESS }}:2222/upload/zip > a.txt || true
               sleep 5
