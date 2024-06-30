@@ -47,6 +47,36 @@ jobs:
             timeout: 10000
             files: "FILES_23"
             tmp_folder: "/tmp/tmp_folder/normal_3"
+          - name: NORMAL_1_SHORTER
+            generate-broken-files: true
+            format: false
+            exceptions: true
+            remove_invalid_files: true
+            config-file: fuzz_settings_ci.toml
+            ruff-config: ""
+            timeout: 3600
+            files: "FILES_21"
+            tmp_folder: "/tmp/tmp_folder/normal_1_shorter"
+          - name: NORMAL_2_SHORTER
+            generate-broken-files: true
+            format: false
+            exceptions: true
+            remove_invalid_files: true
+            config-file: fuzz_settings_ci.toml
+            ruff-config: ""
+            timeout: 3600
+            files: "FILES_22"
+            tmp_folder: "/tmp/tmp_folder/normal_2_shorter"
+          - name: NORMAL_3_SHORTER
+            generate-broken-files: true
+            format: false
+            exceptions: true
+            remove_invalid_files: true
+            config-file: fuzz_settings_ci.toml
+            ruff-config: ""
+            timeout: 3600
+            files: "FILES_23"
+            tmp_folder: "/tmp/tmp_folder/normal_3_shorter"
 
           #          - name: RED_KNOT
           #            generate-broken-files: true
