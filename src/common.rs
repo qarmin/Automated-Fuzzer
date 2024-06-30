@@ -20,6 +20,13 @@ pub const STRING_MINIMIZATION_LIMIT: usize = 3;
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
 
+#[derive(PartialOrd, PartialEq, Eq, Clone, Copy, Debug)]
+pub enum CheckGroupFileMode {
+    None,
+    ByFolder,
+    ByFilesGroup,
+}
+
 pub fn check_if_app_ends() -> bool {
     let elapsed = START_TIME.elapsed().as_secs();
     let timeout = TIMEOUT_SECS.get().unwrap();
@@ -95,10 +102,12 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     };
 
     let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    assert!(
-        (is_really_broken || obj.is_broken(&output)),
-        "At start should be broken!"
-    );
+    if !(is_really_broken || obj.is_broken(&output)) {
+        error!("At start should be broken!");
+        println!("{output}");
+        fs::write(full_name, data).unwrap();
+        return;
+    }
 
     let mut lines = data.lines().map(str::to_string).collect::<Vec<String>>();
     let mut rng = rand::thread_rng();
@@ -519,8 +528,12 @@ fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, 
     }
 }
 
-pub fn execute_command_on_pack_of_files(obj: &Box<dyn ProgramConfig>, folder_name: &str) -> (bool, String) {
-    let command = obj.get_run_command(folder_name);
+pub fn execute_command_on_pack_of_files(obj: &Box<dyn ProgramConfig>, folder_name: &str, files: &[String]) -> (bool, String) {
+    let command = match obj.get_files_group_mode() {
+        CheckGroupFileMode::ByFolder => obj.get_run_command(folder_name),
+        CheckGroupFileMode::ByFilesGroup => obj.get_group_files_command(&files),
+        CheckGroupFileMode::None => panic!("Invalid mode"),
+    };
     // let start_time = std::time::Instant::now();
     let output = command.wait_with_output().unwrap();
     // info!("Command took: {:?}", start_time.elapsed());

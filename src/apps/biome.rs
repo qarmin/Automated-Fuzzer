@@ -1,6 +1,6 @@
 use crate::broken_files::{create_broken_files, LANGS};
 use std::process::Child;
-
+use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -19,12 +19,15 @@ impl ProgramConfig for BiomeStruct {
 
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()
-            .arg("check")
+            .arg("lint")
             .arg(full_name)
             // .arg("--max-diagnostics") // This probably disable diagnostics instead hiding them from output
             // .arg("0")
             .spawn()
             .unwrap()
+    }
+    fn get_group_files_command(&self, _files: &[String]) -> Child {
+        unimplemented!("Biome does not support group files")
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
@@ -35,5 +38,8 @@ impl ProgramConfig for BiomeStruct {
     }
     fn get_settings(&self) -> &Setting {
         &self.settings
+    }
+    fn get_files_group_mode(&self) -> CheckGroupFileMode {
+        CheckGroupFileMode::ByFolder
     }
 }

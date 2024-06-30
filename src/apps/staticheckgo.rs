@@ -1,6 +1,6 @@
 use crate::broken_files::{create_broken_files, LANGS};
 use std::process::Child;
-
+use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -10,11 +10,11 @@ pub struct StaticCheckGoStruct {
 
 impl ProgramConfig for StaticCheckGoStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("internal error") || content.contains("panic:") || content.contains("fatal error:")
+        content.contains("internal error") || content.contains("panic:") || (content.contains("fatal error:") && !content.contains("No such file or directory"))
     }
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()
-            .env("PATH", "/usr/local/go/bin")
+            // .env("PATH", "/usr/local/go/bin")
             .arg("-checks")
             .arg("ALL")
             .arg(full_name)
@@ -30,5 +30,8 @@ impl ProgramConfig for StaticCheckGoStruct {
     }
     fn get_settings(&self) -> &Setting {
         &self.settings
+    }
+    fn get_files_group_mode(&self) -> CheckGroupFileMode {
+        CheckGroupFileMode::ByFilesGroup
     }
 }

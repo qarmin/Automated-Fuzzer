@@ -7,9 +7,7 @@ use std::process::{Child, Command, Stdio};
 use std::sync::atomic::AtomicU32;
 
 use crate::broken_files::{create_broken_files, LANGS};
-use crate::common::{
-    collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
-};
+use crate::common::{CheckGroupFileMode, collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -335,11 +333,12 @@ impl ProgramConfig for RuffStruct {
 
         );
     }
-    fn check_if_can_check_files_in_group(&self) -> bool {
+
+    fn get_files_group_mode(&self) -> CheckGroupFileMode {
         match self.settings.tool_type.as_str() {
-            "lint_check_fix" | "lint_check" | "format" => true,
-            "red_knot" => false,
-            _ => false,
+            "lint_check_fix" | "lint_check" | "format" => CheckGroupFileMode::ByFolder,
+            "red_knot" => CheckGroupFileMode::None,
+            _ => CheckGroupFileMode::None,
         }
     }
 }

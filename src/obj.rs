@@ -2,7 +2,7 @@ use jwalk::WalkDir;
 use log::error;
 use std::process::{Child, Command, Stdio};
 
-use crate::common::{create_new_file_name, try_to_save_file};
+use crate::common::{CheckGroupFileMode, create_new_file_name, try_to_save_file};
 use crate::settings::Setting;
 
 pub trait ProgramConfig: Sync {
@@ -22,6 +22,9 @@ pub trait ProgramConfig: Sync {
 
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command().arg(full_name).spawn().unwrap()
+    }
+    fn get_group_files_command(&self, files: &[String]) -> Child {
+        self._get_basic_run_command().args(files).spawn().unwrap()
     }
     fn _get_basic_run_command(&self) -> Command {
         let timeout = self.get_settings().timeout;
@@ -76,8 +79,8 @@ pub trait ProgramConfig: Sync {
     fn get_version(&self) -> String {
         panic!()
     }
-    fn check_if_can_check_files_in_group(&self) -> bool {
-        false
+    fn get_files_group_mode(&self) -> CheckGroupFileMode {
+        CheckGroupFileMode::None
     }
     // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
     //     output

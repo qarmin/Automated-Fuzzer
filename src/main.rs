@@ -9,7 +9,7 @@ use std::sync::atomic::{AtomicU32, Ordering};
 use std::{fs, process};
 use rayon::prelude::*;
 
-use crate::common::{check_if_app_ends, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, TIMEOUT_SECS};
+use crate::common::{check_if_app_ends, CheckGroupFileMode, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files, minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, TIMEOUT_SECS};
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
 use jwalk::WalkDir;
@@ -124,7 +124,7 @@ fn main() {
         let start_file_size = files.len();
         info!("Collected {start_file_size} files");
 
-        if settings.grouping > 1 {
+        if settings.grouping > 1 && obj.get_files_group_mode() != CheckGroupFileMode::None {
             info!("Started to check files in groups of {} elements", settings.grouping);
             files = test_files_in_group(files, &settings, &obj);
             info!(
@@ -257,7 +257,7 @@ fn collect_files(settings: &Setting) -> Vec<String> {
 }
 
 fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>) -> Vec<String> {
-    if !obj.check_if_can_check_files_in_group() {
+    if obj.get_files_group_mode() == CheckGroupFileMode::None {
         return files;
     }
 
@@ -270,7 +270,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
     let res = files
         .into_par_iter()
         .chunks(settings.grouping as usize)
-        .filter_map(|group| {
+        .map(|group| {
             let number = atomic.fetch_add(1, Ordering::Release);
             if number % 10 == 0 {
                 info!("+++++ {number} / {all_chunks_number}");
@@ -284,20 +284,28 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             let mut map = HashMap::new();
             let random_folder = format!("{temp_folder}/{}", random::<u64>());
             fs::create_dir_all(&random_folder).expect("Failed to create random folder");
+
+            let mut all_temp_files = vec![];
             for (idx, file_name) in group.iter().enumerate() {
-                let temp_name = format!("{random_folder}/{idx}.py");
+                let extension = Path::new(file_name).extension().unwrap().to_str().unwrap();
+                let temp_name = format!("{random_folder}/{idx}.{extension}");
                 fs::copy(file_name, &temp_name).expect("Failed to copy file");
                 map.insert(file_name, temp_name);
             }
 
-            let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &random_folder);
+            if obj.get_files_group_mode() == CheckGroupFileMode::ByFilesGroup {
+                all_temp_files = map.values().map(|x| x.to_string()).collect();
+            }
+            // let count = WalkDir::new(&random_folder).max_depth(999).into_iter().flatten().count();
+            // warn!("{:?} {:?} {}", all_temp_files.len(), random_folder, count);
+
+            let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &random_folder, &all_temp_files);
 
             fs::remove_dir_all(&random_folder).expect("Failed to remove random folder");
 
             if settings.debug_print_results {
                 info!("{output}");
             }
-
             // info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
 
             if is_really_broken || obj.is_broken(&output) {
@@ -307,6 +315,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             }
         })
         .while_some()
+        .flatten()
         .flatten()
         .collect();
 
