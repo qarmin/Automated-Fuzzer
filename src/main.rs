@@ -43,6 +43,9 @@ fn main() {
     //     .unwrap();
 
     let settings = load_settings();
+
+    info!("{settings:#?}");
+
     let mut obj = get_object(settings.clone());
 
     obj.init();
