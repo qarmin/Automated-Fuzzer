@@ -1,12 +1,12 @@
 [general]
-loop_number = 5 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 100# Number of broken files that will be created for each 1 valid file
+loop_number = 100 # How much creating/removing/checking steps will be executed
+broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file
 copy_broken_files = true # Copy broken files to broken dir, disable if testing new settings
 generate_files = true # If true will generate broken files and save them to temp_possible_broken_files_dir(this folder will be removed after each run), otherwise it will copy all valid files into BROKEN_FIELS_DIR
 ignore_generate_copy_files_step = false # If true, will only use files inside temp_possible_broken_files_dir, without  copying new files or generating
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
-minimization_attempts = 1000 # Attemps to minimize code, counter reset when found minimized test case
+minimization_attempts = 200 # Attemps to minimize code, counter reset when found minimized test case
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
 debug_print_results = false # Debug prints output of commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
@@ -20,9 +20,10 @@ allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is diff
 ignore_timeout_errors = false
 error_when_found_signal = true # Errors, when app was killed by OS or used
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
-check_if_file_is_parsable = true # If true, will check if file is parsable, if not, then will be removed
+check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
+grouping = 1 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "ruff"
+current_mode = "staticcheckgo"
 
 # app_binary - place where binary exists
 # app_config - path to configuration file
@@ -32,18 +33,54 @@ current_mode = "ruff"
 # broken_files_dir - place where to save broken files
 # binary_mode - used to minify output, if binary mode is on, then all minimization works on bytes, if is off, then minimization works on lines
 
+[binary]
+app_binary = "/home/rafal/Downloads/swc-linux-x64-gnu"
+app_config = ""
+extensions = "docx"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/swc/Broken"
+tool_type = ""
+binary_mode = false
+
 [ruff]
 app_binary = "ruff"
-app_config = "/home/rafal/Desktop/RunEveryCommand/ruff/ruff.toml"
+app_config = ""
 extensions = "py"
-#valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES2"
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES3"
 #valid_input_files_dir = "/home/rafal/test/DOWNLOADED/py_files"
 #valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/TO_MINIMIZE"
-valid_input_files_dir = "/home/rafal/test/tmp_folder"
+#valid_input_files_dir = "/home/rafal/test/tmp_folder"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
 tool_type = "lint_check_fix" # Available "format", "lint_check", "lint_check_fix"
+binary_mode = false
+
+[swc]
+app_binary = "/home/rafal/Downloads/swc-linux-x64-gnu"
+app_config = ""
+extensions = "ts,js,mjs,mts"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/swc/Broken"
+tool_type = ""
+binary_mode = false
+
+[zip]
+app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/zip/target/release/zip"
+app_config = ""
+extensions = "zip"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_ZIP_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/zip/Broken"
+tool_type = ""
+binary_mode = false
+
+[dicom]
+app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/dicom/target/release/dicom"
+app_config = ""
+extensions = "dcm"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_DICOM_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dicom/Broken"
+tool_type = ""
 binary_mode = false
 
 [libcst]
@@ -101,7 +138,7 @@ tool_type = ""
 binary_mode = false
 
 [staticcheckgo]
-app_binary = "/home/rafal/Desktop/RunEveryCommand/APPS/staticcheck"
+app_binary = "/home/rafal/Downloads/staticcheck/staticcheck"
 app_config = ""
 extensions = "go"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_GO_VALID_FILES"
