@@ -191,6 +191,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     info!("File {new_name} ({i}) is when only checking for broken files");
                     return Some((vec!["ALL_CHECK".to_string()], file_name.to_string(), i, output));
                 }
+                fs::write(&new_name, &original_content).unwrap();
             }
 
             let mut valid_remove_rules = all_ruff_rules.clone();
