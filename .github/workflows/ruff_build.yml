@@ -16,10 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y wget
+      #      - name: Install dependencies
+      #        run: |
+      #          sudo apt update
+      #          sudo apt install -y wget
 
       #      - name: Install sd
       #        run: cargo install sd
@@ -52,6 +52,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "Nightly"
-          files: "ruff_binary.7z"
+          files: "ruff.7z"
           token: ${{ secrets.PAT_REPOSITORY }}
 
