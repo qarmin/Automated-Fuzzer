@@ -53,4 +53,5 @@ jobs:
         with:
           tag_name: "Nightly"
           files: "ruff_binary.7z"
+          token: ${{ secrets.PAT_REPOSITORY }}
 
