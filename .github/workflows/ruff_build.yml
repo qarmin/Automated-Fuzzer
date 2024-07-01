@@ -45,13 +45,17 @@ jobs:
         run: |
           cd ruff/target/release
           time 7z a "ruff.7z" "ruff"
+          time 7z a "red_knot.7z" "red_knot"
           cp "ruff.7z" "../../../"
+          cp "red_knot.7z" "../../../"
           cd ../../..
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "Nightly"
-          files: "ruff.7z"
+          files: |
+            "ruff.7z"
+            "red_knot.7z"
           token: ${{ secrets.PAT_REPOSITORY }}
 
