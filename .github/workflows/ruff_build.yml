@@ -33,19 +33,15 @@ jobs:
           sed -i '/\[profile.release\]/a debug = true' Cargo.toml
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
-          cargo install --path crates/ruff --locked
-          cargo install --path crates/red_knot/ --force --locked
+          cargo build --release
           cd ..
-
-      - name: Build
-        run: cargo build --release
 
       - name: Pack files
         run: |
-          cd target/release
+          cd ruff/target/release
           time 7z a "ruff_binary.7z" "ruff"
-          cp "ruff_binary.7z" "../../"
-          cd ../..
+          cp "ruff_binary.7z" "../../../"
+          cd ../../..
 
       - name: Release
         uses: softprops/action-gh-release@v2
