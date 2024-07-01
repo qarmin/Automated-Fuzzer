@@ -51,6 +51,10 @@ jobs:
           cp "red_knot.7z" "../../../"
           cd ../../..
 
+      - name: ls files
+        run: |
+          ls -al .
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
