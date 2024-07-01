@@ -9,6 +9,7 @@ temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where 
 minimization_attempts = 3000 # Attemps to minimize code, counter reset when found minimized test case
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
 debug_print_results = false # Debug prints output of commands
+debug_executed_commands = false # Debug prints executed commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
 find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR

@@ -61,6 +61,7 @@ pub struct Setting {
     pub disable_exceptions: bool,
     pub ignore_timeout_errors: bool,
     pub grouping: u32,
+    pub debug_executed_commands: bool,
 }
 
 pub fn load_settings() -> Setting {
@@ -90,6 +91,7 @@ pub fn load_settings() -> Setting {
         verify_if_files_are_still_broken && !(find_minimal_rules || remove_non_crashing_items_from_broken_files);
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
+    let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
@@ -128,6 +130,7 @@ pub fn load_settings() -> Setting {
         disable_exceptions,
         ignore_timeout_errors,
         grouping,
+        debug_executed_commands,
     }
 }
 
