@@ -1,0 +1,55 @@
+name: 🐧 Ruff Check
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 22 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ruff-normal-ci:
+
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget
+
+      - name: Install sd
+        run: cargo install sd
+
+      - name: Install ruff
+        run: |
+          git clone https://github.com/astral-sh/ruff.git ruff
+          cd ruff
+          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
+          rm rust-toolchain.toml
+          cargo install --path crates/ruff --locked
+          cargo install --path crates/red_knot/ --force --locked
+          cd ..
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Pack files
+        run: |
+          cd target/release
+          time 7z a "ruff_binary.7z" "ruff"
+          cp "ruff_binary.7z" "../../"
+          cd ../..
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "Data"
+          files: "ruff_binary.7z"
+
