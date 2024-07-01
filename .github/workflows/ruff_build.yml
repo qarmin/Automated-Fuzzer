@@ -21,26 +21,31 @@ jobs:
           sudo apt update
           sudo apt install -y wget
 
-      - name: Install sd
-        run: cargo install sd
-
-      - name: Install ruff
+      #      - name: Install sd
+      #        run: cargo install sd
+      #
+      #      - name: Install ruff
+      #        run: |
+      #          git clone https://github.com/astral-sh/ruff.git ruff
+      #          cd ruff
+      #          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+      #          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+      #          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+      #          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
+      #          rm rust-toolchain.toml
+      #          cargo build --release
+      #          cd ..
+      #          ls -al ruff/target/release
+      - name: Create test file
         run: |
-          git clone https://github.com/astral-sh/ruff.git ruff
-          cd ruff
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
-          rm rust-toolchain.toml
-          cargo build --release
-          cd ..
+          mkdir -p ruff/target/release
+          echo "Hello, world!" > ruff/target/release/ruff
 
       - name: Pack files
         run: |
           cd ruff/target/release
-          time 7z a "ruff_binary.7z" "ruff"
-          cp "ruff_binary.7z" "../../../"
+          time 7z a "ruff.7z" "ruff"
+          cp "ruff.7z" "../../../"
           cd ../../..
 
       - name: Release
