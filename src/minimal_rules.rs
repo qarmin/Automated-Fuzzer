@@ -172,54 +172,65 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 info!("_____ Processsed already {idx} / {all}");
             }
             let file_name = i.split('/').last().unwrap();
-            let new_name = thread_rng().gen::<u64>().to_string();
+            let new_name = random::<u64>().to_string();
             let new_name = format!("{temp_folder}/{new_name}.py");
             let original_content = fs::read_to_string(&i).unwrap();
             let mut out = String::new();
 
             fs::write(&new_name, &original_content).unwrap();
-
-            let happens_with_fix = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, false, settings).0;
+            let (happens_with_fix, fix_output) = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, false, settings);
+            // println!("{_output}");
             fs::write(&new_name, &original_content).unwrap();
-            let happens_with_check = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, false, settings).0;
+            let (happens_with_check, check_output) = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, true, settings);
+            // println!("{_output}");
             fs::write(&new_name, &original_content).unwrap();
 
             if !happens_with_fix && !happens_with_check {
                 info!("File {new_name} ({i}) is not broken");
                 return None;
             }
+            // println!("Happens with fix {happens_with_fix} - happens with check {happens_with_check} ({new_name} - {i})");
+
+            if happens_with_fix {
+                out = fix_output;
+            } else {
+                out = check_output;
+            }
 
             let only_check = happens_with_check;
 
             let mut valid_remove_rules = all_ruff_rules.clone();
-            let mut rules_to_test = all_ruff_rules.clone();
+            let mut rules_to_test;
 
             let mut to_idx = 100;
             while to_idx != 0 {
                 fs::write(&new_name, &original_content).unwrap();
                 // info!("TO_IDX - {to_idx}");
                 to_idx -= 1;
-                // Almost sure that  this will not crash with more than 4 rules
-                if valid_remove_rules.len() <= 4 {
+                // Using bigger number, will add const additional checking time, but may decrease number of iterations
+                if valid_remove_rules.len() <= 6 {
                     break;
                 }
 
+                rules_to_test = valid_remove_rules.clone();
+                rules_to_test.shuffle(&mut thread_rng());
+                rules_to_test.truncate(rules_to_test.len() / 2);
+                rules_to_test.sort();
+
                 let (crashing, output) =
                     check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
+                // println!("CRASHHHHHH - {} ({only_check}) - {}", crashing, output);
                 if crashing {
                     valid_remove_rules = rules_to_test.clone();
-                    rules_to_test.shuffle(&mut thread_rng());
-                    rules_to_test.truncate(rules_to_test.len() / 2);
-                    rules_to_test.sort();
                     out = output;
-                } else {
-                    rules_to_test = valid_remove_rules.clone();
                 }
             }
 
             rules_to_test = valid_remove_rules.clone();
             let mut curr_idx = valid_remove_rules.len();
+            let mut rules_check = 0;
             while curr_idx != 0 {
+                rules_check += 1;
                 fs::write(&new_name, &original_content).unwrap();
                 if valid_remove_rules.len() <= 1 {
                     break;
@@ -236,7 +247,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     rules_to_test = valid_remove_rules.clone();
                 }
             }
-            info!("For file {i} valid rules are: {}", valid_remove_rules.join(","));
+            info!("For file {i} ({} group checks + {rules_check} rules checks) valid rules are: {}",100 - to_idx,  valid_remove_rules.join(","));
 
             fs::write(&new_name, &original_content).unwrap();
 

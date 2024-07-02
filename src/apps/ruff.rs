@@ -82,6 +82,10 @@ pub fn calculate_ignored_rules() -> String {
 
 impl ProgramConfig for RuffStruct {
     fn is_broken(&self, content: &str) -> bool {
+        // Fake errors
+        if content.contains(r#""stack backtrace:\n""#) {
+            return false;
+        }
         if DISABLE_EXCEPTIONS || self.settings.disable_exceptions {
             return BROKEN_ITEMS_TO_FIND
                 .iter()
