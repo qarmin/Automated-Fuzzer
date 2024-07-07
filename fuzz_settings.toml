@@ -22,7 +22,7 @@ ignore_timeout_errors = false
 error_when_found_signal = true # Errors, when app was killed by OS or used
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
-grouping = 1 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
+grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
 current_mode = "ruff"
 
@@ -162,7 +162,7 @@ app_config = ""
 extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken"
-tool_type = ""
+tool_type = "lint" # Available "lint", "check" # TODO
 binary_mode = false
 
 [mypy]

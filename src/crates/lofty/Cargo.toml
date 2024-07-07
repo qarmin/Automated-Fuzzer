@@ -7,3 +7,4 @@ edition = "2021"
 
 [dependencies]
 lofty = { git = "https://github.com/Serial-ATA/lofty-rs/" }
+walkdir = "2.5.0"

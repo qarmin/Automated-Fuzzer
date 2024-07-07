@@ -1,0 +1,138 @@
+name: 🐧 Go Check
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 22 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  go-normal-ci:
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: NORMAL_1
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 10000
+            files: "AA_GO_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget earlyoom
+
+      - name: Install create_broken_files
+        run: cargo install create_broken_files
+
+      - name: Install sd
+        run: cargo install sd
+
+      - name: Install staticcheck
+        run: |
+          apt install golang-go
+          git clone https://github.com/dominikh/go-tools.git gotools
+          cd gotools
+          go install cmd/staticcheck/staticcheck.go
+          cp ~/go/bin/staticcheck /usr/bin/staticcheck
+          cd ..
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Create folders
+        run: |
+          mkdir /opt/VALID_FILES_DIR
+          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
+          mkdir /opt/BROKEN_FILES_DIR
+
+      - name: Download and prepare python data files
+        run: |
+          CURR_DIR=$(pwd)
+          
+          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
+          
+          if [ "$GENERATE_BROKEN_FILES" = "true" ]; then
+            cd /opt/VALID_FILES_DIR
+          else
+            cd /opt/POSSIBLY_BROKEN_FILES_DIR
+          fi
+          
+          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          
+          cd $CURR_DIR
+
+      - name: Run app
+        run: |
+          mv ${{ matrix.config-file }} fuzz_settings.toml
+          sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
+          target/release/automated_fuzzer ${{ matrix.timeout }} || true
+
+      - name: Move settings for remove non crashing files
+        if: ${{ matrix.remove_invalid_files == true }}
+        run: |
+          mv fuzz_settings.toml settings.toml.temp
+
+      - name: Remove pycache
+        run: |
+          rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
+
+      - name: Store results
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: ${{ matrix.name }}-before
+          path: /opt/BROKEN_FILES_DIR
+
+      # Some output files can be not parsable or not broken if closed app before finish
+      - name: Remove non crashing files
+        run: |
+          mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
+          RUST_BACKTRACE=1 target/release/automated_fuzzer
+
+      - name: Find minimal rules
+        run: |
+          if [ -f settings.toml.temp ]; then
+            mv settings.toml.temp fuzz_settings.toml
+          fi
+          sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
+          RUST_BACKTRACE=1 target/release/automated_fuzzer
+
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: reports-${{ matrix.name }}
+          path: ${{ matrix.tmp_folder }}
+
+      - name: Remove pycache
+        run: |
+          rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
+
+      - name: Store results
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: "GO___${{ matrix.name }}"
+          path: /opt/BROKEN_FILES_DIR
+
+      - name: Remove all folders
+        run: |
+          rm -rf /opt/VALID_FILES_DIR || true
+          rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
+
+      - name: Exit when found broken files
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
+
