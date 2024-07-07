@@ -45,7 +45,7 @@ jobs:
           git clone https://github.com/dominikh/go-tools.git gotools
           cd gotools
           go install cmd/staticcheck/staticcheck.go
-          cp ~/go/bin/staticcheck /usr/bin/staticcheck
+          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
           cd ..
 
       - name: Build
