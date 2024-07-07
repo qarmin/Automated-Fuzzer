@@ -41,7 +41,7 @@ jobs:
 
       - name: Install staticcheck
         run: |
-          apt install golang-go
+          sudo apt install golang-go
           git clone https://github.com/dominikh/go-tools.git gotools
           cd gotools
           go install cmd/staticcheck/staticcheck.go
