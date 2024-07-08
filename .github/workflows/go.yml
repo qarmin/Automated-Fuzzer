@@ -25,6 +25,14 @@ jobs:
             files: "AA_GO_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
             go_version: '1.22'
+          - name: SHORT_1
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 1800
+            files: "AA_GO_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/short"
+            go_version: '1.22'
           - name: UNSTABLE_123
             generate-broken-files: true
             remove_invalid_files: true

@@ -24,6 +24,13 @@ jobs:
             timeout: 10000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
+          - name: SHORT_1
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_js_settings_ci.toml
+            timeout: 1800
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/short"
 
     steps:
       - uses: actions/checkout@v4
