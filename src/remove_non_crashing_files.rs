@@ -8,12 +8,14 @@ use log::{error, info};
 use rand::random;
 use rayon::prelude::*;
 use std::fs;
+use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
 
     let broken_files: Vec<String> = collect_broken_files(settings);
+    info!("Found {} broken files to check", broken_files.len());
     // let broken_files_before = broken_files.len();
 
     remove_non_crashing(broken_files, settings, obj, 1);
@@ -48,7 +50,8 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
             fs::create_dir_all(&temp_folder).unwrap();
 
             for (idx, full_name) in chunk.iter().enumerate() {
-                let new_name = format!("{}/{}.py", temp_folder, idx);
+                let extension = Path::new(full_name).extension().unwrap().to_str().unwrap();
+                let new_name = format!("{temp_folder}/{idx}.{extension}");
                 fs::copy(&full_name, &new_name).unwrap();
             }
 
