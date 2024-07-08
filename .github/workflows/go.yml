@@ -39,9 +39,11 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
+      - uses: actions/setup-go@v5
+        with:
+          check-latest: true
       - name: Install staticcheck
         run: |
-          sudo apt install golang-go
           git clone https://github.com/dominikh/go-tools.git gotools
           cd gotools
           go install cmd/staticcheck/staticcheck.go
