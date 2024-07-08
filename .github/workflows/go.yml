@@ -60,7 +60,7 @@ jobs:
         with:
           go-version: ${{ matrix.go_version }}
           check-latest: true
-      - name: Install staticcheck
+      - name: Install go
         run: |
           git clone https://github.com/dominikh/go-tools.git gotools
           cd gotools
@@ -99,15 +99,6 @@ jobs:
           sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
-      - name: Move settings for remove non crashing files
-        if: ${{ matrix.remove_invalid_files == true }}
-        run: |
-          mv fuzz_settings.toml settings.toml.temp
-
-      - name: Remove pycache
-        run: |
-          rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
-
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
@@ -115,15 +106,10 @@ jobs:
           name: GO___${{ matrix.name }}___before___${{ matrix.go_version }}
           path: /opt/BROKEN_FILES_DIR
 
-      # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
         run: |
-          mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
+          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
-
-      - name: Remove pycache
-        run: |
-          rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
 
       - name: Store results
         uses: actions/upload-artifact@v4

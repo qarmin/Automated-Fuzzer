@@ -1,4 +1,4 @@
-name: 🐧 Js Check
+name: 🐧 Lofty Check
 on:
   push:
   pull_request:
@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  js-normal-ci:
+  go-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -19,15 +19,15 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
-            config-file: fuzz_js_settings_ci.toml
+            config-file: fuzz_lofty_settings_ci.toml
             timeout: 10000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: SHORT_1
             generate-broken-files: true
-            config-file: fuzz_js_settings_ci.toml
+            config-file: fuzz_lofty_settings_ci.toml
             timeout: 1800
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
 
     steps:
@@ -44,9 +44,12 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
-      - name: Install oxlint
+      - name: Install lofty
         run: |
-          cargo install --git https://github.com/oxc-project/oxc.git oxlint --locked
+          cd src/crates/lofty
+          cargo update
+          cargo install --path .
+          cd ../../..
 
       - name: Build
         run: cargo build --release
@@ -83,10 +86,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: JS___${{ matrix.name }}___before
+          name: GO___${{ matrix.name }}___before___${{ matrix.go_version }}
           path: /opt/BROKEN_FILES_DIR
 
-      # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
@@ -96,7 +98,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: JS___${{ matrix.name }}___after
+          name: LOFTY___${{ matrix.name }}___after___${{ matrix.go_version }}
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
