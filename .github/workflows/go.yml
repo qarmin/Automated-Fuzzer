@@ -32,7 +32,7 @@ jobs:
             timeout: 10000
             files: "AA_GO_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/unstable"
-            go_version: '1.23rc1'
+            go_version: '1.23-rc1'
 
     steps:
       - uses: actions/checkout@v4
