@@ -20,8 +20,14 @@ pub trait ProgramConfig: Sync {
         }
     }
 
+    fn get_only_run_command(&self, full_name: &str) -> Command {
+        let mut command = self._get_basic_run_command();
+        command.arg(full_name);
+        command
+    }
+
     fn get_run_command(&self, full_name: &str) -> Child {
-        self._get_basic_run_command().arg(full_name).spawn().unwrap()
+        self.get_only_run_command(full_name).spawn().unwrap()
     }
     fn get_group_files_command(&self, files: &[String]) -> Child {
         self._get_basic_run_command().args(files).spawn().unwrap()

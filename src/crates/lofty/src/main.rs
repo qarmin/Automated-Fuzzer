@@ -1,8 +1,8 @@
 use std::env::args;
 use std::fs::File;
 
+use lofty::file::AudioFile;
 use lofty::file::TaggedFileExt;
-use lofty::file::{AudioFile};
 use lofty::read_from;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -19,9 +19,7 @@ fn main() {
         }
     } else {
         check_file(&path);
-
     }
-
 }
 
 fn check_file(path: &str) {

@@ -16,7 +16,11 @@ dicom-transfer-syntax-registry = {git = "https://github.com/Enet4/dicom-rs"}
 dicom-dump = {git = "https://github.com/Enet4/dicom-rs"}
 
 [profile.dev]
+overflow-checks = true
 panic = "abort"
+debug = true
 
 [profile.release]
+overflow-checks = true
 panic = "abort"
+debug = true

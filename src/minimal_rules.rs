@@ -121,11 +121,11 @@ $ERROR
         fs::write(format!("{folder}/python_code.py"), &file_code).unwrap();
 
         let zip_filename = format!("{folder}/raw_file.zip");
-        zip_file(&zip_filename, &file_name, &file_code);
+        zip_file(&zip_filename, &file_name, file_code.as_bytes());
     }
 }
 
-pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &str) {
+pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &[u8]) {
     let zip_file = File::create(zip_filename).unwrap();
     let mut zip_writer = ZipWriter::new(zip_file);
 
@@ -134,7 +134,7 @@ pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &str) {
         .unix_permissions(0o755);
 
     let _ = zip_writer.start_file(file_name, options);
-    let _ = zip_writer.write_all(file_code.as_bytes());
+    let _ = zip_writer.write_all(file_code);
 }
 
 pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
@@ -175,7 +175,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let new_name = random::<u64>().to_string();
             let new_name = format!("{temp_folder}/{new_name}.py");
             let original_content = fs::read_to_string(&i).unwrap();
-            let mut out = String::new();
+            let mut out;
 
             fs::write(&new_name, &original_content).unwrap();
             let (happens_with_fix, fix_output) =
@@ -386,7 +386,7 @@ Ruff build, that was used to reproduce problem(compiled on Ubuntu 22.04 with rel
         fs::write(format!("{folder}/python_code.py"), &file_code).unwrap();
 
         let zip_filename = format!("{folder}/python_compressed.zip");
-        zip_file(&zip_filename, &file_name, &file_code);
+        zip_file(&zip_filename, &file_name, file_code.as_bytes());
     }
 }
 

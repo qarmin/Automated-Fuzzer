@@ -1,15 +1,14 @@
-use crate::common::{
-    execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder,
-};
+use crate::common::{execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
-use log::{error, info};
+use log::{info};
 use rand::random;
 use rayon::prelude::*;
 use std::fs;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
+use crate::minimal_rules::zip_file;
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
@@ -32,6 +31,8 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     // if broken_files_after != broken_files_after2 {
     //     error!("There is unstable checking for broken files");
     // }
+    let broken_files: Vec<String> = collect_broken_files(settings);
+    info!("After checking {} broken files left", broken_files.len());
 }
 
 fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
@@ -78,7 +79,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
 
     let atomic_counter = AtomicUsize::new(0);
     let all = still_broken_files.len();
-    still_broken_files.into_par_iter().for_each(|full_name| {
+    let results = still_broken_files.into_par_iter().filter_map(|full_name| {
         let start_text = fs::read(&full_name).unwrap();
         let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
         if idx % 100 == 0 {
@@ -93,16 +94,78 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
         // }
         if is_really_broken || obj.is_broken(&output) {
             fs::write(&full_name, &start_text).unwrap();
-            return;
+            return Some((full_name, output));
         };
         info!("File {full_name} is not broken, and will be removed");
 
         fs::remove_file(&full_name).unwrap();
-    });
+        None
+    }).collect::<Vec<_>>();
 
-    // TODO - why is this here?
-    if collect_broken_files(settings).is_empty() {
-        remove_and_create_entire_folder(&settings.broken_files_dir);
+    remove_and_create_entire_folder(&settings.temp_folder);
+
+    save_results_to_file(obj, settings, results);
+}
+
+pub fn save_results_to_file(
+    obj: &Box<dyn ProgramConfig>,
+    settings: &Setting,
+    content: Vec<(String, String)>,
+) {
+    let command = obj.get_only_run_command("TEST___FILE");
+    let args = command.get_args().map(|e| format!("\"{}\"", e.to_string_lossy())).collect::<Vec<_>>();
+    let command_str = format!("{} {}", command.get_program().to_string_lossy(), args.join(" "));
+
+    for (file_name, result) in content {
+        let content = fs::read(&file_name).unwrap();
+        let extension = Path::new(&file_name).extension().unwrap().to_str().unwrap();
+        let command_str_with_extension = command_str.replace("TEST___FILE", &format!("TEST___FILE.{extension}"));
+        let mut file_content = String::new();
+
+        let mut cnt_text = "".to_string();
+        let output_to_string = String::from_utf8(content.clone());
+        if let Ok(output_string) = output_to_string {
+            cnt_text += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
+            cnt_text += "```";
+            cnt_text += &output_string;
+            cnt_text += "```";
+        } else {
+            cnt_text += "File content is binary, so is available only in zip file";
+        };
+
+        let folder = format!(
+            "{}/{}___({} bytes) - {}",
+            settings.temp_folder,
+            settings.current_mode.to_string(),
+            content.len(),
+            random::<u64>()
+        );
+        let _ = fs::create_dir_all(&folder);
+
+        file_content += &r"$CNT_TEXT
+
+command
+```
+$COMMAND
+```
+
+cause this
+```
+$ERROR
+```
+"
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
+
+        fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
+
+        fs::write(format!("{folder}/problematic_file.{extension}"), &content).unwrap();
+
+        let zip_filename = format!("{folder}/compressed.zip");
+        let only_file_name = Path::new(&file_name).file_name().unwrap().to_string_lossy().to_string();
+        zip_file(&zip_filename, &only_file_name, &content);
     }
 }
 

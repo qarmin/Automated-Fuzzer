@@ -2,7 +2,7 @@ use crate::broken_files::{create_broken_files, LANGS};
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
-use std::process::Child;
+use std::process::{Child, Command};
 
 pub struct BiomeStruct {
     pub settings: Setting,
@@ -17,12 +17,16 @@ impl ProgramConfig for BiomeStruct {
             && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
     }
 
-    fn get_run_command(&self, full_name: &str) -> Child {
-        self._get_basic_run_command()
+    fn get_only_run_command(&self, full_name: &str) -> Command {
+        let mut command = self._get_basic_run_command();
+        command
             .arg("lint")
-            .arg(full_name)
-            // .arg("--max-diagnostics") // This probably disable diagnostics instead hiding them from output
-            // .arg("0")
+            .arg(full_name);
+        command
+    }
+
+    fn get_run_command(&self, full_name: &str) -> Child {
+        self.get_only_run_command(full_name)
             .spawn()
             .unwrap()
     }

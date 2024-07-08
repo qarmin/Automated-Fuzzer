@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 
 use config::Config;
-use strum_macros::EnumString;
+use strum_macros::{Display, EnumString};
 
 use crate::apps::biome::BiomeStruct;
 use crate::apps::dicom::DicomStruct;
@@ -161,7 +161,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
     }
 }
 
-#[derive(Debug, PartialEq, EnumString, Copy, Clone)]
+#[derive(Debug, PartialEq, EnumString, Copy, Clone, Display)]
 pub enum MODES {
     #[strum(ascii_case_insensitive)]
     RUFF,

@@ -7,3 +7,9 @@ edition = "2021"
 
 [dependencies]
 pdf = {git = "https://github.com/pdf-rs/pdf/"}
+
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true

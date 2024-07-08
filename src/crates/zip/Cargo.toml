@@ -27,3 +27,8 @@ edition = "2021"
 #    "zstd",
 #]
 zip = { version = "2.1" }
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
