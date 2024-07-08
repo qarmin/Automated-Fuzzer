@@ -1,12 +1,14 @@
-use crate::common::{execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder};
+use crate::common::{
+    execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder,
+};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
 use log::{error, info};
+use rand::random;
 use rayon::prelude::*;
 use std::fs;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use rand::{random};
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
@@ -35,36 +37,41 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     let group_size = 20;
     let atomic_counter = AtomicUsize::new(0);
     let all_chunks = broken_files.chunks(group_size).count();
-    let still_broken_files: Vec<_> = broken_files.into_par_iter().chunks(group_size).enumerate().filter_map(|(chunk_idx, chunk)| {
-        let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
-        info!("_____ Processsed already {idx} / {all_chunks} chunk (step {group_size})");
-        let temp_folder = format!("{}/{}", settings.temp_folder, random::<u64>());
-        fs::create_dir_all(&temp_folder).unwrap();
+    let still_broken_files: Vec<_> = broken_files
+        .into_par_iter()
+        .chunks(group_size)
+        .enumerate()
+        .filter_map(|(chunk_idx, chunk)| {
+            let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
+            info!("_____ Processsed already {idx} / {all_chunks} chunk (step {group_size})");
+            let temp_folder = format!("{}/{}", settings.temp_folder, random::<u64>());
+            fs::create_dir_all(&temp_folder).unwrap();
 
-        for (idx, full_name) in chunk.iter().enumerate() {
-            let new_name = format!("{}/{}.py", temp_folder, idx);
-            fs::copy(&full_name, &new_name).unwrap();
-        }
-
-        let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &temp_folder, &[]);
-        if settings.debug_print_results {
-            info!("File pack {temp_folder}\n{output}");
-        }
-
-        fs::remove_dir_all(&temp_folder).unwrap();
-
-        if is_really_broken || obj.is_broken(&output) {
-            info!("Chunk {chunk_idx} is broken");
-            Some(chunk.to_vec())
-        } else {
-            info!("Chunk {chunk_idx} is not broken");
-            for full_name in chunk {
-                fs::remove_file(&full_name).unwrap();
+            for (idx, full_name) in chunk.iter().enumerate() {
+                let new_name = format!("{}/{}.py", temp_folder, idx);
+                fs::copy(&full_name, &new_name).unwrap();
             }
-            None
-        }
-    }).flatten().collect();
 
+            let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &temp_folder, &[]);
+            if settings.debug_print_results {
+                info!("File pack {temp_folder}\n{output}");
+            }
+
+            fs::remove_dir_all(&temp_folder).unwrap();
+
+            if is_really_broken || obj.is_broken(&output) {
+                info!("Chunk {chunk_idx} is broken");
+                Some(chunk.to_vec())
+            } else {
+                info!("Chunk {chunk_idx} is not broken");
+                for full_name in chunk {
+                    fs::remove_file(&full_name).unwrap();
+                }
+                None
+            }
+        })
+        .flatten()
+        .collect();
 
     let atomic_counter = AtomicUsize::new(0);
     let all = still_broken_files.len();
@@ -95,7 +102,6 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
         remove_and_create_entire_folder(&settings.broken_files_dir);
     }
 }
-
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
     WalkDir::new(&settings.broken_files_dir)

@@ -13,7 +13,8 @@ impl ProgramConfig for StaticCheckGoStruct {
     fn is_broken(&self, content: &str) -> bool {
         let contains_internal_compiler_error = content.contains("internal compiler error:");
         let contains_internal_error = content.contains("internal error:") && !content.contains("\"internal error");
-        let contains_panic = content.contains("panic:") && !content.contains("\"panic:") && !content.contains("panic: %v");
+        let contains_panic =
+            content.contains("panic:") && !content.contains("\"panic:") && !content.contains("panic: %v");
         let contains_fatal_error = content.contains("fatal error:") && !content.contains("No such file or directory");
 
         !contains_internal_compiler_error && (contains_internal_error || contains_panic || contains_fatal_error)

@@ -178,10 +178,12 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let mut out = String::new();
 
             fs::write(&new_name, &original_content).unwrap();
-            let (happens_with_fix, fix_output) = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, false, settings);
+            let (happens_with_fix, fix_output) =
+                check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, false, settings);
             // println!("{_output}");
             fs::write(&new_name, &original_content).unwrap();
-            let (happens_with_check, check_output) = check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, true, settings);
+            let (happens_with_check, check_output) =
+                check_if_rule_file_crashing(&new_name, &all_ruff_rules, obj, true, settings);
             // println!("{_output}");
             fs::write(&new_name, &original_content).unwrap();
 
@@ -247,7 +249,11 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     rules_to_test = valid_remove_rules.clone();
                 }
             }
-            info!("For file {i} ({} group checks + {rules_check} rules checks) valid rules are: {}",100 - to_idx,  valid_remove_rules.join(","));
+            info!(
+                "For file {i} ({} group checks + {rules_check} rules checks) valid rules are: {}",
+                100 - to_idx,
+                valid_remove_rules.join(",")
+            );
 
             fs::write(&new_name, &original_content).unwrap();
 
@@ -409,7 +415,11 @@ pub fn collect_all_ruff_rules() -> Vec<String> {
                 rules.push(rule.to_string());
             }
         }
-        if line.starts_with("## Removal") || line.starts_with("## Removed") || line.starts_with("## Deprecation") || line.starts_with("## Deprecated") {
+        if line.starts_with("## Removal")
+            || line.starts_with("## Removed")
+            || line.starts_with("## Deprecation")
+            || line.starts_with("## Deprecated")
+        {
             rules.pop();
         }
     }

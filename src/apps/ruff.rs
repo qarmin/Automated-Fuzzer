@@ -55,7 +55,7 @@ const INVALID_RULES: &[&str] = &[
     // // "PLR1706", // 8402
     // "C413", // 8402
     //
-    "E999", // Cannot use with preview
+    "E999",                          // Cannot use with preview
     "PGH001",                        // Remapped
     "PGH002",                        // Remapped
     "RUF011",                        // Remapped
