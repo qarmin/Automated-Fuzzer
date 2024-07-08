@@ -101,21 +101,6 @@ jobs:
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
-      - name: Find minimal rules
-        run: |
-          if [ -f settings.toml.temp ]; then
-            mv settings.toml.temp fuzz_settings.toml
-          fi
-          sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
-          RUST_BACKTRACE=1 target/release/automated_fuzzer
-
-      - name: Store Reports
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: reports-${{ matrix.name }}
-          path: ${{ matrix.tmp_folder }}
-
       - name: Remove pycache
         run: |
           rm -rf /opt/BROKEN_FILES_DIR/__pycache__ || true
@@ -124,7 +109,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: "GO___${{ matrix.name }}"
+          name: GO___${{ matrix.name }}
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
