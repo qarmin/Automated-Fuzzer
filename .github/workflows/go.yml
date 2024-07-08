@@ -24,6 +24,15 @@ jobs:
             timeout: 10000
             files: "AA_GO_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
+            go_version: '1.22'
+          - name: UNSTABLE_123
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 10000
+            files: "AA_GO_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/unstable"
+            go_version: '1.23'
 
     steps:
       - uses: actions/checkout@v4
@@ -41,6 +50,7 @@ jobs:
 
       - uses: actions/setup-go@v5
         with:
+          go-version: ${{ matrix.go_version }}
           check-latest: true
       - name: Install staticcheck
         run: |
@@ -94,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: ${{ matrix.name }}-before
+          name: GO___${{ matrix.name }}___before___${{ matrix.go_version }}
           path: /opt/BROKEN_FILES_DIR
 
       # Some output files can be not parsable or not broken if closed app before finish
@@ -111,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: GO___${{ matrix.name }}
+          name: GO___${{ matrix.name }}___after___${{ matrix.go_version }}
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders

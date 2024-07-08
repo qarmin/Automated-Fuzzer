@@ -87,7 +87,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: ${{ matrix.name }}-before
+          name: JS___${{ matrix.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
       # Some output files can be not parsable or not broken if closed app before finish
@@ -104,7 +104,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: JS___${{ matrix.name }}
+          name: JS___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
