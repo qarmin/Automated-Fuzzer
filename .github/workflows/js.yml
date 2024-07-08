@@ -41,9 +41,7 @@ jobs:
 
       - name: Install oxlint
         run: |
-          git clone https://github.com/oxc-project/oxc.git
-          cd oxc
-          cargo install --path apps/oxlint/ --locked
+          cargo install --git https://github.com/oxc-project/oxc.git oxlint --locked
 
       - name: Build
         run: cargo build --release

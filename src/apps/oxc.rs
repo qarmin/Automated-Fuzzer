@@ -15,9 +15,10 @@ impl ProgramConfig for OxcStruct {
 
     fn get_run_command(&self, full_name: &str) -> Child {
         self._get_basic_run_command()
-            .arg("lint")
-            .arg("-A")
+            .arg("-D")
             .arg("all")
+            .arg("-D")
+            .arg("nursery")
             .arg(full_name)
             .arg("--fix")
             .spawn()

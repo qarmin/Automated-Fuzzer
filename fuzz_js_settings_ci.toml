@@ -27,7 +27,7 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 current_mode = "oxc"
 
 [oxc]
-app_binary = "oxc_cli"
+app_binary = "oxlint"
 app_config = ""
 extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

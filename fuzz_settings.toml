@@ -157,7 +157,7 @@ tool_type = ""
 binary_mode = false
 
 [oxc]
-app_binary = "oxc_cli"
+app_binary = "oxlint"
 app_config = ""
 extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
