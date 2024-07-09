@@ -1,0 +1,136 @@
+name: 🐧 Go Check
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 22 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  go-normal-ci:
+
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: NORMAL_1
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 10000
+            files: "AA_GO_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
+            go_version: '1.22.0'
+          - name: SHORT_1
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 1800
+            files: "AA_GO_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/short"
+            go_version: '1.22.0'
+          - name: UNSTABLE_123
+            generate-broken-files: true
+            remove_invalid_files: true
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 10000
+            files: "AA_GO_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/unstable"
+            go_version: '1.23.0-rc.1'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget earlyoom
+
+      - name: Install create_broken_files
+        run: cargo install create_broken_files
+
+      - name: Install sd
+        run: cargo install sd
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: ${{ matrix.go_version }}
+          check-latest: true
+      - name: Install go
+        run: |
+          git clone https://github.com/dominikh/go-tools.git gotools
+          cd gotools
+          go install cmd/staticcheck/staticcheck.go
+          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
+          cd ..
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Create folders
+        run: |
+          mkdir /opt/VALID_FILES_DIR
+          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
+          mkdir /opt/BROKEN_FILES_DIR
+
+      - name: Download and prepare python data files
+        run: |
+          CURR_DIR=$(pwd)
+          
+          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
+          
+          if [ "$GENERATE_BROKEN_FILES" = "true" ]; then
+            cd /opt/VALID_FILES_DIR
+          else
+            cd /opt/POSSIBLY_BROKEN_FILES_DIR
+          fi
+          
+          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          
+          cd $CURR_DIR
+
+      - name: Run app
+        run: |
+          mv ${{ matrix.config-file }} fuzz_settings.toml
+          sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
+          target/release/automated_fuzzer ${{ matrix.timeout }} || true
+
+      - name: Store results
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: GO___${{ matrix.name }}___before___${{ matrix.go_version }}
+          path: /opt/BROKEN_FILES_DIR
+
+      - name: Remove non crashing files
+        run: |
+          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
+          RUST_BACKTRACE=1 target/release/automated_fuzzer
+
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: GO___REPORTS___${{ matrix.name }}
+          path: ${{ matrix.tmp_folder }}
+
+      - name: Store results
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: GO___${{ matrix.name }}___after___${{ matrix.go_version }}
+          path: /opt/BROKEN_FILES_DIR
+
+      - name: Remove all folders
+        run: |
+          rm -rf /opt/VALID_FILES_DIR || true
+          rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
+
+      - name: Exit when found broken files
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
+

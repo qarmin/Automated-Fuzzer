@@ -2,6 +2,8 @@ use std::env::args;
 use std::fs::File;
 use std::io;
 
+use walkdir::WalkDir;
+use std::path::Path;
 use symphonia::core::codecs::CODEC_TYPE_NULL;
 use symphonia::core::errors::Error;
 use symphonia::core::errors::Error::IoError;
@@ -9,6 +11,21 @@ use symphonia::core::io::MediaSourceStream;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
+
+    if Path::new(&path).is_dir() {
+        for entry in WalkDir::new(&path).into_iter().flatten() {
+            if !entry.file_type().is_file() {
+                continue;
+            }
+            let path = entry.path().to_string_lossy().to_string();
+            check_file(&path);
+        }
+    } else {
+        check_file(&path);
+    }
+}
+
+fn check_file(path: &str) {
     let file = match File::open(&path) {
         Ok(t) => t,
         Err(e) => {

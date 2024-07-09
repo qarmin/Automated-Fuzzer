@@ -1,4 +1,4 @@
-name: 🐧 Go Check
+name: 🐧 Lofty Check
 on:
   push:
   pull_request:
@@ -19,28 +19,16 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
-            remove_invalid_files: true
-            config-file: fuzz_go_settings_ci.toml
+            config-file: fuzz_lofty_settings_ci.toml
             timeout: 10000
-            files: "AA_GO_VALID_FILES.7z"
+            files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
-            go_version: '1.22.0'
           - name: SHORT_1
             generate-broken-files: true
-            remove_invalid_files: true
-            config-file: fuzz_go_settings_ci.toml
+            config-file: fuzz_lofty_settings_ci.toml
             timeout: 1800
-            files: "AA_GO_VALID_FILES.7z"
+            files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
-            go_version: '1.22.0'
-          - name: UNSTABLE_123
-            generate-broken-files: true
-            remove_invalid_files: true
-            config-file: fuzz_go_settings_ci.toml
-            timeout: 10000
-            files: "AA_GO_VALID_FILES.7z"
-            tmp_folder: "/tmp/tmp_folder/unstable"
-            go_version: '1.23.0-rc.1'
 
     steps:
       - uses: actions/checkout@v4
@@ -56,17 +44,12 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go_version }}
-          check-latest: true
-      - name: Install go
+      - name: Install lofty
         run: |
-          git clone https://github.com/dominikh/go-tools.git gotools
-          cd gotools
-          go install cmd/staticcheck/staticcheck.go
-          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
-          cd ..
+          cd src/crates/lofty
+          cargo update
+          cargo install --path .
+          cd ../../..
 
       - name: Build
         run: cargo build --release
@@ -103,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: GO___${{ matrix.name }}___before___${{ matrix.go_version }}
+          name: LOFTY___${{ matrix.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
@@ -111,11 +94,18 @@ jobs:
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: LOFTY___REPORTS___${{ matrix.name }}
+          path: ${{ matrix.tmp_folder }}
+
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: GO___${{ matrix.name }}___after___${{ matrix.go_version }}
+          name: LOFTY___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders

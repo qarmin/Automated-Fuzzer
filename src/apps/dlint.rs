@@ -1,5 +1,5 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::Child;
+use std::process::{Child, Command};
 
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -19,8 +19,13 @@ impl ProgramConfig for DlintStruct {
         content.contains("RUST_BACKTRACE") && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
     }
 
+    fn get_only_run_command(&self, full_name: &str) -> Command {
+        let mut command = self._get_basic_run_command();
+        command.arg("run").arg(full_name);
+        command
+    }
     fn get_run_command(&self, full_name: &str) -> Child {
-        self._get_basic_run_command().arg("run").arg(full_name).spawn().unwrap()
+        self.get_only_run_command(full_name).spawn().unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {

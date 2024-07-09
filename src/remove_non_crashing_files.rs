@@ -1,14 +1,17 @@
-use crate::common::{execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder};
+use crate::common::{
+    execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder,
+    CheckGroupFileMode,
+};
+use crate::minimal_rules::zip_file;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
-use log::{info};
+use log::info;
 use rand::random;
 use rayon::prelude::*;
 use std::fs;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
-use crate::minimal_rules::zip_file;
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
@@ -34,13 +37,16 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     let broken_files: Vec<String> = collect_broken_files(settings);
     info!("After checking {} broken files left", broken_files.len());
 }
-
-fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
-    // Processing in groups
+fn remove_non_crashing_in_group(
+    broken_files: Vec<String>,
+    settings: &Setting,
+    obj: &Box<dyn ProgramConfig>,
+) -> Vec<String> {
     let group_size = 20;
     let atomic_counter = AtomicUsize::new(0);
     let all_chunks = broken_files.chunks(group_size).count();
-    let still_broken_files: Vec<_> = broken_files
+
+    broken_files
         .into_par_iter()
         .chunks(group_size)
         .enumerate()
@@ -75,45 +81,56 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
             }
         })
         .flatten()
-        .collect();
+        .collect()
+}
+fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
+    // Processing in groups
+    let still_broken_files = if obj.get_files_group_mode() != CheckGroupFileMode::None {
+        remove_non_crashing_in_group(broken_files, settings, obj)
+    } else {
+        broken_files
+    };
 
     let atomic_counter = AtomicUsize::new(0);
     let all = still_broken_files.len();
-    let results = still_broken_files.into_par_iter().filter_map(|full_name| {
-        let start_text = fs::read(&full_name).unwrap();
-        let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
-        if idx % 100 == 0 {
-            info!("_____ Processsed already {idx} / {all} (step {step})");
-        }
-        let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
-        if settings.debug_print_results {
-            info!("File {full_name}\n{output}");
-        }
-        // if settings.debug_print_results {
-        //     info!("File {full_name}\n{output}");
-        // }
-        if is_really_broken || obj.is_broken(&output) {
-            fs::write(&full_name, &start_text).unwrap();
-            return Some((full_name, output));
-        };
-        info!("File {full_name} is not broken, and will be removed");
+    let results = still_broken_files
+        .into_par_iter()
+        .filter_map(|full_name| {
+            let start_text = fs::read(&full_name).unwrap();
+            let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
+            if idx % 100 == 0 {
+                info!("_____ Processsed already {idx} / {all} (step {step})");
+            }
+            let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
+            if settings.debug_print_results {
+                info!("File {full_name}\n{output}");
+            }
+            // if settings.debug_print_results {
+            //     info!("File {full_name}\n{output}");
+            // }
+            if is_really_broken || obj.is_broken(&output) {
+                fs::write(&full_name, &start_text).unwrap();
+                return Some((full_name, output.trim().to_string()));
+            };
+            info!("File {full_name} is not broken, and will be removed");
 
-        fs::remove_file(&full_name).unwrap();
-        None
-    }).collect::<Vec<_>>();
+            fs::remove_file(&full_name).unwrap();
+            None
+        })
+        .collect::<Vec<_>>();
 
     remove_and_create_entire_folder(&settings.temp_folder);
 
     save_results_to_file(obj, settings, results);
 }
 
-pub fn save_results_to_file(
-    obj: &Box<dyn ProgramConfig>,
-    settings: &Setting,
-    content: Vec<(String, String)>,
-) {
+pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
+    info!("Saving results to file");
     let command = obj.get_only_run_command("TEST___FILE");
-    let args = command.get_args().map(|e| format!("\"{}\"", e.to_string_lossy())).collect::<Vec<_>>();
+    let args = command
+        .get_args()
+        .map(|e| format!("\"{}\"", e.to_string_lossy()))
+        .collect::<Vec<_>>();
     let command_str = format!("{} {}", command.get_program().to_string_lossy(), args.join(" "));
 
     for (file_name, result) in content {
@@ -123,20 +140,34 @@ pub fn save_results_to_file(
         let mut file_content = String::new();
 
         let mut cnt_text = "".to_string();
-        let output_to_string = String::from_utf8(content.clone());
-        if let Ok(output_string) = output_to_string {
+        let content_to_string = String::from_utf8(content.clone());
+        if let Ok(content_string) = content_to_string {
             cnt_text += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
             cnt_text += "```";
-            cnt_text += &output_string;
+            cnt_text += &content_string;
             cnt_text += "```";
         } else {
             cnt_text += "File content is binary, so is available only in zip file";
         };
+        let error_type = match result {
+            _ if result.contains("memory allocation of") => "memory_failure",
+            _ if result.contains("stack overflow") => "stack_overflow",
+            _ if result.contains("segmentation fault") => "segmentation_fault",
+            _ if result.contains("Aborted") => "aborted",
+            _ if result.contains("Killed") => "killed",
+            _ if result.contains("Timeout") => "timeout",
+            _ if result.contains("divide by zero") => "divide_by_zero",
+            _ if result.contains("attempt to subtract with overflow") => "overflow",
+            _ if result.contains("panicked at ") => "panicked",
+            _ if result.contains("RUST_BACKTRACE") => "panic",
+            _ => "",
+        };
 
         let folder = format!(
-            "{}/{}___({} bytes) - {}",
+            "{}/{}_{}__({} bytes) - {}",
             settings.temp_folder,
             settings.current_mode.to_string(),
+            error_type,
             content.len(),
             random::<u64>()
         );
@@ -154,10 +185,10 @@ cause this
 $ERROR
 ```
 "
-            .replace("$CNT_TEXT", &cnt_text)
-            .replace("$COMMAND", &command_str_with_extension)
-            .replace("$ERROR", &result)
-            .replace("\n\n```", "\n```");
+        .replace("$CNT_TEXT", &cnt_text)
+        .replace("$COMMAND", &command_str_with_extension)
+        .replace("$ERROR", &result)
+        .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

@@ -24,7 +24,7 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
 grouping = 10 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "lofty"
+current_mode = "ruff"
 
 # app_binary - place where binary exists
 # app_config - path to configuration file

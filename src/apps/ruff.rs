@@ -162,8 +162,7 @@ impl ProgramConfig for RuffStruct {
             None
         }
     }
-
-    fn get_run_command(&self, full_name: &str) -> Child {
+    fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
 
         match self.settings.tool_type.as_str() {
@@ -218,9 +217,12 @@ impl ProgramConfig for RuffStruct {
         if self.settings.debug_executed_commands {
             info!("Executing command: {:?}", command);
         }
-
-        command.spawn().unwrap()
+        command
     }
+    fn get_run_command(&self, full_name: &str) -> Child {
+        self.get_only_run_command(full_name).spawn().unwrap()
+    }
+
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
             create_broken_files(self, LANGS::GENERAL)

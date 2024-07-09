@@ -1,4 +1,4 @@
-name: 🐧 Js Check
+name: 🐧 Swc Check
 on:
   push:
   pull_request:
@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  js-normal-ci:
+  swc-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -19,13 +19,13 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
-            config-file: fuzz_js_settings_ci.toml
+            config-file: fuzz_swc_settings_ci.toml
             timeout: 10000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: SHORT_1
             generate-broken-files: true
-            config-file: fuzz_js_settings_ci.toml
+            config-file: fuzz_swc_settings_ci.toml
             timeout: 1800
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
@@ -44,9 +44,12 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
-      - name: Install oxlint
+      - name: Install swc
         run: |
-          cargo install --git https://github.com/oxc-project/oxc.git oxlint --locked
+          wget https://github.com/swc-project/swc/archive/refs/heads/main.zip
+          unzip main.zip
+          cargo +nightly install --path swc-main/crates/swc_cli_impl/
+          rm -rf main.zip swc-main
 
       - name: Build
         run: cargo build --release
@@ -83,20 +86,26 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: JS___${{ matrix.name }}___before
+          name: SWC___${{ matrix.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
-      # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: SWC___REPORTS___${{ matrix.name }}
+          path: ${{ matrix.tmp_folder }}
+
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: JS___${{ matrix.name }}___after
+          name: SWC___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders

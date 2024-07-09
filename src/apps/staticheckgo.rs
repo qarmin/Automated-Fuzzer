@@ -1,4 +1,4 @@
-use std::process::Child;
+use std::process::{Child, Command};
 
 use crate::broken_files::{create_broken_files, LANGS};
 use crate::common::CheckGroupFileMode;
@@ -19,16 +19,21 @@ impl ProgramConfig for StaticCheckGoStruct {
 
         let is_stack_overflow = content.contains("goroutine stack exceeds"); // TODO for https://github.com/dominikh/go-tools/issues/310
 
-        !contains_internal_compiler_error && !is_stack_overflow && (contains_internal_error || contains_panic || contains_fatal_error)
+        !contains_internal_compiler_error
+            && !is_stack_overflow
+            && (contains_internal_error || contains_panic || contains_fatal_error)
     }
-    fn get_run_command(&self, full_name: &str) -> Child {
-        self._get_basic_run_command()
-            // .env("PATH", "/usr/local/go/bin")
+    fn get_only_run_command(&self, full_name: &str) -> Command {
+        let mut command = self._get_basic_run_command();
+        command
             .arg("-checks")
             .arg("ALL")
             .arg(full_name)
-            .spawn()
-            .unwrap()
+            .arg(&self.get_settings().app_config);
+        command
+    }
+    fn get_run_command(&self, full_name: &str) -> Child {
+        self.get_only_run_command(full_name).spawn().unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {

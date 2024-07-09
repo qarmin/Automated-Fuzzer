@@ -1,4 +1,4 @@
-name: 🐧 Lofty Check
+name: 🐧 Symphonia Check
 on:
   push:
   pull_request:
@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  go-normal-ci:
+  symphonia-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -19,13 +19,13 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
+            config-file: fuzz_symphonia_settings_ci.toml
             timeout: 10000
             files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: SHORT_1
             generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
+            config-file: fuzz_symphonia_settings_ci.toml
             timeout: 1800
             files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
@@ -44,9 +44,9 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
-      - name: Install lofty
+      - name: Install Symphonia
         run: |
-          cd src/crates/lofty
+          cd src/crates/symphonia
           cargo update
           cargo install --path .
           cd ../../..
@@ -82,11 +82,18 @@ jobs:
           sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: SYMPHONIA___REPORTS___${{ matrix.name }}
+          path: ${{ matrix.tmp_folder }}
+
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: LOFTY___${{ matrix.name }}___before___${{ matrix.go_version }}
+          name: SYMPHONIA___${{ matrix.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
@@ -98,7 +105,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: LOFTY___${{ matrix.name }}___after___${{ matrix.go_version }}
+          name: SYMPHONIA___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
