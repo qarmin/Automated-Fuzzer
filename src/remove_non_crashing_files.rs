@@ -42,11 +42,12 @@ fn remove_non_crashing_in_group(
     settings: &Setting,
     obj: &Box<dyn ProgramConfig>,
 ) -> Vec<String> {
+    info!("Removing non-crashing files in group");
     let group_size = 20;
     let atomic_counter = AtomicUsize::new(0);
     let all_chunks = broken_files.chunks(group_size).count();
 
-    broken_files
+    let still_broken_files = broken_files
         .into_par_iter()
         .chunks(group_size)
         .enumerate()
@@ -81,10 +82,13 @@ fn remove_non_crashing_in_group(
             }
         })
         .flatten()
-        .collect()
+        .collect();
+    info!("Removing non-crashing files in group done");
+    still_broken_files
 }
 fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
     // Processing in groups
+    // let still_broken_files = broken_files;
     let still_broken_files = if obj.get_files_group_mode() != CheckGroupFileMode::None {
         remove_non_crashing_in_group(broken_files, settings, obj)
     } else {
@@ -156,8 +160,10 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("Killed") => "killed",
             _ if result.contains("Timeout") => "timeout",
             _ if result.contains("divide by zero") => "divide_by_zero",
-            _ if result.contains("attempt to subtract with overflow") => "overflow",
-            _ if result.contains("attempt to multiply with overflow") => "overflow",
+            _ if result.contains("attempt to subtract with overflow") => "overflow_s",
+            _ if result.contains("attempt to multiply with overflow") => "overflow_m",
+            _ if result.contains("attempt to add with overflow") => "overflow_a",
+            _ if result.contains("attempt to shift right with overflow") => "overflow_sr",
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
             _ if result.contains("Aborted") => "aborted",

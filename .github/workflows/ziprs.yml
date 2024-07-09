@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  zip-normal-ci:
+  ziprs-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -19,13 +19,13 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
-            config-file: fuzz_zip_settings_ci.toml
+            config-file: fuzz_ziprs_settings_ci.toml
             timeout: 10000
             files: "AA_ZIP_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: SHORT_1
             generate-broken-files: true
-            config-file: fuzz_zip_settings_ci.toml
+            config-file: fuzz_ziprs_settings_ci.toml
             timeout: 1800
             files: "AA_ZIP_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
@@ -46,7 +46,7 @@ jobs:
 
       - name: Install zip
         run: |
-          cd src/crates/zip
+          cd src/crates/ziprs
           cargo update
           cargo install --path . --locked
           cd ../../..
