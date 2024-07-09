@@ -158,6 +158,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("Timeout") => "timeout",
             _ if result.contains("divide by zero") => "divide_by_zero",
             _ if result.contains("attempt to subtract with overflow") => "overflow",
+            _ if result.contains("attempt to multiply with overflow") => "overflow",
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
             _ => "",
@@ -185,10 +186,10 @@ cause this
 $ERROR
 ```
 "
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

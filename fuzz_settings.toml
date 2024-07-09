@@ -8,11 +8,11 @@ minimize_output = true # Tries to remove some lines from output file, remember, 
 temp_possible_broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
 minimization_attempts = 200 # Attemps to minimize code, counter reset when found minimized test case
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
-debug_print_results = false # Debug prints output of commands
-debug_executed_commands = false # Debug prints executed commands
+debug_print_results = true # Debug prints output of commands
+debug_executed_commands = true # Debug prints executed commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
-remove_non_crashing_items_from_broken_files = true # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
-find_minimal_rules = true # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
+remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
+find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
 verify_if_files_are_still_broken = false # If true, will verify if files are still broken, if not, then will be removed
 clean_base_files = false # If true, files will be cleaned according to extension e.g. non parsable python files will be removed
 temp_folder = "/home/rafal/test/tmp_folder" # Temp file used to store random data
@@ -24,7 +24,7 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
 grouping = 10 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "ruff"
+current_mode = "zip"
 
 # app_binary - place where binary exists
 # app_config - path to configuration file
@@ -67,7 +67,7 @@ tool_type = ""
 binary_mode = false
 
 [zip]
-app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/zip/target/release/zip"
+app_binary = "zip"
 app_config = ""
 extensions = "zip"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_ZIP_VALID_FILES"
