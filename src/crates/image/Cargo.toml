@@ -7,7 +7,6 @@ edition = "2021"
 
 [dependencies]
 image = { git = "https://github.com/image-rs/image" }
-zune-jpeg = { git = "https://github.com/etemesi254/zune-image.git" }
 
 [profile.release]
 overflow-checks = true

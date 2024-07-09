@@ -7,17 +7,13 @@ use strum_macros::{Display, EnumString};
 use crate::apps::biome::BiomeStruct;
 use crate::apps::dicom::DicomStruct;
 use crate::apps::dlint::DlintStruct;
-use crate::apps::eslint::EslintStruct;
 use crate::apps::image::ImageStruct;
-use crate::apps::libcst::LibCSTStruct;
 use crate::apps::lofty::LoftyStruct;
 use crate::apps::mypy::MypyStruct;
 use crate::apps::oxc::OxcStruct;
 use crate::apps::pdfrs::PdfRsStruct;
 use crate::apps::quick_lint_js::QuickLintStruct;
 use crate::apps::ruff::RuffStruct;
-use crate::apps::rust_parser::RustParserStruct;
-use crate::apps::rustfmt::RustFmtStruct;
 use crate::apps::selene::SeleneStruct;
 use crate::apps::staticheckgo::StaticCheckGoStruct;
 use crate::apps::swc::SwcStruct;
@@ -144,7 +140,6 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
             settings,
             ignored_rules: String::new(),
         }),
-        MODES::LIBCST => Box::new(LibCSTStruct { settings }),
         MODES::LOFTY => Box::new(LoftyStruct { settings }),
         MODES::IMAGE => Box::new(ImageStruct { settings }),
         MODES::SYMPHONIA => Box::new(SymphoniaStruct { settings }),
@@ -152,9 +147,6 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
         MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
         MODES::PDFRS => Box::new(PdfRsStruct { settings }),
-        MODES::RUSTFMT => Box::new(RustFmtStruct { settings }),
-        MODES::ESLINT => Box::new(EslintStruct { settings }),
-        MODES::RUSTPARSER => Box::new(RustParserStruct { settings }),
         MODES::DICOM => Box::new(DicomStruct { settings }),
         MODES::SWC => Box::new(SwcStruct { settings }),
         MODES::ZIP => Box::new(ZipStruct { settings }),
@@ -187,14 +179,6 @@ pub enum MODES {
     QUICKLINTJS,
     #[strum(ascii_case_insensitive)]
     PDFRS,
-    #[strum(ascii_case_insensitive)]
-    RUSTFMT,
-    #[strum(ascii_case_insensitive)]
-    ESLINT,
-    #[strum(ascii_case_insensitive)]
-    RUSTPARSER,
-    #[strum(ascii_case_insensitive)]
-    LIBCST,
     #[strum(ascii_case_insensitive)]
     DICOM,
     #[strum(ascii_case_insensitive)]

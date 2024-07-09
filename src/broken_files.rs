@@ -8,6 +8,7 @@ pub enum LANGS {
     JAVASCRIPT,
     LUA,
     GO,
+    #[allow(dead_code)]
     RUST,
     GENERAL,
 }
@@ -79,9 +80,9 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::GENERAL => {
             com = com.args(
                 format!(
-                "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c false"
-            )
-                .split(' '),
+                    "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c false"
+                )
+                    .split(' '),
             );
         }
     }

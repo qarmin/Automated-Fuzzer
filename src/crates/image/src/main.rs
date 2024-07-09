@@ -1,24 +1,31 @@
 use std::env::args;
 use std::fs;
-use zune_jpeg::zune_core::bytestream::ZCursor;
-use zune_jpeg::zune_core::options::DecoderOptions;
+use std::fs::File;
+use std::path::Path;
 
 fn main() {
-    let path = args().nth(1).unwrap();
-    // let output = image::open(&path);
+    let path = args().nth(1).unwrap().clone();
 
-    let options = DecoderOptions::default()
-        .set_strict_mode(false)
-        .set_max_width(usize::MAX)
-        .set_max_height(usize::MAX);
-    let Ok(data) = fs::read(&path) else {
-        return;
-    };
-    let cursor = ZCursor::new(data);
-    let mut decoder = zune_jpeg::JpegDecoder::new_with_options(cursor, options);
-    let output = decoder.decode();
+    if Path::new(&path).is_dir() {
+        for entry in WalkDir::new(&path).into_iter().flatten() {
+            if !entry.file_type().is_file() {
+                continue;
+            }
+            let path = entry.path().to_string_lossy().to_string();
+            check_file(&path);
+        }
+    } else {
+        check_file(&path);
+    }
+}
 
-    if let Err(e) = output {
-        println!("{e}");
+fn check_file(file_path: &str) {
+    match image::open(&file_path) {
+        Ok(file) => {
+            if let Err(e) = zip::ZipArchive::new(file) {
+                println!("Failed to open zip file {e}");
+            }
+        }
+        Err(_inspected) => (),
     }
 }

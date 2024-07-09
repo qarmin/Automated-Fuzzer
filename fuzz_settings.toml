@@ -84,41 +84,6 @@ broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dicom/Broken"
 tool_type = ""
 binary_mode = false
 
-[libcst]
-app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/libcst/target/release/libcstt"
-app_config = ""
-extensions = "py"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/libcst/Broken"
-tool_type = ""
-binary_mode = false
-
-[rustparser]
-app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/rust_parser/target/release/rust_parser"
-app_config = ""
-extensions = "py"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rust_parser/Broken"
-tool_type = ""
-binary_mode = false
-
-[eslint]
-app_binary = "/home/rafal/.nvm/versions/node/v19.1.0/bin/npx" # npx eslint
-app_config = "/home/rafal/Desktop/RunEveryCommand/eslint/.eslintrc.yml"
-extensions = "ts,js,mjs,mts"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/eslint/Broken"
-tool_type = ""
-binary_mode = false
-
-[rustfmt]
-app_binary = "rustfmt"
-app_config = "/home/rafal/Projekty/Rust/Rozne/rustfmtt.toml"
-extensions = "rs"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_RUST_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rustfmt/Broken"
-tool_type = ""
-binary_mode = false
 
 [pdfrs]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/pdf/target/release/pdf"
