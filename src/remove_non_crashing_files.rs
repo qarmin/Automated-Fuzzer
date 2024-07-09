@@ -143,9 +143,9 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
         let content_to_string = String::from_utf8(content.clone());
         if let Ok(content_string) = content_to_string {
             cnt_text += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
-            cnt_text += "```";
+            cnt_text += "```\n";
             cnt_text += &content_string;
-            cnt_text += "```";
+            cnt_text += "\n```";
         } else {
             cnt_text += "File content is binary, so is available only in zip file";
         };
