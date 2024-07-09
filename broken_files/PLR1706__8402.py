@@ -1,1 +1,0 @@
-PERM = 'view' if (VERSION[0] == 2 and VERSION[1] > 0) or (VERSION[0] > 2) else 'change'
