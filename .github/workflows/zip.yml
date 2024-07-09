@@ -48,7 +48,7 @@ jobs:
         run: |
           cd src/crates/zip
           cargo update
-          cargo install --path .
+          cargo install --path . --locked
           cd ../../..
 
       - name: Build

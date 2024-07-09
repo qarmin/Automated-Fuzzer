@@ -79,13 +79,6 @@ jobs:
           sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
-      - name: Store Reports
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: OXC___REPORTS___${{ matrix.name }}
-          path: ${{ matrix.tmp_folder }}
-
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
@@ -98,6 +91,13 @@ jobs:
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
+
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: OXC___REPORTS___${{ matrix.name }}
+          path: ${{ matrix.tmp_folder }}
 
       - name: Store results
         uses: actions/upload-artifact@v4
