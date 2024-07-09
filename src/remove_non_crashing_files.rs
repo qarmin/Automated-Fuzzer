@@ -153,7 +153,6 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("memory allocation of") => "memory_failure",
             _ if result.contains("stack overflow") => "stack_overflow",
             _ if result.contains("segmentation fault") => "segmentation_fault",
-            _ if result.contains("Aborted") => "aborted",
             _ if result.contains("Killed") => "killed",
             _ if result.contains("Timeout") => "timeout",
             _ if result.contains("divide by zero") => "divide_by_zero",
@@ -161,6 +160,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("attempt to multiply with overflow") => "overflow",
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
+            _ if result.contains("Aborted") => "aborted",
             _ => "",
         };
 
