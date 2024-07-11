@@ -4,11 +4,11 @@ use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use std::process::Child;
 
-pub struct ZipStruct {
+pub struct RustBuzzStruct {
     pub settings: Setting,
 }
 
-impl ProgramConfig for ZipStruct {
+impl ProgramConfig for RustBuzzStruct {
     fn is_broken(&self, content: &str) -> bool {
         content.contains("RUST_BACKTRACE")
     }

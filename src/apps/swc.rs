@@ -1,8 +1,8 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::Child;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
+use std::process::Child;
 
 pub struct SwcStruct {
     pub settings: Setting,

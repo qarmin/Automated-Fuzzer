@@ -1,4 +1,4 @@
-name: 🐧 Lofty Check
+name: 🐧 Swc Check
 on:
   push:
   pull_request:
@@ -7,10 +7,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: LOFTY
+  TOOL_TYPE: SWC
 
 jobs:
-  lofty-normal-ci:
+  swc-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -18,39 +18,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LONG_1
-            generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
           - name: NORMAL_1
             generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
+            config-file: fuzz_swc_settings_ci.toml
             timeout: 10000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMAL_SHORTER_1
-            generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 7500
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMAL_HALF_1
-            generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 5000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: HOUR_1
-            generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 3600
-            files: "AA_MUSIC_VALID_FILES.7z"
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
           - name: SHORT_1
             generate-broken-files: true
-            config-file: fuzz_lofty_settings_ci.toml
+            config-file: fuzz_swc_settings_ci.toml
             timeout: 1800
-            files: "AA_MUSIC_VALID_FILES.7z"
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup rust version
+        run: rustup default nightly
 
       - name: Install dependencies
         run: |
@@ -63,12 +46,12 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
-      - name: Install lofty
+      - name: Install swc
         run: |
-          cd src/crates/lofty
-          cargo update
-          cargo install --path . --locked
-          cd ../../..
+          wget -q https://github.com/swc-project/swc/archive/refs/heads/main.zip
+          unzip -q main.zip
+          cargo install --path swc-main/crates/swc_cli_impl/ --locked
+          rm -rf main.zip swc-main
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 

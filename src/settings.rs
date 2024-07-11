@@ -14,6 +14,7 @@ use crate::apps::oxc::OxcStruct;
 use crate::apps::pdfrs::PdfRsStruct;
 use crate::apps::quick_lint_js::QuickLintStruct;
 use crate::apps::ruff::RuffStruct;
+use crate::apps::rustbuzz::RustBuzzStruct;
 use crate::apps::selene::SeleneStruct;
 use crate::apps::staticheckgo::StaticCheckGoStruct;
 use crate::apps::swc::SwcStruct;
@@ -150,6 +151,7 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         MODES::DICOM => Box::new(DicomStruct { settings }),
         MODES::SWC => Box::new(SwcStruct { settings }),
         MODES::ZIP => Box::new(ZipStruct { settings }),
+        MODES::RUSTBUZZ => Box::new(RustBuzzStruct { settings }),
     }
 }
 
@@ -185,4 +187,6 @@ pub enum MODES {
     SWC,
     #[strum(ascii_case_insensitive)]
     ZIP,
+    #[strum(ascii_case_insensitive)]
+    RUSTBUZZ,
 }

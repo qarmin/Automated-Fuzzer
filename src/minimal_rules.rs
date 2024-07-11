@@ -8,7 +8,7 @@ use jwalk::WalkDir;
 use log::info;
 use rand::prelude::*;
 use rayon::prelude::*;
-use zip::write::FileOptions;
+use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
 
 use crate::apps::ruff::calculate_ignored_rules;
@@ -129,7 +129,7 @@ pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &[u8]) {
     let zip_file = File::create(zip_filename).unwrap();
     let mut zip_writer = ZipWriter::new(zip_file);
 
-    let options = FileOptions::default()
+    let options = SimpleFileOptions::default()
         .compression_method(zip::CompressionMethod::Deflated)
         .unix_permissions(0o755);
 

@@ -8,6 +8,7 @@ pub mod oxc;
 pub mod pdfrs;
 pub mod quick_lint_js;
 pub mod ruff;
+pub mod rustbuzz;
 pub mod selene;
 pub mod staticheckgo;
 pub mod swc;

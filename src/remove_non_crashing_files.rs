@@ -196,10 +196,10 @@ cause this
 $ERROR
 ```
 "
-            .replace("$CNT_TEXT", &cnt_text)
-            .replace("$COMMAND", &command_str_with_extension)
-            .replace("$ERROR", &result)
-            .replace("\n\n```", "\n```");
+        .replace("$CNT_TEXT", &cnt_text)
+        .replace("$COMMAND", &command_str_with_extension)
+        .replace("$ERROR", &result)
+        .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

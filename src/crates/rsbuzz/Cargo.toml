@@ -1,0 +1,13 @@
+[package]
+name = "rsbuzz"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git" }
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true

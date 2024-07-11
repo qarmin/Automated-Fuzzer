@@ -359,7 +359,7 @@ jobs:
       - name: Run app
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
-          sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
+          sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
       - name: Move settings for remove non crashing files
@@ -404,7 +404,7 @@ jobs:
         with:
           if-no-files-found: ignore
           name: reports-${{ matrix.name }}
-          path: ${{ matrix.tmp_folder }}
+          path: /tmp/tmp_folder/data
 
       - name: Remove pycache
         run: |
@@ -420,7 +420,7 @@ jobs:
       - name: Zip and send it
         if: ${{ matrix.ruff-config == '' }}
         run: |
-          for dir in "/opt/BROKEN_FILES_DIR" "${{ matrix.tmp_folder }}"; do
+          for dir in "/opt/BROKEN_FILES_DIR" "/tmp/tmp_folder/data"; do
             if [ -d "$dir" ]; then
               #python3 send.py "${{ secrets.SECRET_KEY }}" "${{ secrets.IP_ADDRESS }}" "$dir"
               zip_file="src.zip"

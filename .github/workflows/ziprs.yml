@@ -7,6 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  TOOL_TYPE: ZIP_RS
 
 jobs:
   ziprs-normal-ci:
@@ -22,13 +23,11 @@ jobs:
             config-file: fuzz_ziprs_settings_ci.toml
             timeout: 10000
             files: "AA_ZIP_VALID_FILES.7z"
-            tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: SHORT_1
             generate-broken-files: true
             config-file: fuzz_ziprs_settings_ci.toml
             timeout: 1800
             files: "AA_ZIP_VALID_FILES.7z"
-            tmp_folder: "/tmp/tmp_folder/short"
 
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +50,8 @@ jobs:
           cargo install --path . --locked
           cd ../../..
 
+      # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
+
       - name: Build
         run: cargo build --release
 
@@ -60,7 +61,7 @@ jobs:
           mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
           mkdir /opt/BROKEN_FILES_DIR
 
-      - name: Download and prepare python data files
+      - name: Download and prepare data files
         run: |
           CURR_DIR=$(pwd)
           
@@ -79,14 +80,14 @@ jobs:
       - name: Run app
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
-          sd "TMP_FOLDER_TO_REPLACE" "${{ matrix.tmp_folder }}" fuzz_settings.toml
+          sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: ZIP___${{ matrix.name }}___before
+          name: FILES___${{ env.TOOL_TYPE }}___${{ matrix.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
@@ -98,14 +99,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: ZIP___REPORTS___${{ matrix.name }}
-          path: ${{ matrix.tmp_folder }}
+          name: REPORTS___${{ env.TOOL_TYPE }}___${{ matrix.name }}
+          path: /tmp/tmp_folder/data
 
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: ZIP___${{ matrix.name }}___after
+          name: FILES___${{ env.TOOL_TYPE }}___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
