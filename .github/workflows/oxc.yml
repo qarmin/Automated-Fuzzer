@@ -17,6 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: LONG_1
+            generate-broken-files: true
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 18000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: NORMAL_1
             generate-broken-files: true
             config-file: fuzz_oxc_settings_ci.toml
@@ -27,6 +33,12 @@ jobs:
             generate-broken-files: true
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 1800
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/short"
+          - name: EXTRA_SHORT_1
+            generate-broken-files: true
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 300
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
 
@@ -46,7 +58,16 @@ jobs:
 
       - name: Install oxlint
         run: |
-          cargo install --git https://github.com/oxc-project/oxc.git oxlint --locked
+          wget https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
+          unzip main.zip
+          rm main.zip
+          cd oxc-main
+          rm rust-toolchain.toml
+          sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
+          sd "debug         = false" "debug = true" Cargo.toml
+          cargo install --path apps/oxlint --locked
+          cd ../
+          rm -rf oxc-main
 
       - name: Build
         run: cargo build --release

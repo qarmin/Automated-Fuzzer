@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  go-normal-ci:
+  lofty-normal-ci:
 
     runs-on: ubuntu-24.04
 
