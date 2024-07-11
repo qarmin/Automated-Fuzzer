@@ -133,7 +133,15 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
     let command = obj.get_only_run_command("TEST___FILE");
     let args = command
         .get_args()
-        .map(|e| format!("\"{}\"", e.to_string_lossy()))
+        .map(|e|
+        {
+            let tmp_string = e.to_string_lossy();
+            if [" ", "\"", "\\", "/"].iter().any(|e| tmp_string.contains(e)) {
+                format!("\"{}\"", tmp_string)
+            } else {
+                tmp_string.to_string()
+            }
+        })
         .collect::<Vec<_>>();
     let command_str = format!("{} {}", command.get_program().to_string_lossy(), args.join(" "));
 
@@ -159,11 +167,13 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("segmentation fault") => "segmentation_fault",
             _ if result.contains("Killed") => "killed",
             _ if result.contains("Timeout") => "timeout",
+            _ if result.contains("is not a char boundary") => "char_boundary",
             _ if result.contains("divide by zero") => "divide_by_zero",
             _ if result.contains("attempt to subtract with overflow") => "overflow_s",
             _ if result.contains("attempt to multiply with overflow") => "overflow_m",
             _ if result.contains("attempt to add with overflow") => "overflow_a",
             _ if result.contains("attempt to shift right with overflow") => "overflow_sr",
+            _ if result.contains("attempt to shift left with overflow") => "overflow_sl",
             _ if result.contains("Option::unwrap()") => "option_unwrap",
             _ if result.contains("Result::unwrap()") => "result_unwrap",
             _ if result.contains("internal error: entered unreachable code") => "unreachable_code",
@@ -196,10 +206,10 @@ cause this
 $ERROR
 ```
 "
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

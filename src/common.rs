@@ -559,6 +559,31 @@ pub fn execute_command_on_pack_of_files(
     (is_signal_code_timeout_broken, str_out)
 }
 
+pub struct OutputResult {
+    output: String,
+    status_code: Option<i32>,
+    signal: Option<i32>,
+    is_signal_broken: bool,
+    is_status_broken: bool,
+}
+impl OutputResult {
+    pub fn new(output: String, status_code: Option<i32>, signal: Option<i32>, is_signal_broken: bool, is_status_broken: bool) -> Self {
+        Self {
+            output,
+            status_code,
+            signal,
+            is_signal_broken,
+            is_status_broken,
+        }
+    }
+    pub fn is_broken(&self) -> bool {
+        self.is_signal_broken || self.is_status_broken
+    }
+    pub fn is_only_signal_broken(&self) -> bool {
+        self.is_signal_broken && !self.is_status_broken
+    }
+}
+
 #[allow(clippy::borrowed_box)]
 pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> (bool, String) {
     let content_before = fs::read(full_name).unwrap(); // In each iteration be sure that before and after, file is the same
@@ -578,9 +603,9 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
     if !obj.get_settings().allowed_error_statuses.is_empty()
         && output.status.code().is_some()
         && !obj
-            .get_settings()
-            .allowed_error_statuses
-            .contains(&output.status.code().unwrap())
+        .get_settings()
+        .allowed_error_statuses
+        .contains(&output.status.code().unwrap())
     {
         // info!("Non standard output status {:?}", output.status.code());
         is_signal_code_timeout_broken = true;
@@ -694,16 +719,16 @@ fn test_remove_single_docstring() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -725,9 +750,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected1 = r###"
     def function():
         pass
@@ -737,9 +762,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected2 = r###"
     """
     DOCSTRING
@@ -749,9 +774,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         let result = remove_single_docstring(&lines, &mut rng).unwrap();
         assert!([expected1, expected2].contains(&result));
@@ -767,16 +792,16 @@ fn test_remove_single_docstring3() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -792,23 +817,23 @@ fn test_remove_single_def() {
     def function2():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected1 = r###"
     def function2():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected2 = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         let ret = remove_single_def(&lines, &mut rng).unwrap();
         if ![&expected2, &expected1].contains(&&ret) {
@@ -827,16 +852,16 @@ fn test_remove_all_comments() {
     def function():
         pass
     "###
-    .split("\n")
-    .map(String::from)
-    .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
     let expected = r###"
     def function():
         pass
     "###
-    .split("\n")
-    .map(String::from)
-    .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
     assert_eq!(remove_all_comments(&lines), expected);
 }

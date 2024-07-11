@@ -26,7 +26,7 @@ edition = "2021"
 #    "time",
 #    "zstd",
 #]
-zip = { version = "2.1" }
+zip = { version = "2.1", features = ["_all-features"] }
 walkdir = "2.5.0"
 
 [profile.release]
