@@ -167,6 +167,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
             _ if result.contains("Aborted") => "aborted",
+            _ if result.contains("output signal \"Some(15)\"") => "out_of_memory",
             _ => "",
         };
 

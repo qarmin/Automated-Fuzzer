@@ -19,7 +19,6 @@ jobs:
         include:
           - name: NORMAL_1
             generate-broken-files: true
-            remove_invalid_files: true
             config-file: fuzz_go_settings_ci.toml
             timeout: 10000
             files: "AA_GO_VALID_FILES.7z"
@@ -27,7 +26,6 @@ jobs:
             go_version: '1.22.0'
           - name: SHORT_1
             generate-broken-files: true
-            remove_invalid_files: true
             config-file: fuzz_go_settings_ci.toml
             timeout: 1800
             files: "AA_GO_VALID_FILES.7z"
@@ -35,7 +33,6 @@ jobs:
             go_version: '1.22.0'
           - name: UNSTABLE_123
             generate-broken-files: true
-            remove_invalid_files: true
             config-file: fuzz_go_settings_ci.toml
             timeout: 10000
             files: "AA_GO_VALID_FILES.7z"

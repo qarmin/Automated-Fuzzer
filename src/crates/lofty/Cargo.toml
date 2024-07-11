@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-lofty = { git = "https://github.com/Serial-ATA/lofty-rs/" }
+lofty = { git = "https://github.com/Serial-ATA/lofty-rs/", branch = "fuzzing-fixes" }
 walkdir = "2.5.0"
 
 

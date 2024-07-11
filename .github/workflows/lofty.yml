@@ -1,4 +1,4 @@
-name: 🐧 Symphonia Check
+name: 🐧 Lofty Check
 on:
   push:
   pull_request:
@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  symphonia-normal-ci:
+  go-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -17,15 +17,39 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: LONG_1
+            generate-broken-files: true
+            config-file: fuzz_lofty_settings_ci.toml
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: NORMAL_1
             generate-broken-files: true
-            config-file: fuzz_symphonia_settings_ci.toml
+            config-file: fuzz_lofty_settings_ci.toml
             timeout: 10000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
+          - name: NORMAL_SHORTER_1
+            generate-broken-files: true
+            config-file: fuzz_lofty_settings_ci.toml
+            timeout: 7500
+            files: "AA_MUSIC_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
+          - name: NORMAL_HALF_1
+            generate-broken-files: true
+            config-file: fuzz_lofty_settings_ci.toml
+            timeout: 5000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            tmp_folder: "/tmp/tmp_folder/normal_1"
+          - name: HOUR_1
+            generate-broken-files: true
+            config-file: fuzz_lofty_settings_ci.toml
+            timeout: 3600
             files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: SHORT_1
             generate-broken-files: true
-            config-file: fuzz_symphonia_settings_ci.toml
+            config-file: fuzz_lofty_settings_ci.toml
             timeout: 1800
             files: "AA_MUSIC_VALID_FILES.7z"
             tmp_folder: "/tmp/tmp_folder/short"
@@ -44,9 +68,9 @@ jobs:
       - name: Install sd
         run: cargo install sd
 
-      - name: Install Symphonia
+      - name: Install lofty
         run: |
-          cd src/crates/symphonia
+          cd src/crates/lofty
           cargo update
           cargo install --path . --locked
           cd ../../..
@@ -86,7 +110,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: SYMPHONIA___${{ matrix.name }}___before
+          name: LOFTY___${{ matrix.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
@@ -98,14 +122,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: SYMPHONIA___REPORTS___${{ matrix.name }}
+          name: LOFTY___REPORTS___${{ matrix.name }}
           path: ${{ matrix.tmp_folder }}
 
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: SYMPHONIA___${{ matrix.name }}___after
+          name: LOFTY___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
