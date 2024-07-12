@@ -18,9 +18,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: NORMAL_1
+          - name: LONG_1
             config-file: fuzz_go_settings_ci.toml
-            timeout: 10000
+            timeout: 18000
             files: "AA_GO_VALID_FILES.7z"
             go_version: '1.22.0'
           - name: SHORT_1

@@ -22,27 +22,10 @@ jobs:
             config-file: fuzz_symphonia_settings_ci.toml
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMAL_1
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 10000
-            files: "AA_MUSIC_VALID_FILES.7z"
           - name: SHORT_1
             config-file: fuzz_symphonia_settings_ci.toml
             timeout: 1800
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: QUITE_SHORT_1
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 3600
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMALLER_SHORT_1
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 5000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMALLER_LONGER_1
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 7500
-            files: "AA_MUSIC_VALID_FILES.7z"
-
     steps:
       - uses: actions/checkout@v4
 

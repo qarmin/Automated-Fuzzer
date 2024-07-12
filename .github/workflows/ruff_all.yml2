@@ -18,238 +18,55 @@ jobs:
       matrix:
         include:
           - name: NORMAL_1
-            format: false
-            exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
-            ruff-config: ""
             timeout: 10000
             files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: NORMAL_2
-            format: false
-            exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
-            ruff-config: ""
             timeout: 10000
             files: "FILES_22.zip"
-            tmp_folder: "/tmp/tmp_folder/normal_2"
           - name: NORMAL_3
-            format: false
-            exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
-            ruff-config: ""
             timeout: 10000
             files: "FILES_23.zip"
-            tmp_folder: "/tmp/tmp_folder/normal_3"
-          - name: NORMAL_1_SHORTER
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 3600
-            files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/normal_1_shorter"
-          - name: NORMAL_2_SHORTER
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 3600
-            files: "FILES_22.zip"
-            tmp_folder: "/tmp/tmp_folder/normal_2_shorter"
-          - name: NORMAL_3_SHORTER
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 3600
-            files: "FILES_23.zip"
-            tmp_folder: "/tmp/tmp_folder/normal_3_shorter"
 
           #          - name: RED_KNOT
-          #            format: false
-          #            exceptions: false
           #            remove_invalid_files: true
           #            config-file: fuzz_settings_ci_red_knot.toml
-          #            ruff-config: ""
           #            timeout: 10000
           #            files: "FILES_21.zip"
-          #            tmp_folder: "/tmp/tmp_folder/red_knot"
           #          - name: RED_KNOT_SHORT
-          #            format: false
-          #            exceptions: false
           #            remove_invalid_files: true
           #            config-file: fuzz_settings_ci_red_knot.toml
-          #            ruff-config: ""
           #            timeout: 1800
           #            files: "FILES_25.zip"
-          #            tmp_folder: "/tmp/tmp_folder/red_knot_short"
-          - name: CONFIG_1
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_config.toml
-            ruff-config: "ruff_config.toml"
-            timeout: 10000
-            files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/config_1"
-          #          - name: NO_GENERATE_1
-          #            format: false
-          #            exceptions: true
-          #            remove_invalid_files: true
-          #            config-file: fuzz_settings_ci_alt.toml
-          #            ruff-config: ""
-          #            timeout: 10000
-          #            files: "FILES_21.zip,FILES_22.zip"
-          #            tmp_folder: "/tmp/tmp_folder/no_generate_1"
-          #          - name: NO_GENERATE_2
-          #            format: false
-          #            exceptions: true
-          #            remove_invalid_files: true
-          #            config-file: fuzz_settings_ci_alt.toml
-          #            ruff-config: ""
-          #            timeout: 10000
-          #            files: "FILES_23.zip,FILES_24.zip"
-          #            tmp_folder: "/tmp/tmp_folder/no_generate_2"
-          #          - name: NO_GENERATE_3
-          #            format: false
-          #            exceptions: true
-          #            remove_invalid_files: true
-          #            config-file: fuzz_settings_ci_alt.toml
-          #            ruff-config: ""
-          #            timeout: 10000
-          #            files: "FILES_25.zip,FILES_26.zip"
-          #            tmp_folder: "/tmp/tmp_folder/no_generate_3"
 
           - name: SHORT_NORMAL_1
-            format: false
-            exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci.toml
-            ruff-config: ""
             timeout: 120
             files: "FILES_25.zip"
-            tmp_folder: "/tmp/tmp_folder/short_normal_1"
-          - name: SHORT_A_LITTLE_LONGER_NORMAL_1
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 800
-            files: "FILES_25.zip"
-            tmp_folder: "/tmp/tmp_folder/short_a_little_longer_normal_1"
-          - name: SHORT_A_LITTLE_LONGER_NORMAL_DEBUG_INFO_1
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_debug_info.toml
-            ruff-config: ""
-            timeout: 800
-            files: "FILES_25.zip"
-            tmp_folder: "/tmp/tmp_folder/short_a_little_longer_normal_debug_info_1"
-          - name: SHORT_LONGER_NORMAL_1
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 3600
-            files: "FILES_25.zip"
-            tmp_folder: "/tmp/tmp_folder/short_longer_normal_1"
-
-          - name: NO_EXCEPTIONS_NORMAL_1
-            format: false
-            exceptions: false
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 10000
-            files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/no_exceptions_normal_1"
-          - name: NO_EXCEPTIONS_NORMAL_2
-            format: false
-            exceptions: false
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci.toml
-            ruff-config: ""
-            timeout: 10000
-            files: "FILES_23.zip"
-            tmp_folder: "/tmp/tmp_folder/no_exceptions_normal_2"
-          #          - name: NO_EXCEPTIONS_NO_GENERATE_3
-          #            format: false
-          #            exceptions: false
-          #            remove_invalid_files: true
-          #            config-file: fuzz_settings_ci_alt.toml
-          #            ruff-config: ""
-          #            timeout: 10000
-          #            files: "FILES_25.zip,FILES_26.zip"
-          #            tmp_folder: "/tmp/tmp_folder/no_exceptions_no_generate_3"
 
           - name: BINARY_NORMAL_1
-            format: false
-            exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci_binary.toml
-            ruff-config: ""
             timeout: 10000
             files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/binary_normal_1"
-          - name: BINARY_NO_EXCEPTIONS_NORMAL_2
-            format: false
-            exceptions: false
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_binary.toml
-            ruff-config: ""
-            timeout: 10000
-            files: "FILES_22.zip"
-            tmp_folder: "/tmp/tmp_folder/binary_no_exceptions_normal_2"
-
-          #          - name: FORMAT_NO_GENERATE_1
-          #            format: true
-          #            exceptions: true
-          #            remove_invalid_files: true
-          #            config-file: fuzz_settings_ci_alt_format.toml
-          #            ruff-config: ""
-          #            timeout: 10000
-          #            files: "FILES_21,FILES_22"
-          #            tmp_folder: "/tmp/tmp_folder/format_no_generate_1"
 
           - name: ONLY_CHECK_1
-            format: false
-            exceptions: true
             remove_invalid_files: true
             config-file: fuzz_settings_ci_only_check.toml
-            ruff-config: ""
             timeout: 10000
             files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/only_check_1"
-
-          - name: DEBUG_1
-            format: false
-            exceptions: true
-            remove_invalid_files: true
-            config-file: fuzz_settings_ci_debug.toml
-            ruff-config: ""
-            timeout: 10000
-            files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/debug_1"
 
           - name: NOT_PARSABLE
-            format: false
-            exceptions: true
             remove_invalid_files: false
             config-file: fuzz_settings_ci_not_parsable.toml
-            ruff-config: ""
             timeout: 10000
             files: "FILES_21.zip"
-            tmp_folder: "/tmp/tmp_folder/not_parsable"
 
     steps:
       - uses: actions/checkout@v4
@@ -289,15 +106,6 @@ jobs:
           rm rust-toolchain.toml
           cargo install --path crates/ruff --debug  --locked
           cd ..
-
-      - name: Remove exceptions
-        if: ${{ matrix.exceptions == false }}
-        run: |
-          cat src/apps/ruff.rs
-          sd 'const DISABLE_EXCEPTIONS: bool = false;' 'const DISABLE_EXCEPTIONS: bool = true;' src/apps/ruff.rs
-          sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/dlint.rs
-          sd 'const BROKEN_ITEMS_TO_IGNORE: &\[&str\] = &\[[^]]+];' 'const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];' src/apps/biome.rs
-          cat src/apps/ruff.rs
 
       - name: Build
         run: cargo build --release
@@ -348,15 +156,9 @@ jobs:
 
       # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
-        if: ${{ matrix.format == false && matrix.remove_invalid_files == true }}
+        if: ${{ matrix.remove_invalid_files == true }}
         run: |
           mv fuzz_settings_ci_remove_files.toml fuzz_settings.toml
-          RUST_BACKTRACE=1 target/release/automated_fuzzer
-
-      - name: Remove non crashing files
-        if: ${{ matrix.format != false && matrix.remove_invalid_files == true }}
-        run: |
-          mv fuzz_settings_ci_remove_files_format.toml fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
       - name: Find minimal rules

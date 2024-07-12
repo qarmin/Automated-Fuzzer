@@ -212,8 +212,6 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let mut old_new_data = data.clone();
     let items_number = data.len();
 
-    dbg!(&output_result);
-    dbg!(&output_result.is_only_signal_broken());
     let mut attempts = obj.get_number_of_minimization(&output_result);
     let mut minimized_output = false;
     let mut valid_output = false;
@@ -224,11 +222,9 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         tries += 1;
 
         let Some(new_data) = minimize_binaries(full_name, &old_new_data, &mut rng) else {
-            println!("Failed to minimize file {full_name} {tries}");
             break;
         };
         if new_data.len() == old_new_data.len() {
-            println!("Failed to minimize file {full_name}2 {tries}");
             break;
         }
 
@@ -272,8 +268,13 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     if items_number == old_new_data.len() {
         info!("File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",);
     } else {
+        let original_percent = if items_number != 0 {
+            (items_number - old_new_data.len()) as f64 / items_number as f64 * 100.0
+        } else {
+            0.0
+        };
         info!(
-            "File {full_name}, minimized from {items_number} to {} bytes after {tries} attempts",
+            "File {full_name}, minimized from {items_number} to {} bytes ({original_percent:.2}% original size) after {tries} attempts",
             old_new_data.len(),
         );
     }
@@ -602,9 +603,9 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
 
     let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
         && output
-            .status
-            .code()
-            .map_or(false, |code| !obj.get_settings().allowed_error_statuses.contains(&code));
+        .status
+        .code()
+        .map_or(false, |code| !obj.get_settings().allowed_error_statuses.contains(&code));
 
     let timeouted = obj.get_settings().timeout > 0
         && str_out.contains(TIMEOUT_MESSAGE)
@@ -721,16 +722,16 @@ fn test_remove_single_docstring() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -752,9 +753,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected1 = r###"
     def function():
         pass
@@ -764,9 +765,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected2 = r###"
     """
     DOCSTRING
@@ -776,9 +777,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         let result = remove_single_docstring(&lines, &mut rng).unwrap();
         assert!([expected1, expected2].contains(&result));
@@ -794,16 +795,16 @@ fn test_remove_single_docstring3() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -819,23 +820,23 @@ fn test_remove_single_def() {
     def function2():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected1 = r###"
     def function2():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
         let expected2 = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+            .split("\n")
+            .map(String::from)
+            .collect::<Vec<String>>();
 
         let ret = remove_single_def(&lines, &mut rng).unwrap();
         if ![&expected2, &expected1].contains(&&ret) {
@@ -854,16 +855,16 @@ fn test_remove_all_comments() {
     def function():
         pass
     "###
-    .split("\n")
-    .map(String::from)
-    .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
     let expected = r###"
     def function():
         pass
     "###
-    .split("\n")
-    .map(String::from)
-    .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
     assert_eq!(remove_all_comments(&lines), expected);
 }

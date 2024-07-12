@@ -22,22 +22,6 @@ jobs:
             config-file: fuzz_lofty_settings_ci.toml
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMAL_1
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 10000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMAL_SHORTER_1
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 7500
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NORMAL_HALF_1
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 5000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: HOUR_1
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 3600
-            files: "AA_MUSIC_VALID_FILES.7z"
           - name: SHORT_1
             config-file: fuzz_lofty_settings_ci.toml
             timeout: 1800

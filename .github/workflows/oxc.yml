@@ -22,17 +22,9 @@ jobs:
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 18000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          - name: NORMAL_1
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 10000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
           - name: SHORT_1
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 1800
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          - name: EXTRA_SHORT_1
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 300
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
 
     steps:
