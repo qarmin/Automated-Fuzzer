@@ -577,7 +577,7 @@ impl OutputResult {
         }
     }
     pub fn is_broken(&self) -> bool {
-        self.is_signal_broken || self.have_invalid_output || self.is_code_broken
+        self.is_signal_broken || self.have_invalid_output || self.is_code_broken || self.timeouted
     }
     pub fn is_only_signal_broken(&self) -> bool {
         self.is_signal_broken && !self.have_invalid_output && !self.is_code_broken

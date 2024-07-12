@@ -46,11 +46,13 @@ fn check_file(file_path: &str) {
         ImageFormat::Avif,
         ImageFormat::Qoi,
     ]
-        .into_iter()
+    .into_iter()
     {
         let buffer: Vec<u8> = Vec::new();
+        println!("Before write_to {format:?}");
         if let Err(e) = res.write_to(&mut Cursor::new(buffer), format) {
             eprintln!("Error: {}", e);
         };
+        println!("After write_to {format:?}");
     }
 }
