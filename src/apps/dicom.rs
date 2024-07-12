@@ -8,13 +8,9 @@ pub struct DicomStruct {
     pub settings: Setting,
 }
 
-const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
-const BROKEN_ITEMS_TO_FOUND: &[&str] = &["RUST_BACKTRACE"];
-
 impl ProgramConfig for DicomStruct {
     fn is_broken(&self, content: &str) -> bool {
-        BROKEN_ITEMS_TO_FOUND.iter().any(|e| content.contains(e))
-            && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {

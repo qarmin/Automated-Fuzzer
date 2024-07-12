@@ -264,7 +264,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     remove_and_create_entire_folder(&settings.temp_folder);
 
     let ruff_version = obj.get_version();
-    save_results_to_file(settings, collected_rules.clone(), ruff_version);
+    save_results_to_file(settings, collected_rules.clone(), &ruff_version);
 
     let mut btree_map: BTreeMap<String, u32> = BTreeMap::new();
     for (rules, _, _, _, _) in collected_rules {
@@ -309,7 +309,7 @@ pub fn draw_table(items: Vec<(String, u32)>, temp_folder: &str) -> Result<(), st
 pub fn save_results_to_file(
     settings: &Setting,
     rules_with_names: Vec<(Vec<String>, String, String, String, bool)>,
-    ruff_version: String,
+    ruff_version: &str,
 ) {
     for (rules, file_name, name, output, only_check) in rules_with_names {
         let file_code = fs::read_to_string(&name).unwrap();
@@ -377,7 +377,7 @@ Ruff build, that was used to reproduce problem(compiled on Ubuntu 22.04 with rel
             .replace("$RUFF_FIX", fix_needed)
             .replace("$RULES_TO_REPLACE", &rules.join(","))
             .replace("$FILE_CONTENT", &file_code)
-            .replace("$RUFF_VERSION", &ruff_version)
+            .replace("$RUFF_VERSION", ruff_version)
             .replace("$ERROR", &output)
             .replace("\n\n```", "\n```");
 

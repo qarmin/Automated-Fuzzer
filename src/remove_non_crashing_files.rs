@@ -60,7 +60,7 @@ fn remove_non_crashing_in_group(
             for (idx, full_name) in chunk.iter().enumerate() {
                 let extension = Path::new(full_name).extension().unwrap().to_str().unwrap();
                 let new_name = format!("{temp_folder}/{idx}.{extension}");
-                fs::copy(&full_name, &new_name).unwrap();
+                fs::copy(full_name, &new_name).unwrap();
             }
 
             let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &temp_folder, &[]);
@@ -72,7 +72,7 @@ fn remove_non_crashing_in_group(
 
             if is_really_broken || obj.is_broken(&output) {
                 info!("Chunk {chunk_idx} is broken");
-                Some(chunk.to_vec())
+                Some(chunk.clone())
             } else {
                 info!("Chunk {chunk_idx} is not broken");
                 for full_name in chunk {
@@ -105,16 +105,13 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
             if idx % 100 == 0 {
                 info!("_____ Processsed already {idx} / {all} (step {step})");
             }
-            let (is_really_broken, output) = execute_command_and_connect_output(obj, &full_name);
+            let output_result = execute_command_and_connect_output(obj, &full_name);
             if settings.debug_print_results {
-                info!("File {full_name}\n{output}");
+                info!("File {full_name}\n{}", output_result.get_output());
             }
-            // if settings.debug_print_results {
-            //     info!("File {full_name}\n{output}");
-            // }
-            if is_really_broken || obj.is_broken(&output) {
-                fs::write(&full_name, &start_text).unwrap();
-                return Some((full_name, output.trim().to_string()));
+            if output_result.is_broken() {
+                fs::write(&full_name, start_text).unwrap();
+                return Some((full_name, output_result.get_output().trim().to_string()));
             };
             info!("File {full_name} is not broken, and will be removed");
 
@@ -133,11 +130,10 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
     let command = obj.get_only_run_command("TEST___FILE");
     let args = command
         .get_args()
-        .map(|e|
-        {
+        .map(|e| {
             let tmp_string = e.to_string_lossy();
             if [" ", "\"", "\\", "/"].iter().any(|e| tmp_string.contains(e)) {
-                format!("\"{}\"", tmp_string)
+                format!("\"{tmp_string}\"")
             } else {
                 tmp_string.to_string()
             }
@@ -151,7 +147,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
         let command_str_with_extension = command_str.replace("TEST___FILE", &format!("TEST___FILE.{extension}"));
         let mut file_content = String::new();
 
-        let mut cnt_text = "".to_string();
+        let mut cnt_text = String::new();
         let content_to_string = String::from_utf8(content.clone());
         if let Ok(content_string) = content_to_string {
             cnt_text += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
@@ -187,7 +183,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
         let folder = format!(
             "{}/{}_{}__({} bytes) - {}",
             settings.temp_folder,
-            settings.current_mode.to_string(),
+            settings.current_mode,
             error_type,
             content.len(),
             random::<u64>()
@@ -206,10 +202,10 @@ cause this
 $ERROR
 ```
 "
-            .replace("$CNT_TEXT", &cnt_text)
-            .replace("$COMMAND", &command_str_with_extension)
-            .replace("$ERROR", &result)
-            .replace("\n\n```", "\n```");
+        .replace("$CNT_TEXT", &cnt_text)
+        .replace("$COMMAND", &command_str_with_extension)
+        .replace("$ERROR", &result)
+        .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

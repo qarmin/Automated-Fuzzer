@@ -10,7 +10,7 @@ pub struct SeleneStruct {
 
 impl ProgramConfig for SeleneStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE")
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {

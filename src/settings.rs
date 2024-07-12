@@ -29,12 +29,10 @@ pub struct Setting {
     pub loop_number: u32,
     pub broken_files_for_each_file: u32,
     pub copy_broken_files: bool,
-    pub generate_files: bool,
     pub minimize_output: bool,
     pub minimization_attempts: u32,
     pub minimization_attempts_with_signal_timeout: u32,
     pub remove_non_crashing_items_from_broken_files: bool,
-    pub clean_base_files: bool,
     pub temp_folder: String,
     pub current_mode: MODES,
     pub extensions: Vec<String>,
@@ -51,10 +49,8 @@ pub struct Setting {
     pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
-    pub ignore_generate_copy_files_step: bool,
     pub find_minimal_rules: bool,
     pub check_if_file_is_parsable: bool,
-    pub verify_if_files_are_still_broken: bool,
     pub disable_exceptions: bool,
     pub ignore_timeout_errors: bool,
     pub grouping: u32,
@@ -80,12 +76,10 @@ pub fn load_settings() -> Setting {
         .map(str::trim)
         .filter_map(|e| if e.is_empty() { None } else { Some(format!(".{e}")) })
         .collect();
-    let verify_if_files_are_still_broken = general["verify_if_files_are_still_broken"].parse().unwrap();
     let find_minimal_rules = general["find_minimal_rules"].parse().unwrap();
     let remove_non_crashing_items_from_broken_files =
         general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
-    let disable_exceptions =
-        verify_if_files_are_still_broken && !(find_minimal_rules || remove_non_crashing_items_from_broken_files);
+    let disable_exceptions = !(find_minimal_rules || remove_non_crashing_items_from_broken_files);
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
@@ -93,7 +87,6 @@ pub fn load_settings() -> Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
         copy_broken_files: general["copy_broken_files"].parse().unwrap(),
-        generate_files: general["generate_files"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         minimization_attempts_with_signal_timeout: general["minimization_attempts_with_signal_timeout"]
@@ -117,13 +110,10 @@ pub fn load_settings() -> Setting {
         error_when_found_signal: general["error_when_found_signal"].parse().unwrap(),
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
-        ignore_generate_copy_files_step: general["ignore_generate_copy_files_step"].parse().unwrap(),
-        clean_base_files: general["clean_base_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
         find_minimal_rules,
         tool_type: curr_setting["tool_type"].clone(),
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
-        verify_if_files_are_still_broken,
         disable_exceptions,
         ignore_timeout_errors,
         grouping,

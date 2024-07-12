@@ -10,7 +10,7 @@ pub struct RustBuzzStruct {
 
 impl ProgramConfig for RustBuzzStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE")
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
     fn broken_file_creator(&self) -> Child {
         create_broken_files(self, LANGS::GENERAL)

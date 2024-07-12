@@ -10,7 +10,7 @@ pub struct SymphoniaStruct {
 
 impl ProgramConfig for SymphoniaStruct {
     fn is_broken(&self, content: &str) -> bool {
-        let contains_rust_backtrace = content.contains("RUST_BACKTRACE");
+        let contains_rust_backtrace = ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x));
         let contains_memory_allocation_failure = content.contains("memory allocation of"); // https://github.com/pdeljanov/Symphonia/issues/297
         let contains_mkv_problem = content.contains("symphonia_format_mkv::ebml::read_vint"); // https://github.com/pdeljanov/Symphonia/issues/298
         let contains_time_problem = content.contains("symphonia_core::units::TimeBase::new"); // https://github.com/pdeljanov/Symphonia/issues/299

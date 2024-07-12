@@ -8,29 +8,21 @@ pub struct SwcStruct {
     pub settings: Setting,
 }
 
-const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
-const BROKEN_ITEMS_TO_FOUND: &[&str] = &["RUST_BACKTRACE"];
-
 impl ProgramConfig for SwcStruct {
     fn is_broken(&self, content: &str) -> bool {
-        BROKEN_ITEMS_TO_FOUND.iter().any(|e| content.contains(e))
-            && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
 
     fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
-        command
-            .arg("compile")
-            .arg(full_name);
+        command.arg("compile").arg(full_name);
         command
     }
 
     fn get_run_command(&self, full_name: &str) -> Child {
-        self.get_only_run_command(full_name)
-            .spawn()
-            .unwrap()
+        self.get_only_run_command(full_name).spawn().unwrap()
     }
-    
+
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
             create_broken_files(self, LANGS::GENERAL)

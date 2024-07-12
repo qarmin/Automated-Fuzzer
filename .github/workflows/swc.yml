@@ -19,12 +19,10 @@ jobs:
       matrix:
         include:
           - name: NORMAL_1
-            generate-broken-files: true
             config-file: fuzz_swc_settings_ci.toml
             timeout: 10000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
           - name: SHORT_1
-            generate-broken-files: true
             config-file: fuzz_swc_settings_ci.toml
             timeout: 1800
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
@@ -67,14 +65,7 @@ jobs:
       - name: Download and prepare data files
         run: |
           CURR_DIR=$(pwd)
-          
-          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
-          
-          if [ "$GENERATE_BROKEN_FILES" = "true" ]; then
-            cd /opt/VALID_FILES_DIR
-          else
-            cd /opt/POSSIBLY_BROKEN_FILES_DIR
-          fi
+          cd /opt/VALID_FILES_DIR
           
           python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
           

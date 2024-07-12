@@ -18,7 +18,6 @@ jobs:
       matrix:
         include:
           - name: NORMAL_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -28,7 +27,6 @@ jobs:
             files: "FILES_21.zip"
             tmp_folder: "/tmp/tmp_folder/normal_1"
           - name: NORMAL_2
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -38,7 +36,6 @@ jobs:
             files: "FILES_22.zip"
             tmp_folder: "/tmp/tmp_folder/normal_2"
           - name: NORMAL_3
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -48,7 +45,6 @@ jobs:
             files: "FILES_23.zip"
             tmp_folder: "/tmp/tmp_folder/normal_3"
           - name: NORMAL_1_SHORTER
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -58,7 +54,6 @@ jobs:
             files: "FILES_21.zip"
             tmp_folder: "/tmp/tmp_folder/normal_1_shorter"
           - name: NORMAL_2_SHORTER
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -68,7 +63,6 @@ jobs:
             files: "FILES_22.zip"
             tmp_folder: "/tmp/tmp_folder/normal_2_shorter"
           - name: NORMAL_3_SHORTER
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -79,7 +73,6 @@ jobs:
             tmp_folder: "/tmp/tmp_folder/normal_3_shorter"
 
           #          - name: RED_KNOT
-          #            generate-broken-files: true
           #            format: false
           #            exceptions: false
           #            remove_invalid_files: true
@@ -89,7 +82,6 @@ jobs:
           #            files: "FILES_21.zip"
           #            tmp_folder: "/tmp/tmp_folder/red_knot"
           #          - name: RED_KNOT_SHORT
-          #            generate-broken-files: true
           #            format: false
           #            exceptions: false
           #            remove_invalid_files: true
@@ -99,7 +91,6 @@ jobs:
           #            files: "FILES_25.zip"
           #            tmp_folder: "/tmp/tmp_folder/red_knot_short"
           - name: CONFIG_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -109,7 +100,6 @@ jobs:
             files: "FILES_21.zip"
             tmp_folder: "/tmp/tmp_folder/config_1"
           #          - name: NO_GENERATE_1
-          #            generate-broken-files: false
           #            format: false
           #            exceptions: true
           #            remove_invalid_files: true
@@ -119,7 +109,6 @@ jobs:
           #            files: "FILES_21.zip,FILES_22.zip"
           #            tmp_folder: "/tmp/tmp_folder/no_generate_1"
           #          - name: NO_GENERATE_2
-          #            generate-broken-files: false
           #            format: false
           #            exceptions: true
           #            remove_invalid_files: true
@@ -129,7 +118,6 @@ jobs:
           #            files: "FILES_23.zip,FILES_24.zip"
           #            tmp_folder: "/tmp/tmp_folder/no_generate_2"
           #          - name: NO_GENERATE_3
-          #            generate-broken-files: false
           #            format: false
           #            exceptions: true
           #            remove_invalid_files: true
@@ -140,7 +128,6 @@ jobs:
           #            tmp_folder: "/tmp/tmp_folder/no_generate_3"
 
           - name: SHORT_NORMAL_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -150,7 +137,6 @@ jobs:
             files: "FILES_25.zip"
             tmp_folder: "/tmp/tmp_folder/short_normal_1"
           - name: SHORT_A_LITTLE_LONGER_NORMAL_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -160,7 +146,6 @@ jobs:
             files: "FILES_25.zip"
             tmp_folder: "/tmp/tmp_folder/short_a_little_longer_normal_1"
           - name: SHORT_A_LITTLE_LONGER_NORMAL_DEBUG_INFO_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -170,7 +155,6 @@ jobs:
             files: "FILES_25.zip"
             tmp_folder: "/tmp/tmp_folder/short_a_little_longer_normal_debug_info_1"
           - name: SHORT_LONGER_NORMAL_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -181,7 +165,6 @@ jobs:
             tmp_folder: "/tmp/tmp_folder/short_longer_normal_1"
 
           - name: NO_EXCEPTIONS_NORMAL_1
-            generate-broken-files: true
             format: false
             exceptions: false
             remove_invalid_files: true
@@ -191,7 +174,6 @@ jobs:
             files: "FILES_21.zip"
             tmp_folder: "/tmp/tmp_folder/no_exceptions_normal_1"
           - name: NO_EXCEPTIONS_NORMAL_2
-            generate-broken-files: true
             format: false
             exceptions: false
             remove_invalid_files: true
@@ -201,7 +183,6 @@ jobs:
             files: "FILES_23.zip"
             tmp_folder: "/tmp/tmp_folder/no_exceptions_normal_2"
           #          - name: NO_EXCEPTIONS_NO_GENERATE_3
-          #            generate-broken-files: false
           #            format: false
           #            exceptions: false
           #            remove_invalid_files: true
@@ -212,7 +193,6 @@ jobs:
           #            tmp_folder: "/tmp/tmp_folder/no_exceptions_no_generate_3"
 
           - name: BINARY_NORMAL_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -222,7 +202,6 @@ jobs:
             files: "FILES_21.zip"
             tmp_folder: "/tmp/tmp_folder/binary_normal_1"
           - name: BINARY_NO_EXCEPTIONS_NORMAL_2
-            generate-broken-files: true
             format: false
             exceptions: false
             remove_invalid_files: true
@@ -233,7 +212,6 @@ jobs:
             tmp_folder: "/tmp/tmp_folder/binary_no_exceptions_normal_2"
 
           #          - name: FORMAT_NO_GENERATE_1
-          #            generate-broken-files: false
           #            format: true
           #            exceptions: true
           #            remove_invalid_files: true
@@ -244,7 +222,6 @@ jobs:
           #            tmp_folder: "/tmp/tmp_folder/format_no_generate_1"
 
           - name: ONLY_CHECK_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -255,7 +232,6 @@ jobs:
             tmp_folder: "/tmp/tmp_folder/only_check_1"
 
           - name: DEBUG_1
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: true
@@ -266,7 +242,6 @@ jobs:
             tmp_folder: "/tmp/tmp_folder/debug_1"
 
           - name: NOT_PARSABLE
-            generate-broken-files: true
             format: false
             exceptions: true
             remove_invalid_files: false
@@ -343,14 +318,7 @@ jobs:
       - name: Download and prepare python data files
         run: |
           CURR_DIR=$(pwd)
-          
-          GENERATE_BROKEN_FILES=${{ matrix.generate-broken-files }}
-          
-          if [ "$GENERATE_BROKEN_FILES" = "true" ]; then
-            cd /opt/VALID_FILES_DIR
-          else
-            cd /opt/POSSIBLY_BROKEN_FILES_DIR
-          fi
+          cd /opt/VALID_FILES_DIR
           
           python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
           

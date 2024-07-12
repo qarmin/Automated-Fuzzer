@@ -1,13 +1,12 @@
-use jwalk::WalkDir;
 use log::error;
 use std::process::{Child, Command, Stdio};
 
-use crate::common::{create_new_file_name, try_to_save_file, CheckGroupFileMode};
+use crate::common::{create_new_file_name, try_to_save_file, CheckGroupFileMode, OutputResult};
 use crate::settings::Setting;
 
 pub trait ProgramConfig: Sync {
     fn is_broken(&self, content: &str) -> bool;
-    fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
+    fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
         error!("File {full_name} saved to {new_name}\n{output}");
@@ -48,33 +47,6 @@ pub trait ProgramConfig: Sync {
         comm
     }
 
-    fn collect_files_in_dir_with_extension(&self, dir_to_check: &str) -> Vec<String> {
-        let mut files_to_check = Vec::new();
-        for i in WalkDir::new(dir_to_check).into_iter().flatten() {
-            let path = i.path();
-            if !path.is_file() {
-                continue;
-            }
-            let Some(file_name) = path.file_name() else {
-                continue;
-            };
-            let Some(file_name) = file_name.to_str() else {
-                continue;
-            };
-            let small_file_name = file_name.to_lowercase();
-
-            if !self
-                .get_settings()
-                .extensions
-                .iter()
-                .any(|x| small_file_name.ends_with(x))
-            {
-                continue;
-            }
-            files_to_check.push(file_name.to_string());
-        }
-        files_to_check
-    }
     fn broken_file_creator(&self) -> Child;
     fn get_settings(&self) -> &Setting;
     fn init(&mut self) {}
@@ -87,6 +59,13 @@ pub trait ProgramConfig: Sync {
     }
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
         CheckGroupFileMode::None
+    }
+    fn get_number_of_minimization(&self, output_result: &OutputResult) -> u32 {
+        if output_result.is_only_signal_broken() {
+            self.get_settings().minimization_attempts_with_signal_timeout
+        } else {
+            self.get_settings().minimization_attempts
+        }
     }
     // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
     //     output

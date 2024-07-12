@@ -10,7 +10,7 @@ pub struct OxcStruct {
 
 impl ProgramConfig for OxcStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE")
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
     fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();

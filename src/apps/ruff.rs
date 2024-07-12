@@ -133,7 +133,7 @@ impl ProgramConfig for RuffStruct {
     //         .join("\n")
     // }
 
-    fn validate_output_and_save_file(&self, full_name: String, output: String) -> Option<String> {
+    fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
         let mut lines = output
             .lines()
             .filter(|e| {

@@ -1,8 +1,3 @@
-use jwalk::WalkDir;
-use log::{error, info};
-use once_cell::sync::{Lazy, OnceCell};
-use rand::prelude::ThreadRng;
-use rand::Rng;
 use std::cmp::max;
 use std::collections::HashSet;
 use std::fs;
@@ -12,6 +7,12 @@ use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use std::time::Instant;
+
+use jwalk::WalkDir;
+use log::{error, info};
+use once_cell::sync::{Lazy, OnceCell};
+use rand::prelude::ThreadRng;
+use rand::Rng;
 
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
@@ -99,10 +100,10 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         return;
     };
 
-    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    if !(is_really_broken || obj.is_broken(&output)) {
+    let output_result = execute_command_and_connect_output(obj, full_name);
+    if !output_result.is_broken() {
         error!("At start should be broken!");
-        println!("{output}");
+        println!("{}", output_result.output);
         fs::write(full_name, data).unwrap();
         return;
     }
@@ -112,11 +113,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let old_line_number = lines.len();
 
-    let mut attempts = if is_really_broken {
-        obj.get_settings().minimization_attempts_with_signal_timeout
-    } else {
-        obj.get_settings().minimization_attempts
-    };
+    let mut attempts = obj.get_number_of_minimization(&output_result);
     let mut minimized_output = false;
     let mut valid_output = false;
     let mut current_alternative_idx: i32 = STRING_MINIMIZATION_LIMIT as i32;
@@ -151,13 +148,9 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             continue;
         }
 
-        let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-        if is_really_broken || obj.is_broken(&output) {
-            attempts = if is_really_broken {
-                obj.get_settings().minimization_attempts_with_signal_timeout
-            } else {
-                obj.get_settings().minimization_attempts
-            };
+        let output_result = execute_command_and_connect_output(obj, full_name);
+        if output_result.is_broken() {
+            attempts = obj.get_number_of_minimization(&output_result);
             lines = new_lines;
             minimized_output = true;
             valid_output = true;
@@ -185,8 +178,8 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         }
     }
 
-    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    if !(is_really_broken || obj.is_broken(&output)) {
+    let output_result = execute_command_and_connect_output(obj, full_name);
+    if !output_result.is_broken() {
         error!(
             "File was minimized ({}/{}), but last run was not broken, probably app is not reproducible",
             full_name,
@@ -211,22 +204,17 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         return;
     };
 
-    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    assert!(
-        (is_really_broken || obj.is_broken(&output)),
-        "At start should be broken!"
-    );
+    let output_result = execute_command_and_connect_output(obj, full_name);
+    assert!(output_result.is_broken(), "At start should be broken!");
 
     let mut rng = rand::thread_rng();
 
     let mut old_new_data = data.clone();
     let items_number = data.len();
 
-    let mut attempts = if is_really_broken {
-        obj.get_settings().minimization_attempts_with_signal_timeout
-    } else {
-        obj.get_settings().minimization_attempts
-    };
+    dbg!(&output_result);
+    dbg!(&output_result.is_only_signal_broken());
+    let mut attempts = obj.get_number_of_minimization(&output_result);
     let mut minimized_output = false;
     let mut valid_output = false;
     let mut tries = 0;
@@ -236,9 +224,11 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         tries += 1;
 
         let Some(new_data) = minimize_binaries(full_name, &old_new_data, &mut rng) else {
+            println!("Failed to minimize file {full_name} {tries}");
             break;
         };
         if new_data.len() == old_new_data.len() {
+            println!("Failed to minimize file {full_name}2 {tries}");
             break;
         }
 
@@ -247,13 +237,9 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
             continue;
         }
 
-        let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-        if is_really_broken || obj.is_broken(&output) {
-            attempts = if is_really_broken {
-                obj.get_settings().minimization_attempts_with_signal_timeout
-            } else {
-                obj.get_settings().minimization_attempts
-            };
+        let output_result = execute_command_and_connect_output(obj, full_name);
+        if output_result.is_broken() {
+            attempts = obj.get_number_of_minimization(&output_result);
             old_new_data = new_data;
             minimized_output = true;
             valid_output = true;
@@ -280,8 +266,8 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         }
     }
 
-    let (is_really_broken, output) = execute_command_and_connect_output(obj, full_name);
-    assert!(is_really_broken || obj.is_broken(&output));
+    let output_result = execute_command_and_connect_output(obj, full_name);
+    assert!(output_result.is_broken());
 
     if items_number == old_new_data.len() {
         info!("File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",);
@@ -559,62 +545,70 @@ pub fn execute_command_on_pack_of_files(
     (is_signal_code_timeout_broken, str_out)
 }
 
-pub struct OutputResult {
+#[allow(unused)]
+#[derive(Debug)]
+pub(crate) struct OutputResult {
     output: String,
-    status_code: Option<i32>,
+    code: Option<i32>,
     signal: Option<i32>,
     is_signal_broken: bool,
-    is_status_broken: bool,
+    is_code_broken: bool,
+    // timeouted is only field to check if timeout was reached
+    // if timeouted is true, then always is_signal_broken is also true
+    have_invalid_output: bool,
+    timeouted: bool,
 }
 impl OutputResult {
-    pub fn new(output: String, status_code: Option<i32>, signal: Option<i32>, is_signal_broken: bool, is_status_broken: bool) -> Self {
+    pub fn new(
+        code: Option<i32>,
+        signal: Option<i32>,
+        is_signal_broken: bool,
+        is_code_broken: bool,
+        have_invalid_output: bool,
+        timeouted: bool,
+        output: String,
+    ) -> Self {
         Self {
             output,
-            status_code,
+            code,
             signal,
             is_signal_broken,
-            is_status_broken,
+            is_code_broken,
+            have_invalid_output,
+            timeouted,
         }
     }
     pub fn is_broken(&self) -> bool {
-        self.is_signal_broken || self.is_status_broken
+        self.is_signal_broken || self.have_invalid_output || self.is_code_broken
     }
     pub fn is_only_signal_broken(&self) -> bool {
-        self.is_signal_broken && !self.is_status_broken
+        self.is_signal_broken && !self.have_invalid_output && !self.is_code_broken
+    }
+    pub fn get_output(&self) -> &str {
+        &self.output
     }
 }
 
 #[allow(clippy::borrowed_box)]
-pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> (bool, String) {
+pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> OutputResult {
     let content_before = fs::read(full_name).unwrap(); // In each iteration be sure that before and after, file is the same
 
     let command = obj.get_run_command(full_name);
     let output = command.wait_with_output().unwrap();
-    let mut is_signal_code_timeout_broken = false;
 
     let mut str_out = collect_output(&output);
 
-    if obj.get_settings().error_when_found_signal {
-        if let Some(_signal) = output.status.signal() {
-            // info!("Non standard output signal {}", signal);
-            is_signal_code_timeout_broken = true;
-        }
-    }
-    if !obj.get_settings().allowed_error_statuses.is_empty()
-        && output.status.code().is_some()
-        && !obj
-        .get_settings()
-        .allowed_error_statuses
-        .contains(&output.status.code().unwrap())
-    {
-        // info!("Non standard output status {:?}", output.status.code());
-        is_signal_code_timeout_broken = true;
-    }
-    if obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) && !obj.get_settings().ignore_timeout_errors
-    {
-        // info!("Timeout found");
-        is_signal_code_timeout_broken = true;
-    }
+    let is_signal_broken = obj.get_settings().error_when_found_signal && output.status.signal().is_some();
+
+    let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
+        && output
+            .status
+            .code()
+            .map_or(false, |code| !obj.get_settings().allowed_error_statuses.contains(&code));
+
+    let timeouted = obj.get_settings().timeout > 0
+        && str_out.contains(TIMEOUT_MESSAGE)
+        && !obj.get_settings().ignore_timeout_errors;
 
     let res = fs::write(full_name, content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
 
@@ -629,7 +623,15 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
         output.status.signal()
     ));
 
-    (is_signal_code_timeout_broken, str_out)
+    OutputResult::new(
+        output.status.code(),
+        output.status.signal(),
+        is_signal_broken,
+        is_code_broken,
+        obj.is_broken(&str_out),
+        timeouted,
+        str_out,
+    )
 }
 
 pub fn run_ruff_format_check(item_to_check: &str, print_info: bool) -> Output {
@@ -719,16 +721,16 @@ fn test_remove_single_docstring() {
     def function():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -750,9 +752,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
         let expected1 = r###"
     def function():
         pass
@@ -762,9 +764,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
         let expected2 = r###"
     """
     DOCSTRING
@@ -774,9 +776,9 @@ fn test_remove_single_docstring2() {
     def romma():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
         let result = remove_single_docstring(&lines, &mut rng).unwrap();
         assert!([expected1, expected2].contains(&result));
@@ -792,16 +794,16 @@ fn test_remove_single_docstring3() {
     def function():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
         let expected = r###"
     def function():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
         assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
     }
@@ -817,23 +819,23 @@ fn test_remove_single_def() {
     def function2():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
         let expected1 = r###"
     def function2():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
         let expected2 = r###"
     def function():
         pass
     "###
-            .split("\n")
-            .map(String::from)
-            .collect::<Vec<String>>();
+        .split("\n")
+        .map(String::from)
+        .collect::<Vec<String>>();
 
         let ret = remove_single_def(&lines, &mut rng).unwrap();
         if ![&expected2, &expected1].contains(&&ret) {
@@ -852,16 +854,16 @@ fn test_remove_all_comments() {
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+    .split("\n")
+    .map(String::from)
+    .collect::<Vec<String>>();
     let expected = r###"
     def function():
         pass
     "###
-        .split("\n")
-        .map(String::from)
-        .collect::<Vec<String>>();
+    .split("\n")
+    .map(String::from)
+    .collect::<Vec<String>>();
 
     assert_eq!(remove_all_comments(&lines), expected);
 }

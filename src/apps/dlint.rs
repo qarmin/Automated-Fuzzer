@@ -16,7 +16,8 @@ const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
 
 impl ProgramConfig for DlintStruct {
     fn is_broken(&self, content: &str) -> bool {
-        content.contains("RUST_BACKTRACE") && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
+            && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
     }
 
     fn get_only_run_command(&self, full_name: &str) -> Command {
