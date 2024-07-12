@@ -76,11 +76,8 @@ jobs:
           sudo apt update
           sudo apt install -y wget earlyoom
 
-      - name: Install create_broken_files
-        run: cargo install create_broken_files
-
-      - name: Install sd
-        run: cargo install sd
+      - name: Install create_broken_files and sd
+        run: cargo install create_broken_files sd
 
       - name: Install ruff
         if: matrix.name != 'DEBUG_1'

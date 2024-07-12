@@ -22,6 +22,10 @@ jobs:
             config-file: fuzz_rustbuzz_settings_ci.toml
             timeout: 18000
             files: "AA_FONT_VALID_FILES.7z"
+          - name: LONG_ALL_1
+            config-file: fuzz_rustbuzz_more_settings_ci.toml
+            timeout: 18000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
           - name: SHORT_1
             config-file: fuzz_rustbuzz_settings_ci.toml
             timeout: 1800
@@ -35,11 +39,8 @@ jobs:
           sudo apt update
           sudo apt install -y wget earlyoom
 
-      - name: Install create_broken_files
-        run: cargo install create_broken_files
-
-      - name: Install sd
-        run: cargo install sd
+      - name: Install create_broken_files and sd
+        run: cargo install create_broken_files sd
 
       - name: Install zip
         run: |
