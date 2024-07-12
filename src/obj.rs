@@ -19,6 +19,12 @@ pub trait ProgramConfig: Sync {
         }
     }
 
+    // When app crashes, sometimes it not gives any status code
+    // To be able to ignore certain groups of files, we can use this function
+    fn ignored_signal_output(&self, _output: &str) -> bool {
+        false
+    }
+
     fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
         command.arg(full_name);

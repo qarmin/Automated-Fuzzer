@@ -1,7 +1,9 @@
 use std::env::args;
-use std::fs;
-use std::fs::File;
+use std::io::Cursor;
 use std::path::Path;
+
+use image::ImageFormat;
+use walkdir::WalkDir;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -20,12 +22,35 @@ fn main() {
 }
 
 fn check_file(file_path: &str) {
-    match image::open(&file_path) {
-        Ok(file) => {
-            if let Err(e) = zip::ZipArchive::new(file) {
-                println!("Failed to open zip file {e}");
-            }
+    let res = match image::open(file_path) {
+        Ok(res) => res,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return;
         }
-        Err(_inspected) => (),
+    };
+
+    for format in [
+        ImageFormat::Bmp,
+        ImageFormat::Farbfeld,
+        ImageFormat::Ico,
+        ImageFormat::Jpeg,
+        ImageFormat::Png,
+        ImageFormat::Pnm,
+        ImageFormat::Tiff,
+        ImageFormat::WebP,
+        ImageFormat::Tga,
+        ImageFormat::Dds,
+        ImageFormat::Hdr,
+        ImageFormat::OpenExr,
+        ImageFormat::Avif,
+        ImageFormat::Qoi,
+    ]
+        .into_iter()
+    {
+        let buffer: Vec<u8> = Vec::new();
+        if let Err(e) = res.write_to(&mut Cursor::new(buffer), format) {
+            eprintln!("Error: {}", e);
+        };
     }
 }

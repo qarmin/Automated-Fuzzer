@@ -187,14 +187,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
         );
     }
 
-    if old_line_number == lines.len() {
-        info!("File {full_name}, was not minimized after {tries} attempts, had {old_line_number} lines",);
-    } else {
-        info!(
-            "File {full_name}, minimized from {old_line_number} to {} lines after {tries} attempts",
-            lines.len(),
-        );
-    }
+    print_numbers(full_name, tries, old_line_number, lines.len(), "lines");
 }
 
 #[allow(clippy::borrowed_box)]
@@ -265,17 +258,21 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let output_result = execute_command_and_connect_output(obj, full_name);
     assert!(output_result.is_broken());
 
-    if items_number == old_new_data.len() {
-        info!("File {full_name}, was not minimized after {tries} attempts, had {items_number} bytes",);
+    print_numbers(full_name, tries, items_number, old_new_data.len(), "bytes");
+}
+
+fn print_numbers(file_name: &str, tries: i32, items_before: usize, items_after: usize, txt: &str) {
+    if items_before == items_after {
+        info!("File {file_name}, was not minimized after {tries} attempts, had {items_before} {txt}",);
     } else {
-        let original_percent = if items_number != 0 {
-            (items_number - old_new_data.len()) as f64 / items_number as f64 * 100.0
+        let original_percent = if items_before != 0 {
+            items_after as f64 / items_before as f64 * 100.0
         } else {
             0.0
         };
         info!(
-            "File {full_name}, minimized from {items_number} to {} bytes ({original_percent:.2}% original size) after {tries} attempts",
-            old_new_data.len(),
+            "File {file_name}, minimized from {items_before} to {items_after} {txt} (now is {original_percent:.2}% original size) after {tries} attempts"
+
         );
     }
 }
@@ -599,7 +596,7 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
 
     let mut str_out = collect_output(&output);
 
-    let is_signal_broken = obj.get_settings().error_when_found_signal && output.status.signal().is_some();
+    let is_signal_broken = obj.get_settings().error_when_found_signal && output.status.signal().is_some() && !obj.ignored_signal_output(&str_out);
 
     let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
         && output

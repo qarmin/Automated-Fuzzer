@@ -20,7 +20,7 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
 grouping = 10 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "rustbuzz"
+current_mode = "image"
 
 # app_binary - place where binary exists
 # app_config - path to configuration file
@@ -164,9 +164,9 @@ tool_type = ""
 binary_mode = false
 
 [image]
-app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/image/target/release/image"
+app_binary = "image"
 app_config = ""
-extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr"
+extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_IMAGE_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/image/Broken"
 tool_type = ""

@@ -32,7 +32,7 @@ const JAVASCRIPT_ARGS: &[&str] = &[
     "extends", "false", "final", "finally", "float", "for", "function", "goto", "if", "implements", "import", "in",
     "instanceof", "int", "interface", "let", "long", "native", "new", "null", "package", "private", "protected",
     "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws", "transient",
-    "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield",
+    "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield", "                                "
 ];
 const LUA_ARGS: &[&str] = &[
     "and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or",
@@ -46,7 +46,8 @@ const GO_ARGS: &[&str] = &[
     "{", "}", "/", "<<", "/=", "<<=", "++", "=", ":=", ",", ";", "%", ">>", "%=", ">>=", "!", "...", ".", ":", "&^",
     "&^=", "~", "break", "default", "func", "interface", "select", "case", "defer", "go", "map", "struct", "chan",
     "else", "goto", "package", "switch", "const", "fallthrough", "if", "range", "type", "continue", "for", "import",
-    "return", "var",
+    "return", "var", "append", "cap", "complex", "delete", "len", "panic",
+    "                                                                                        ", "https"
 ];
 
 // "|", "||",  "|=", "--", "-=", "\0", "->"  cause some problems
