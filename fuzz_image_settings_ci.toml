@@ -22,7 +22,7 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 
 current_mode = "image"
 
-[lofty]
+[image]
 app_binary = "image"
 app_config = ""
 extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
