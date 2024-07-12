@@ -1,4 +1,4 @@
-kname: 🐧 Image Check
+name: 🐧 Image Check
 on:
   push:
   pull_request:
