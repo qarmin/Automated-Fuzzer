@@ -170,6 +170,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("attempt to add with overflow") => "overflow_a",
             _ if result.contains("attempt to shift right with overflow") => "overflow_sr",
             _ if result.contains("attempt to shift left with overflow") => "overflow_sl",
+            _ if result.contains("index out of bounds:") => "index_out_of_bounds",
             _ if result.contains("Option::unwrap()") => "option_unwrap",
             _ if result.contains("Result::unwrap()") => "result_unwrap",
             _ if result.contains("internal error: entered unreachable code") => "unreachable_code",

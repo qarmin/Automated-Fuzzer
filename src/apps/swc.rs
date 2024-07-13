@@ -22,7 +22,10 @@ impl ProgramConfig for SwcStruct {
             content.contains("crates/swc_ecma_transforms_typescript/src/transform.rs:265:18") ||
             content.contains("crates/swc_ecma_compat_es2022/src/class_properties/mod.rs:972:21") ||
             content.contains("crates/swc_ecma_compat_es2015/src/destructuring.rs:418:52") ||
-            content.contains("timeout: the monitored command dumped core")
+            content.contains("timeout: the monitored command dumped core") ||
+            content.contains("crates/swc_ecma_compat_es2021/src/logical_assignments.rs:158:50") ||
+            content.contains("crates/swc_ecma_compat_es2015/src/destructuring.rs:418:52") ||
+            content.contains("crates/swc_ecma_compat_es2022/src/class_properties/mod.rs:972:21")
     }
     fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();

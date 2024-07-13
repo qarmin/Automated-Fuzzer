@@ -64,8 +64,10 @@ jobs:
           sd "debug         = false" "debug = true" Cargo.toml
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path apps/oxlint --locked --target x86_64-unknown-linux-gnu
           else
+            echo "NORMAL BUILD___"
             cargo install --path apps/oxlint --locked
           fi
           

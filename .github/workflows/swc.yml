@@ -59,8 +59,10 @@ jobs:
           unzip -q main.zip
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path swc-main/crates/swc_cli_impl/ --locked  --target x86_64-unknown-linux-gnu
           else
+            echo "NORMAL BUILD___"
             cargo install --path swc-main/crates/swc_cli_impl/ --locked
           fi
 

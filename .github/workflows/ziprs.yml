@@ -59,8 +59,10 @@ jobs:
           cargo update
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
           else
+            echo "NORMAL BUILD___"
             cargo install --path . --locked
           fi
           
