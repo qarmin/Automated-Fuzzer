@@ -29,7 +29,7 @@ fn check_file(file_path: &str) {
             return;
         }
     };
-
+    println!("Image: {file_path}");
     for format in [
         ImageFormat::Bmp,
         ImageFormat::Farbfeld,

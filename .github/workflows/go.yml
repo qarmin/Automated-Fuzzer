@@ -46,7 +46,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom
+          sudo apt install -y wget earlyoom libasan8
 
       - name: Install create_broken_files and sd
         run: cargo install create_broken_files sd
@@ -64,6 +64,7 @@ jobs:
           cd gotools
           go install cmd/staticcheck/staticcheck.go
           sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
+          ldd /usr/bin/staticheck
           cd ..
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################

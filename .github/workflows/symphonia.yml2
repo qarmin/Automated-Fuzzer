@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom
+          sudo apt install -y wget earlyoom libasan8
 
       - name: Install create_broken_files and sd
         run: cargo install create_broken_files sd
@@ -66,6 +66,7 @@ jobs:
           fi
 
           cd ../../..
+          ldd $(whereis -b symphonia | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 
