@@ -198,7 +198,9 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     };
 
     let output_result = execute_command_and_connect_output(obj, full_name);
-    assert!(output_result.is_broken(), "At start should be broken!");
+    if !output_result.is_broken() {
+        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high")
+    }
 
     let mut rng = rand::thread_rng();
 
@@ -256,7 +258,9 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     }
 
     let output_result = execute_command_and_connect_output(obj, full_name);
-    assert!(output_result.is_broken());
+    if !output_result.is_broken() {
+        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high")
+    }
 
     print_numbers(full_name, tries, items_number, old_new_data.len(), "bytes");
 }
@@ -514,25 +518,26 @@ pub fn execute_command_on_pack_of_files(
     obj: &Box<dyn ProgramConfig>,
     folder_name: &str,
     files: &[String],
-) -> (bool, String) {
+) -> OutputResult {
     let command = match obj.get_files_group_mode() {
         CheckGroupFileMode::ByFolder => obj.get_run_command(folder_name),
         CheckGroupFileMode::ByFilesGroup => obj.get_group_files_command(files),
         CheckGroupFileMode::None => panic!("Invalid mode"),
     };
-    // let start_time = std::time::Instant::now();
     let output = command.wait_with_output().unwrap();
-    // info!("Command took: {:?}", start_time.elapsed());
-    let mut is_signal_code_timeout_broken = false;
-
     let mut str_out = collect_output(&output);
 
-    if obj.get_settings().error_when_found_signal {
-        if let Some(_signal) = output.status.signal() {
-            // info!("Non standard output signal {}", signal);
-            is_signal_code_timeout_broken = true;
-        }
-    }
+    let is_signal_broken = obj.get_settings().error_when_found_signal && output.status.signal().is_some() && !obj.ignored_signal_output(&str_out);
+
+    let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
+        && output
+        .status
+        .code()
+        .map_or(false, |code| !obj.get_settings().allowed_error_statuses.contains(&code));
+
+    let timeouted = obj.get_settings().timeout > 0
+        && str_out.contains(TIMEOUT_MESSAGE)
+        && !obj.get_settings().ignore_timeout_errors;
 
     str_out.push_str(&format!(
         "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
@@ -540,7 +545,15 @@ pub fn execute_command_on_pack_of_files(
         output.status.signal()
     ));
 
-    (is_signal_code_timeout_broken, str_out)
+    OutputResult::new(
+        output.status.code(),
+        output.status.signal(),
+        is_signal_broken,
+        is_code_broken,
+        obj.is_broken(&str_out),
+        timeouted,
+        str_out,
+    )
 }
 
 #[allow(unused)]

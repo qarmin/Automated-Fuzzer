@@ -63,14 +63,14 @@ fn remove_non_crashing_in_group(
                 fs::copy(full_name, &new_name).unwrap();
             }
 
-            let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &temp_folder, &[]);
+            let output_result = execute_command_on_pack_of_files(obj, &temp_folder, &[]);
             if settings.debug_print_results {
-                info!("File pack {temp_folder}\n{output}");
+                info!("File pack {temp_folder}\n{}", output_result.get_output());
             }
 
             fs::remove_dir_all(&temp_folder).unwrap();
 
-            if is_really_broken || obj.is_broken(&output) {
+            if output_result.is_broken() {
                 info!("Chunk {chunk_idx} is broken");
                 Some(chunk.clone())
             } else {
@@ -174,11 +174,14 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("Result::unwrap()") => "result_unwrap",
             _ if result.contains("internal error: entered unreachable code") => "unreachable_code",
             _ if result.contains("not implemented: ") => "not_implemented",
-            _ if result.contains("panicked at ") => "panicked",
-            _ if result.contains("RUST_BACKTRACE") => "panic",
             _ if result.contains("Aborted") => "aborted",
             _ if result.contains("output signal \"Some(15)\"") => "out_of_memory",
             _ if result.contains("output signal \"Some(11)\"") => "segmentation_fault2",
+            _ if result.contains("AddressSanitizer") => "address_sanitizer",
+            _ if result.contains("ThreadSanitizer") => "thread_sanitizer",
+            _ if result.contains("LeakSanitizer") => "leak_sanitizer",
+            _ if result.contains("panicked at ") => "panicked",
+            _ if result.contains("RUST_BACKTRACE") => "panic",
             _ => "",
         };
 

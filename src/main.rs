@@ -230,16 +230,16 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             // let count = WalkDir::new(&random_folder).max_depth(999).into_iter().flatten().count();
             // warn!("{:?} {:?} {}", all_temp_files.len(), random_folder, count);
 
-            let (is_really_broken, output) = execute_command_on_pack_of_files(obj, &random_folder, &all_temp_files);
+            let output_result = execute_command_on_pack_of_files(obj, &random_folder, &all_temp_files);
 
             fs::remove_dir_all(&random_folder).expect("Failed to remove random folder");
 
             if settings.debug_print_results {
-                info!("{output}");
+                info!("{}", output_result.get_output());
             }
             // info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
 
-            if is_really_broken || obj.is_broken(&output) {
+            if output_result.is_broken() {
                 Some(Some(group))
             } else {
                 Some(None)

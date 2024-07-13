@@ -37,6 +37,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup rust version
+        run: |
+          rustup default nightly
+          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+
       - name: Install dependencies
         run: |
           sudo apt update
@@ -45,10 +51,13 @@ jobs:
       - name: Install create_broken_files and sd
         run: cargo install create_broken_files sd
 
+      # THERE STARTING CUSTOM STEP
+
       - uses: actions/setup-go@v5
         with:
           go-version: ${{ matrix.go_version }}
           check-latest: true
+
       - name: Install go
         run: |
           git clone https://github.com/dominikh/go-tools.git gotools

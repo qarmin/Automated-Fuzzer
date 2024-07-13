@@ -22,13 +22,26 @@ jobs:
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 18000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            asan_build: false
+          - name: SANITIZER_1
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 18000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            asan_build: true
           - name: SHORT_1
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 1800
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            asan_build: false
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup rust version
+        run: |
+          rustup default nightly
+          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
 
       - name: Install dependencies
         run: |
@@ -37,6 +50,8 @@ jobs:
 
       - name: Install create_broken_files and sd
         run: cargo install create_broken_files sd
+
+      # THERE STARTING CUSTOM STEP
 
       - name: Install oxlint
         run: |
@@ -47,7 +62,13 @@ jobs:
           rm rust-toolchain.toml
           sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
           sd "debug         = false" "debug = true" Cargo.toml
-          cargo install --path apps/oxlint --locked
+          
+          if [ "${{ matrix.asan_build }}" = "true" ]; then
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path apps/oxlint --locked --target x86_64-unknown-linux-gnu
+          else
+            cargo install --path apps/oxlint --locked
+          fi
+          
           cd ../
           rm -rf oxc-main
 
