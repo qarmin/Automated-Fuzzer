@@ -43,10 +43,10 @@ fn check_file(file_path: &str) {
         ImageFormat::Dds,
         ImageFormat::Hdr,
         ImageFormat::OpenExr,
-        ImageFormat::Avif,
+        // ImageFormat::Avif, // TODO strange freezes https://github.com/image-rs/image/issues/2282
         ImageFormat::Qoi,
     ]
-    .into_iter()
+        .into_iter()
     {
         let buffer: Vec<u8> = Vec::new();
         println!("Before write_to {format:?}");
