@@ -1,4 +1,4 @@
-name: 🐧 Go Check
+name: 🐧 Pdf Check
 on:
   push:
   pull_request:
@@ -7,10 +7,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: GO
+  TOOL_TYPE: Pdf
 
 jobs:
-  go-normal-ci:
+  pdf-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -19,20 +19,20 @@ jobs:
       matrix:
         include:
           - name: LONG_1
-            config-file: fuzz_go_settings_ci.toml
+            config-file: fuzz_pdf_settings_ci.toml
             timeout: 18000
-            files: "AA_GO_VALID_FILES.7z"
-            go_version: '1.22.0'
+            files: "AA_PDF_VALID_FILES.7z"
+            asan_build: false
+          - name: SANITIZER_1
+            config-file: fuzz_pdf_settings_ci.toml
+            timeout: 18000
+            files: "AA_PDF_VALID_FILES.7z"
+            asan_build: true
           - name: SHORT_1
-            config-file: fuzz_go_settings_ci.toml
+            config-file: fuzz_pdf_settings_ci.toml
             timeout: 1800
-            files: "AA_GO_VALID_FILES.7z"
-            go_version: '1.22.0'
-          - name: UNSTABLE_123
-            config-file: fuzz_go_settings_ci.toml
-            timeout: 10000
-            files: "AA_GO_VALID_FILES.7z"
-            go_version: '1.23.0-rc.1'
+            files: "AA_PDF_VALID_FILES.7z"
+            asan_build: false
 
     steps:
       - uses: actions/checkout@v4
@@ -53,19 +53,21 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version: ${{ matrix.go_version }}
-          check-latest: true
-
-      - name: Install go
+      - name: Install pdf
         run: |
-          git clone https://github.com/dominikh/go-tools.git gotools
-          cd gotools
-          go install cmd/staticcheck/staticcheck.go
-          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
-          ldd /usr/bin/staticcheck
-          cd ..
+          cd src/crates/pdf
+          cargo update
+          
+          if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path . --locked
+          fi
+          
+          cd ../../..
+          ldd $(whereis -b pdf | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 

@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 pdf = {git = "https://github.com/pdf-rs/pdf/"}
-
+walkdir = "2.5.0"
 
 [profile.release]
 overflow-checks = true

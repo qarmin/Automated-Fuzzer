@@ -11,6 +11,9 @@ use symphonia::core::io::MediaSourceStream;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
+    if !Path::new(&path).exists() {
+        panic!("Missing file");
+    }
 
     if Path::new(&path).is_dir() {
         for entry in WalkDir::new(&path).into_iter().flatten() {

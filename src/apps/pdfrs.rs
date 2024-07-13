@@ -1,6 +1,6 @@
 use crate::broken_files::{create_broken_files, LANGS};
 use std::process::Child;
-
+use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -17,5 +17,8 @@ impl ProgramConfig for PdfRsStruct {
     }
     fn get_settings(&self) -> &Setting {
         &self.settings
+    }
+    fn get_files_group_mode(&self) -> CheckGroupFileMode {
+        CheckGroupFileMode::ByFolder
     }
 }
