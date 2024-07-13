@@ -10,7 +10,13 @@ pub struct OxcStruct {
 
 impl ProgramConfig for OxcStruct {
     fn is_broken(&self, content: &str) -> bool {
-        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
+        ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x)) && !self.ignored_signal_output(&content)
+    }
+    fn ignored_signal_output(&self, content: &str) -> bool {
+        content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:424:41") ||
+            content.contains("fatal runtime error: stack overflow") ||
+            content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:450:41") ||
+            content.contains("crates/oxc_span/src/span.rs:102:9")
     }
     fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();

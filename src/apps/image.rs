@@ -22,6 +22,6 @@ impl ProgramConfig for ImageStruct {
         &self.settings
     }
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
-        CheckGroupFileMode::ByFolder
+        CheckGroupFileMode::None // It is possible that images will use to much memory, also this operation is very heavy, so gain with testing in groups is minimal
     }
 }

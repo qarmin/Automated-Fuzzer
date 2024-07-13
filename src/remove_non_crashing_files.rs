@@ -173,10 +173,12 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("Option::unwrap()") => "option_unwrap",
             _ if result.contains("Result::unwrap()") => "result_unwrap",
             _ if result.contains("internal error: entered unreachable code") => "unreachable_code",
+            _ if result.contains("not implemented: ") => "not_implemented",
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
             _ if result.contains("Aborted") => "aborted",
             _ if result.contains("output signal \"Some(15)\"") => "out_of_memory",
+            _ if result.contains("output signal \"Some(11)\"") => "segmentation_fault2",
             _ => "",
         };
 
@@ -202,10 +204,10 @@ cause this
 $ERROR
 ```
 "
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
