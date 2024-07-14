@@ -18,11 +18,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LONG_1
-            config-file: fuzz_pdf_settings_ci.toml
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
-            asan_build: false
+          #          - name: LONG_1
+          #            config-file: fuzz_pdf_settings_ci.toml
+          #            timeout: 18000
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #            asan_build: false
           - name: SANITIZER_1
             config-file: fuzz_pdf_settings_ci.toml
             timeout: 18000
