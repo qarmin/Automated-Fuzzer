@@ -22,12 +22,6 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 current_mode = "custom"
 
 [custom]
-# Unused in custom mode
-app_binary = ""
-app_config = ""
-tool_type = ""
-
-# Used in custom mode
 command = "dlint|run|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ts,js,mjs,mts"

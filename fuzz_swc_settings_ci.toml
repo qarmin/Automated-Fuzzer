@@ -22,12 +22,6 @@ grouping = 4000 # How many files will be grouped in one command - using bigger n
 current_mode = "custom"
 
 [custom]
-# Unused in custom mode
-app_binary = ""
-app_config = ""
-tool_type = ""
-
-# Used in custom mode
 command = "swc|compile|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ts,js,mjs,mts"

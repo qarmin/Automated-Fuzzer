@@ -22,12 +22,6 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 current_mode = "custom"
 
 [custom]
-# Unused in custom mode
-app_binary = ""
-app_config = ""
-tool_type = ""
-
-# Used in custom mode
 command = "symphonia|FILE_PATHS_TO_PROVIDE"
 
 extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"

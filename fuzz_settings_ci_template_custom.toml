@@ -22,9 +22,6 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 current_mode = "custom"
 
 [custom]
-app_binary = "" # This not works in general mode, this is hardcoded in command so may be empty
-app_config = "" # This not works in general mode, this is hardcoded in command so may be empty
-extensions = ""
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 tool_type = "" # This not works in general mode, needs to create new toml file with different command

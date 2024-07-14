@@ -22,11 +22,6 @@ grouping = 1000 # How many files will be grouped in one command - using bigger n
 current_mode = "custom"
 
 [custom]
-# Unused in custom mode
-app_binary = ""
-app_config = ""
-tool_type = ""
-
 command = "oxlint|-D|all|-D|nursery|FILE_PATHS_TO_PROVIDE|--fix"
 
 extensions = "ts,js,mjs,mts"
