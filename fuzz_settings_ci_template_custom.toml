@@ -28,7 +28,7 @@ extensions = ""
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 tool_type = "" # This not works in general mode, needs to create new toml file with different command
-binary_mode = true # This not works in general mode, needs to create new toml file with different command
+# This not works in general mode, needs to create new toml file with different command
 
 # Available
 # none(grouping number is ignored and files are only checked one by one)

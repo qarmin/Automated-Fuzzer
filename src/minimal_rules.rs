@@ -109,7 +109,6 @@ error
 $ERROR
 ```
 
-
 "
             .replace("$FILE_CONTENT", &file_code)
             .replace("$ERROR", &output)

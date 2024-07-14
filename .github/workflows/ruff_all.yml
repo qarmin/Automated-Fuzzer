@@ -1,7 +1,7 @@
 name: 🐧 Ruff Check
 on:
-  push:
-  pull_request:
+  #push: # Once daily
+  #pull_request: # Once daily
   schedule:
     - cron: '0 22 * * *'
 
@@ -21,18 +21,18 @@ jobs:
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 10000
             files: "FILES_21.zip"
-          - name: NORMAL_2
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 10000
-            files: "FILES_22.zip"
-          - name: NORMAL_3
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 10000
-            files: "FILES_23.zip"
-          - name: SHORT_NORMAL_1
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 120
-            files: "FILES_25.zip"
+          #          - name: NORMAL_2
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 10000
+          #            files: "FILES_22.zip"
+          #          - name: NORMAL_3
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 10000
+          #            files: "FILES_23.zip"
+          #          - name: SHORT_NORMAL_1
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 120
+          #            files: "FILES_25.zip"
 
           #          - name: RED_KNOT
           #            config-file: fuzz_rust_settings_ci_red_knot.toml

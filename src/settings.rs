@@ -147,10 +147,13 @@ pub fn load_settings() -> Setting {
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
 
-    let custom_items = if current_mode == MODES::CUSTOM {
-        Some(process_custom_struct(&general, &curr_setting))
+    let (custom_items, binary_mode) = if current_mode == MODES::CUSTOM {
+        let ci = process_custom_struct(&general, &curr_setting);
+        let bm = ci.file_type == LANGS::BINARY;
+        (Some(ci), bm)
     } else {
-        None
+        // Currently only ruff uses non custom mode, so it always have non binary mode
+        (None, false)
     };
 
     Setting {
@@ -170,7 +173,7 @@ pub fn load_settings() -> Setting {
         temp_possible_broken_files_dir: general["temp_possible_broken_files_dir"].parse().unwrap(),
         app_binary: curr_setting["app_binary"].parse().unwrap(),
         app_config: curr_setting["app_config"].parse().unwrap(),
-        binary_mode: curr_setting["binary_mode"].parse().unwrap(),
+        binary_mode,
         debug_print_results: general["debug_print_results"].parse().unwrap(),
         allowed_error_statuses: general["allowed_error_statuses"]
             .split(',')

@@ -26,7 +26,6 @@ current_mode = "custom"
 app_binary = ""
 app_config = ""
 tool_type = ""
-binary_mode = false
 
 # Used in custom mode
 command = "symphonia|FILE_PATHS_TO_PROVIDE"
@@ -42,4 +41,14 @@ ignored_item_1 = "memory allocation of" # https://github.com/pdeljanov/Symphonia
 ignored_item_2 = "symphonia_format_mkv::ebml::read_vint" # https://github.com/pdeljanov/Symphonia/issues/298
 ignored_item_3 = "symphonia_core::units::TimeBase::new" # https://github.com/pdeljanov/Symphonia/issues/299
 ignored_item_4 = "symphonia_format_isomp4::atoms::AtomIterator<B>::read_atom" # https://github.com/pdeljanov/Symphonia/issues/300
+ignored_item_5 = "src/units.rs"
+ignored_item_6 = "src/ebml.rs"
+ignored_item_7 = "src/wave/chunks.rs"
+ignored_item_8 = "src/atoms/stsc.rs"
+ignored_item_9 = ""
+ignored_item_10 = ""
+ignored_item_11 = ""
+ignored_item_12 = ""
+ignored_item_13 = ""
+ignored_item_14 = ""
 file_type = "binary" # Available: text, binary, js, go, rust, lua

@@ -26,7 +26,6 @@ current_mode = "custom"
 app_binary = ""
 app_config = ""
 tool_type = ""
-binary_mode = false
 
 # Used in custom mode
 command = "dlint|run|FILE_PATHS_TO_PROVIDE"

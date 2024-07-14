@@ -1,7 +1,7 @@
 name: 🐧 Go Check
 on:
-  push:
-  pull_request:
+  #push: # Once daily
+  #pull_request: # Once daily
   schedule:
     - cron: '0 22 * * *'
 

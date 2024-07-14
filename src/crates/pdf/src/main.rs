@@ -3,7 +3,6 @@ use std::env::args;
 use std::path::Path;
 use walkdir::WalkDir;
 
-
 fn main() {
     let path = args().nth(1).unwrap().clone();
     if !Path::new(&path).exists() {

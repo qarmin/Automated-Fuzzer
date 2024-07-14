@@ -27,7 +27,6 @@ current_mode = "custom"
 # non_destructive_input_dir - folder which contains files to test, such files will not be overwriten
 # valid_input_files_dir - place with valid files
 # broken_files_dir - place where to save broken files
-# binary_mode - used to minify output, if binary mode is on, then all minimization works on bytes, if is off, then minimization works on lines
 
 [custom]
 app_binary = ""
@@ -36,7 +35,6 @@ extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/swc/Broken"
 tool_type = ""
-binary_mode = false
 
 group_mode = "by_group" # available: none, by_files, by_group
 command = "swc|compile|FILE_PATHS_TO_PROVIDE"
@@ -57,7 +55,6 @@ valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FIL
 #valid_input_files_dir = "/home/rafal/test/tmp_folder"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/ruff/Broken"
 tool_type = "lint_check_fix" # Available "format", "lint_check", "lint_check_fix"
-binary_mode = false
 
 [rustbuzz]
 app_binary = "rsbuzz"
@@ -66,7 +63,6 @@ extensions = "ttf,otf,woff,woff2"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_FONT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/rustbuzz/Broken"
 tool_type = ""
-binary_mode = true
 
 [swc]
 app_binary = "/home/rafal/Downloads/swc-linux-x64-gnu"
@@ -75,7 +71,6 @@ extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/swc/Broken"
 tool_type = ""
-binary_mode = false
 
 [zip]
 app_binary = "ziprs"
@@ -84,7 +79,6 @@ extensions = "zip"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_ZIP_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/zip/Broken"
 tool_type = ""
-binary_mode = false
 
 [dicom]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/dicom/target/release/dicom"
@@ -93,8 +87,6 @@ extensions = "dcm"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_DICOM_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dicom/Broken"
 tool_type = ""
-binary_mode = false
-
 
 [pdfrs]
 app_binary = "pdf"
@@ -103,7 +95,6 @@ extensions = "pdf"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PDF_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/pdfrs/Broken"
 tool_type = ""
-binary_mode = true
 
 [quicklintjs]
 app_binary = "quick-lint-js"
@@ -112,7 +103,6 @@ extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/quicklint/Broken"
 tool_type = ""
-binary_mode = false
 
 [staticcheckgo]
 app_binary = "/home/rafal/Downloads/staticcheck/staticcheck"
@@ -121,7 +111,6 @@ extensions = "go"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_GO_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/staticcheckgo/Broken"
 tool_type = ""
-binary_mode = false
 
 [selene]
 app_binary = "/home/rafal/test/selene/target/release/selene"
@@ -130,7 +119,6 @@ extensions = "lua"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/selene/Broken"
 tool_type = ""
-binary_mode = false
 
 [oxc]
 app_binary = "oxlint"
@@ -139,7 +127,6 @@ extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken"
 tool_type = "lint" # Available "lint", "check" # TODO
-binary_mode = false
 
 [mypy]
 app_binary = "mypy"
@@ -148,8 +135,6 @@ extensions = "py"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken"
 tool_type = ""
-binary_mode = false
-
 
 [dlint]
 app_binary = "/home/rafal/test/deno_lint/target/release/examples/dlint"
@@ -158,7 +143,6 @@ extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dlint/Broken"
 tool_type = ""
-binary_mode = false
 
 [biome]
 app_binary = "biome"
@@ -167,7 +151,6 @@ extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/biome/Broken"
 tool_type = ""
-binary_mode = false
 
 [image]
 app_binary = "image"
@@ -176,7 +159,6 @@ extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico,
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_IMAGE_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/image/Broken"
 tool_type = ""
-binary_mode = true
 
 [lofty]
 app_binary = "lofty"
@@ -185,7 +167,6 @@ extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/lofty/Broken"
 tool_type = ""
-binary_mode = true
 
 [symphonia]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/symphonia/target/release/symphonia"
@@ -194,4 +175,4 @@ extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/symphonia/Broken"
 tool_type = ""
-binary_mode = true
+
