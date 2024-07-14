@@ -155,12 +155,9 @@ impl ProgramConfig for RuffStruct {
         let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
         error!("File {full_name} saved to {new_name}\n{output}");
 
-        if try_to_save_file(self.get_settings(), &full_name, &new_name) {
-            let _ = try_to_save_file(self.get_settings(), &full_name, &new_name_not_minimized);
-            Some(new_name)
-        } else {
-            None
-        }
+        try_to_save_file(&full_name, &new_name);
+        try_to_save_file(&full_name, &new_name_not_minimized);
+        Some(new_name)
     }
     fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();

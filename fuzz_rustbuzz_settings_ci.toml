@@ -1,7 +1,6 @@
 [general]
 loop_number = 5000 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 500# Number of broken files that will be created for each 1 valid file
-copy_broken_files = true
+broken_files_for_each_file = 14# Number of broken files that will be created for each 1 valid file
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 3000 # Attemps to minimize code, counter reset when found minimized test case
@@ -20,13 +19,37 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "rustbuzz"
+current_mode = "custom"
 
-[rustbuzz]
-app_binary = "rsbuzz"
+[custom]
+# Unused in custom mode
+app_binary = ""
 app_config = ""
+tool_type = ""
+binary_mode = false
+
+# Used in custom mode
+command = "rsbuzz|FILE_PATHS_TO_PROVIDE"
+
 extensions = "ttf,otf,woff,woff2"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-tool_type = ""
-binary_mode = true
+group_mode = "by_group" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+ignored_item_1 = "ttf-parser-0.24.0/src/lib.rs:351:9"
+ignored_item_2 = "src/hb/set_digest.rs:93"
+ignored_item_3 = "src/hb/ot_layout_gsubgpos.rs:610:67"
+ignored_item_4 = "src/hb/ot_layout_gsubgpos.rs:451:57"
+ignored_item_5 = "src/hb/ot_layout_gsubgpos.rs:615:63"
+ignored_item_6 = "src/hb/ot_layout_gsubgpos.rs:605:67"
+ignored_item_7 = "ttf-parser-0.24.0/src/lib.rs:351:9"
+ignored_item_8 = "src/hb/face.rs:331:42"
+ignored_item_9 = "src/hb/set_digest.rs:93:12"
+ignored_item_10 = "ttf-parser-0.24.0/src/var_store.rs:144:49"
+ignored_item_11 = "ttf-parser-0.24.0/src/tables/gpos.rs:97:34"
+ignored_item_12 = "src/hb/buffer.rs:1236:22"
+ignored_item_13 = "src/hb/buffer.rs:1187:43"
+file_type = "binary" # Available: text, binary, js, go, rust, lua
+

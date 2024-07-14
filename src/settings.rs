@@ -5,10 +5,6 @@ use strum_macros::{Display, EnumString};
 
 use crate::apps::custom::CustomStruct;
 use crate::apps::ruff::RuffStruct;
-use crate::apps::rustbuzz::RustBuzzStruct;
-use crate::apps::selene::SeleneStruct;
-use crate::apps::staticheckgo::StaticCheckGoStruct;
-use crate::apps::zip::ZipStruct;
 use crate::broken_files::LANGS;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
@@ -19,7 +15,6 @@ pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
 pub struct Setting {
     pub loop_number: u32,
     pub broken_files_for_each_file: u32,
-    pub copy_broken_files: bool,
     pub minimize_output: bool,
     pub minimization_attempts: u32,
     pub minimization_attempts_with_signal_timeout: u32,
@@ -74,7 +69,7 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         command_parts.push(timeout_time.to_string());
     }
     if tool_hashmap["command"]
-        .split("|")
+        .split('|')
         .filter_map(|e| {
             let r = e.trim();
             if r.is_empty() {
@@ -96,9 +91,7 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         .cloned()
         .collect();
     let search_items: Vec<_> = search_item_keys.iter().map(|e| tool_hashmap[e].clone()).collect();
-    if search_items.is_empty() {
-        panic!("No search items found in the custom tool");
-    }
+    assert!(!search_items.is_empty(), "No search items found in the custom tool");
 
     let ignored_item_keys: Vec<_> = tool_hashmap
         .keys()
@@ -162,7 +155,6 @@ pub fn load_settings() -> Setting {
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
-        copy_broken_files: general["copy_broken_files"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         minimization_attempts_with_signal_timeout: general["minimization_attempts_with_signal_timeout"]
@@ -205,10 +197,6 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
             settings,
             ignored_rules: String::new(),
         }),
-        MODES::SELENE => Box::new(SeleneStruct { settings }),
-        MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
-        MODES::ZIP => Box::new(ZipStruct { settings }),
-        MODES::RUSTBUZZ => Box::new(RustBuzzStruct { settings }),
         MODES::CUSTOM => Box::new(CustomStruct {
             custom_items: custom_items.unwrap(),
             settings,
@@ -222,12 +210,4 @@ pub enum MODES {
     CUSTOM,
     #[strum(ascii_case_insensitive)]
     RUFF,
-    #[strum(ascii_case_insensitive)]
-    SELENE,
-    #[strum(ascii_case_insensitive)]
-    STATICCHECKGO,
-    #[strum(ascii_case_insensitive)]
-    ZIP,
-    #[strum(ascii_case_insensitive)]
-    RUSTBUZZ,
 }

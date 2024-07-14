@@ -1,7 +1,6 @@
 [general]
 loop_number = 5000 # How much creating/removing/checking steps will be executed
 broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file
-copy_broken_files = true
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 15 # Attemps to minimize code, counter reset when found minimized test case

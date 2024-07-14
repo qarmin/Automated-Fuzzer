@@ -82,15 +82,10 @@ pub fn collect_output(output: &Output) -> String {
     format!("{stdout_str}\n{stderr_str}")
 }
 
-pub fn try_to_save_file(setting: &Setting, full_name: &str, new_name: &str) -> bool {
-    if setting.copy_broken_files {
-        if let Err(e) = fs::copy(full_name, new_name) {
-            error!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
-            return true;
-        };
-        return true;
-    }
-    false
+pub fn try_to_save_file(full_name: &str, new_name: &str) {
+    if let Err(e) = fs::copy(full_name, new_name) {
+        error!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
+    };
 }
 
 #[allow(clippy::borrowed_box)]
@@ -199,7 +194,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let output_result = execute_command_and_connect_output(obj, full_name);
     if !output_result.is_broken() {
-        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high")
+        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
     }
 
     let mut rng = rand::thread_rng();
@@ -259,7 +254,7 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let output_result = execute_command_and_connect_output(obj, full_name);
     if !output_result.is_broken() {
-        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high")
+        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
     }
 
     print_numbers(full_name, tries, items_number, old_new_data.len(), "bytes");

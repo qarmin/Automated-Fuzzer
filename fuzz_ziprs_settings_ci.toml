@@ -1,7 +1,6 @@
 [general]
 loop_number = 5000 # How much creating/removing/checking steps will be executed
 broken_files_for_each_file = 1000# Number of broken files that will be created for each 1 valid file
-copy_broken_files = true
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 3000 # Attemps to minimize code, counter reset when found minimized test case
@@ -20,14 +19,24 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "zip"
+current_mode = "common"
 
-[zip]
-app_binary = "zip"
+[custom]
+# Unused in custom mode
+app_binary = ""
 app_config = ""
+tool_type = ""
+binary_mode = false
+
+# Used in custom mode
+command = "ziprs|FILE_PATHS_TO_PROVIDE"
+
 extensions = "zip"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-tool_type = ""
-binary_mode = true
+group_mode = "by_group" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+file_type = "binary" # Available: text, binary, js, go, rust, lua
 
