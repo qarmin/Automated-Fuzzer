@@ -37,4 +37,5 @@ search_item_5 = "goroutine stack exceeds"
 ignored_item_1 = "\"internal error"
 ignored_item_2 = "panic: %v"
 ignored_item_3 = "No such file or directory"
+ignored_item_4 = "syntax error:"
 file_type = "go" # Available: text, binary, js, go, rust, lua

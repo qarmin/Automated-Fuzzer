@@ -1,4 +1,4 @@
-name: 🐧 Lofty Check
+name: 🐧 Full moon Check
 on:
   push: # Once daily
   pull_request: # Once daily
@@ -7,10 +7,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: LOFTY
+  TOOL_TYPE: FULL_MOON
 
 jobs:
-  lofty-normal-ci:
+  lua-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -19,19 +19,19 @@ jobs:
       matrix:
         include:
           #          - name: LONG_1
-          #            config-file: fuzz_lofty_settings_ci.toml
+          #            config-file: fuzz_lua_settings_ci.toml
           #            timeout: 18000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            files: "AA_LUA_VALID_FILES.7z"
           #            asan_build: false
           #          - name: SHORT_1
-          #            config-file: fuzz_lofty_settings_ci.toml
+          #            config-file: fuzz_lua_settings_ci.toml
           #            timeout: 1800
-          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            files: "AA_LUA_VALID_FILES.7z"
           #            asan_build: false
           - name: SANITIZER_1
-            config-file: fuzz_lofty_settings_ci.toml
+            config-file: fuzz_lua_settings_ci.toml
             timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
+            files: "AA_LUA_VALID_FILES.7z"
             asan_build: true
 
     steps:
@@ -53,9 +53,9 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
 
-      - name: Install lofty
+      - name: Install fool_moon
         run: |
-          cd src/crates/lofty
+          cd src/crates/fool_moon
           cargo update
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
@@ -67,7 +67,7 @@ jobs:
           fi
           
           cd ../../..
-          ldd $(whereis -b lofty | awk '{print $2}')
+          ldd $(whereis -b fool_moon | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 

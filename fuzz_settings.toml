@@ -28,20 +28,18 @@ current_mode = "custom"
 # valid_input_files_dir - place with valid files
 # broken_files_dir - place where to save broken files
 
-[custom]
-app_binary = ""
-app_config = ""
-extensions = "ts,js,mjs,mts"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/swc/Broken"
-tool_type = ""
 
+[custom]
+command = "full_moon|FILE_PATHS_TO_PROVIDE"
+
+extensions = "lua"
+valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/full_moon/Broken"
 group_mode = "by_group" # available: none, by_files, by_group
-command = "swc|compile|FILE_PATHS_TO_PROVIDE"
+
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-#ignored_item_1 = ""
-file_type = "js" # Available: text, binary, js, go, rust, lua
+file_type = "lua" # Available: text, binary, js, go, rust, lua
 
 [ruff]
 app_binary = "ruff"

@@ -1,0 +1,13 @@
+[package]
+name = "full_moon"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = [ "roblox", "lua54"] }
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
