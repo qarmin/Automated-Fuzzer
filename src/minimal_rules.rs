@@ -1,27 +1,26 @@
+use crate::apps::ruff::calculate_ignored_rules;
+use crate::common::{collect_output, remove_and_create_entire_folder};
+use crate::obj::ProgramConfig;
+use crate::settings::Setting;
+use jwalk::WalkDir;
+use log::info;
+use rand::prelude::*;
+use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::process::{Command, Stdio};
-
-use jwalk::WalkDir;
-use log::info;
-use rand::prelude::*;
-use rayon::prelude::*;
 use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
-
-use crate::apps::ruff::calculate_ignored_rules;
-use crate::common::{collect_output, remove_and_create_entire_folder};
-use crate::obj::ProgramConfig;
-use crate::settings::Setting;
 
 // THIS ONLY WORKS WITH RUFF
 
 pub const MAX_FILE_SIZE: u64 = 500; // Bytes
 
 pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
-    match settings.tool_type.as_str() {
+    let tool_type = settings.non_custom_items.as_ref().unwrap().tool_type.clone();
+    match tool_type.as_str() {
         "lint_check" | "lint_check_fix" => {
             find_minimal_rules(settings, obj);
         }
@@ -33,7 +32,7 @@ pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             // there is
         }
         _ => {
-            panic!("Unknown tool type: {}", settings.tool_type);
+            panic!("Unknown tool type: {}", tool_type);
         }
     }
 }
@@ -92,7 +91,6 @@ pub fn save_results_to_file_format(
         } else {
             file_content += "Formatter cause problem";
         }
-
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r"Ruff $RUFF_VERSION
 ```
@@ -459,8 +457,9 @@ fn check_if_rule_file_crashing(
             .arg("--unsafe-fixes")
             .arg("--no-cache")
     };
-    if !settings.app_config.is_empty() {
-        command.arg("--config").arg(&settings.app_config);
+    let app_config = &settings.non_custom_items.as_ref().unwrap().app_config;
+    if !app_config.is_empty() {
+        command.arg("--config").arg(&app_config);
     } else {
         command.arg("--isolated");
     }

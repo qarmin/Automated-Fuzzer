@@ -1,16 +1,13 @@
-use config::Config;
-use std::collections::HashMap;
-use std::str::FromStr;
-use strum_macros::{Display, EnumString};
-
 use crate::apps::custom::CustomStruct;
 use crate::apps::ruff::RuffStruct;
 use crate::broken_files::LANGS;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
-
+use config::Config;
+use std::collections::HashMap;
+use std::str::FromStr;
+use strum_macros::{Display, EnumString};
 pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
-
 #[derive(Clone, Debug)]
 pub struct Setting {
     pub loop_number: u32,
@@ -25,9 +22,6 @@ pub struct Setting {
     pub broken_files_dir: String,
     pub valid_input_files_dir: String,
     pub temp_possible_broken_files_dir: String,
-    pub app_binary: String,
-    pub tool_type: String,
-    pub app_config: String,
     pub binary_mode: bool,
     pub debug_print_results: bool,
     pub timeout: usize,
@@ -42,8 +36,14 @@ pub struct Setting {
     pub grouping: u32,
     pub debug_executed_commands: bool,
     pub custom_items: Option<CustomItems>,
+    pub non_custom_items: Option<NonCustomItems>,
 }
-
+#[derive(Clone, Debug)]
+pub struct NonCustomItems {
+    pub app_binary: String,
+    pub app_config: String,
+    pub tool_type: String,
+}
 #[derive(Clone, Debug)]
 pub struct CustomItems {
     pub group_mode: CheckGroupFileMode,
@@ -119,7 +119,13 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         file_type,
     }
 }
-
+pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustomItems {
+    NonCustomItems {
+        app_binary: tool_hashmap["app_binary"].clone(),
+        app_config: tool_hashmap["app_config"].clone(),
+        tool_type: tool_hashmap["tool_type"].clone(),
+    }
+}
 pub fn load_settings() -> Setting {
     let settings = Config::builder()
         .add_source(config::File::with_name("fuzz_settings"))
@@ -146,14 +152,14 @@ pub fn load_settings() -> Setting {
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
-
-    let (custom_items, binary_mode) = if current_mode == MODES::CUSTOM {
+    let (custom_items, non_custom_items, binary_mode) = if current_mode == MODES::CUSTOM {
         let ci = process_custom_struct(&general, &curr_setting);
         let bm = ci.file_type == LANGS::BINARY;
-        (Some(ci), bm)
+        (Some(ci), None, bm)
     } else {
+        let nci = get_non_custom_items(&curr_setting);
         // Currently only ruff uses non custom mode, so it always have non binary mode
-        (None, false)
+        (None, Some(nci), false)
     };
 
     Setting {
@@ -171,8 +177,6 @@ pub fn load_settings() -> Setting {
         broken_files_dir: curr_setting["broken_files_dir"].parse().unwrap(),
         valid_input_files_dir: curr_setting["valid_input_files_dir"].parse().unwrap(),
         temp_possible_broken_files_dir: general["temp_possible_broken_files_dir"].parse().unwrap(),
-        app_binary: curr_setting["app_binary"].parse().unwrap(),
-        app_config: curr_setting["app_config"].parse().unwrap(),
         binary_mode,
         debug_print_results: general["debug_print_results"].parse().unwrap(),
         allowed_error_statuses: general["allowed_error_statuses"]
@@ -184,22 +188,24 @@ pub fn load_settings() -> Setting {
         max_collected_files: general["max_collected_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
         find_minimal_rules,
-        tool_type: curr_setting["tool_type"].clone(),
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
         disable_exceptions,
         ignore_timeout_errors,
         grouping,
         debug_executed_commands,
         custom_items,
+        non_custom_items,
     }
 }
 
 pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
     let custom_items = settings.custom_items.clone();
+    let non_custom_items = settings.non_custom_items.clone();
     match settings.current_mode {
         MODES::RUFF => Box::new(RuffStruct {
             settings,
             ignored_rules: String::new(),
+            non_custom_items: non_custom_items.unwrap(),
         }),
         MODES::CUSTOM => Box::new(CustomStruct {
             custom_items: custom_items.unwrap(),

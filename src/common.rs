@@ -8,15 +8,13 @@ use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use std::time::Instant;
 
+use crate::obj::ProgramConfig;
+use crate::settings::{Setting, TIMEOUT_MESSAGE};
 use jwalk::WalkDir;
 use log::{error, info};
 use once_cell::sync::{Lazy, OnceCell};
 use rand::prelude::ThreadRng;
 use rand::Rng;
-
-use crate::obj::ProgramConfig;
-use crate::settings::{Setting, TIMEOUT_MESSAGE};
-
 pub const STRING_MINIMIZATION_LIMIT: usize = 3;
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();

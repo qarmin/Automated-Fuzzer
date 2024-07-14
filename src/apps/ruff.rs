@@ -1,3 +1,10 @@
+use crate::broken_files::{create_broken_files, LANGS};
+use crate::common::{
+    collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
+    CheckGroupFileMode,
+};
+use crate::obj::ProgramConfig;
+use crate::settings::{NonCustomItems, Setting};
 use jwalk::WalkDir;
 use log::{error, info};
 use rand::Rng;
@@ -5,18 +12,10 @@ use rayon::prelude::*;
 use std::fs;
 use std::process::{Child, Command, Stdio};
 use std::sync::atomic::AtomicU32;
-
-use crate::broken_files::{create_broken_files, LANGS};
-use crate::common::{
-    collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
-    CheckGroupFileMode,
-};
-use crate::obj::ProgramConfig;
-use crate::settings::Setting;
-
 pub struct RuffStruct {
     pub settings: Setting,
     pub ignored_rules: String,
+    pub non_custom_items: NonCustomItems,
 }
 
 const DISABLE_EXCEPTIONS: bool = false;
@@ -81,6 +80,21 @@ pub fn calculate_ignored_rules() -> String {
 }
 
 impl ProgramConfig for RuffStruct {
+    fn _get_basic_run_command(&self) -> Command {
+        let timeout = self.get_settings().timeout;
+
+        let mut comm = if timeout == 0 {
+            Command::new(&self.non_custom_items.app_binary)
+        } else {
+            let mut a = Command::new("timeout");
+            a.arg("-v")
+                .arg(&timeout.to_string())
+                .arg(&self.non_custom_items.app_binary);
+            a
+        };
+        comm.stderr(Stdio::piped()).stdout(Stdio::piped());
+        comm
+    }
     fn is_broken(&self, content: &str) -> bool {
         // Fake errors
         if content.contains(r#""stack backtrace:\n""#) {
@@ -117,22 +131,6 @@ impl ProgramConfig for RuffStruct {
         found_broken_items && !found_ignored_item
     }
 
-    // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
-    //     output
-    //         .lines()
-    //         .filter(|e| {
-    //             !((e.contains(".py") && e.matches(':').count() >= 3)
-    //                 || e.trim().is_empty()
-    //                 || e.starts_with("warning: `")
-    //                 || e.starts_with("Found: `")
-    //                 || e.starts_with("Found ")
-    //                 || e.starts_with("Ignoring `"))
-    //         })
-    //         .map(String::from)
-    //         .collect::<Vec<String>>()
-    //         .join("\n")
-    // }
-
     fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
         let mut lines = output
             .lines()
@@ -162,7 +160,7 @@ impl ProgramConfig for RuffStruct {
     fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
 
-        match self.settings.tool_type.as_str() {
+        match self.non_custom_items.tool_type.as_str() {
             "lint_check_fix" => {
                 command
                     .arg("check")
@@ -176,8 +174,8 @@ impl ProgramConfig for RuffStruct {
                     .arg("--fix")
                     .arg("--unsafe-fixes");
 
-                if !self.get_settings().app_config.is_empty() {
-                    command.arg("--config").arg(&self.get_settings().app_config);
+                if !self.non_custom_items.app_config.is_empty() {
+                    command.arg("--config").arg(&self.non_custom_items.app_config);
                 } else {
                     command.arg("--isolated");
                 }
@@ -207,7 +205,7 @@ impl ProgramConfig for RuffStruct {
                 command.arg(full_name);
             }
             _ => {
-                panic!("Unknown tool type: {}", self.settings.tool_type);
+                panic!("Unknown tool type: {}", self.non_custom_items.tool_type);
             }
         }
 
@@ -343,7 +341,7 @@ impl ProgramConfig for RuffStruct {
     }
 
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
-        match self.settings.tool_type.as_str() {
+        match self.non_custom_items.tool_type.as_str() {
             "lint_check_fix" | "lint_check" | "format" => CheckGroupFileMode::ByFolder,
             "red_knot" => CheckGroupFileMode::None,
             _ => CheckGroupFileMode::None,
