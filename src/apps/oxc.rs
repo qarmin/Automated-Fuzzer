@@ -17,7 +17,7 @@ impl ProgramConfig for OxcStruct {
             content.contains("fatal runtime error: stack overflow") ||
             content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:450:41") ||
             content.contains("crates/oxc_span/src/span.rs:102:9") ||
-            content.contains("crates/oxc_linter/src/fixer/mod.rs:200:37") ||
+            content.contains("crates/oxc_linter/src/fixer/mod.rs:200:37")
     }
     fn get_only_run_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
