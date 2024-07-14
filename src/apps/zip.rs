@@ -13,7 +13,7 @@ impl ProgramConfig for ZipStruct {
         ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_files(self, LANGS::GENERAL)
+        create_broken_files(self, LANGS::BINARY)
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

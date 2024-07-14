@@ -20,17 +20,17 @@ impl ProgramConfig for DlintStruct {
             && !BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e))
     }
 
-    fn get_only_run_command(&self, full_name: &str) -> Command {
+    fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
         command.arg("run").arg(full_name);
         command
     }
-    fn get_run_command(&self, full_name: &str) -> Child {
-        self.get_only_run_command(full_name).spawn().unwrap()
+    fn run_command(&self, full_name: &str) -> Child {
+        self.get_full_command(full_name).spawn().unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
-            create_broken_files(self, LANGS::GENERAL)
+            create_broken_files(self, LANGS::BINARY)
         } else {
             create_broken_files(self, LANGS::JAVASCRIPT)
         }

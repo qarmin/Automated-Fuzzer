@@ -1,8 +1,8 @@
 use crate::broken_files::{create_broken_files, LANGS};
-use std::process::Child;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
+use std::process::Child;
 
 pub struct PdfRsStruct {
     pub settings: Setting,
@@ -13,7 +13,7 @@ impl ProgramConfig for PdfRsStruct {
         ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x))
     }
     fn broken_file_creator(&self) -> Child {
-        create_broken_files(self, LANGS::GENERAL)
+        create_broken_files(self, LANGS::BINARY)
     }
     fn get_settings(&self) -> &Setting {
         &self.settings

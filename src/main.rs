@@ -126,7 +126,11 @@ fn main() {
         test_files(files, &settings, &obj, &atomic_broken, &atomic_all_broken);
 
         info!("");
-        info!("Found {} broken files ({} in all iterations)", atomic_broken.load(Ordering::Relaxed), atomic_all_broken.load(Ordering::Relaxed));
+        info!(
+            "Found {} broken files ({} in all iterations)",
+            atomic_broken.load(Ordering::Relaxed),
+            atomic_all_broken.load(Ordering::Relaxed)
+        );
         info!("");
     }
     info!("");

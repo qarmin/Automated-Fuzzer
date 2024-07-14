@@ -1,10 +1,10 @@
+use config::Config;
 use std::collections::HashMap;
 use std::str::FromStr;
-
-use config::Config;
 use strum_macros::{Display, EnumString};
 
 use crate::apps::biome::BiomeStruct;
+use crate::apps::custom::CustomStruct;
 use crate::apps::dicom::DicomStruct;
 use crate::apps::dlint::DlintStruct;
 use crate::apps::image::ImageStruct;
@@ -17,9 +17,9 @@ use crate::apps::ruff::RuffStruct;
 use crate::apps::rustbuzz::RustBuzzStruct;
 use crate::apps::selene::SeleneStruct;
 use crate::apps::staticheckgo::StaticCheckGoStruct;
-use crate::apps::swc::SwcStruct;
-use crate::apps::symphonia::SymphoniaStruct;
 use crate::apps::zip::ZipStruct;
+use crate::broken_files::LANGS;
+use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 
 pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
@@ -55,6 +55,84 @@ pub struct Setting {
     pub ignore_timeout_errors: bool,
     pub grouping: u32,
     pub debug_executed_commands: bool,
+    pub custom_items: Option<CustomItems>,
+}
+
+#[derive(Clone, Debug)]
+pub struct CustomItems {
+    pub group_mode: CheckGroupFileMode,
+    pub command_parts: Vec<String>,
+    pub search_items: Vec<String>,
+    pub ignored_items: Vec<String>,
+    pub file_type: LANGS,
+}
+
+pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &HashMap<String, String>) -> CustomItems {
+    let group_mode = match tool_hashmap["group_mode"].as_str() {
+        "none" => CheckGroupFileMode::None,
+        "by_files" => CheckGroupFileMode::ByFilesGroup,
+        "by_group" => CheckGroupFileMode::ByFolder,
+        _ => panic!("Invalid group mode {}", tool_hashmap["group_mode"]),
+    };
+
+    let timeout_time: u32 = general["timeout"].parse().unwrap();
+    let mut command_parts = Vec::new();
+    if timeout_time != 0 {
+        command_parts.push("timeout".to_string());
+        command_parts.push("-v".to_string());
+        command_parts.push(timeout_time.to_string());
+    }
+    if tool_hashmap["command"]
+        .split("|")
+        .filter_map(|e| {
+            let r = e.trim();
+            if r.is_empty() {
+                None
+            } else {
+                Some(r)
+            }
+        })
+        .count()
+        == 0
+    {
+        panic!("No command found in the custom tool");
+    }
+    command_parts.extend(tool_hashmap["command"].split('|').map(str::to_string));
+
+    let search_item_keys: Vec<_> = tool_hashmap
+        .keys()
+        .filter(|e| e.starts_with("search_item_"))
+        .cloned()
+        .collect();
+    let search_items: Vec<_> = search_item_keys.iter().map(|e| tool_hashmap[e].clone()).collect();
+    if search_items.is_empty() {
+        panic!("No search items found in the custom tool");
+    }
+
+    let ignored_item_keys: Vec<_> = tool_hashmap
+        .keys()
+        .filter(|e| e.starts_with("ignored_item_"))
+        .cloned()
+        .collect();
+    let ignored_items = ignored_item_keys.iter().map(|e| tool_hashmap[e].clone()).collect();
+
+    let file_type = match tool_hashmap["file_type"].as_str() {
+        "text" => LANGS::TEXT,
+        "binary" => LANGS::BINARY,
+        "js" => LANGS::JAVASCRIPT,
+        "go" => LANGS::GO,
+        "rust" => LANGS::RUST,
+        "lua" => LANGS::LUA,
+        _ => panic!("Invalid file type {}", tool_hashmap["file_type"]),
+    };
+
+    CustomItems {
+        group_mode,
+        command_parts,
+        search_items,
+        ignored_items,
+        file_type,
+    }
 }
 
 pub fn load_settings() -> Setting {
@@ -83,6 +161,13 @@ pub fn load_settings() -> Setting {
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
+
+    let custom_items = if current_mode == MODES::CUSTOM {
+        Some(process_custom_struct(&general, &curr_setting))
+    } else {
+        None
+    };
+
     Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
@@ -118,10 +203,12 @@ pub fn load_settings() -> Setting {
         ignore_timeout_errors,
         grouping,
         debug_executed_commands,
+        custom_items,
     }
 }
 
 pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
+    let custom_items = settings.custom_items.clone();
     match settings.current_mode {
         MODES::OXC => Box::new(OxcStruct { settings }),
         MODES::MYPY => Box::new(MypyStruct { settings }),
@@ -133,20 +220,24 @@ pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
         }),
         MODES::LOFTY => Box::new(LoftyStruct { settings }),
         MODES::IMAGE => Box::new(ImageStruct { settings }),
-        MODES::SYMPHONIA => Box::new(SymphoniaStruct { settings }),
         MODES::SELENE => Box::new(SeleneStruct { settings }),
         MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
         MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
         MODES::PDFRS => Box::new(PdfRsStruct { settings }),
         MODES::DICOM => Box::new(DicomStruct { settings }),
-        MODES::SWC => Box::new(SwcStruct { settings }),
         MODES::ZIP => Box::new(ZipStruct { settings }),
         MODES::RUSTBUZZ => Box::new(RustBuzzStruct { settings }),
+        MODES::CUSTOM => Box::new(CustomStruct {
+            custom_items: custom_items.unwrap(),
+            settings,
+        }),
     }
 }
 
 #[derive(Debug, PartialEq, EnumString, Copy, Clone, Display)]
 pub enum MODES {
+    #[strum(ascii_case_insensitive)]
+    CUSTOM,
     #[strum(ascii_case_insensitive)]
     RUFF,
     #[strum(ascii_case_insensitive)]
@@ -162,8 +253,6 @@ pub enum MODES {
     #[strum(ascii_case_insensitive)]
     LOFTY,
     #[strum(ascii_case_insensitive)]
-    SYMPHONIA,
-    #[strum(ascii_case_insensitive)]
     SELENE,
     #[strum(ascii_case_insensitive)]
     STATICCHECKGO,
@@ -173,8 +262,6 @@ pub enum MODES {
     PDFRS,
     #[strum(ascii_case_insensitive)]
     DICOM,
-    #[strum(ascii_case_insensitive)]
-    SWC,
     #[strum(ascii_case_insensitive)]
     ZIP,
     #[strum(ascii_case_insensitive)]

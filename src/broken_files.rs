@@ -2,15 +2,15 @@ use std::process::{Child, Command, Stdio};
 
 use crate::obj::ProgramConfig;
 
-#[derive(PartialEq, Eq, Clone, Copy)]
+#[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum LANGS {
     PYTHON,
     JAVASCRIPT,
     LUA,
     GO,
-    #[allow(dead_code)]
     RUST,
-    GENERAL,
+    BINARY,
+    TEXT,
 }
 
 const PYTHON_ARGS: &[&str] = &[
@@ -32,7 +32,7 @@ const JAVASCRIPT_ARGS: &[&str] = &[
     "extends", "false", "final", "finally", "float", "for", "function", "goto", "if", "implements", "import", "in",
     "instanceof", "int", "interface", "let", "long", "native", "new", "null", "package", "private", "protected",
     "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws", "transient",
-    "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield", "                                "
+    "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield", "                                ",
 ];
 const LUA_ARGS: &[&str] = &[
     "and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or",
@@ -47,7 +47,7 @@ const GO_ARGS: &[&str] = &[
     "&^=", "~", "break", "default", "func", "interface", "select", "case", "defer", "go", "map", "struct", "chan",
     "else", "goto", "package", "switch", "const", "fallthrough", "if", "range", "type", "continue", "for", "import",
     "return", "var", "append", "cap", "complex", "delete", "len", "panic",
-    "                                                                                        ", "https"
+    "                                                                                        ", "https",
 ];
 
 // "|", "||",  "|=", "--", "-=", "\0", "->"  cause some problems
@@ -69,7 +69,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;
     let mut command = Command::new("create_broken_files");
     let mut com = &mut command;
-    if lang != LANGS::GENERAL {
+    if ![LANGS::BINARY, LANGS::TEXT].contains(&lang) {
         com = com.args(format!("-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c true -s").split(' '));
     }
     match lang {
@@ -78,10 +78,18 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::LUA => com = com.args(LUA_ARGS),
         LANGS::GO => com = com.args(GO_ARGS),
         LANGS::RUST => com = com.args(RUST_ARGS),
-        LANGS::GENERAL => {
+        LANGS::BINARY => {
             com = com.args(
                 format!(
                     "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c false"
+                )
+                    .split(' '),
+            );
+        }
+        LANGS::TEXT => {
+            com = com.args(
+                format!(
+                    "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c true"
                 )
                     .split(' '),
             );

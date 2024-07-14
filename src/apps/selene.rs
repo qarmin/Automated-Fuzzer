@@ -14,7 +14,7 @@ impl ProgramConfig for SeleneStruct {
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
-            create_broken_files(self, LANGS::GENERAL)
+            create_broken_files(self, LANGS::BINARY)
         } else {
             create_broken_files(self, LANGS::LUA)
         }

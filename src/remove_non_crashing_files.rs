@@ -127,7 +127,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
 
 pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
     info!("Saving results to file");
-    let command = obj.get_only_run_command("TEST___FILE");
+    let command = obj.get_full_command("TEST___FILE");
     let args = command
         .get_args()
         .map(|e| {
@@ -208,10 +208,10 @@ cause this
 $ERROR
 ```
 "
-            .replace("$CNT_TEXT", &cnt_text)
-            .replace("$COMMAND", &command_str_with_extension)
-            .replace("$ERROR", &result)
-            .replace("\n\n```", "\n```");
+        .replace("$CNT_TEXT", &cnt_text)
+        .replace("$COMMAND", &command_str_with_extension)
+        .replace("$ERROR", &result)
+        .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

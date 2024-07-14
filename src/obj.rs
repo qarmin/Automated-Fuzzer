@@ -25,17 +25,22 @@ pub trait ProgramConfig: Sync {
         false
     }
 
-    fn get_only_run_command(&self, full_name: &str) -> Command {
+    fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
         command.arg(full_name);
         command
     }
-
-    fn get_run_command(&self, full_name: &str) -> Child {
-        self.get_only_run_command(full_name).spawn().unwrap()
+    fn get_group_command(&self, files: &[String]) -> Command {
+        let mut command = self._get_basic_run_command();
+        command.args(files);
+        command
     }
-    fn get_group_files_command(&self, files: &[String]) -> Child {
-        self._get_basic_run_command().args(files).spawn().unwrap()
+
+    fn run_command(&self, full_name: &str) -> Child {
+        self.get_full_command(full_name).spawn().unwrap()
+    }
+    fn run_group_command(&self, files: &[String]) -> Child {
+        self.get_group_command(files).spawn().unwrap()
     }
     fn _get_basic_run_command(&self) -> Command {
         let timeout = self.get_settings().timeout;

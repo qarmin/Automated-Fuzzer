@@ -1,4 +1,5 @@
 pub mod biome;
+pub mod custom;
 pub mod dicom;
 pub mod dlint;
 pub mod image;
@@ -11,6 +12,4 @@ pub mod ruff;
 pub mod rustbuzz;
 pub mod selene;
 pub mod staticheckgo;
-pub mod swc;
-pub mod symphonia;
 pub mod zip;

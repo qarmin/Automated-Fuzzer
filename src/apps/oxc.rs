@@ -13,13 +13,13 @@ impl ProgramConfig for OxcStruct {
         ["RUST_BACKTRACE", "panicked at"].iter().any(|&x| content.contains(x)) && !self.ignored_signal_output(&content)
     }
     fn ignored_signal_output(&self, content: &str) -> bool {
-        content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:424:41") ||
-            content.contains("fatal runtime error: stack overflow") ||
-            content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:450:41") ||
-            content.contains("crates/oxc_span/src/span.rs:102:9") ||
-            content.contains("crates/oxc_linter/src/fixer/mod.rs:200:37")
+        content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:424:41")
+            || content.contains("fatal runtime error: stack overflow")
+            || content.contains("crates/oxc_linter/src/utils/tree_shaking.rs:450:41")
+            || content.contains("crates/oxc_span/src/span.rs:102:9")
+            || content.contains("crates/oxc_linter/src/fixer/mod.rs:200:37")
     }
-    fn get_only_run_command(&self, full_name: &str) -> Command {
+    fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
         command
             .arg("-D")
@@ -30,12 +30,12 @@ impl ProgramConfig for OxcStruct {
             .arg("--fix");
         command
     }
-    fn get_run_command(&self, full_name: &str) -> Child {
-        self.get_only_run_command(full_name).spawn().unwrap()
+    fn run_command(&self, full_name: &str) -> Child {
+        self.get_full_command(full_name).spawn().unwrap()
     }
     fn broken_file_creator(&self) -> Child {
         if self.settings.binary_mode {
-            create_broken_files(self, LANGS::GENERAL)
+            create_broken_files(self, LANGS::BINARY)
         } else {
             create_broken_files(self, LANGS::JAVASCRIPT)
         }

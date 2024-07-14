@@ -20,14 +20,27 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "symphonia"
+current_mode = "custom"
 
-[symphonia]
-app_binary = "symphonia"
+[custom]
+# Unused in custom mode
+app_binary = ""
 app_config = ""
+tool_type = ""
+binary_mode = false
+
+# Used in custom mode
+command = "symphonia|FILE_PATHS_TO_PROVIDE"
+
 extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-tool_type = ""
-binary_mode = true
+group_mode = "by_group" # available: none, by_files, by_group
 
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+ignored_item_1 = "memory allocation of" # https://github.com/pdeljanov/Symphonia/issues/297
+ignored_item_2 = "symphonia_format_mkv::ebml::read_vint" # https://github.com/pdeljanov/Symphonia/issues/298
+ignored_item_3 = "symphonia_core::units::TimeBase::new" # https://github.com/pdeljanov/Symphonia/issues/299
+ignored_item_4 = "symphonia_format_isomp4::atoms::AtomIterator<B>::read_atom" # https://github.com/pdeljanov/Symphonia/issues/300
+file_type = "binary" # Available: text, binary, js, go, rust, lua

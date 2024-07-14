@@ -52,7 +52,7 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
 
             fs::write(&new_name, original_content).unwrap();
 
-            let output = obj.get_run_command(&new_name).wait_with_output().unwrap();
+            let output = obj.run_command(&new_name).wait_with_output().unwrap();
             let all_str = collect_output(&output);
             if !obj.is_broken(&all_str) {
                 info!("File {new_name} ({i}) is not broken");
