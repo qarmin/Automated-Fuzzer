@@ -80,8 +80,9 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         })
         .count()
         == 0
+        || !tool_hashmap["command"].contains("FILE_PATHS_TO_PROVIDE")
     {
-        panic!("No command found in the custom tool");
+        panic!("No command found in the custom tool or FILE_PATHS_TO_PROVIDE is not found in the command");
     }
     command_parts.extend(tool_hashmap["command"].split('|').map(str::to_string));
 

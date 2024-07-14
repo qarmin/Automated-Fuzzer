@@ -1,4 +1,4 @@
-name: 🐧 Oxc Check
+name: 🐧 Symphonia Check
 on:
   push:
   pull_request:
@@ -7,10 +7,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: OXC
+  TOOL_TYPE: SYMPHONIA
 
 jobs:
-  oxc-normal-ci:
+  symphonia-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -18,22 +18,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #          - name: LONG_1
-          #            config-file: fuzz_oxc_settings_ci.toml
+          #          - name: SANITIZER_1
+          #            config-file: fuzz_symphonia_settings_ci.toml
           #            timeout: 18000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            asan_build: true
+          #          - name: SHORT_1
+          #            config-file: fuzz_symphonia_settings_ci.toml
+          #            timeout: 1800
+          #            files: "AA_MUSIC_VALID_FILES.7z"
           #            asan_build: false
-          - name: SANITIZER_1
-            config-file: fuzz_oxc_settings_ci.toml
+          - name: LONG_1
+            config-file: fuzz_symphonia_settings_ci.toml
             timeout: 18000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            asan_build: true
-          - name: SHORT_1
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 1800
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            files: "AA_MUSIC_VALID_FILES.7z"
             asan_build: false
-
     steps:
       - uses: actions/checkout@v4
 
@@ -53,27 +52,21 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
 
-      - name: Install oxlint
+      - name: Install Symphonia
         run: |
-          wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
-          unzip -q main.zip
-          rm main.zip
-          cd oxc-main
-          rm rust-toolchain.toml
-          sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
-          sd "debug         = false" "debug = true" Cargo.toml
-          
+          cd src/crates/symphonia
+          cargo update
+
           if [ "${{ matrix.asan_build }}" = "true" ]; then
             echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path apps/oxlint --locked --target x86_64-unknown-linux-gnu
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
           else
             echo "NORMAL BUILD___"
-            cargo install --path apps/oxlint --locked
+            cargo install --path . --locked
           fi
-          
-          cd ../
-          rm -rf oxc-main
-          ldd $(whereis -b oxlint | awk '{print $2}')
+
+          cd ../../..
+          ldd $(whereis -b symphonia | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 
@@ -90,9 +83,9 @@ jobs:
         run: |
           CURR_DIR=$(pwd)
           cd /opt/VALID_FILES_DIR
-          
+
           python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
-          
+
           cd $CURR_DIR
 
       - name: Run app

@@ -1,6 +1,5 @@
-use std::process::{Child, Command, Stdio};
-
 use crate::obj::ProgramConfig;
+use std::process::{Child, Command, Stdio};
 
 #[derive(PartialEq, Eq, Clone, Copy, Debug)]
 pub enum LANGS {
@@ -95,5 +94,8 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
             );
         }
     }
+
+    // info!("Command: {:?}", com);
+
     com.stderr(Stdio::piped()).stdout(Stdio::piped()).spawn().unwrap()
 }

@@ -1,4 +1,4 @@
-name: 🐧 Symphonia Check
+name: 🐧 Zip Check
 on:
   push:
   pull_request:
@@ -7,10 +7,10 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: SYMPHONIA
+  TOOL_TYPE: ZIP_RS
 
 jobs:
-  symphonia-normal-ci:
+  ziprs-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -18,21 +18,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LONG_1
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            asan_build: false
+          #          - name: LONG_1
+          #            config-file: fuzz_ziprs_settings_ci.toml
+          #            timeout: 18000
+          #            files: "AA_ZIP_VALID_FILES.7z"
+          #            asan_build: false
+          #          - name: SHORT_1
+          #            config-file: fuzz_ziprs_settings_ci.toml
+          #            timeout: 1800
+          #            files: "AA_ZIP_VALID_FILES.7z"
+          #            asan_build: false
           - name: SANITIZER_1
-            config-file: fuzz_symphonia_settings_ci.toml
+            config-file: fuzz_ziprs_settings_ci.toml
             timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
+            files: "AA_ZIP_VALID_FILES.7z"
             asan_build: true
-          - name: SHORT_1
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 1800
-            files: "AA_MUSIC_VALID_FILES.7z"
-            asan_build: false
+
     steps:
       - uses: actions/checkout@v4
 
@@ -52,21 +53,22 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
 
-      - name: Install Symphonia
+      - name: Install zip
         run: |
-          cd src/crates/symphonia
+          cd src/crates/ziprs
           cargo update
-
+          
           if [ "${{ matrix.asan_build }}" = "true" ]; then
             echo "ASAN BUILD___"
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
           else
             echo "NORMAL BUILD___"
+            cargo default stable
             cargo install --path . --locked
           fi
-
+          
           cd ../../..
-          ldd $(whereis -b symphonia | awk '{print $2}')
+          ldd $(whereis -b ziprs | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 
@@ -83,9 +85,9 @@ jobs:
         run: |
           CURR_DIR=$(pwd)
           cd /opt/VALID_FILES_DIR
-
+          
           python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
-
+          
           cd $CURR_DIR
 
       - name: Run app

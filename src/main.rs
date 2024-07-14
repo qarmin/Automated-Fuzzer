@@ -1,6 +1,15 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
 
+use crate::common::{
+    check_if_app_ends, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files,
+    minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, CheckGroupFileMode, TIMEOUT_SECS,
+};
+use crate::obj::ProgramConfig;
+use crate::settings::{get_object, load_settings, Setting};
+use humansize::format_size;
+use jwalk::WalkDir;
+use log::{error, info};
 use rand::prelude::*;
 use rayon::prelude::*;
 use std::collections::HashMap;
@@ -9,18 +18,8 @@ use std::path::Path;
 use std::sync::atomic::{AtomicU32, Ordering};
 use std::{fs, process};
 
-use crate::common::{
-    check_if_app_ends, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files,
-    minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, CheckGroupFileMode, TIMEOUT_SECS,
-};
-use crate::obj::ProgramConfig;
-use crate::settings::{get_object, load_settings, Setting};
-use jwalk::WalkDir;
-use log::{error, info};
-
 pub mod apps;
 mod broken_files;
-mod clean_base_files;
 mod common;
 mod minimal_rules;
 mod obj;
@@ -103,9 +102,12 @@ fn main() {
             break;
         };
         info!("Collecting files");
-        let mut files = collect_files(&settings);
+        let (mut files, files_size) = collect_files(&settings);
         let start_file_size = files.len();
-        info!("Collected {start_file_size} files");
+        info!(
+            "Collected {start_file_size} files with size {}",
+            format_size(files_size, humansize::BINARY)
+        );
 
         if settings.grouping > 1 && obj.get_files_group_mode() != CheckGroupFileMode::None {
             info!("Started to check files in groups of {} elements", settings.grouping);
@@ -156,7 +158,8 @@ fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
     };
 }
 
-fn collect_files(settings: &Setting) -> Vec<String> {
+fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
+    let mut size_all = 0;
     let mut files = Vec::new();
     assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());
     for i in WalkDir::new(&settings.temp_possible_broken_files_dir)
@@ -177,6 +180,7 @@ fn collect_files(settings: &Setting) -> Vec<String> {
         };
         if settings.extensions.iter().any(|e| s.to_lowercase().ends_with(e)) {
             files.push(s.to_string());
+            size_all += metadata.len();
         }
     }
     if files.len() > settings.max_collected_files {
@@ -188,7 +192,7 @@ fn collect_files(settings: &Setting) -> Vec<String> {
         assert!(!files.is_empty());
     }
 
-    files
+    (files, size_all)
 }
 
 fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>) -> Vec<String> {
