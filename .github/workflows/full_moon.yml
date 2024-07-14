@@ -53,9 +53,9 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
 
-      - name: Install fool_moon
+      - name: Install full_moon
         run: |
-          cd src/crates/fool_moon
+          cd src/crates/full_moon
           cargo update
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
@@ -67,7 +67,7 @@ jobs:
           fi
           
           cd ../../..
-          ldd $(whereis -b fool_moon | awk '{print $2}')
+          ldd $(whereis -b full_moon | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 
