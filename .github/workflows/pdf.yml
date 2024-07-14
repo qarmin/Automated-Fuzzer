@@ -11,7 +11,6 @@ env:
 
 jobs:
   pdf-normal-ci:
-
     runs-on: ubuntu-24.04
 
     strategy:
@@ -60,5 +59,29 @@ jobs:
           cd ../../..
           ldd $(whereis -b pdf | awk '{print $2}')
 
+      # Requires
+      # workflow_call:
+      #    inputs:
+      #      files:
+      #        description: 'Files to download'
+      #        type: string
+      #        required: true
+      #      config-file:
+      #        description: 'Config file to use'
+      #        type: string
+      #        required: true
+      #      timeout:
+      #        description: 'Timeout for fuzzer'
+      #        type: number
+      #        required: true
+      #      tool-type:
+      #        description: 'Type of tool'
+      #        type: string
+      #        required: true
       - name: Call common steps
         uses: ./.github/workflows/common_after.yml
+        with:
+          files: ${{ matrix.files }}
+          config-file: ${{ matrix.config-file }}
+          timeout: ${{ matrix.timeout }}
+          tool-type: ${{ env.TOOL_TYPE }}

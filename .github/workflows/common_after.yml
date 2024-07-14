@@ -1,6 +1,25 @@
 name: Common Step Before
 
-on: [ workflow_call ]
+on:
+  workflow_call:
+    inputs:
+      files:
+        description: 'Files to download'
+        type: string
+        required: true
+      config-file:
+        description: 'Config file to use'
+        type: string
+        required: true
+      timeout:
+        description: 'Timeout for fuzzer'
+        type: number
+        required: true
+      tool-type:
+        description: 'Type of tool'
+        type: string
+        required: true
+
 
 jobs:
   common-steps:
@@ -21,21 +40,21 @@ jobs:
           CURR_DIR=$(pwd)
           cd /opt/VALID_FILES_DIR
           
-          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          python3 "$CURR_DIR/download_helper.py" "${{ inputs.files }}"
           
           cd $CURR_DIR
 
       - name: Run app
         run: |
-          mv ${{ matrix.config-file }} fuzz_settings.toml
+          mv ${{ inputs.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
-          target/release/automated_fuzzer ${{ matrix.timeout }} || true
+          target/release/automated_fuzzer ${{ inputs.timeout }} || true
 
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: FILES___${{ env.TOOL_TYPE }}___${{ matrix.name }}___before
+          name: FILES___${{ inputs.tool-type }}___${{ inputs.name }}___before
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
@@ -47,14 +66,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: REPORTS___${{ env.TOOL_TYPE }}___${{ matrix.name }}
+          name: REPORTS___${{ inputs.tool-type }}___${{ inputs.name }}
           path: /tmp/tmp_folder/data
 
       - name: Store results
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: FILES___${{ env.TOOL_TYPE }}___${{ matrix.name }}___after
+          name: FILES___${{ inputs.tool-type }}___${{ inputs.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove all folders
