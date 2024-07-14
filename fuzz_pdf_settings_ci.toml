@@ -20,7 +20,7 @@ max_collected_files = 1000000000 # Max number of files that will be collected fr
 check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "pdfrs"
+current_mode = "custom"
 
 [pdfrs]
 app_binary = "pdf"
@@ -30,4 +30,24 @@ valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 tool_type = ""
 binary_mode = true
+
+
+[custom]
+# Unused in custom mode
+app_binary = ""
+app_config = ""
+tool_type = ""
+binary_mode = false
+
+# Used in custom mode
+command = "pdf|FILE_PATHS_TO_PROVIDE"
+
+extensions = "pdf"
+valid_input_files_dir = "/opt/VALID_FILES_DIR"
+broken_files_dir = "/opt/BROKEN_FILES_DIR"
+group_mode = "by_group" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+file_type = "js" # Available: text, binary, js, go, rust, lua
 

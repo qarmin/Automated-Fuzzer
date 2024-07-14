@@ -37,27 +37,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup rust version
-        run: |
-          rustup default nightly
-          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
-          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+      - name: Call common steps
+        uses: ./.github/workflows/common_before.yml
 
-      - name: Install dependencies
-        run: |
-          sudo apt update
-          sudo apt install -y wget earlyoom libasan8
-
-      - name: Install create_broken_files and sd
-        run: cargo install create_broken_files sd
 
       # THERE STARTING CUSTOM STEP
+
 
       - name: Install pdf
         run: |
           cd src/crates/pdf
           cargo update
-          
+
           if [ "${{ matrix.asan_build }}" = "true" ]; then
             echo "ASAN BUILD___"
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
@@ -65,68 +56,9 @@ jobs:
             echo "NORMAL BUILD___"
             cargo install --path . --locked
           fi
-          
+
           cd ../../..
           ldd $(whereis -b pdf | awk '{print $2}')
 
-      # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
-
-      - name: Build
-        run: cargo build --release
-
-      - name: Create folders
-        run: |
-          mkdir /opt/VALID_FILES_DIR
-          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
-          mkdir /opt/BROKEN_FILES_DIR
-
-      - name: Download and prepare data files
-        run: |
-          CURR_DIR=$(pwd)
-          cd /opt/VALID_FILES_DIR
-          
-          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
-          
-          cd $CURR_DIR
-
-      - name: Run app
-        run: |
-          mv ${{ matrix.config-file }} fuzz_settings.toml
-          sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
-          target/release/automated_fuzzer ${{ matrix.timeout }} || true
-
-      - name: Store results
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: FILES___${{ env.TOOL_TYPE }}___${{ matrix.name }}___before
-          path: /opt/BROKEN_FILES_DIR
-
-      - name: Remove non crashing files
-        run: |
-          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-          RUST_BACKTRACE=1 target/release/automated_fuzzer
-
-      - name: Store Reports
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: REPORTS___${{ env.TOOL_TYPE }}___${{ matrix.name }}
-          path: /tmp/tmp_folder/data
-
-      - name: Store results
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: FILES___${{ env.TOOL_TYPE }}___${{ matrix.name }}___after
-          path: /opt/BROKEN_FILES_DIR
-
-      - name: Remove all folders
-        run: |
-          rm -rf /opt/VALID_FILES_DIR || true
-          rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
-
-      - name: Exit when found broken files
-        run: |
-          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
-
+      - name: Call common steps
+        uses: ./.github/workflows/common_after.yml

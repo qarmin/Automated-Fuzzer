@@ -3,16 +3,7 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use strum_macros::{Display, EnumString};
 
-use crate::apps::biome::BiomeStruct;
 use crate::apps::custom::CustomStruct;
-use crate::apps::dicom::DicomStruct;
-use crate::apps::dlint::DlintStruct;
-use crate::apps::image::ImageStruct;
-use crate::apps::lofty::LoftyStruct;
-use crate::apps::mypy::MypyStruct;
-use crate::apps::oxc::OxcStruct;
-use crate::apps::pdfrs::PdfRsStruct;
-use crate::apps::quick_lint_js::QuickLintStruct;
 use crate::apps::ruff::RuffStruct;
 use crate::apps::rustbuzz::RustBuzzStruct;
 use crate::apps::selene::SeleneStruct;
@@ -210,21 +201,12 @@ pub fn load_settings() -> Setting {
 pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
     let custom_items = settings.custom_items.clone();
     match settings.current_mode {
-        MODES::OXC => Box::new(OxcStruct { settings }),
-        MODES::MYPY => Box::new(MypyStruct { settings }),
-        MODES::DLINT => Box::new(DlintStruct { settings }),
-        MODES::BIOME => Box::new(BiomeStruct { settings }),
         MODES::RUFF => Box::new(RuffStruct {
             settings,
             ignored_rules: String::new(),
         }),
-        MODES::LOFTY => Box::new(LoftyStruct { settings }),
-        MODES::IMAGE => Box::new(ImageStruct { settings }),
         MODES::SELENE => Box::new(SeleneStruct { settings }),
         MODES::STATICCHECKGO => Box::new(StaticCheckGoStruct { settings }),
-        MODES::QUICKLINTJS => Box::new(QuickLintStruct { settings }),
-        MODES::PDFRS => Box::new(PdfRsStruct { settings }),
-        MODES::DICOM => Box::new(DicomStruct { settings }),
         MODES::ZIP => Box::new(ZipStruct { settings }),
         MODES::RUSTBUZZ => Box::new(RustBuzzStruct { settings }),
         MODES::CUSTOM => Box::new(CustomStruct {
@@ -241,27 +223,9 @@ pub enum MODES {
     #[strum(ascii_case_insensitive)]
     RUFF,
     #[strum(ascii_case_insensitive)]
-    MYPY,
-    #[strum(ascii_case_insensitive)]
-    BIOME,
-    #[strum(ascii_case_insensitive)]
-    DLINT,
-    #[strum(ascii_case_insensitive)]
-    OXC,
-    #[strum(ascii_case_insensitive)]
-    IMAGE,
-    #[strum(ascii_case_insensitive)]
-    LOFTY,
-    #[strum(ascii_case_insensitive)]
     SELENE,
     #[strum(ascii_case_insensitive)]
     STATICCHECKGO,
-    #[strum(ascii_case_insensitive)]
-    QUICKLINTJS,
-    #[strum(ascii_case_insensitive)]
-    PDFRS,
-    #[strum(ascii_case_insensitive)]
-    DICOM,
     #[strum(ascii_case_insensitive)]
     ZIP,
     #[strum(ascii_case_insensitive)]

@@ -13,9 +13,9 @@ remove_non_crashing_items_from_broken_files = false # Special mode to remove non
 find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
-allowed_error_statuses = "0,1,2,101,124" # TODO https://github.com/image-rs/image/issues/2282
+allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 ignore_timeout_errors = false
-error_when_found_signal = true # Errors, when app was killed by OS or user
+error_when_found_signal = false # Errors, when app was killed by OS or user # TODO: https://github.com/pdeljanov/Symphonia/issues/297
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
@@ -30,17 +30,17 @@ tool_type = ""
 binary_mode = false
 
 # Used in custom mode
-command = "image|FILE_PATHS_TO_PROVIDE"
+command = "dlint|run|FILE_PATHS_TO_PROVIDE"
 
-extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
+extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "none" # available: none, by_files, by_group - TODO check if works checking in group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-ignored_item_3 = "zune-jpeg-0.4.11/src/mcu.rs:209:9"
-ignored_item_34 = "src/codecs/tiff.rs:247:21"
-ignored_item_35 = "src/compression/piz/huffman.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+ignored_item_3 = "Parser should not call bump()" # 1145
+ignored_item_4 = "on a `None` value', src/js_regex/validator.rs" # 1145
+ignored_item_5 = "on a `None` value', src/rules/getter_return.rs" # 1145
+file_type = "js" # Available: text, binary, js, go, rust, lua
 

@@ -30,3 +30,34 @@ valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 tool_type = ""
 binary_mode = false
+
+[custom]
+# Unused in custom mode
+app_binary = ""
+app_config = ""
+tool_type = ""
+binary_mode = false
+
+#command
+#.arg("-D")
+#.arg("all")
+#.arg("-D")
+#.arg("nursery")
+#.arg(full_name)
+#.arg("--fix");
+# Used in custom mode
+command = "oxlint|-D|all|-D|nursery|FILE_PATHS_TO_PROVIDE|--fix"
+
+extensions = "ts,js,mjs,mts"
+valid_input_files_dir = "/opt/VALID_FILES_DIR"
+broken_files_dir = "/opt/BROKEN_FILES_DIR"
+group_mode = "by_group" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+ignored_item_1 = "crates/oxc_linter/src/utils/tree_shaking.rs:424:41"
+ignored_item_2 = "fatal runtime error: stack overflow"
+ignored_item_3 = "crates/oxc_linter/src/utils/tree_shaking.rs:450:41"
+ignored_item_4 = "crates/oxc_span/src/span.rs:102:9"
+ignored_item_5 = "crates/oxc_linter/src/fixer/mod.rs:200:37"
+file_type = "js" # Available: text, binary, js, go, rust, lua
