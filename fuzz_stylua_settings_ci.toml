@@ -1,6 +1,6 @@
 [general]
 loop_number = 5000 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 1000# Number of broken files that will be created for each 1 valid file
+broken_files_for_each_file = 10# Number of broken files that will be created for each 1 valid file
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 3000 # Attemps to minimize code, counter reset when found minimized test case
@@ -12,7 +12,7 @@ remove_non_crashing_items_from_broken_files = false # Special mode to remove non
 find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
-allowed_error_statuses = "0,1,2,3,12,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes) # TODO Strange 3,12 status - not sure why happens
+allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 ignore_timeout_errors = false
 error_when_found_signal = true # Errors, when app was killed by OS or user
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
@@ -22,15 +22,15 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 current_mode = "custom"
 
 [custom]
-name = "zip_rs"
-command = "ziprs|FILE_PATHS_TO_PROVIDE"
+name = "stylua"
+command = "stylua|FILE_PATHS_TO_PROVIDE"
 
-extensions = "zip"
+extensions = "lua"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "lua" # Available: text, binary, js, go, rust, lua
 

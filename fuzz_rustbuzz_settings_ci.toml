@@ -22,6 +22,7 @@ grouping = 200 # How many files will be grouped in one command - using bigger nu
 current_mode = "custom"
 
 [custom]
+name = "rust_buzz"
 command = "rsbuzz|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ttf,otf,woff,woff2"

@@ -22,6 +22,7 @@ grouping = 4000 # How many files will be grouped in one command - using bigger n
 current_mode = "custom"
 
 [custom]
+name = "swc"
 command = "swc|compile|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ts,js,mjs,mts"

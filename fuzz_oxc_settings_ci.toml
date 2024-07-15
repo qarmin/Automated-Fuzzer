@@ -22,6 +22,7 @@ grouping = 1000 # How many files will be grouped in one command - using bigger n
 current_mode = "custom"
 
 [custom]
+name = "oxc_linter"
 command = "oxlint|-D|all|-D|nursery|FILE_PATHS_TO_PROVIDE|--fix"
 
 extensions = "ts,js,mjs,mts"

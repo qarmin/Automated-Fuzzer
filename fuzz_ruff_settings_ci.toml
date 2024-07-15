@@ -22,6 +22,7 @@ grouping = 10000 # How many files will be grouped in one command - using bigger 
 current_mode = "ruff"
 
 [ruff]
+name = "ruff"
 app_binary = "ruff"
 app_config = ""
 extensions = "py"

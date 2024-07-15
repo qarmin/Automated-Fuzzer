@@ -22,6 +22,7 @@ grouping = 100 # How many files will be grouped in one command - using bigger nu
 current_mode = "custom"
 
 [custom]
+name = "staticcheck_go"
 command = "staticcheck|-checks|ALL|FILE_PATHS_TO_PROVIDE"
 
 extensions = "go"

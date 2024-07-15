@@ -30,6 +30,7 @@ current_mode = "custom"
 
 
 [custom]
+name = "name"
 command = "full_moon|FILE_PATHS_TO_PROVIDE"
 
 extensions = "lua"

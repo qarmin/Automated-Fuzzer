@@ -189,7 +189,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
         let folder = format!(
             "{}/{}_{}__({} bytes) - {}",
             settings.temp_folder,
-            settings.current_mode,
+            settings.name,
             error_type,
             content.len(),
             random::<u64>()
@@ -208,10 +208,10 @@ cause this
 $ERROR
 ```
 "
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

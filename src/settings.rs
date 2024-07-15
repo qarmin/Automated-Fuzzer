@@ -10,6 +10,7 @@ use strum_macros::{Display, EnumString};
 pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
 #[derive(Clone, Debug)]
 pub struct Setting {
+    pub name: String,
     pub loop_number: u32,
     pub broken_files_for_each_file: u32,
     pub minimize_output: bool,
@@ -148,6 +149,7 @@ pub fn load_settings() -> Setting {
     let current_mode = MODES::from_str(&current_mode_string).unwrap();
     let curr_setting = config[&current_mode_string].clone();
 
+    let name = curr_setting["name"].clone();
     let extensions = curr_setting["extensions"]
         .split(',')
         .map(str::trim)
@@ -171,6 +173,7 @@ pub fn load_settings() -> Setting {
     };
 
     Setting {
+        name,
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
