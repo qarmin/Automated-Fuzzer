@@ -32,5 +32,6 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
+ignored_item_3 = "src/stateful/decode.rs" # https://github.com/Enet4/dicom-rs/issues/543
 file_type = "binary" # Available: text, binary, js, go, rust, lua
 
