@@ -42,6 +42,9 @@ fn remove_non_crashing_in_group(
     settings: &Setting,
     obj: &Box<dyn ProgramConfig>,
 ) -> Vec<String> {
+    if settings.grouping == 1 || obj.get_files_group_mode() == CheckGroupFileMode::None {
+        return broken_files;
+    }
     info!("Removing non-crashing files in group");
     let group_size = 20;
     let atomic_counter = AtomicUsize::new(0);

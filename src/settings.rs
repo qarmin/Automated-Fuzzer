@@ -146,7 +146,12 @@ pub fn load_settings() -> Setting {
 
     let general = config["general"].clone();
     let current_mode_string = general["current_mode"].clone();
-    let current_mode = MODES::from_str(&current_mode_string).unwrap();
+
+    let current_mode = if current_mode_string.contains("custom") {
+        MODES::CUSTOM
+    } else {
+        MODES::from_str(&current_mode_string).unwrap()
+    };
     let curr_setting = config[&current_mode_string].clone();
 
     let name = curr_setting["name"].clone();

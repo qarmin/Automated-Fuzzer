@@ -22,8 +22,8 @@ grouping = 2000 # How many files will be grouped in one command - using bigger n
 current_mode = "custom"
 
 [custom]
-name = "stylua"
-command = "stylua|FILE_PATHS_TO_PROVIDE"
+name = "stylua_veriy"
+command = "stylua|--verify|FILE_PATHS_TO_PROVIDE"
 
 extensions = "lua"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
@@ -32,5 +32,6 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
+serach_item_3 = "internal error:"
 file_type = "lua" # Available: text, binary, js, go, rust, lua
 
