@@ -87,16 +87,24 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
     command_parts.extend(tool_hashmap["command"].split('|').map(str::to_string));
 
     let search_item_keys: Vec<_> = tool_hashmap
-        .keys()
-        .filter(|e| e.starts_with("search_item_"))
+        .iter()
+        .filter_map(|(key, value)| if key.starts_with("search_item_") && !value.trim().is_empty() {
+            Some(key)
+        } else {
+            None
+        })
         .cloned()
         .collect();
     let search_items: Vec<_> = search_item_keys.iter().map(|e| tool_hashmap[e].clone()).collect();
     assert!(!search_items.is_empty(), "No search items found in the custom tool");
 
     let ignored_item_keys: Vec<_> = tool_hashmap
-        .keys()
-        .filter(|e| e.starts_with("ignored_item_"))
+        .iter()
+        .filter_map(|(key, value)| if key.starts_with("ignored_item_") && !value.trim().is_empty() {
+            Some(key)
+        } else {
+            None
+        })
         .cloned()
         .collect();
     let ignored_items = ignored_item_keys.iter().map(|e| tool_hashmap[e].clone()).collect();
