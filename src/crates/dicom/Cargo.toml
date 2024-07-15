@@ -14,6 +14,7 @@ dicom-encoding = {git = "https://github.com/Enet4/dicom-rs"}
 dicom-dictionary-std = {git = "https://github.com/Enet4/dicom-rs"}
 dicom-transfer-syntax-registry = {git = "https://github.com/Enet4/dicom-rs"}
 dicom-dump = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-json = {git = "https://github.com/Enet4/dicom-rs"}
 
 walkdir = "2.5.0"
 

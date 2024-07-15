@@ -1,6 +1,7 @@
 use dicom_object::open_file;
 use std::env::args;
 use std::path::Path;
+use dicom_dump::DumpOptions;
 use walkdir::WalkDir;
 
 fn main() {
@@ -23,11 +24,12 @@ fn main() {
 }
 
 fn check_file(path: &str) {
-    let res = open_file(path);
-    if let Err(e) = res {
-        // eprintln!("Error: {}", e);
-    } else {
-        // println!("Result: {:?}", res);
-    }
-    // dbg!(res);
+    let Ok(res) = open_file(path) else {
+        return;
+    };
+    let mut item_to_dump = Vec::new();
+    let _ = DumpOptions::new().dump_object_to(&mut item_to_dump, &res);
+    let _ = dicom_json::to_string(&res);
+    let mut item_to_dump = Vec::new();
+    let _ = res.write_dataset(&mut item_to_dump);
 }
