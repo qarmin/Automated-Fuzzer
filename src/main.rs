@@ -51,11 +51,14 @@ fn main() {
     let _ = fs::create_dir_all(&settings.temp_folder);
     let _ = fs::create_dir_all(&settings.broken_files_dir);
 
+
     if settings.remove_non_crashing_items_from_broken_files {
+        info!("RUNNING REMOVE NON CRASHING FILES");
         remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);
         return;
     }
     if settings.find_minimal_rules {
+        info!("RUNNING MINIMAL RULES");
         minimal_rules::check_code(&settings, &obj);
         return;
     }
@@ -68,6 +71,9 @@ fn main() {
 
     assert!(Path::new(&settings.valid_input_files_dir).exists());
     assert!(Path::new(&settings.broken_files_dir).exists());
+
+
+    info!("Found {} files in valid input dir", calculate_number_of_files(&settings.valid_input_files_dir));
 
     let atomic_all_broken = AtomicU32::new(0);
 
@@ -156,6 +162,20 @@ fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
     if settings.debug_print_broken_files_creator {
         info!("{out}");
     };
+}
+
+fn calculate_number_of_files(dir: &str) -> usize {
+    let mut number_of_files = 0;
+    for i in WalkDir::new(&dir)
+        .max_depth(999)
+        .into_iter()
+        .flatten()
+    {
+        if i.path().is_file() {
+            number_of_files += 1;
+        }
+    }
+    number_of_files
 }
 
 fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
