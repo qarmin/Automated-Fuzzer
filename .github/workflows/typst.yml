@@ -19,22 +19,22 @@ jobs:
       matrix:
         include:
           - name: LONG_1
-            config-file: fuzz_typst_rs_settings_ci.toml
+            config-file: fuzz_typst_settings_ci.toml
             timeout: 18000
             files: "AA_TYPST_VALID_FILES.zip"
             asan_build: false
           - name: SHORT_2
-            config-file: fuzz_typst_rs_settings_ci.toml
+            config-file: fuzz_typst_settings_ci.toml
             timeout: 3600
             files: "AA_TYPST_VALID_FILES.zip"
             asan_build: false
           - name: SHORT_1
-            config-file: fuzz_typst_rs_settings_ci.toml
+            config-file: fuzz_typst_settings_ci.toml
             timeout: 1800
             files: "AA_TYPST_VALID_FILES.zip"
             asan_build: false
           - name: SANITIZER_1
-            config-file: fuzz_typst_rs_settings_ci.toml
+            config-file: fuzz_typst_settings_ci.toml
             timeout: 18000
             files: "AA_TYPST_VALID_FILES.zip"
             asan_build: true
