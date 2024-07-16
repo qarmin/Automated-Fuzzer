@@ -33,5 +33,6 @@ group_mode = "by_group" # available: none, by_files, by_group
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
 serach_item_3 = "internal error:"
+ignored_item_1 = "src/verify_ast.rs:151:35"
 file_type = "lua" # Available: text, binary, js, go, rust, lua
 

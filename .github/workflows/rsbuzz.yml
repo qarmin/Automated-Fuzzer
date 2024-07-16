@@ -1,7 +1,7 @@
 name: 🐧 Rustbuzz Check
 on:
-  #push: # Once daily
-  #pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 22 * * *'
 
@@ -18,16 +18,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #          - name: LONG_1
-          #            config-file: fuzz_rustbuzz_settings_ci.toml
-          #            timeout: 18000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            asan_build: false
-          #          - name: SHORT_1
-          #            config-file: fuzz_rustbuzz_settings_ci.toml
-          #            timeout: 1800
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            asan_build: false
+          - name: LONG_1
+            config-file: fuzz_rustbuzz_settings_ci.toml
+            timeout: 18000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            asan_build: false
+          - name: SHORT_1
+            config-file: fuzz_rustbuzz_settings_ci.toml
+            timeout: 1800
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            asan_build: false
+          - name: SHORT_2
+            config-file: fuzz_rustbuzz_settings_ci.toml
+            timeout: 4000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            asan_build: false
           - name: SANITIZER_1
             config-file: fuzz_rustbuzz_settings_ci.toml
             timeout: 18000
