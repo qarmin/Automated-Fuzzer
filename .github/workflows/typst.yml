@@ -1,16 +1,16 @@
-name: 🐧 Rustbuzz Check
+name: 🐧 Typst Check
 on:
-  #push: # Once daily
-  #pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 22 * * *'
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: RUSTBUZZ
+  TOOL_TYPE: TYPST
 
 jobs:
-  rustbuzz-normal-ci:
+  typst-normal-ci:
 
     runs-on: ubuntu-24.04
 
@@ -18,25 +18,25 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #          - name: LONG_1
-          #            config-file: fuzz_rustbuzz_settings_ci.toml
-          #            timeout: 18000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            asan_build: false
-          #          - name: SHORT_1
-          #            config-file: fuzz_rustbuzz_settings_ci.toml
-          #            timeout: 1800
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            asan_build: false
-          #          - name: SHORT_2
-          #            config-file: fuzz_rustbuzz_settings_ci.toml
-          #            timeout: 4000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            asan_build: false
-          - name: SANITIZER_1
-            config-file: fuzz_rustbuzz_settings_ci.toml
+          - name: LONG_1
+            config-file: fuzz_typst_rs_settings_ci.toml
             timeout: 18000
-            files: "AA_FONT_VALID_FILES_MORE.7z"
+            files: "AA_TYPST_VALID_FILES.zip"
+            asan_build: false
+          - name: SHORT_2
+            config-file: fuzz_typst_rs_settings_ci.toml
+            timeout: 3600
+            files: "AA_TYPST_VALID_FILES.zip"
+            asan_build: false
+          - name: SHORT_1
+            config-file: fuzz_typst_rs_settings_ci.toml
+            timeout: 1800
+            files: "AA_TYPST_VALID_FILES.zip"
+            asan_build: false
+          - name: SANITIZER_1
+            config-file: fuzz_typst_rs_settings_ci.toml
+            timeout: 18000
+            files: "AA_TYPST_VALID_FILES.zip"
             asan_build: true
 
     steps:
@@ -58,10 +58,17 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
 
-      - name: Install zip
+      - name: Install typst_rs
         run: |
-          cd src/crates/rsbuzz
-          cargo update
+          wget -q https://github.com/typst/typst/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          cd typst-main/crates/typst-cli
+          echo "" >> Cargo.toml
+          echo "[profile.release]" >> Cargo.toml
+          echo "overflow-checks = true" >> Cargo.toml
+          echo "debug = true" >> Cargo.toml
+          echo "panic = 'abort'" >> Cargo.toml
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
             echo "ASAN BUILD___"
@@ -72,7 +79,7 @@ jobs:
           fi
           
           cd ../../..
-          ldd $(whereis -b rsbuzz | awk '{print $2}')
+          ldd $(whereis -b typst | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 
