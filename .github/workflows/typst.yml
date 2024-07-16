@@ -63,12 +63,11 @@ jobs:
           wget -q https://github.com/typst/typst/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd typst-main/crates/typst-cli
-          echo "" >> Cargo.toml
-          echo "[profile.release]" >> Cargo.toml
-          echo "overflow-checks = true" >> Cargo.toml
-          echo "debug = true" >> Cargo.toml
-          echo "panic = 'abort'" >> Cargo.toml
+          cd typst-main
+          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          cd crates/typst-cli
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
             echo "ASAN BUILD___"
