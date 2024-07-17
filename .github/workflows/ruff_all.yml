@@ -19,7 +19,7 @@ jobs:
         include:
           - name: NORMAL_1
             config-file: fuzz_ruff_settings_ci.toml
-            timeout: 10000
+            timeout: 18000
             files: "FILES_21.zip"
           #          - name: NORMAL_2
           #            config-file: fuzz_ruff_settings_ci.toml

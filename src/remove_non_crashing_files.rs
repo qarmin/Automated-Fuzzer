@@ -37,11 +37,18 @@ pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig
     let broken_files: Vec<String> = collect_broken_files(settings);
     info!("After checking {} broken files left", broken_files.len());
 }
+
+#[allow(dead_code)]
+#[allow(unused)]
 fn remove_non_crashing_in_group(
     broken_files: Vec<String>,
     settings: &Setting,
     obj: &Box<dyn ProgramConfig>,
 ) -> Vec<String> {
+    // TODO this check may be broken - test it
+    return broken_files;
+
+
     if settings.grouping == 1 || obj.get_files_group_mode() == CheckGroupFileMode::None {
         return broken_files;
     }
@@ -184,6 +191,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("AddressSanitizer") => "address_sanitizer",
             _ if result.contains("ThreadSanitizer") => "thread_sanitizer",
             _ if result.contains("LeakSanitizer") => "leak_sanitizer",
+            _ if result.contains("assertion `") => "assertion",
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
             _ => "",
