@@ -7,7 +7,7 @@ license = "MIT"
 
 [dependencies]
 jwalk = "0.8"
-rayon = "1.8"
+rayon = "1.10"
 rand = "0.8"
 config = "0.14"
 zip = "2.1.3"

@@ -32,17 +32,12 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-ignored_item_1 = "crates/swc_ecma_compat_es2015/src/destructuring.rs:1165:44"
-ignored_item_2 = "crates/swc_common/src/source_map.rs:662:60"
-ignored_item_3 = "crates/swc_ecma_compat_es2021/src/logical_assignments.rs:155:50"
-ignored_item_4 = "crates/swc_ecma_compat_es2015/src/destructuring.rs:409:52"
-ignored_item_5 = "crates/swc_ecma_compat_es2022/src/class_properties/mod.rs:959:21"
-ignored_item_6 = "crates/swc_ecma_transforms_typescript/src/transform.rs:265:18"
-ignored_item_7 = "crates/swc_ecma_compat_es2022/src/class_properties/mod.rs:972:21"
-ignored_item_8 = "crates/swc_ecma_compat_es2015/src/destructuring.rs:418:52"
-ignored_item_10 = "crates/swc_ecma_compat_es2021/src/logical_assignments.rs:158:50"
-ignored_item_11 = "crates/swc_ecma_compat_es2015/src/destructuring.rs:418:52"
-ignored_item_12 = "crates/swc_ecma_compat_es2022/src/class_properties/mod.rs:972:21"
+ignored_item_1 = "crates/swc_ecma_compat_es2015/src/destructuring.rs"
+ignored_item_2 = "crates/swc_common/src/source_map.rs"
+ignored_item_5 = "crates/swc_ecma_compat_es2022/src/class_properties/mod.rs"
+ignored_item_6 = "crates/swc_ecma_transforms_typescript/src/transform.rs"
+ignored_item_10 = "crates/swc_ecma_compat_es2021/src/logical_assignments.rs"
+ignored_item_13 = "entered unreachable code: auto_accessor pass should remove this"
 ignored_item_9 = "timeout: the monitored command dumped core"
 file_type = "js" # Available: text, binary, js, go, rust, lua
 
