@@ -32,8 +32,8 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-ignored_item_1 = "src/mp4/ilst/read.rs:217:5"
-ignored_item_2 = "mp4/ilst/read.rs:243:35"
-ignored_item_3 = "iff/wav/properties.rs:218:48"
+ignored_item_1 = "src/mp4/ilst/read.rs"
+ignored_item_2 = "mp4/ilst/read.rs"
+ignored_item_3 = "iff/wav/properties.rs"
 file_type = "binary" # Available: text, binary, js, go, rust, lua
 

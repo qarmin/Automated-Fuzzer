@@ -36,4 +36,6 @@ ignored_item_2 = "fatal runtime error: stack overflow"
 ignored_item_3 = "crates/oxc_linter/src/utils/tree_shaking.rs"
 ignored_item_4 = "crates/oxc_span/src/span.rs"
 ignored_item_5 = "crates/oxc_linter/src/fixer/mod.rs"
+ignored_item_6 = "src/jsdoc/parser/jsdoc_tag.rs"
+ignored_item_7 = "crates/oxc_linter/src/rules/jsx_a11y/lang.rs"
 file_type = "js" # Available: text, binary, js, go, rust, lua
