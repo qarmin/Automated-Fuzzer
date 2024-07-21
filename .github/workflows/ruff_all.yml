@@ -1,7 +1,7 @@
 name: 🐧 Ruff Check
 on:
-  #push: # Once daily
-  #pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 22 * * *'
 
@@ -21,10 +21,10 @@ jobs:
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 18000
             files: "FILES_21.zip"
-          #          - name: NORMAL_2
-          #            config-file: fuzz_ruff_settings_ci.toml
-          #            timeout: 10000
-          #            files: "FILES_22.zip"
+          - name: NORMAL_2
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 1800
+            files: "FILES_22.zip"
           #          - name: NORMAL_3
           #            config-file: fuzz_ruff_settings_ci.toml
           #            timeout: 10000
@@ -120,11 +120,19 @@ jobs:
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
+      - name: Store non crashing reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: reports_nc-${{ matrix.name }}
+          path: /tmp/tmp_folder/data
+
       - name: Find minimal rules
         run: |
           if [ -f settings.toml.temp ]; then
             mv settings.toml.temp fuzz_settings.toml
           fi
+          sd "remove_non_crashing_items_from_broken_files = true" "remove_non_crashing_items_from_broken_files = false" fuzz_settings.toml
           sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
           RUST_BACKTRACE=1 target/release/automated_fuzzer
 
@@ -143,7 +151,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: ${{ matrix.name }}
+          name: ${{ matrix.name }}-after
           path: /opt/BROKEN_FILES_DIR
 
       - name: Zip and send it
