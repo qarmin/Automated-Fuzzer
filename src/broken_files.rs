@@ -69,10 +69,10 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let mut command = Command::new("create_broken_files");
     let mut com = &mut command;
     if ![LANGS::BINARY, LANGS::TEXT].contains(&lang) {
-        com = com.args(format!("-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c -m -s").split(' '));
+        com = com.args(format!("-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c -s").split(' '));
     }
     match lang {
-        LANGS::PYTHON => com = com.args(PYTHON_ARGS),
+        LANGS::PYTHON => com = com.args(PYTHON_ARGS).arg("-m"),
         LANGS::JAVASCRIPT => com = com.args(JAVASCRIPT_ARGS),
         LANGS::LUA => com = com.args(LUA_ARGS),
         LANGS::GO => com = com.args(GO_ARGS),
@@ -80,7 +80,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::BINARY => {
             com = com.args(
                 format!(
-                    "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -m"
+                    "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file}"
                 )
                     .split(' '),
             );
@@ -88,7 +88,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::TEXT => {
             com = com.args(
                 format!(
-                    "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c -m"
+                    "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c"
                 )
                     .split(' '),
             );

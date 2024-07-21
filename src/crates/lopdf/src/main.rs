@@ -10,6 +10,12 @@ fn main() {
         panic!("Missing file");
     }
 
+    unsafe {
+        // Dereference null pointer
+        let null: *const i32 = std::ptr::null();
+        println!("{:?}", *null);
+    }
+
     if Path::new(&path).is_dir() {
         for entry in WalkDir::new(&path).into_iter().flatten() {
             if !entry.file_type().is_file() {
