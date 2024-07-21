@@ -6,3 +6,8 @@ edition = "2021"
 [dependencies]
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git" }
 walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
