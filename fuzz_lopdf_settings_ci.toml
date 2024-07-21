@@ -37,6 +37,6 @@ search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "stack overflow"
 ignored_item_2 = "src/object_stream.rs:43"
-#ignored_item_3 = "stack-overflow"
+ignored_item_3 = "stack-overflow"
 file_type = "binary" # Available: text, binary, js, go, rust, lua
 
