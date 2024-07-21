@@ -19,6 +19,10 @@ jobs:
             timeout: 18000
             files: "AA_PDF_VALID_FILES.7z"
             asan_build: false
+          - name: SHORT_LONGER_1
+            config-file: fuzz_lopdf_settings_ci.toml
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
           - name: SHORT_1
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 1800
