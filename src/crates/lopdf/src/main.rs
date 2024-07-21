@@ -28,6 +28,9 @@ fn check_file(file_path: &str) {
         Ok(mut document) => {
             let pages = document.get_pages();
 
+            let mut doc_clone = document.clone();
+            doc_clone.decompress();
+
             for (i, _) in pages.iter().enumerate() {
                 let page_number = (i + 1) as u32;
                 let _text = document.extract_text(&[page_number]);
