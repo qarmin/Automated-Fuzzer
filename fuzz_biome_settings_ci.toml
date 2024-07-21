@@ -33,5 +33,8 @@ group_mode = "none" # available: none, by_files, by_group
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
 search_item_3 = "Biome encountered an unexpected error"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
 file_type = "js" # Available: text, binary, js, go, rust, lua
 

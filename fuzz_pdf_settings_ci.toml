@@ -32,6 +32,9 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "src/crypt.rs"
 ignored_item_2 = "src/parser/parse_xref.rs"
 file_type = "binary" # Available: text, binary, js, go, rust, lua
