@@ -25,13 +25,15 @@ fn main() {
 
 fn check_file(file_path: &str) {
     match Document::load(file_path) {
-        Ok(document) => {
+        Ok(mut document) => {
             let pages = document.get_pages();
 
             for (i, _) in pages.iter().enumerate() {
                 let page_number = (i + 1) as u32;
                 let _text = document.extract_text(&[page_number]);
             }
+
+            document.save_to(&mut Cursor::new(Vec::new())).unwrap();
         }
         Err(err) => {
             eprintln!("Error reading PDF contents: {}", err)
