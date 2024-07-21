@@ -117,8 +117,10 @@ jobs:
       # Some output files can be not parsable or not broken if closed app before finish
       - name: Remove non crashing files
         run: |
-          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-          RUST_BACKTRACE=1 target/release/automated_fuzzer
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1
+          target/release/automated_fuzzer
 
       - name: Store non crashing reports
         uses: actions/upload-artifact@v4

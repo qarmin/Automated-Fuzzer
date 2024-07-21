@@ -99,6 +99,9 @@ jobs:
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
       - name: Store results
@@ -110,8 +113,10 @@ jobs:
 
       - name: Remove non crashing files
         run: |
-          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-          RUST_BACKTRACE=1 target/release/automated_fuzzer
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1
+          target/release/automated_fuzzer
 
       - name: Store Reports
         uses: actions/upload-artifact@v4
@@ -135,4 +140,3 @@ jobs:
       - name: Exit when found broken files
         run: |
           [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
-
