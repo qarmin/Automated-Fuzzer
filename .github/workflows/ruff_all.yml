@@ -47,6 +47,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Setup rust version
+        run: |
+          rustup default nightly
+          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+
       - name: Install dependencies
         run: |
           sudo apt update
@@ -55,8 +61,9 @@ jobs:
       - name: Install create_broken_files and sd
         run: cargo install create_broken_files sd
 
+      # THERE STARTING CUSTOM STEP
+
       - name: Install ruff
-        if: matrix.name != 'DEBUG_1'
         run: |
           git clone https://github.com/astral-sh/ruff.git ruff
           cd ruff
@@ -76,17 +83,6 @@ jobs:
             cargo install --path crates/red_knot/ --locked
           fi
           
-          cd ..
-
-      - name: Install ruff Debug
-        if: matrix.name == 'DEBUG_1'
-        run: |
-          git clone https://github.com/astral-sh/ruff.git ruff
-          cd ruff
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
-          rm rust-toolchain.toml
-          cargo install --path crates/ruff --debug  --locked
           cd ..
 
       - name: Build
