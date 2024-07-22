@@ -1,7 +1,7 @@
 name: 🐧 Dicom Check
 on:
-  #push: # Once daily
-  #pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 22 * * *'
 
@@ -107,6 +107,7 @@ jobs:
 
       - name: Remove non crashing files
         run: |
+          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
