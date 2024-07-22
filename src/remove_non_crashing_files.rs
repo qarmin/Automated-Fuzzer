@@ -170,9 +170,10 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
         let error_type = match result {
             _ if result.contains("memory allocation of") => "memory_failure",
             _ if result.contains("stack overflow") => "stack_overflow",
+            _ if result.contains("stack-overflow") => "asan_stack_overflow",
+            _ if result.contains("heap-use-after-free") => "asan_heap_use_after_free",
             _ if result.contains("segmentation fault") => "segmentation_fault",
             _ if result.contains("Killed") => "killed",
-            _ if result.contains("Timeout") => "timeout",
             _ if result.contains("is not a char boundary") => "char_boundary",
             _ if result.contains("divide by zero") => "divide_by_zero",
             _ if result.contains("attempt to subtract with overflow") => "overflow_s",
@@ -187,6 +188,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("not implemented: ") => "not_implemented",
             _ if result.contains("Aborted") => "aborted",
             _ if result.contains("output signal \"Some(15)\"") => "out_of_memory",
+            _ if result.contains("AddressSanitizer: out of memory") => "asan_out_of_memory",
             _ if result.contains("output signal \"Some(11)\"") => "segmentation_fault2",
             _ if result.contains("AddressSanitizer") => "address_sanitizer",
             _ if result.contains("ThreadSanitizer") => "thread_sanitizer",
@@ -194,6 +196,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("assertion `") => "assertion",
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
+            _ if result.contains("output status \"Some(124)\"") => "timeout",
             _ => "",
         };
 

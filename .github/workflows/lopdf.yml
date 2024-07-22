@@ -14,20 +14,20 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LONG_1
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
-            asan_build: false
-          - name: SHORT_LONGER_1
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 6000
-            files: "AA_PDF_VALID_FILES.7z"
-          - name: SHORT_1
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 1800
-            files: "AA_PDF_VALID_FILES.7z"
-            asan_build: false
+          #          - name: LONG_1
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 18000
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #            asan_build: false
+          #          - name: SHORT_LONGER_1
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #          - name: SHORT_1
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 1800
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #            asan_build: false
           - name: SANITIZER_1
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 18000
@@ -92,8 +92,6 @@ jobs:
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           export RUST_BACKTRACE=1
-          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
       - name: Store results

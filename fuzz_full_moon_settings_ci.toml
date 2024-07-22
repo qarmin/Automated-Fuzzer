@@ -38,5 +38,7 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "called `Result::unwrap()` on an `Err` value: ()"
 ignored_item_2 = "unexpected interpolated string kind: End"
 ignored_item_3 = "unexpected interpolated string kind: Middle"
+ignored_item_4 = "stack-overflow"
+ignored_item_5 = "heap-use-after-free"
 file_type = "lua" # Available: text, binary, js, go, rust, lua
 

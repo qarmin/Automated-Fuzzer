@@ -23,13 +23,13 @@ jobs:
           #            timeout: 18000
           #            files: "AA_LUA_VALID_FILES.7z"
           #            asan_build: false
+          #          - name: SANITIZER_VERIFY_1
+          #            config-file: fuzz_stylua_verify_settings_ci.toml
+          #            timeout: 18000
+          #            files: "AA_LUA_VALID_FILES.7z"
+          #            asan_build: true
           - name: SANITIZER_1
             config-file: fuzz_stylua_settings_ci.toml
-            timeout: 18000
-            files: "AA_LUA_VALID_FILES.7z"
-            asan_build: true
-          - name: SANITIZER_VERIFY_1
-            config-file: fuzz_stylua_verify_settings_ci.toml
             timeout: 18000
             files: "AA_LUA_VALID_FILES.7z"
             asan_build: true
@@ -101,8 +101,6 @@ jobs:
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           export RUST_BACKTRACE=1
-          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
       - name: Store results
