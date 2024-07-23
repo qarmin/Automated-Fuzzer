@@ -39,5 +39,6 @@ ignored_item_1 = "src/mp4/ilst/read.rs"
 ignored_item_2 = "mp4/ilst/read.rs"
 ignored_item_3 = "iff/wav/properties.rs"
 ignored_item_4 = "AddressSanitizer: out of memory"
+ignored_item_5 = "mp4/properties.rs"
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 

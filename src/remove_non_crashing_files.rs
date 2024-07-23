@@ -217,8 +217,8 @@ command
 $COMMAND
 ```
 
-App was compiled with nightly rust compiler, with address sanitizer enabled
-On Ubuntu 24.04, commands to compile were:
+App was compiled with nightly rust compiler to be able to use address sanitizer
+On Ubuntu 24.04, the commands to compile were:
 ```
 rustup default nightly
 rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu

@@ -101,7 +101,11 @@ jobs:
           export RUST_BACKTRACE=1
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
-      - name: Store results
+      - name: Create broken file to fail ci
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && touch CI_NEEDS_TO_FAIL.txt || true
+
+      - name: Store results before
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
@@ -116,6 +120,11 @@ jobs:
           export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer
 
+      - name: Create broken file to fail ci
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && touch CI_NEEDS_TO_FAIL.txt || true
+          [ "$(ls -A /tmp/tmp_folder/data)" ] && touch CI_NEEDS_TO_FAIL.txt || true
+
       - name: Store Reports
         uses: actions/upload-artifact@v4
         with:
@@ -123,7 +132,7 @@ jobs:
           name: REPORTS___${{ env.TOOL_TYPE }}___${{ matrix.name }}
           path: /tmp/tmp_folder/data
 
-      - name: Store results
+      - name: Store results after
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
@@ -138,3 +147,4 @@ jobs:
       - name: Exit when found broken files
         run: |
           [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
+          [ -f CI_NEEDS_TO_FAIL.txt ] && exit 1 || true
