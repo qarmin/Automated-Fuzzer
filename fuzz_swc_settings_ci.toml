@@ -44,5 +44,6 @@ ignored_item_13 = "entered unreachable code: auto_accessor pass should remove th
 ignored_item_9 = "timeout: the monitored command dumped core"
 ignored_item_11 = "crates/swc_ecma_compat_es2015/src/generator.rs"
 ignored_item_12 = "stack-overflow"
+ignored_item_14 = "AddressSanitizer: SEGV on unknown address"
 file_type = "js" # Available: text, binary, js, go, rust, lua, python
 

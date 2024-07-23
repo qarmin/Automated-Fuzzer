@@ -95,8 +95,7 @@ pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
 
     let output_result = execute_command_and_connect_output(obj, full_name);
     if !output_result.is_broken() {
-        error!("At start should be broken!");
-        println!("{}", output_result.output);
+        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
         fs::write(full_name, data).unwrap();
         return;
     }
@@ -193,6 +192,8 @@ pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let output_result = execute_command_and_connect_output(obj, full_name);
     if !output_result.is_broken() {
         error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
+        fs::write(full_name, data).unwrap();
+        return;
     }
 
     let mut rng = rand::thread_rng();

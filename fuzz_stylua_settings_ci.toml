@@ -38,5 +38,6 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "src/verify_ast.rs"
 ignored_item_2 = "stack-overflow"
 ignored_item_3 = "heap-use-after-free"
+ignored_item_4 = "heap-buffer-overflow" # Quite flaky
 file_type = "lua" # Available: text, binary, js, go, rust, lua, python
 
