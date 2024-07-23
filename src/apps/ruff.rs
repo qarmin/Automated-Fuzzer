@@ -18,44 +18,23 @@ pub struct RuffStruct {
     pub non_custom_items: NonCustomItems,
 }
 
-const DISABLE_EXCEPTIONS: bool = false;
-
-// This errors are not critical, and can be ignored when found two issues and one with it
-const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
-    // "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
-    // "Failed to create fix for UnnecessaryLiteralDict", // Mostly expected 7455
-    // "ReimplementedStarmap",            // Mostly expected 7455
-    // "due to late binding",             // Mostly expected 6842
-    // "UnnecessaryCollectionCall",       // 6809
-    // "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717 - UP030
-    // "Unable to use existing symbol due to incompatible context", // 6842
-];
-
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
-const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
-    "Ord violation"
-];
+const BROKEN_ITEMS_TO_IGNORE: &[&str] = &["Ord violation", r#""stack backtrace:\n""#];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "stack backtrace:",
-    "0: rust_begin_unwind",
-    "AddressSanitizer:",
+    "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "0: rust_begin_unwind", "AddressSanitizer:",
     "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
     // "Fix introduced a syntax error", "Fix introduced a syntax error", "This indicates a bug in",
 ];
 
 const INVALID_RULES: &[&str] = &[
-    "E999",                          // Cannot use with preview
+    "E999", // Cannot use with preview
 ];
 
 #[must_use]
 pub fn calculate_ignored_rules() -> String {
-    if DISABLE_EXCEPTIONS {
-        return String::new();
-    }
-
     INVALID_RULES
         .iter()
         .filter(|e| &&e.to_uppercase().as_str() == e)
@@ -83,39 +62,12 @@ impl ProgramConfig for RuffStruct {
         comm
     }
     fn is_broken(&self, content: &str) -> bool {
-        // Fake errors
-        if content.contains(r#""stack backtrace:\n""#) {
-            return false;
-        }
-        if DISABLE_EXCEPTIONS || self.settings.disable_exceptions {
-            return BROKEN_ITEMS_TO_FIND
-                .iter()
-                .filter(|line| !BROKEN_ITEMS_NOT_CRITICAL.iter().any(|e2| line.contains(e2)))
-                .any(|e| content.contains(e));
-        }
+        BROKEN_ITEMS_TO_FIND.iter().any(|e| content.contains(e)) && !self.ignored_signal_output(content)
+    }
 
-        let mut content = content.to_string();
-        #[allow(clippy::const_is_empty)]
-        if !BROKEN_ITEMS_NOT_CRITICAL.is_empty() {
-            // Remove lines that contains not critical errors
-            content = content
-                .lines()
-                .filter(|line| !BROKEN_ITEMS_NOT_CRITICAL.iter().any(|e2| line.contains(e2)))
-                .collect::<Vec<&str>>()
-                .join("\n")
-                .to_string();
-        }
-
-        let found_broken_items = BROKEN_ITEMS_TO_FIND.iter().any(|e| content.contains(e));
-
-        let found_ignored_item = BROKEN_ITEMS_TO_IGNORE.iter().any(|e| content.contains(e));
-
-        // Debug check if properly finding broken items
-        // dbg!(
-        //     BROKEN_ITEMS_TO_IGNORE.iter().find(|e| content.contains(*e)),
-        //     found_broken_items
-        // );
-        found_broken_items && !found_ignored_item
+    #[allow(clippy::const_is_empty)]
+    fn ignored_signal_output(&self, content: &str) -> bool {
+        !BROKEN_ITEMS_TO_IGNORE.is_empty() && BROKEN_ITEMS_TO_IGNORE.iter().any(|x| content.contains(x))
     }
 
     fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {

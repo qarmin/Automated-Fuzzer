@@ -48,7 +48,6 @@ fn remove_non_crashing_in_group(
     // TODO this check may be broken - test it
     return broken_files;
 
-
     if settings.grouping == 1 || obj.get_files_group_mode() == CheckGroupFileMode::None {
         return broken_files;
     }
@@ -235,10 +234,10 @@ cause this
 $ERROR
 ```
 "#
-            .replace("$CNT_TEXT", &cnt_text)
-            .replace("$COMMAND", &command_str_with_extension)
-            .replace("$ERROR", &result)
-            .replace("\n\n```", "\n```");
+        .replace("$CNT_TEXT", &cnt_text)
+        .replace("$COMMAND", &command_str_with_extension)
+        .replace("$ERROR", &result)
+        .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

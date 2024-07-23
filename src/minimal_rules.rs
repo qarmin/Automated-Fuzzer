@@ -144,11 +144,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let files_to_check = collect_broken_files_dir_files(settings);
     // files_to_check.truncate(100);
 
-    let files_to_check_new: Vec<_> = files_to_check
-        .iter()
-        .cloned()
-        // .filter(|e| Path::new(&e).metadata().ok().map(|e| e.len()).unwrap_or(u64::MAX) < MAX_FILE_SIZE)
-        .collect();
+    let files_to_check_new: Vec<_> = files_to_check.to_vec();
 
     info!(
         "Using only {} files from {} files, that are smaller than {} bytes",
@@ -220,7 +216,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                     check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
                 // println!("CRASHHHHHH - {} ({only_check}) - {}", crashing, output);
                 if crashing {
-                    valid_remove_rules = rules_to_test.clone();
+                    valid_remove_rules.clone_from(&rules_to_test);
                     out = output;
                 }
             }
@@ -240,7 +236,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
                 let (crashing, output) =
                     check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
                 if crashing {
-                    valid_remove_rules = rules_to_test.clone();
+                    valid_remove_rules.clone_from(&rules_to_test);
                     out = output;
                 } else {
                     rules_to_test = valid_remove_rules.clone();
@@ -459,7 +455,7 @@ fn check_if_rule_file_crashing(
     };
     let app_config = &settings.non_custom_items.as_ref().unwrap().app_config;
     if !app_config.is_empty() {
-        command.arg("--config").arg(&app_config);
+        command.arg("--config").arg(app_config);
     } else {
         command.arg("--isolated");
     }

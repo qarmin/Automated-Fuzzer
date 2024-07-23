@@ -1,7 +1,7 @@
+use lopdf::Document;
 use std::env::args;
 use std::io::Cursor;
 use std::path::Path;
-use lopdf::Document;
 use walkdir::WalkDir;
 
 fn main() {

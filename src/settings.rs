@@ -32,7 +32,6 @@ pub struct Setting {
     pub max_collected_files: usize,
     pub find_minimal_rules: bool,
     pub check_if_file_is_parsable: bool,
-    pub disable_exceptions: bool,
     pub ignore_timeout_errors: bool,
     pub grouping: u32,
     pub debug_executed_commands: bool,
@@ -89,10 +88,12 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
 
     let search_item_keys: Vec<_> = tool_hashmap
         .iter()
-        .filter_map(|(key, value)| if key.starts_with("search_item_") && !value.trim().is_empty() {
-            Some(key)
-        } else {
-            None
+        .filter_map(|(key, value)| {
+            if key.starts_with("search_item_") && !value.trim().is_empty() {
+                Some(key)
+            } else {
+                None
+            }
         })
         .cloned()
         .collect();
@@ -101,10 +102,12 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
 
     let ignored_item_keys: Vec<_> = tool_hashmap
         .iter()
-        .filter_map(|(key, value)| if key.starts_with("ignored_item_") && !value.trim().is_empty() {
-            Some(key)
-        } else {
-            None
+        .filter_map(|(key, value)| {
+            if key.starts_with("ignored_item_") && !value.trim().is_empty() {
+                Some(key)
+            } else {
+                None
+            }
         })
         .cloned()
         .collect();
@@ -164,7 +167,6 @@ pub fn load_settings() -> Setting {
     let find_minimal_rules = general["find_minimal_rules"].parse().unwrap();
     let remove_non_crashing_items_from_broken_files =
         general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
-    let disable_exceptions = !(find_minimal_rules || remove_non_crashing_items_from_broken_files);
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
@@ -206,7 +208,6 @@ pub fn load_settings() -> Setting {
         temp_folder: general["temp_folder"].clone(),
         find_minimal_rules,
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
-        disable_exceptions,
         ignore_timeout_errors,
         grouping,
         debug_executed_commands,
