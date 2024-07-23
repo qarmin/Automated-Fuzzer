@@ -3,7 +3,7 @@ on:
   push: # Once daily
   pull_request: # Once daily
   schedule:
-    - cron: '0 22 * * *'
+    - cron: '0 21 * * *'
 
 env:
   CARGO_TERM_COLOR: always
@@ -20,17 +20,17 @@ jobs:
         include:
           #          - name: LONG_1
           #            config-file: fuzz_stylua_settings_ci.toml
-          #            timeout: 18000
+          #            timeout: 6000
           #            files: "AA_LUA_VALID_FILES.7z"
           #            asan_build: false
           #          - name: SANITIZER_VERIFY_1
           #            config-file: fuzz_stylua_verify_settings_ci.toml
-          #            timeout: 18000
+          #            timeout: 6000
           #            files: "AA_LUA_VALID_FILES.7z"
           #            asan_build: true
           - name: SANITIZER_1
             config-file: fuzz_stylua_settings_ci.toml
-            timeout: 18000
+            timeout: 6000
             files: "AA_LUA_VALID_FILES.7z"
             asan_build: true
 

@@ -36,5 +36,5 @@ search_item_3 = "Biome encountered an unexpected error"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
-file_type = "js" # Available: text, binary, js, go, rust, lua
+file_type = "js" # Available: text, binary, js, go, rust, lua, python
 

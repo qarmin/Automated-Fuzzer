@@ -47,5 +47,5 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "src/hb/buffer.rs"
 # Type of files/broken files to be created, using e.g. rust will use text and add in random places
 # random rust keywords, to crash programs even more
-# Available: text, binary, js, go, rust, lua
-file_type = "text" # Available: text, binary, js, go, rust, lua
+# Available: text, binary, js, go, rust, lua, python
+file_type = "text" # Available: text, binary, js, go, rust, lua, python

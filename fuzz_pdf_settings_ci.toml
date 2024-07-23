@@ -37,5 +37,5 @@ search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "src/crypt.rs"
 ignored_item_2 = "src/parser/parse_xref.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 

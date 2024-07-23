@@ -40,5 +40,5 @@ ignored_item_2 = "unexpected interpolated string kind: End"
 ignored_item_3 = "unexpected interpolated string kind: Middle"
 ignored_item_4 = "stack-overflow"
 ignored_item_5 = "heap-use-after-free"
-file_type = "lua" # Available: text, binary, js, go, rust, lua
+file_type = "lua" # Available: text, binary, js, go, rust, lua, python
 

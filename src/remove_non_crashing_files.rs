@@ -210,18 +210,31 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
         );
         let _ = fs::create_dir_all(&folder);
 
-        file_content += &r"$CNT_TEXT
+        file_content += &r#"$CNT_TEXT
 
 command
 ```
 $COMMAND
 ```
 
+App was compiled with nightly rust compiler, with address sanitizer enabled
+On Ubuntu 24.04, commands to compile were:
+```
+rustup default nightly
+rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+
+export RUST_BACKTRACE=1
+export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+export ASAN_OPTIONS=symbolize=1
+RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --target x86_64-unknown-linux-gnu
+```
+
 cause this
 ```
 $ERROR
 ```
-"
+"#
             .replace("$CNT_TEXT", &cnt_text)
             .replace("$COMMAND", &command_str_with_extension)
             .replace("$ERROR", &result)

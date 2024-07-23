@@ -22,7 +22,9 @@ grouping = 1 # How many files will be grouped in one command - using bigger numb
 current_mode = "custom_zip"
 
 # app_binary - place where binary exists
-# app_config - path to configuration file
+# app_config - path to configu          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1ration file
 # extensions - list of extensions of tested files
 # non_destructive_input_dir - folder which contains files to test, such files will not be overwriten
 # valid_input_files_dir - place with valid files
@@ -42,7 +44,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
-file_type = "text" # Available: text, binary, js, go, rust, lua
+file_type = "text" # Available: text, binary, js, go, rust, lua, python
 
 
 [custom_image]
@@ -60,7 +62,7 @@ search_item_2 = "panicked at"
 ignored_item_3 = "zune-jpeg-0.4.11/src/mcu.rs:209:9"
 ignored_item_34 = "src/codecs/tiff.rs:247:21"
 ignored_item_35 = "src/compression/piz/huffman.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 
 [custom_zip]
 name = "zip_rs"
@@ -73,7 +75,7 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 
 [custom_full_moon]
 name = "name"
@@ -86,7 +88,7 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-file_type = "lua" # Available: text, binary, js, go, rust, lua
+file_type = "lua" # Available: text, binary, js, go, rust, lua, python
 
 [ruff]
 app_binary = "ruff"

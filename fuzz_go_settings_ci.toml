@@ -41,4 +41,4 @@ ignored_item_3 = "No such file or directory"
 ignored_item_4 = "syntax error:"
 ignored_item_5 = "no required module provides package"
 ignored_item_6 = "internal compiler error:"
-file_type = "go" # Available: text, binary, js, go, rust, lua
+file_type = "go" # Available: text, binary, js, go, rust, lua, python

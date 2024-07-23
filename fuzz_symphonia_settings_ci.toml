@@ -49,4 +49,4 @@ ignored_item_11 = ""
 ignored_item_12 = ""
 ignored_item_13 = ""
 ignored_item_14 = ""
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python

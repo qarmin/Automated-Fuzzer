@@ -40,5 +40,5 @@ ignored_item_2 = "src/object_stream.rs:43"
 ignored_item_3 = "stack-overflow"
 ignored_item_4 = "Some(124)"
 ignored_item_5 = "Some(15)"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 

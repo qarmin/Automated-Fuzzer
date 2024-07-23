@@ -37,5 +37,5 @@ search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "called `Result::unwrap()` on an `Err` value: UnknownKind"
 ignored_item_2 = "assertion `left == right` failed"
-file_type = "text" # Available: text, binary, js, go, rust, lua
+file_type = "text" # Available: text, binary, js, go, rust, lua, python
 

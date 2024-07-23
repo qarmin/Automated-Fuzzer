@@ -38,5 +38,5 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_3 = "zune-jpeg-0.4.11/src/mcu.rs"
 ignored_item_34 = "src/codecs/tiff.rs"
 ignored_item_35 = "src/compression/piz/huffman.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 

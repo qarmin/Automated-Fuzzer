@@ -36,5 +36,5 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 ignored_item_3 = "src/stateful/decode.rs" # https://github.com/Enet4/dicom-rs/issues/543
-file_type = "binary" # Available: text, binary, js, go, rust, lua
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 

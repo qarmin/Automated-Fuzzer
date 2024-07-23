@@ -22,45 +22,32 @@ const DISABLE_EXCEPTIONS: bool = false;
 
 // This errors are not critical, and can be ignored when found two issues and one with it
 const BROKEN_ITEMS_NOT_CRITICAL: &[&str] = &[
-    "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
-    "Failed to create fix for UnnecessaryLiteralDict", // Mostly expected 7455
-    "ReimplementedStarmap",            // Mostly expected 7455
-    "due to late binding",             // Mostly expected 6842
-    "UnnecessaryCollectionCall",       // 6809
-    "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717 - UP030
-    "Unable to use existing symbol due to incompatible context", // 6842
+    // "into scope due to name conflict", // Expected, name conflict cannot really be fixed automatically
+    // "Failed to create fix for UnnecessaryLiteralDict", // Mostly expected 7455
+    // "ReimplementedStarmap",            // Mostly expected 7455
+    // "due to late binding",             // Mostly expected 6842
+    // "UnnecessaryCollectionCall",       // 6809
+    // "error: Failed to create fix for FormatLiterals: Unable to identify format literals", // 6717 - UP030
+    // "Unable to use existing symbol due to incompatible context", // 6842
 ];
 
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
-const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[];
+const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
+    "Ord violation"
+];
 
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "stack backtrace:",
     "0: rust_begin_unwind",
-    // "AddressSanitizer:",
-    // "LeakSanitizer:",
+    "AddressSanitizer:",
+    "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
     // "Fix introduced a syntax error", "Fix introduced a syntax error", "This indicates a bug in",
 ];
 
 const INVALID_RULES: &[&str] = &[
-    // "FURB171", // 8402
-    // "E223",    // 8402
-    // "RUF015",  // 8402
-    // "C405",    // 8402
-    // "RUF022",  // 8402
-    // "RUF023",  // 8402
-    // // "PLR1706", // 8402
-    // "C413", // 8402
-    //
     "E999",                          // Cannot use with preview
-    "PGH001",                        // Remapped
-    "PGH002",                        // Remapped
-    "RUF011",                        // Remapped
-    "TRY200",                        // Remapped
-    "one-blank-line-before-class",   // incompatible with "no-blank-line-before-class"
-    "multi-line-summary-first-line", // incompatible with "multi-line-summary-second-line"
 ];
 
 #[must_use]
