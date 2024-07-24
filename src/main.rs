@@ -263,7 +263,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
                 info!("{}", output_result.get_output());
             }
             // info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
-
+            dbg!(&output_result);
             if output_result.is_broken() {
                 Some(Some(group))
             } else {
