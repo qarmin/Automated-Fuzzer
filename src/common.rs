@@ -8,13 +8,15 @@ use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use std::time::Instant;
 
-use crate::obj::ProgramConfig;
-use crate::settings::{Setting, TIMEOUT_MESSAGE};
 use jwalk::WalkDir;
 use log::{error, info};
 use once_cell::sync::{Lazy, OnceCell};
 use rand::prelude::ThreadRng;
 use rand::Rng;
+
+use crate::obj::ProgramConfig;
+use crate::settings::{Setting, TIMEOUT_MESSAGE};
+
 pub const STRING_MINIMIZATION_LIMIT: usize = 3;
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
@@ -593,6 +595,9 @@ impl OutputResult {
     }
     pub fn get_output(&self) -> &str {
         &self.output
+    }
+    pub fn debug_print(&self) {
+        info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_code_broken, self.timeouted, self.code, self.signal);
     }
 }
 
