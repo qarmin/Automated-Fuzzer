@@ -1,0 +1,13 @@
+[package]
+name = "font_kit"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+font-kit = { git = "https://github.com/servo/font-kit.git", features = ["source"] }
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true

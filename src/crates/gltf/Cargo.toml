@@ -1,0 +1,14 @@
+[package]
+name = "gltf"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gltf = { git = "https://github.com/gltf-rs/gltf.git" }
+walkdir = "2.5.0"
+
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
