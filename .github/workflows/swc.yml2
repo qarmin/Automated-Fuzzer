@@ -1,7 +1,7 @@
 name: 🐧 Swc Check
 on:
-  push: # Once daily
-  pull_request: # Once daily
+  #push: # Once daily
+  #pull_request: # Once daily
   schedule:
     - cron: '0 21 * * *'
 

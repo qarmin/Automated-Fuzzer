@@ -1,0 +1,74 @@
+name: 🐧 Lofty Check
+on:
+  push: # Once daily
+  pull_request: # Once daily
+  schedule:
+    - cron: '0 21 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+  TOOL_TYPE: LOFTY
+
+jobs:
+  lofty-normal-ci:
+
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: SANITIZER_1
+            config-file: fuzz_lofty_settings_ci.toml
+            timeout: 100
+            files: "AA_MUSIC_VALID_FILES.7z"
+            asan_build: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup rust version
+        run: |
+          rustup default nightly
+          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget earlyoom libasan8
+
+      - name: Install create_broken_files and sd
+        run: cargo install create_broken_files sd cargo-afl
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Download and prepare data files
+        run: |
+          CURR_DIR=$(pwd)
+          mkdir -p /opt/INPUT_FILES_DIR
+          mkdir -p /opt/INVALID_FILES_DIR
+          cd /opt/INPUT_FILES_DIR
+          
+          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          
+          cd $CURR_DIR
+
+      - name: Configure fuzzer
+        run: |
+          cd src/crates/lofty_afl
+          cargo update
+          sudo cargo-afl afl system-config
+          cargo afl build
+
+      - name: Run Fuzzer
+        run: |
+          timeout -v ${{ matrix.timeout }} cargo afl fuzz -i /opt/INPUT_FILES_DIR -o /opt/INVALID_FILES target/debug/url-fuzz-target
+
+      - name: Store AFL results after
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: AFL___${{ env.TOOL_TYPE }}___${{ matrix.name }}
+          path: /opt/INVALID_FILES_DIR
