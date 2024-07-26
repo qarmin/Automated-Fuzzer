@@ -63,11 +63,12 @@ jobs:
           sudo -E ~/.cargo/bin/cargo afl system-config
           export AFL_USE_ASAN=1
           cargo afl build
+          cd ../../../
 
       - name: Run Fuzzer
         run: |
           export AFL_USE_ASAN=1
-          timeout -v ${{ matrix.timeout }} cargo afl fuzz -i /opt/INPUT_FILES_DIR -o /opt/INVALID_FILES target/debug/lofty_afl
+          timeout -v ${{ matrix.timeout }} cargo afl fuzz -i /opt/INPUT_FILES_DIR -o /opt/INVALID_FILES src/crates/lofty_afl/target/debug/lofty_afl
 
       - name: Store AFL results after
         uses: actions/upload-artifact@v4
