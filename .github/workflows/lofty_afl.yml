@@ -1,4 +1,4 @@
-name: 🐧 AFL Lofty Check
+name: 🐧 AFL Check
 on:
   push: # Once daily
   pull_request: # Once daily
@@ -10,7 +10,7 @@ env:
   TOOL_TYPE: LOFTY
 
 jobs:
-  lofty-normal-ci:
+  afl-ci:
 
     runs-on: ubuntu-24.04
 
@@ -18,11 +18,30 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: SANITIZER_1
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 100
+          - name: LOFTY_1
+            timeout: 180
             files: "AA_MUSIC_VALID_FILES.7z"
-            asan_build: true
+          - name: LOFTY_2
+            timeout: 1800
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY_3
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY_4
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY_5
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY_6
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY_7
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY_8
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
 
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +87,7 @@ jobs:
       - name: Run Fuzzer
         run: |
           export AFL_USE_ASAN=1
-          timeout -v ${{ matrix.timeout }} cargo afl fuzz -i /opt/INPUT_FILES_DIR -o /opt/INVALID_FILES src/crates/lofty_afl/target/debug/lofty_afl
+          timeout -v ${{ matrix.timeout }} cargo afl fuzz -a binary -i /opt/INPUT_FILES_DIR -o /opt/INVALID_FILES src/crates/lofty_afl/target/debug/lofty_afl || true
 
       - name: Store AFL results after
         uses: actions/upload-artifact@v4
