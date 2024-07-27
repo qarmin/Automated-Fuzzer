@@ -28,6 +28,51 @@ jobs:
             timeout: 6000
             files: "AA_FONT_VALID_FILES_MORE.7z"
             src_folder: font_kit
+          - name: FULL_MOON
+            config-file: fuzz_full_moon_settings_ci.toml
+            timeout: 6000
+            files: "AA_LUA_VALID_FILES.7z"
+            src_folder: full_moon
+          - name: IMAGE
+            config-file: fuzz_image_settings_ci.toml
+            timeout: 6000
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: image
+          - name: LOFTY
+            config-file: fuzz_lofty_settings_ci.toml
+            timeout: 6000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: lofty
+          - name: LOPDF
+            config-file: fuzz_lopdf_settings_ci.toml
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: lopdf
+          - name: PDF_RS
+            config-file: fuzz_pdf_rs_settings_ci.toml
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: pdf_rs
+          - name: RSBUZZ
+            config-file: fuzz_pdf_rs_settings_ci.toml
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: pdf_rs
+          - name: RSBUZZ
+            config-file: fuzz_rustbuzz_settings_ci.toml
+            timeout: 6000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            src_folder: rsbuzz
+          - name: SYMPHONIA
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 6000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: symphonia
+          - name: ZIP_RS
+            config-file: fuzz_ziprs_settings_ci.toml
+            timeout: 6000
+            files: "AA_ZIP_VALID_FILES.7z"
+            src_folder: zip_rs
 
     steps:
       - uses: actions/checkout@v4
