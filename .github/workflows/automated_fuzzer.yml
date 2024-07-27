@@ -1,0 +1,141 @@
+name: 🐧 Automated Fuzzer Check
+on:
+  push: # Once daily
+  pull_request: # Once daily
+  schedule:
+    - cron: '0 21 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+  SANITIZER: true
+
+jobs:
+  automated-ci:
+
+    runs-on: ubuntu-24.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: DICOM
+            config-file: fuzz_dicom_rs_settings_ci.toml
+            timeout: 6000
+            files: "AA_DCM_VALID_FILES.7z"
+            src_folder: dicom
+          - name: FONT_KIT
+            config-file: fuzz_font_kit_settings_ci.toml
+            timeout: 6000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            src_folder: font_kit
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup rust version
+        run: |
+          rustup default nightly
+          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget earlyoom libasan8
+          sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
+
+      - name: Install create_broken_files and sd
+        run: cargo install create_broken_files sd
+
+      # THERE STARTING CUSTOM STEP
+      - name: Install apps, which are inside this repo(probably only libraries)
+        if: ${{ matrix.src_folder == '' }}
+        run: |
+          cd src/crates/${{ matrix.src_folder }}
+          cargo update
+          
+          if [ "${{ env.SANITIZER }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path . --locked
+          fi
+          
+          cd ../../..
+          ldd $(whereis -b ${{ matrix.src_folder }} | awk '{print $2}')
+
+      # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
+
+      - name: Build
+        run: cargo build --release
+
+      - name: Create folders
+        run: |
+          mkdir /opt/VALID_FILES_DIR
+          mkdir /opt/POSSIBLY_BROKEN_FILES_DIR
+          mkdir /opt/BROKEN_FILES_DIR
+
+      - name: Download and prepare data files
+        run: |
+          CURR_DIR=$(pwd)
+          cd /opt/VALID_FILES_DIR
+          
+          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          
+          cd $CURR_DIR
+
+      - name: Run app
+        run: |
+          mv ${{ matrix.config-file }} fuzz_settings.toml
+          sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
+          export RUST_BACKTRACE=1
+          target/release/automated_fuzzer ${{ matrix.timeout }} || true
+
+      - name: Create broken file to fail ci
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && touch CI_NEEDS_TO_FAIL.txt || true
+
+      - name: Store results before
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: FILES___${{ matrix.name }}___before
+          path: /opt/BROKEN_FILES_DIR
+
+      - name: Remove non crashing files
+        run: |
+          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1
+          target/release/automated_fuzzer
+
+      - name: Create broken file to fail ci
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && touch CI_NEEDS_TO_FAIL.txt || true
+          [ "$(ls -A /tmp/tmp_folder/data)" ] && touch CI_NEEDS_TO_FAIL.txt || true
+
+      - name: Store Reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: REPORTS___${{ matrix.name }}
+          path: /tmp/tmp_folder/data
+
+      - name: Store results after
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: FILES___${{ matrix.name }}___after
+          path: /opt/BROKEN_FILES_DIR
+
+      - name: Remove all folders
+        run: |
+          rm -rf /opt/VALID_FILES_DIR || true
+          rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
+
+      - name: Exit when found broken files
+        run: |
+          [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
+          [ -f CI_NEEDS_TO_FAIL.txt ] && exit 1 || true
