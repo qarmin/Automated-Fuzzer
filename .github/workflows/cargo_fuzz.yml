@@ -76,7 +76,7 @@ jobs:
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }} || true
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=4200 || true
 
       - name: Store fuzz results after
         uses: actions/upload-artifact@v4
@@ -84,3 +84,7 @@ jobs:
           if-no-files-found: ignore
           name: CARGO_FUZZ___${{ matrix.name }}
           path: fuzz/artifacts
+
+      - name: Exit when found broken files
+        run: |
+          [ "$(ls -A fuzz/artifacts)" ] && exit 1 || true

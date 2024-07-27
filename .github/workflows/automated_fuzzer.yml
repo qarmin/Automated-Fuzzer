@@ -54,11 +54,6 @@ jobs:
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_rs
           - name: RSBUZZ
-            config-file: fuzz_pdf_rs_settings_ci.toml
-            timeout: 6000
-            files: "AA_PDF_VALID_FILES.7z"
-            src_folder: pdf_rs
-          - name: RSBUZZ
             config-file: fuzz_rustbuzz_settings_ci.toml
             timeout: 6000
             files: "AA_FONT_VALID_FILES_MORE.7z"
@@ -69,10 +64,37 @@ jobs:
             files: "AA_MUSIC_VALID_FILES.7z"
             src_folder: symphonia
           - name: ZIP_RS
-            config-file: fuzz_ziprs_settings_ci.toml
+            config-file: fuzz_zip_rs_settings_ci.toml
             timeout: 6000
             files: "AA_ZIP_VALID_FILES.7z"
             src_folder: zip_rs
+
+          - name: GO
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 6000
+            files: "AA_GO_VALID_FILES.7z"
+            go_version: '1.23.0-rc.1'
+            src_folder: ''
+          - name: OXC
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 6000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            src_folder: ''
+          - name: STYLUA
+            config-file: fuzz_stylua_settings_ci.toml
+            timeout: 6000
+            files: "AA_LUA_VALID_FILES.7z"
+            src_folder: ''
+          - name: SWC
+            config-file: fuzz_swc_settings_ci.toml
+            timeout: 6000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            src_folder: ''
+          - name: TYPST
+            config-file: fuzz_typst_settings_ci.toml
+            timeout: 6000
+            files: "AA_TYPST_VALID_FILES.zip"
+            src_folder: ''
 
     steps:
       - uses: actions/checkout@v4
@@ -109,6 +131,114 @@ jobs:
           
           cd ../../..
           ldd $(whereis -b ${{ matrix.src_folder }} | awk '{print $2}')
+
+      #### GO
+      - uses: actions/setup-go@v5
+        if: ${{ contains(matrix.name, 'GO') }}
+        with:
+          go-version: ${{ matrix.go_version }}
+          check-latest: true
+
+      - name: Install go
+        if: ${{ contains(matrix.name, 'GO') }}
+        run: |
+          git clone https://github.com/dominikh/go-tools.git gotools
+          cd gotools
+          go install cmd/staticcheck/staticcheck.go
+          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
+          ldd /usr/bin/staticcheck
+          cd ..
+
+      #### OXLINT
+      - name: Install oxlint
+        if: ${{ contains(matrix.name, 'OXC') }}
+        run: |
+          wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          cd oxc-main
+          rm rust-toolchain.toml
+          sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
+          sd "debug         = false" "debug = true" Cargo.toml
+          
+          if [ "${{ env.SANITIZER }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path apps/oxlint --locked --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path apps/oxlint --locked
+          fi
+          
+          cd ../
+          rm -rf oxc-main
+          ldd $(whereis -b oxlint | awk '{print $2}')
+
+      #### STYLUA
+      - name: Install stylua
+        if: ${{ contains(matrix.name, 'STYLUA') }}
+        run: |
+          wget -q https://github.com/JohnnyMorganz/StyLua/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          cd StyLua-main
+          echo "" >> Cargo.toml
+          echo "[profile.release]" >> Cargo.toml
+          echo "overflow-checks = true" >> Cargo.toml
+          echo "debug = true" >> Cargo.toml
+          echo "panic = 'abort'" >> Cargo.toml
+          
+          if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path . --locked
+          fi
+          
+          cd ..
+          ldd $(whereis -b stylua | awk '{print $2}')
+
+      #### SWC
+      - name: Install swc
+        if: ${{ contains(matrix.name, 'SWC') }}
+        run: |
+          wget -q https://github.com/swc-project/swc/archive/refs/heads/main.zip
+          unzip -q main.zip
+          
+          if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path swc-main/crates/swc_cli_impl/ --locked  --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path swc-main/crates/swc_cli_impl/ --locked
+          fi
+
+          rm -rf main.zip swc-main
+          ldd $(whereis -b swc | awk '{print $2}')
+
+      #### TYPST
+      - name: Install typst_rs
+        if: ${{ contains(matrix.name, 'TYPST') }}
+        run: |
+          wget -q https://github.com/typst/typst/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          cd typst-main
+          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          cd crates/typst-cli
+          
+          if [ "${{ matrix.asan_build }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path . --locked
+          fi
+          
+          cd ../../..
+          ldd $(whereis -b typst | awk '{print $2}')
 
       # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
 

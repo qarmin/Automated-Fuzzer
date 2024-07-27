@@ -64,7 +64,7 @@ file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 
 [custom_zip]
 name = "zip_rs"
-command = "ziprs|FILE_PATHS_TO_PROVIDE"
+command = "zip_rs|FILE_PATHS_TO_PROVIDE"
 
 extensions = "zip"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_ZIP_VALID_FILES"
