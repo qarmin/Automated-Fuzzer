@@ -1,4 +1,4 @@
-[package]/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/zip_rs
+[package]
 name = "automated_fuzzer-fuzz"
 version = "0.0.0"
 publish = false
@@ -14,7 +14,7 @@ font-kit = { git = "https://github.com/servo/font-kit.git", features = ["source"
 image = { git = "https://github.com/image-rs/image", default-features = false, features = ["default-formats"] }
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git" }
 rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git" }
-pdf = { git = "https://github.com/pdf-rs/pdf/" }
+#pdf = { git = "https://github.com/pdf-rs/pdf/" }
 symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"] }
 zip = { git = "https://github.com/zip-rs/zip2.git" }
 full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = ["roblox", "lua54"] }
@@ -77,12 +77,12 @@ test = false
 doc = false
 bench = false
 
-[[bin]]
-name = "pdf_rs"
-path = "fuzz_targets/pdf_rs.rs"
-test = false
-doc = false
-bench = false
+#[[bin]]
+#name = "pdf_rs"
+#path = "fuzz_targets/pdf_rs.rs"
+#test = false
+#doc = false
+#bench = false
 
 [[bin]]
 name = "rsbuzz"

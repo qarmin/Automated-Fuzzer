@@ -1,35 +1,27 @@
 #![no_main]
 
-use std::io::Read;
+use std::io::Cursor;
 use libfuzzer_sys::fuzz_target;
+use lopdf::Document;
 
 fuzz_target!(|data: &[u8]| {
-    let res = match image::load_from_memory(&data) {
-        Ok(res) => res,
-        Err(e) => {
-            return;
-        }
-    };
+    let cursor = Cursor::new(data);
+    match Document::load_from(cursor) {
+        Ok(mut document) => {
+            let pages = document.get_pages();
 
-    for format in [
-        ImageFormat::Bmp,
-        ImageFormat::Farbfeld,
-        ImageFormat::Ico,
-        ImageFormat::Jpeg,
-        ImageFormat::Png,
-        ImageFormat::Pnm,
-        ImageFormat::Tiff,
-        ImageFormat::WebP,
-        ImageFormat::Tga,
-        ImageFormat::Dds,
-        ImageFormat::Hdr,
-        ImageFormat::OpenExr,
-        // ImageFormat::Avif, // Don't use, it is really slow https://github.com/image-rs/image/issues/2282
-        ImageFormat::Qoi,
-    ]
-        .into_iter()
-    {
-        let buffer: Vec<u8> = Vec::new();
-        let _ = res.write_to(&mut Cursor::new(buffer), format);
+            let mut doc_clone = document.clone();
+            doc_clone.decompress();
+
+            for (i, _) in pages.iter().enumerate() {
+                let page_number = (i + 1) as u32;
+                let _text = document.extract_text(&[page_number]);
+            }
+
+            document.save_to(&mut Cursor::new(Vec::new())).unwrap();
+        }
+        Err(err) => {
+            eprintln!("Error reading PDF contents: {}", err)
+        }
     }
 });

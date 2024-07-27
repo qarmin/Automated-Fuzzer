@@ -41,10 +41,10 @@ jobs:
             fuzz_target: lopdf
             timeout: 6000
             files: "AA_PDF_VALID_FILES.7z"
-          - name: PDF_RS
-            fuzz_target: pdf_rs
-            timeout: 6000
-            files: "AA_PDF_VALID_FILES.7z"
+          #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
+          #            fuzz_target: pdf_rs
+          #            timeout: 6000
+          #            files: "AA_PDF_VALID_FILES.7z"
           #          - name: RSBUZZ
           #            fuzz_target: rsbuzz
           #            timeout: 6000

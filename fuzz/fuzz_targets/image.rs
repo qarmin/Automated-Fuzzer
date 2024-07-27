@@ -1,12 +1,14 @@
 #![no_main]
 
-use std::io::Read;
+use std::io::Cursor;
+
+use image::ImageFormat;
 use libfuzzer_sys::fuzz_target;
 
 fuzz_target!(|data: &[u8]| {
     let res = match image::load_from_memory(&data) {
         Ok(res) => res,
-        Err(e) => {
+        Err(_e) => {
             return;
         }
     };

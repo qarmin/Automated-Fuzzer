@@ -1,39 +1,18 @@
+#![no_main]
+
 use std::env::args;
 use std::{fs, io};
 
-use walkdir::WalkDir;
 use std::path::Path;
 use symphonia::core::codecs::CODEC_TYPE_NULL;
 use symphonia::core::errors::Error;
 use symphonia::core::errors::Error::IoError;
 use symphonia::core::io::MediaSourceStream;
+use libfuzzer_sys::fuzz_target;
 
-fn main() {
-    let path = args().nth(1).unwrap().clone();
-    if !Path::new(&path).exists() {
-        panic!("Missing file");
-    }
-
-    if Path::new(&path).is_dir() {
-        for entry in WalkDir::new(&path).into_iter().flatten() {
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let path = entry.path().to_string_lossy().to_string();
-            check_file(&path);
-        }
-    } else {
-        check_file(&path);
-    }
-}
-
-fn check_file(path: &str) {
-    let Ok(content) = fs::read(path) else {
-        return;
-    };
-
-    let _ = parse_audio_file(content);
-}
+fuzz_target!(|data: &[u8]| {
+    let _ = parse_audio_file(data.to_vec());
+});
 
 pub fn parse_audio_file(content: Vec<u8>) -> Result<(), Error> {
     let cursor = io::Cursor::new(content);
