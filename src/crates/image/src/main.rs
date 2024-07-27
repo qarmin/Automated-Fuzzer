@@ -27,7 +27,6 @@ fn main() {
 
 fn check_file(file_path: &str) {
     let Ok(content) = fs::read(file_path) else {
-        eprintln!("Error: {:?}", e);
         return;
     };
     let res = match image::load_from_memory(&content) {

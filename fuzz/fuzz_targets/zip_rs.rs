@@ -7,8 +7,7 @@ fuzz_target!(|data: &[u8]| {
     let cursor = std::io::Cursor::new(data);
     let mut zip = match zip::ZipArchive::new(cursor) {
         Ok(t) => t,
-        Err(e) => {
-            println!("{e}");
+        Err(_e) => {
             return;
         }
     };
@@ -19,8 +18,7 @@ fuzz_target!(|data: &[u8]| {
                 let mut buf = Vec::new();
                 let _ = file.read(&mut buf);
             }
-            Err(e) => {
-                eprintln!("{e}");
+            Err(_e) => {
             }
         }
     }

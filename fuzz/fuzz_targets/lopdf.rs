@@ -20,8 +20,7 @@ fuzz_target!(|data: &[u8]| {
 
             document.save_to(&mut Cursor::new(Vec::new())).unwrap();
         }
-        Err(err) => {
-            eprintln!("Error reading PDF contents: {}", err)
+        Err(_err) => {
         }
     }
 });

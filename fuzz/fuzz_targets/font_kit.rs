@@ -23,8 +23,8 @@ fuzz_target!(|data: &[u8]| {
             let _ = source.select_by_postscript_name("");
             let _ = source.as_any();
         },
-        Err(e) => {
-            eprintln!("Error: {:?}", e);
+        Err(_e) => {
+            // eprintln!("Error: {:?}", e);
         }
     }
 });

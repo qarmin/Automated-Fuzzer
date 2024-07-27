@@ -11,7 +11,7 @@ cargo-fuzz = true
 libfuzzer-sys = "0.4"
 lofty = { git = "https://github.com/Serial-ATA/lofty-rs/" }
 font-kit = { git = "https://github.com/servo/font-kit.git", features = ["source"] }
-image = { git = "https://github.com/image-rs/image", default-features = false, features = ["default-formats"] }
+image = { git = "https://github.com/image-rs/image", default-features = false, features = ["avif", "bmp", "dds", "ff", "gif", "hdr", "ico", "png", "pnm", "qoi", "tga", "tiff", "webp"] } # All except jpg, webp and openexr
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git" }
 rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git" }
 #pdf = { git = "https://github.com/pdf-rs/pdf/" }

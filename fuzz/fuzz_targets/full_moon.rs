@@ -7,8 +7,5 @@ fuzz_target!(|data: &[u8]| {
         return;
     };
 
-    let r = full_moon::parse_fallible(&data, full_moon::LuaVersion::new());
-    if r.errors().len() > 0 {
-        println!("Error: {:?}", r.errors());
-    }
+    let _r = full_moon::parse_fallible(&data, full_moon::LuaVersion::new());
 });

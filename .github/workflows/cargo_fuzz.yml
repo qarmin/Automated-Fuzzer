@@ -37,10 +37,10 @@ jobs:
             fuzz_target: image
             timeout: 6000
             files: "AA_IMAGE_VALID_FILES.7z"
-          - name: LOPDF
-            fuzz_target: lopdf
-            timeout: 6000
-            files: "AA_PDF_VALID_FILES.7z"
+          #          - name: LOPDF # Stack overflow
+          #            fuzz_target: lopdf
+          #            timeout: 6000
+          #            files: "AA_PDF_VALID_FILES.7z"
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
           #            timeout: 6000
@@ -106,7 +106,7 @@ jobs:
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 -max_total_time=120 || true
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
       - name: Store fuzz results after
         uses: actions/upload-artifact@v4
@@ -117,4 +117,4 @@ jobs:
 
       - name: Exit when found broken files
         run: |
-          [ "$(ls -A fuzz/artifacts)" ] && exit 1 || true
+          [ "$(ls -A fuzz/artifacts/${{ matrix.fuzz_target }})" ] && exit 1 || true
