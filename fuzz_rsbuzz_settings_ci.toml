@@ -23,7 +23,7 @@ current_mode = "custom"
 
 [custom]
 name = "rust_buzz"
-command = "UNSTABLE_123|FILE_PATHS_TO_PROVIDE"
+command = "rsbuzz|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ttf,otf,woff,woff2"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

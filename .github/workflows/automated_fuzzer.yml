@@ -54,7 +54,7 @@ jobs:
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_rs
           - name: RSBUZZ
-            config-file: fuzz_rustbuzz_settings_ci.toml
+            config-file: fuzz_rsbuzz_settings_ci.toml
             timeout: 6000
             files: "AA_FONT_VALID_FILES_MORE.7z"
             src_folder: rsbuzz

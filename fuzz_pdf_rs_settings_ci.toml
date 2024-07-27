@@ -23,7 +23,7 @@ current_mode = "custom"
 
 [custom]
 name = "pdf_rs"
-command = "pdf_rsUNSTABLE_123|FILE_PATHS_TO_PROVIDE"
+command = "pdf_rs|FILE_PATHS_TO_PROVIDE"
 
 extensions = "pdf"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

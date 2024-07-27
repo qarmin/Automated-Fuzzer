@@ -19,19 +19,43 @@ jobs:
         include:
           - name: LOFTY
             fuzz_target: lofty
-            timeout: 18000
+            timeout: 6000
             files: "AA_MUSIC_VALID_FILES.7z"
           - name: DICOM
             fuzz_target: dicom
-            timeout: 18000
+            timeout: 6000
             files: "AA_DCM_VALID_FILES.7z"
-          - name: FONT_KIT
-            fuzz_target: font_kit
-            timeout: 18000
+          #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
+          #            fuzz_target: font_kit
+          #            timeout: 6000
+          #            files: "AA_FONT_VALID_FILES_MORE.7z"
+          - name: FULL_MOON
+            fuzz_target: full_moon
+            timeout: 6000
+            files: "AA_LUA_VALID_FILES.7z"
+          - name: IMAGE
+            fuzz_target: image
+            timeout: 6000
+            files: "AA_IMAGE_VALID_FILES.7z"
+          - name: LOPDF
+            fuzz_target: lopdf
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
+          - name: PDF_RS
+            fuzz_target: pdf_rs
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
+          - name: RSBUZZ
+            fuzz_target: rsbuzz
+            timeout: 6000
             files: "AA_FONT_VALID_FILES_MORE.7z"
+          - name: SYMPHONIA
+            fuzz_target: symphonia
+            timeout: 6000
+            files: "AA_MUSIC_VALID_FILES.7z"
           - name: ZIP_RS
             fuzz_target: zip_rs
-            timeout: 18000
+            timeout: 6000
             files: "AA_ZIP_VALID_FILES.7z"
 
     steps:
@@ -71,12 +95,21 @@ jobs:
           cargo update
           cd ../
 
+      - name: Build Fuzzer
+        run: |
+          cd fuzz
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz build --release ${{ matrix.fuzz_target }}
+          cd ../
+
       - name: Run Fuzzer
         run: |
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=4200 || true
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 -ignore_ooms -minimize_crash -max_total_time=120 || true
 
       - name: Store fuzz results after
         uses: actions/upload-artifact@v4
