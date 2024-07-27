@@ -49,7 +49,7 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
       - name: Install apps, which are inside this repo(probably only libraries)
-        if: ${{ matrix.src_folder == '' }}
+        if: ${{ matrix.src_folder != '' }}
         run: |
           cd src/crates/${{ matrix.src_folder }}
           cargo update
