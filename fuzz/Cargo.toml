@@ -10,13 +10,47 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = "0.4"
 lofty = { git = "https://github.com/Serial-ATA/lofty-rs/" }
+font-kit = { git = "https://github.com/servo/font-kit.git", features = ["source"] }
+image = { git = "https://github.com/image-rs/image", default-features = false, features = ["default-formats"] }
+lopdf = { git = "https://github.com/J-F-Liu/lopdf.git" }
+rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git" }
+pdf = { git = "https://github.com/pdf-rs/pdf/" }
+symphonia = { version = "0.5", features = ["all"] }
+zip = { version = "2.1", features = [] }
 
-[dependencies.automated_fuzzer]
-path = ".."
+dicom-core = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-object = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-ul = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-encoding = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-dictionary-std = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-transfer-syntax-registry = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-dump = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-json = { git = "https://github.com/Enet4/dicom-rs" }
 
 [[bin]]
 name = "lofty"
 path = "fuzz_targets/lofty.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "dicom"
+path = "fuzz_targets/dicom.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "font_kit"
+path = "fuzz_targets/font_kit.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "zip_rs"
+path = "fuzz_targets/zip_rs.rs"
 test = false
 doc = false
 bench = false

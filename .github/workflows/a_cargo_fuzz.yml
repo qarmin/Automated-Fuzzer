@@ -1,13 +1,12 @@
 name: 🐧 AFL Check
 on:
-  push: # Once daily
-  pull_request: # Once daily
+  push:
+  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
 env:
   CARGO_TERM_COLOR: always
-  TOOL_TYPE: LOFTY
 
 jobs:
   afl-ci:
@@ -18,30 +17,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LOFTY_1
-            timeout: 180
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_2
-            timeout: 1800
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_3
+          - name: LOFTY
+            fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_4
+          - name: DICOM
+            fuzz_target: dicom
             timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_5
+            files: "AA_DCM_VALID_FILES.7z"
+          - name: FONT_KIT
+            fuzz_target: font_kit
             timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_6
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+          - name: ZIP_RS
+            fuzz_target: zip_rs
             timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_7
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY_8
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
+            files: "AA_ZIP_VALID_FILES.7z"
 
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +58,6 @@ jobs:
         run: |
           CURR_DIR=$(pwd)
           mkdir -p /opt/INPUT_FILES_DIR
-          mkdir -p /opt/INVALID_FILES_DIR
           cd /opt/INPUT_FILES_DIR
           
           python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
@@ -82,11 +72,11 @@ jobs:
 
       - name: Run Fuzzer
         run: |
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run lofty /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }}
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }}
 
       - name: Store fuzz results after
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: CARGO_FUZZ___${{ env.TOOL_TYPE }}___${{ matrix.name }}
+          name: CARGO_FUZZ___${{ matrix.name }}
           path: fuzz/artifacts

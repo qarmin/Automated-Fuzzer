@@ -1,7 +1,8 @@
-use dicom_object::open_file;
-use std::env::args;
-use std::path::Path;
 use dicom_dump::DumpOptions;
+use dicom_object::from_reader;
+use std::env::args;
+use std::fs;
+use std::path::Path;
 use walkdir::WalkDir;
 
 fn main() {
@@ -24,7 +25,11 @@ fn main() {
 }
 
 fn check_file(path: &str) {
-    let Ok(res) = open_file(path) else {
+    let Ok(file_content) = fs::read(path) else {
+        return;
+    };
+    let cursor = std::io::Cursor::new(file_content);
+    let Ok(res) = from_reader(cursor) else {
         return;
     };
     let mut item_to_dump = Vec::new();
