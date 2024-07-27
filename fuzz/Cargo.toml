@@ -1,4 +1,4 @@
-[package]
+[package]/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/zip_rs
 name = "automated_fuzzer-fuzz"
 version = "0.0.0"
 publish = false
@@ -15,8 +15,9 @@ image = { git = "https://github.com/image-rs/image", default-features = false, f
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git" }
 rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git" }
 pdf = { git = "https://github.com/pdf-rs/pdf/" }
-symphonia = { version = "0.5", features = ["all"] }
-zip = { version = "2.1", features = [] }
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"] }
+zip = { git = "https://github.com/zip-rs/zip2.git" }
+full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = ["roblox", "lua54"] }
 
 dicom-core = { git = "https://github.com/Enet4/dicom-rs" }
 dicom-object = { git = "https://github.com/Enet4/dicom-rs" }
@@ -51,6 +52,41 @@ bench = false
 [[bin]]
 name = "zip_rs"
 path = "fuzz_targets/zip_rs.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "full_moon"
+path = "fuzz_targets/full_moon.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "image"
+path = "fuzz_targets/image.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "lopdf"
+path = "fuzz_targets/lopdf.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "pdf_rs"
+path = "fuzz_targets/pdf_rs.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "rsbuzz"
+path = "fuzz_targets/rsbuzz.rs"
 test = false
 doc = false
 bench = false

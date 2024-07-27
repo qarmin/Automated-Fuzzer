@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-zip = { version = "2.1", features = [] }
+zip = { git = "https://github.com/zip-rs/zip2.git" }
 walkdir = "2.5.0"
 
 [profile.release]

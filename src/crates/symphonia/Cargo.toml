@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-symphonia = { version = "0.5", features = ["all"] }
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"] }
 walkdir = "2"
 
 [profile.release]

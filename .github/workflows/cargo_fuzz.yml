@@ -29,10 +29,10 @@ jobs:
           #            fuzz_target: font_kit
           #            timeout: 6000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          - name: FULL_MOON
-            fuzz_target: full_moon
-            timeout: 6000
-            files: "AA_LUA_VALID_FILES.7z"
+          #          - name: FULL_MOON
+          #            fuzz_target: full_moon
+          #            timeout: 6000
+          #            files: "AA_LUA_VALID_FILES.7z"
           - name: IMAGE
             fuzz_target: image
             timeout: 6000
@@ -45,14 +45,14 @@ jobs:
             fuzz_target: pdf_rs
             timeout: 6000
             files: "AA_PDF_VALID_FILES.7z"
-          - name: RSBUZZ
-            fuzz_target: rsbuzz
-            timeout: 6000
-            files: "AA_FONT_VALID_FILES_MORE.7z"
-          - name: SYMPHONIA
-            fuzz_target: symphonia
-            timeout: 6000
-            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: RSBUZZ
+          #            fuzz_target: rsbuzz
+          #            timeout: 6000
+          #            files: "AA_FONT_VALID_FILES_MORE.7z"
+          #          - name: SYMPHONIA
+          #            fuzz_target: symphonia
+          #            timeout: 6000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
           - name: ZIP_RS
             fuzz_target: zip_rs
             timeout: 6000
@@ -73,11 +73,8 @@ jobs:
           sudo apt install -y wget earlyoom libasan8
           sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
-      - name: Install create_broken_files and sd
-        run: cargo install create_broken_files sd cargo-fuzz
-
-      - name: Build
-        run: cargo build --release
+      - name: Install cargo fuzz
+        run: cargo install cargo-fuzz
 
       - name: Download and prepare data files
         run: |
@@ -109,7 +106,7 @@ jobs:
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 -ignore_ooms -minimize_crash -max_total_time=120 || true
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 -max_total_time=120 || true
 
       - name: Store fuzz results after
         uses: actions/upload-artifact@v4

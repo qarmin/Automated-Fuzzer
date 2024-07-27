@@ -1,4 +1,5 @@
 use std::env::args;
+use std::fs;
 use std::io::Cursor;
 use std::path::Path;
 
@@ -25,7 +26,11 @@ fn main() {
 }
 
 fn check_file(file_path: &str) {
-    let res = match image::open(file_path) {
+    let Ok(content) = fs::read(file_path) else {
+        eprintln!("Error: {:?}", e);
+        return;
+    };
+    let res = match image::load_from_memory(&content) {
         Ok(res) => res,
         Err(e) => {
             eprintln!("Error: {}", e);

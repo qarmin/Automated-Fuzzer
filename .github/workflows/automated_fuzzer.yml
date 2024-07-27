@@ -23,16 +23,12 @@ jobs:
             timeout: 6000
             files: "AA_DCM_VALID_FILES.7z"
             src_folder: dicom
-          - name: FONT_KIT
-            config-file: fuzz_font_kit_settings_ci.toml
-            timeout: 6000
-            files: "AA_FONT_VALID_FILES_MORE.7z"
-            src_folder: font_kit
-          - name: FULL_MOON
-            config-file: fuzz_full_moon_settings_ci.toml
-            timeout: 6000
-            files: "AA_LUA_VALID_FILES.7z"
-            src_folder: full_moon
+          #          - name: Ffull_moonder: font_kit
+          #          - name: FULL_MOON
+          #            config-file: fuzz_full_moon_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_LUA_VALID_FILES.7z"
+          #            src_folder: full_moon
           - name: IMAGE
             config-file: fuzz_image_settings_ci.toml
             timeout: 6000
@@ -53,16 +49,16 @@ jobs:
             timeout: 6000
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_rs
-          - name: RSBUZZ
-            config-file: fuzz_rsbuzz_settings_ci.toml
-            timeout: 6000
-            files: "AA_FONT_VALID_FILES_MORE.7z"
-            src_folder: rsbuzz
-          - name: SYMPHONIA
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 6000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: symphonia
+          #          - name: RSBUZZ
+          #            config-file: fuzz_rsbuzz_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_FONT_VALID_FILES_MORE.7z"
+          #            src_folder: rsbuzz
+          #          - name: SYMPHONIA
+          #            config-file: fuzz_symphonia_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            src_folder: symphonia
           - name: ZIP_RS
             config-file: fuzz_zip_rs_settings_ci.toml
             timeout: 6000
@@ -75,21 +71,21 @@ jobs:
             files: "AA_GO_VALID_FILES.7z"
             go_version: '1.23.0-rc.1'
             src_folder: ''
-          - name: OXC
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 6000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-          - name: STYLUA
-            config-file: fuzz_stylua_settings_ci.toml
-            timeout: 6000
-            files: "AA_LUA_VALID_FILES.7z"
-            src_folder: ''
-          - name: SWC
-            config-file: fuzz_swc_settings_ci.toml
-            timeout: 6000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
+          #          - name: OXC
+          #            config-file: fuzz_oxc_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            src_folder: ''
+          #          - name: STYLUA
+          #            config-file: fuzz_stylua_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_LUA_VALID_FILES.7z"
+          #            src_folder: ''
+          #          - name: SWC
+          #            config-file: fuzz_swc_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            src_folder: ''
           - name: TYPST
             config-file: fuzz_typst_settings_ci.toml
             timeout: 6000

@@ -1,5 +1,6 @@
 use lopdf::Document;
 use std::env::args;
+use std::fs;
 use std::io::Cursor;
 use std::path::Path;
 use walkdir::WalkDir;
@@ -24,7 +25,11 @@ fn main() {
 }
 
 fn check_file(file_path: &str) {
-    match Document::load(file_path) {
+    let Ok(content) = fs::read(file_path) else {
+        return;
+    };
+    let cursor = Cursor::new(content);
+    match Document::load_from(cursor) {
         Ok(mut document) => {
             let pages = document.get_pages();
 
