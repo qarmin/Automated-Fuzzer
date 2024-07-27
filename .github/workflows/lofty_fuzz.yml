@@ -58,7 +58,7 @@ jobs:
           sudo apt install -y wget earlyoom libasan8
 
       - name: Install create_broken_files and sd
-        run: cargo install create_broken_files sd cargo-afl
+        run: cargo install create_broken_files sd cargo-fuzz
 
       - name: Build
         run: cargo build --release
@@ -76,22 +76,17 @@ jobs:
 
       - name: Configure fuzzer
         run: |
-          cd src/crates/lofty_afl
+          cd fuzz
           cargo update
-          
-          sudo -E ~/.cargo/bin/cargo afl system-config
-          export AFL_USE_ASAN=1
-          cargo afl build
-          cd ../../../
+          cd ../
 
       - name: Run Fuzzer
         run: |
-          export AFL_USE_ASAN=1
-          timeout -v ${{ matrix.timeout }} cargo afl fuzz -a binary -i /opt/INPUT_FILES_DIR -o /opt/INVALID_FILES src/crates/lofty_afl/target/debug/lofty_afl || true
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run lofty /opt/INPUT_FILES_DIR/ -- -max_len=99999 -max_total_time=${{ matrix.timeout }}
 
-      - name: Store AFL results after
+      - name: Store fuzz results after
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: AFL___${{ env.TOOL_TYPE }}___${{ matrix.name }}
-          path: /opt/INVALID_FILES_DIR
+          name: CARGO_FUZZ___${{ env.TOOL_TYPE }}___${{ matrix.name }}
+          path: fuzz/artifacts

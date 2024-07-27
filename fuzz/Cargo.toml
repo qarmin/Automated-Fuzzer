@@ -1,0 +1,28 @@
+[package]
+name = "automated_fuzzer-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+lofty = { git = "https://github.com/Serial-ATA/lofty-rs/" }
+
+[dependencies.automated_fuzzer]
+path = ".."
+
+[[bin]]
+name = "lofty"
+path = "fuzz_targets/lofty.rs"
+test = false
+doc = false
+bench = false
+
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
