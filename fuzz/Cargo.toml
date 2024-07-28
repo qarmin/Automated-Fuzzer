@@ -9,24 +9,41 @@ cargo-fuzz = true
 
 [dependencies]
 libfuzzer-sys = "0.4"
-lofty = { git = "https://github.com/Serial-ATA/lofty-rs/" }
-font-kit = { git = "https://github.com/servo/font-kit.git", features = ["source"] }
-image = { git = "https://github.com/image-rs/image", default-features = false, features = ["avif", "bmp", "dds", "ff", "gif", "hdr", "ico", "png", "pnm", "qoi", "tga", "webp"] } # All except jpg, tiff and openexr
-lopdf = { git = "https://github.com/J-F-Liu/lopdf.git" }
-rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git" }
-#pdf = { git = "https://github.com/pdf-rs/pdf/" }
-symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"] }
-zip = { git = "https://github.com/zip-rs/zip2.git" }
-full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = ["roblox", "lua54"] }
+lofty = { git = "https://github.com/Serial-ATA/lofty-rs/", optional = true }
+font-kit = { git = "https://github.com/servo/font-kit.git", features = ["source"], optional = true }
+image = { git = "https://github.com/image-rs/image", default-features = false, features = ["avif", "bmp", "dds", "ff", "gif", "hdr", "ico", "png", "pnm", "qoi", "tga", "webp"], optional = true } # All except jpg, tiff and openexr
+lopdf = { git = "https://github.com/J-F-Liu/lopdf.git", optional = true }
+rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git", optional = true }
+#pdf = { git = "https://github.com/pdf-rs/pdf/" , optional = true}
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], optional = true }
+zip = { git = "https://github.com/zip-rs/zip2.git", optional = true }
+full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = ["roblox", "lua54"], optional = true }
 
-dicom-core = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-object = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-ul = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-encoding = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-dictionary-std = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-transfer-syntax-registry = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-dump = { git = "https://github.com/Enet4/dicom-rs" }
-dicom-json = { git = "https://github.com/Enet4/dicom-rs" }
+dicom-core = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-object = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-ul = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-encoding = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-dictionary-std = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-transfer-syntax-registry = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-dump = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+dicom-json = { git = "https://github.com/Enet4/dicom-rs", optional = true }
+
+[features]
+default = []
+lofty_f = ["lofty"]
+font_kit_f = ["font-kit"]
+image_f = ["image"]
+lopdf_f = ["lopdf"]
+rsbuzz_f = ["rustybuzz"]
+#pdf_rs_f = ["pdf"]
+symphonia_f = ["symphonia"]
+zip_rs_f = ["zip"]
+full_moon_f = ["full_moon"]
+dicom_f = ["dicom-core", "dicom-object", "dicom-ul", "dicom-encoding", "dicom-dictionary-std", "dicom-transfer-syntax-registry", "dicom-dump", "dicom-json"]
+
+
+
+
 
 [[bin]]
 name = "lofty"
