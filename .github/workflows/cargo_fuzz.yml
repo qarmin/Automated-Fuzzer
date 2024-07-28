@@ -45,10 +45,10 @@ jobs:
           #            fuzz_target: pdf_rs
           #            timeout: 6000
           #            files: "AA_PDF_VALID_FILES.7z"
-          #          - name: RSBUZZ
-          #            fuzz_target: rsbuzz
-          #            timeout: 6000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
+          - name: RSBUZZ
+            fuzz_target: rsbuzz
+            timeout: 6000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
           #          - name: SYMPHONIA
           #            fuzz_target: symphonia
           #            timeout: 6000
@@ -108,11 +108,26 @@ jobs:
           export ASAN_OPTIONS=symbolize=1
           RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
-      - name: Store fuzz results after
+      - name: Store fuzz results before minimization
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: CARGO_FUZZ___${{ matrix.name }}
+          name: CARGO_FUZZ___${{ matrix.name }}___before
+          path: fuzz/artifacts
+
+      - name: Minimalize fuzz results
+        run: |
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS=symbolize=1
+          
+          export RUSTFLAGS="-Zsanitizer=address"; for file in fuzz/artifacts/*; do cargo fuzz tmin "${{ matrix.fuzz_target }}" "$file" -- -rss_limit_mb=20000 || true; done
+
+      - name: Store fuzz results after minimization
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: CARGO_FUZZ___${{ matrix.name }}___after
           path: fuzz/artifacts
 
       - name: Exit when found broken files
