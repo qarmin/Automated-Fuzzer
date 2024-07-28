@@ -98,7 +98,7 @@ jobs:
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz build --release ${{ matrix.fuzz_target }}
+          RUSTFLAGS="-Zsanitizer=address" cargo fuzz build ${{ matrix.fuzz_target }} --release --features "${{ matrix.fuzz_target }}_f"
           cd ../
 
       - name: Run Fuzzer
