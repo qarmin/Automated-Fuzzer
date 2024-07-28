@@ -105,8 +105,9 @@ jobs:
         run: |
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS=symbolize=1
-          RUSTFLAGS="-Zsanitizer=address" cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
+          export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
+          export RUSTFLAGS="-Zsanitizer=address"
+          cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
       - name: Store fuzz results before minimization
         uses: actions/upload-artifact@v4
@@ -119,9 +120,10 @@ jobs:
         run: |
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS=symbolize=1
+          export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
+          export RUSTFLAGS="-Zsanitizer=address"
           
-          export RUSTFLAGS="-Zsanitizer=address"; for file in fuzz/artifacts/*; do cargo fuzz tmin "${{ matrix.fuzz_target }}" "$file" --release --features "${{ matrix.fuzz_target }}_f" -- -rss_limit_mb=20000 || true; done
+          for file in fuzz/artifacts/*; do cargo fuzz tmin "${{ matrix.fuzz_target }}" "$file" --release --features "${{ matrix.fuzz_target }}_f" -- -rss_limit_mb=20000 || true; done
 
       - name: Store fuzz results after minimization
         uses: actions/upload-artifact@v4
