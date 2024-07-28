@@ -11,7 +11,7 @@ fuzz_target!(|data: &[u8]| {
     };
     let mut item_to_dump = Vec::new();
     let _ = DumpOptions::new().dump_object_to(&mut item_to_dump, &res);
-    // let _ = dicom_json::to_string(&res);
+    let _ = dicom_json::to_string(&res);
     let mut item_to_dump = Vec::new();
     let _ = res.write_dataset(&mut item_to_dump);
 });
