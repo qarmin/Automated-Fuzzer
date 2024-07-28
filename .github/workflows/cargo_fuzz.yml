@@ -127,12 +127,12 @@ jobs:
       #
       #          for file in fuzz/artifacts/*; do cargo fuzz tmin "${{ matrix.fuzz_target }}" "$file" --release --features "${{ matrix.fuzz_target }}_f" -- -rss_limit_mb=20000 || true; done
 
-      - name: Store fuzz results after minimization
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: CARGO_FUZZ___${{ matrix.name }}___after
-          path: fuzz/artifacts
+      #      - name: Store fuzz results after minimization
+      #        uses: actions/upload-artifact@v4
+      #        with:
+      #          if-no-files-found: ignore
+      #          name: CARGO_FUZZ___${{ matrix.name }}___after
+      #          path: fuzz/artifacts
 
       - name: Exit when found broken files
         run: |
