@@ -1,11 +1,12 @@
 #![no_main]
 
-use libfuzzer_sys::fuzz_target;
+use libfuzzer_sys::{Corpus, fuzz_target};
 
-fuzz_target!(|data: &[u8]| {
+fuzz_target!(|data: &[u8]| -> Corpus {
     let Ok(data) = String::from_utf8(data.to_vec()) else {
-        return;
+        return Corpus::Reject;
     };
 
-    let _r = full_moon::parse_fallible(&data, full_moon::LuaVersion::new());
+     full_moon::parse_fallible(&data, full_moon::LuaVersion::new());
+    Corpus::Keep
 });

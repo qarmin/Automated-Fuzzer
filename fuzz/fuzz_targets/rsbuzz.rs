@@ -1,9 +1,13 @@
 #![no_main]
 
-use libfuzzer_sys::fuzz_target;
+use libfuzzer_sys::{Corpus, fuzz_target};
 
-fuzz_target!(|data: &[u8]| {
-    let _ = process_face(data);
+fuzz_target!(|data: &[u8]| -> Corpus {
+    if process_face(data).is_some() {
+        Corpus::Keep
+    } else {
+        Corpus::Reject
+    }
 });
 
 fn process_face(data: &[u8]) -> Option<()> {

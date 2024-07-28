@@ -1,17 +1,21 @@
 #![no_main]
 
-use std::env::args;
 use std::{fs, io};
-
+use std::env::args;
 use std::path::Path;
+
+use libfuzzer_sys::{Corpus, fuzz_target};
 use symphonia::core::codecs::CODEC_TYPE_NULL;
 use symphonia::core::errors::Error;
 use symphonia::core::errors::Error::IoError;
 use symphonia::core::io::MediaSourceStream;
-use libfuzzer_sys::fuzz_target;
 
-fuzz_target!(|data: &[u8]| {
-    let _ = parse_audio_file(data.to_vec());
+fuzz_target!(|data: &[u8]| -> Corpus {
+     if parse_audio_file(data.to_vec()).is_ok() {
+        Corpus::Keep
+    } else {
+        Corpus::Reject
+    }
 });
 
 pub fn parse_audio_file(content: Vec<u8>) -> Result<(), Error> {

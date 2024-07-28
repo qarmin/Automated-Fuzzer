@@ -1,14 +1,14 @@
 #![no_main]
 
 use std::io::Read;
-use libfuzzer_sys::fuzz_target;
+use libfuzzer_sys::{Corpus, fuzz_target};
 
-fuzz_target!(|data: &[u8]| {
+fuzz_target!(|data: &[u8]|  -> Corpus{
     let cursor = std::io::Cursor::new(data);
     let mut zip = match zip::ZipArchive::new(cursor) {
         Ok(t) => t,
         Err(_e) => {
-            return;
+            return Corpus::Reject;
         }
     };
 
@@ -22,4 +22,5 @@ fuzz_target!(|data: &[u8]| {
             }
         }
     }
+    Corpus::Keep
 });

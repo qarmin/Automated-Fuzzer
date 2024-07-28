@@ -3,13 +3,13 @@
 use std::io::Cursor;
 
 use image::ImageFormat;
-use libfuzzer_sys::fuzz_target;
+use libfuzzer_sys::{Corpus, fuzz_target};
 
-fuzz_target!(|data: &[u8]| {
+fuzz_target!(|data: &[u8]| -> Corpus {
     let res = match image::load_from_memory(&data) {
         Ok(res) => res,
         Err(_e) => {
-            return;
+            return Corpus::Reject;
         }
     };
 
@@ -34,4 +34,5 @@ fuzz_target!(|data: &[u8]| {
         let buffer: Vec<u8> = Vec::new();
         let _ = res.write_to(&mut Cursor::new(buffer), format);
     }
+    Corpus::Keep
 });

@@ -30,6 +30,7 @@ dicom-json = { git = "https://github.com/Enet4/dicom-rs", optional = true }
 
 [features]
 default = []
+all = ["lofty_f", "font_kit_f", "image_f", "lopdf_f", "rsbuzz_f", "symphonia_f", "zip_rs_f", "full_moon_f", "dicom_f"]
 lofty_f = ["lofty"]
 font_kit_f = ["font-kit"]
 image_f = ["image"]
@@ -40,10 +41,6 @@ symphonia_f = ["symphonia"]
 zip_rs_f = ["zip"]
 full_moon_f = ["full_moon"]
 dicom_f = ["dicom-core", "dicom-object", "dicom-ul", "dicom-encoding", "dicom-dictionary-std", "dicom-transfer-syntax-registry", "dicom-dump", "dicom-json"]
-
-
-
-
 
 [[bin]]
 name = "lofty"
