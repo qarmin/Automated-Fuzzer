@@ -25,6 +25,7 @@ const BROKEN_ITEMS_TO_IGNORE: &[&str] = &["Ord violation", r#""stack backtrace:\
 const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "0: rust_begin_unwind", "AddressSanitizer:",
     "LeakSanitizer:",
+    "Failed to converge after"
     // "Failed to create fix", // Do not report that, probably not worth to fix
     // "Fix introduced a syntax error", "Fix introduced a syntax error", "This indicates a bug in",
 ];
