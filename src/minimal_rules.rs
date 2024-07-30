@@ -352,7 +352,7 @@ pub fn save_results_to_file(
         file_content += "\n\n///////////////////////////////////////////////////////\n\n";
         file_content += &r"$RUFF_VERSION
 ```
-ruff *.py --select $RULES_TO_REPLACE --no-cache $RUFF_FIX --preview --output-format concise --isolated
+ruff check *.py --select $RULES_TO_REPLACE --no-cache $RUFF_FIX --preview --output-format concise --isolated
 ```
 
 file content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):
