@@ -1,9 +1,9 @@
 #![no_main]
 
+use libfuzzer_sys::{fuzz_target, Corpus};
 use std::io::Read;
-use libfuzzer_sys::{Corpus, fuzz_target};
 
-fuzz_target!(|data: &[u8]|  -> Corpus{
+fuzz_target!(|data: &[u8]| -> Corpus {
     let cursor = std::io::Cursor::new(data);
     let mut zip = match zip::ZipArchive::new(cursor) {
         Ok(t) => t,
@@ -18,8 +18,7 @@ fuzz_target!(|data: &[u8]|  -> Corpus{
                 let mut buf = Vec::new();
                 let _ = file.read(&mut buf);
             }
-            Err(_e) => {
-            }
+            Err(_e) => {}
         }
     }
     Corpus::Keep

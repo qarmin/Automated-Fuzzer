@@ -1,8 +1,8 @@
 #![no_main]
 
-use std::io::Cursor;
-use libfuzzer_sys::{Corpus, fuzz_target};
+use libfuzzer_sys::{fuzz_target, Corpus};
 use lopdf::Document;
+use std::io::Cursor;
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     let cursor = Cursor::new(data);
@@ -21,8 +21,6 @@ fuzz_target!(|data: &[u8]| -> Corpus {
             let _ = document.save_to(&mut Cursor::new(Vec::new()));
             Corpus::Keep
         }
-        Err(_err) => {
-            Corpus::Reject
-        }
+        Err(_err) => Corpus::Reject,
     }
 });

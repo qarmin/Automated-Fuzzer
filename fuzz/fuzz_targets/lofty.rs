@@ -1,11 +1,24 @@
 #![no_main]
 
-use libfuzzer_sys::{Corpus, fuzz_target};
-use lofty::file::{FileType, TaggedFileExt};
+use libfuzzer_sys::{fuzz_target, Corpus};
 use lofty::file::AudioFile;
+use lofty::file::{FileType, TaggedFileExt};
 use lofty::probe::Probe;
 
-const ALL_FILE_TYPES: &[FileType] = &[FileType::Aac, FileType::Aiff, FileType::Ape, FileType::Flac, FileType::Mpeg, FileType::Mp4, FileType::Mpc, FileType::Opus, FileType::Vorbis, FileType::Speex, FileType::Wav, FileType::WavPack];
+const ALL_FILE_TYPES: &[FileType] = &[
+    FileType::Aac,
+    FileType::Aiff,
+    FileType::Ape,
+    FileType::Flac,
+    FileType::Mpeg,
+    FileType::Mp4,
+    FileType::Mpc,
+    FileType::Opus,
+    FileType::Vorbis,
+    FileType::Speex,
+    FileType::Wav,
+    FileType::WavPack,
+];
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     let mut corpus = Corpus::Reject;

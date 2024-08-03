@@ -3,7 +3,7 @@
 use std::io::Cursor;
 
 use image::ImageFormat;
-use libfuzzer_sys::{Corpus, fuzz_target};
+use libfuzzer_sys::{fuzz_target, Corpus};
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     let res = match image::load_from_memory(&data) {
@@ -29,7 +29,7 @@ fuzz_target!(|data: &[u8]| -> Corpus {
         // ImageFormat::Avif, // Don't use, it is really slow https://github.com/image-rs/image/issues/2282
         ImageFormat::Qoi,
     ]
-        .into_iter()
+    .into_iter()
     {
         let buffer: Vec<u8> = Vec::new();
         let _ = res.write_to(&mut Cursor::new(buffer), format);

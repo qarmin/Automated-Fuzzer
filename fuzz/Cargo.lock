@@ -226,9 +226,9 @@ checksum = "5ce89b21cab1437276d2650d57e971f9d548a2d9037cc231abdc0562b97498ce"
 
 [[package]]
 name = "bytemuck"
-version = "1.16.1"
+version = "1.16.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b236fc92302c97ed75b38da1f4917b5cdda4984745740f153a5d3059e48d725e"
+checksum = "102087e286b4677862ea56cf8fc58bb2cdfa8725c40ffb80fe3a008eb7f2fc83"
 
 [[package]]
 name = "byteorder"
@@ -274,9 +274,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2aba8f4e9906c7ce3c73463f62a7f0c65183ada1a2d47e397cc8810827f9694f"
+checksum = "26a5c3fd7bfa1ce3897a3a3501d362b2d87b7f2583ebcb4a949ec25911025cbc"
 dependencies = [
  "jobserver",
  "libc",
@@ -322,9 +322,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.11"
+version = "4.5.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "35723e6a11662c2afb578bcf0b88bf6ea8e21282a953428f240574fcc3a2b5b3"
+checksum = "0fbb260a053428790f3de475e304ff84cdbc4face759ea7a3e64c1edd938a7fc"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -332,9 +332,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.11"
+version = "4.5.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "49eb96cbfa7cfa35017b7cd548c75b14c3118c98b423041d70562665e07fb0fa"
+checksum = "64b17d7ea74e9f833c7dbf2cbe4fb12ff26783eda4782a8975b72f895c9b4d99"
 dependencies = [
  "anstream",
  "anstyle",
@@ -344,9 +344,9 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.5.11"
+version = "4.5.13"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d029b67f89d30bbb547c89fd5161293c0aec155fc691d7924b64550662db93e"
+checksum = "501d359d5f3dcaf6ecdeee48833ae73ec6e42723a1e52419c79abf9507eec0a0"
 dependencies = [
  "heck",
  "proc-macro2",
@@ -561,7 +561,7 @@ dependencies = [
 [[package]]
 name = "dicom-core"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "chrono",
  "itertools",
@@ -574,7 +574,7 @@ dependencies = [
 [[package]]
 name = "dicom-dictionary-std"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "dicom-core",
  "once_cell",
@@ -583,7 +583,7 @@ dependencies = [
 [[package]]
 name = "dicom-dump"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "clap",
  "dicom-core",
@@ -599,7 +599,7 @@ dependencies = [
 [[package]]
 name = "dicom-encoding"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -612,7 +612,7 @@ dependencies = [
 [[package]]
 name = "dicom-json"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "base64",
  "dicom-core",
@@ -627,7 +627,7 @@ dependencies = [
 [[package]]
 name = "dicom-object"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -644,7 +644,7 @@ dependencies = [
 [[package]]
 name = "dicom-parser"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "chrono",
  "dicom-core",
@@ -658,7 +658,7 @@ dependencies = [
 [[package]]
 name = "dicom-transfer-syntax-registry"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -672,7 +672,7 @@ dependencies = [
 [[package]]
 name = "dicom-ul"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#4876a5996d1fba7021d50164e23ea20ed8b8002b"
+source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
 dependencies = [
  "byteordered",
  "dicom-encoding",
@@ -873,8 +873,8 @@ checksum = "8ce81f49ae8a0482e4c55ea62ebbd7e5a686af544c00b9d090bba3ff9be97b3d"
 
 [[package]]
 name = "font-kit"
-version = "0.14.1"
-source = "git+https://github.com/servo/font-kit.git#f1c992fe7707e7a8e20483a187b21d843bab7981"
+version = "0.14.2"
+source = "git+https://github.com/servo/font-kit.git#2ead568ebc4cdffb3c4326231ed745725a1c7d55"
 dependencies = [
  "bitflags 2.6.0",
  "byteorder",
@@ -1074,9 +1074,9 @@ checksum = "44feda355f4159a7c757171a77de25daf6411e217b4cabd03bd6650690468126"
 
 [[package]]
 name = "indexmap"
-version = "2.2.6"
+version = "2.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "168fb715dda47215e360912c096649d23d58bf392ac62f73919e831745e40f26"
+checksum = "de3fc2e30ba82dd1b3911c8de1ffc143c74a914a14e99514d7637e3099df5ea0"
 dependencies = [
  "equivalent",
  "hashbrown",
@@ -1248,8 +1248,8 @@ checksum = "9374ef4228402d4b7e403e5838cb880d9ee663314b0a900d5a6aabf0c213552e"
 
 [[package]]
 name = "lofty"
-version = "0.20.1"
-source = "git+https://github.com/Serial-ATA/lofty-rs/#5661d18a2e46c540e06fa1a0fcccd8aad9e993fa"
+version = "0.21.0"
+source = "git+https://github.com/Serial-ATA/lofty-rs/#1505ddf69fd7df686bdf37e7306352011552c184"
 dependencies = [
  "byteorder",
  "data-encoding",
@@ -1532,9 +1532,12 @@ checksum = "439ee305def115ba05938db6eb1644ff94165c5ab5e9420d1c1bcedbba909391"
 
 [[package]]
 name = "ppv-lite86"
-version = "0.2.17"
+version = "0.2.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b40af805b3121feab8a3c29f04d8ad262fa8e0561883e7653e024ae4479e6de"
+checksum = "77957b295656769bb8ad2b6a6b09d897d94f05c41b069aede1fcdaa675eaea04"
+dependencies = [
+ "zerocopy",
+]
 
 [[package]]
 name = "proc-macro2"
@@ -1795,12 +1798,13 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.120"
+version = "1.0.122"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4e0d21c9a8cae1235ad58a00c11cb40d4b1e5c784f1ef2c537876ed6ffd8b7c5"
+checksum = "784b6203951c57ff748476b126ccb5e8e2959a5c19e5c617ab1956be3dbc68da"
 dependencies = [
  "indexmap",
  "itoa",
+ "memchr",
  "ryu",
  "serde",
 ]
@@ -2114,9 +2118,9 @@ dependencies = [
 
 [[package]]
 name = "target-lexicon"
-version = "0.12.15"
+version = "0.12.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4873307b7c257eddcb50c9bedf158eb669578359fb28428bef438fec8e6ba7c2"
+checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
 
 [[package]]
 name = "terminal_size"
@@ -2181,9 +2185,9 @@ dependencies = [
 
 [[package]]
 name = "toml"
-version = "0.8.16"
+version = "0.8.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "81967dd0dd2c1ab0bc3468bd7caecc32b8a4aa47d0c8c695d8c2b2108168d62c"
+checksum = "a1ed1f98e3fdc28d6d910e6737ae6ab1a93bf1985935a1193e68f93eeb68d24e"
 dependencies = [
  "serde",
  "serde_spanned",
@@ -2193,18 +2197,18 @@ dependencies = [
 
 [[package]]
 name = "toml_datetime"
-version = "0.6.7"
+version = "0.6.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f8fb9f64314842840f1d940ac544da178732128f1c78c21772e876579e0da1db"
+checksum = "0dd7358ecb8fc2f8d014bf86f6f638ce72ba252a2c3a2572f2a795f1d23efb41"
 dependencies = [
  "serde",
 ]
 
 [[package]]
 name = "toml_edit"
-version = "0.22.17"
+version = "0.22.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8d9f8729f5aea9562aac1cc0441f5d6de3cff1ee0c5d67293eeca5eb36ee7c16"
+checksum = "583c44c02ad26b0c3f3066fe629275e50627026c51ac2e595cca4c230ce1ce1d"
 dependencies = [
  "indexmap",
  "serde",
@@ -2411,11 +2415,11 @@ checksum = "ac3b87c63620426dd9b991e5ce0329eff545bccbbb34f3be09ff6fb6ab51b7b6"
 
 [[package]]
 name = "winapi-util"
-version = "0.1.8"
+version = "0.1.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4d4cc384e1e73b93bafa6fb4f1df8c41695c8a91cf9c4c64358067d15a7b6c6b"
+checksum = "cf221c93e13a30d793f7645a0e7762c55d169dbb0a49671918a2319d289b10bb"
 dependencies = [
- "windows-sys 0.52.0",
+ "windows-sys 0.59.0",
 ]
 
 [[package]]
@@ -2447,6 +2451,15 @@ name = "windows-sys"
 version = "0.52.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "282be5f36a8ce781fad8c8ae18fa3f9beff57ec1b52cb3de0789201425d9a33d"
+dependencies = [
+ "windows-targets 0.52.6",
+]
+
+[[package]]
+name = "windows-sys"
+version = "0.59.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1e38bc4d79ed67fd075bcc251a1c39b32a1776bbe92e5bef1f0bf1f8c531853b"
 dependencies = [
  "windows-targets 0.52.6",
 ]
@@ -2574,9 +2587,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.16"
+version = "0.6.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b480ae9340fc261e6be3e95a1ba86d54ae3f9171132a73ce8d4bbaf68339507c"
+checksum = "68a9bda4691f099d435ad181000724da8e5899daa10713c2d432552b9ccd3a6f"
 dependencies = [
  "memchr",
 ]
@@ -2602,6 +2615,27 @@ dependencies = [
 ]
 
 [[package]]
+name = "zerocopy"
+version = "0.7.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1b9b4fd18abc82b8136838da5d50bae7bdea537c574d8dc1a34ed098d6c166f0"
+dependencies = [
+ "byteorder",
+ "zerocopy-derive",
+]
+
+[[package]]
+name = "zerocopy-derive"
+version = "0.7.35"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.72",
+]
+
+[[package]]
 name = "zeroize"
 version = "1.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2623,8 +2657,8 @@ dependencies = [
 
 [[package]]
 name = "zip"
-version = "2.1.5"
-source = "git+https://github.com/zip-rs/zip2.git#a29b860395518350b700f6aea59d3a2db4b2aa62"
+version = "2.1.6"
+source = "git+https://github.com/zip-rs/zip2.git#3a427c4f781719091ca7a5b58617dc31eb9a25cb"
 dependencies = [
  "aes",
  "arbitrary",
@@ -2674,18 +2708,18 @@ dependencies = [
 
 [[package]]
 name = "zstd-safe"
-version = "7.2.0"
+version = "7.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fa556e971e7b568dc775c136fc9de8c779b1c2fc3a63defaafadffdbd3181afa"
+checksum = "54a3ab4db68cea366acc5c897c7b4d4d1b8994a9cd6e6f841f8964566a419059"
 dependencies = [
  "zstd-sys",
 ]
 
 [[package]]
 name = "zstd-sys"
-version = "2.0.12+zstd.1.5.6"
+version = "2.0.13+zstd.1.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a4e40c320c3cb459d9a9ff6de98cff88f4751ee9275d140e2be94a2b74e4c13"
+checksum = "38ff0f21cfee8f97d94cef41359e0c89aa6113028ab0291aa8ca0038995a95aa"
 dependencies = [
  "cc",
  "pkg-config",

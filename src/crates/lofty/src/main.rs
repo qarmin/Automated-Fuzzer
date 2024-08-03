@@ -7,7 +7,6 @@ use lofty::file::TaggedFileExt;
 use lofty::probe::Probe;
 use walkdir::WalkDir;
 
-const ALL_FILE_TYPES: &[FileType] = &[FileType::Aac, FileType::Aiff, FileType::Ape, FileType::Flac, FileType::Mpeg, FileType::Mp4, FileType::Mpc, FileType::Opus, FileType::Vorbis, FileType::Speex, FileType::Wav, FileType::WavPack];
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -27,6 +26,7 @@ fn main() {
         check_file(&path);
     }
 }
+const ALL_FILE_TYPES: &[FileType] = &[FileType::Aac, FileType::Aiff, FileType::Ape, FileType::Flac, FileType::Mpeg, FileType::Mp4, FileType::Mpc, FileType::Opus, FileType::Vorbis, FileType::Speex, FileType::Wav, FileType::WavPack];
 
 fn check_file(path: &str) {
     let content = match fs::read(&path) {

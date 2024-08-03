@@ -2,7 +2,7 @@
 
 use dicom_dump::DumpOptions;
 use dicom_object::from_reader;
-use libfuzzer_sys::{Corpus, fuzz_target};
+use libfuzzer_sys::{fuzz_target, Corpus};
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     let cursor = std::io::Cursor::new(data);
