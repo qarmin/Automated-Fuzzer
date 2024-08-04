@@ -1,7 +1,7 @@
 name: 🐧 Automated Fuzzer Check
 on:
-  #push: # Once daily
-  #pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 21 * * *'
 
@@ -71,11 +71,11 @@ jobs:
             files: "AA_GO_VALID_FILES.7z"
             go_version: '1.23.0-rc.1'
             src_folder: ''
-          #          - name: OXC
-          #            config-file: fuzz_oxc_settings_ci.toml
-          #            timeout: 6000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
+          - name: OXC
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 6000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            src_folder: ''
           #          - name: STYLUA
           #            config-file: fuzz_stylua_settings_ci.toml
           #            timeout: 6000
