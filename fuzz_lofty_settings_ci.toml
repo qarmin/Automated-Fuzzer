@@ -36,5 +36,6 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "src/aac/read.rs"
+ignored_item_2 = "src/musepack/read.rs"
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 
