@@ -1,8 +1,13 @@
-use crate::common::{create_new_file_name, try_to_save_file, CheckGroupFileMode, OutputResult};
+use crate::common::{
+    create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode, OutputResult,
+};
 use crate::settings::Setting;
 use log::error;
 use std::process::{Child, Command};
 pub trait ProgramConfig: Sync {
+    fn get_broken_items_list(&self) -> &[String];
+    fn get_ignored_items_list(&self) -> &[String];
+
     fn is_broken(&self, content: &str) -> bool;
     fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
@@ -36,6 +41,40 @@ pub trait ProgramConfig: Sync {
     }
     fn run_group_command(&self, files: &[String]) -> Child {
         self.get_group_command(files).spawn().unwrap()
+    }
+    fn get_minimize_command(&self, full_name: &str) -> Command {
+        let new_full_name = create_new_file_name_for_minimization(self.get_settings(), full_name);
+        let temp_file_name = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
+        let run_command = self.get_full_command(temp_file_name);
+
+        let run_command_as_string = format!(
+            "'{}' '{}'",
+            run_command.get_program().to_string_lossy(),
+            run_command
+                .get_args()
+                .map(|e| e.to_string_lossy().replace(temp_file_name, &new_full_name))
+                .collect::<Vec<_>>()
+                .join("' '")
+        );
+        // minimizer --input-file input.txt --output-file output.txt --command "echo {}" --attempts 300 --broken-info "BROKEN"
+        let mut minimize_command = Command::new("minimizer");
+        let broken_info = self
+            .get_broken_items_list()
+            .iter()
+            .flat_map(|e| vec!["--broken-info".to_string(), e.to_string()])
+            .collect::<Vec<_>>();
+        let ignored_info = self
+            .get_ignored_items_list()
+            .iter()
+            .flat_map(|e| vec!["--ignored-info".to_string(), e.to_string()])
+            .collect::<Vec<_>>();
+        minimize_command.args([
+            "--input-file", full_name, "--output-file", &new_full_name, "--command", &run_command_as_string,
+            "--attempts", "1000", "-r",
+        ]);
+        minimize_command.args(broken_info);
+        minimize_command.args(ignored_info);
+        minimize_command
     }
     fn _get_basic_run_command(&self) -> Command;
     fn broken_file_creator(&self) -> Child;

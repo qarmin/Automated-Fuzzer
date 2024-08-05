@@ -10,6 +10,14 @@ pub struct CustomStruct {
 }
 
 impl ProgramConfig for CustomStruct {
+    fn get_broken_items_list(&self) -> &[String] {
+        self.custom_items.search_items.as_slice()
+    }
+
+    fn get_ignored_items_list(&self) -> &[String] {
+        self.custom_items.ignored_items.as_slice()
+    }
+
     fn is_broken(&self, content: &str) -> bool {
         self.custom_items.search_items.iter().any(|x| content.contains(x)) && !self.ignored_signal_output(content)
     }

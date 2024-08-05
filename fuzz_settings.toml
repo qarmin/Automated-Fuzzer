@@ -17,9 +17,9 @@ ignore_timeout_errors = false
 error_when_found_signal = true # Errors, when app was killed by OS or user
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
-grouping = 1 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
+grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "custom_zip"
+current_mode = "ruff"
 
 # app_binary - place where binary exists
 # app_config - path to configuration
@@ -89,6 +89,7 @@ search_item_2 = "panicked at"
 file_type = "lua" # Available: text, binary, js, go, rust, lua, python
 
 [ruff]
+name = "ruff"
 app_binary = "ruff"
 app_config = ""
 extensions = "py"

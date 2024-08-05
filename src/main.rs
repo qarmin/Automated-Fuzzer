@@ -3,7 +3,7 @@
 
 use crate::common::{
     check_if_app_ends, close_app_if_timeouts, execute_command_and_connect_output, execute_command_on_pack_of_files,
-    minimize_binary_output, minimize_string_output, remove_and_create_entire_folder, CheckGroupFileMode, TIMEOUT_SECS,
+    minimize_new, remove_and_create_entire_folder, CheckGroupFileMode, TIMEOUT_SECS,
 };
 use crate::obj::ProgramConfig;
 use crate::settings::{get_object, load_settings, Setting};
@@ -312,11 +312,7 @@ fn test_files(
                 atomic_all_broken.fetch_add(1, Ordering::Relaxed);
                 if let Some(new_file_name) = obj.validate_output_and_save_file(full_name, output_result.get_output()) {
                     if settings.minimize_output {
-                        if settings.binary_mode {
-                            minimize_binary_output(obj, &new_file_name);
-                        } else {
-                            minimize_string_output(obj, &new_file_name);
-                        }
+                        minimize_new(obj, &new_file_name);
                     }
                 };
             };

@@ -1,8 +1,4 @@
-use std::cmp::max;
-use std::collections::HashSet;
 use std::fs;
-use std::fs::OpenOptions;
-use std::io::Write;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
@@ -11,13 +7,11 @@ use std::time::Instant;
 use jwalk::WalkDir;
 use log::{error, info};
 use once_cell::sync::{Lazy, OnceCell};
-use rand::prelude::ThreadRng;
 use rand::Rng;
 
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
-pub const STRING_MINIMIZATION_LIMIT: usize = 3;
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
 
@@ -59,18 +53,32 @@ pub fn remove_and_create_entire_folder(folder_name: &str) {
 }
 
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
+    let mut random_number = rand::thread_rng().gen_range(1..100_000);
+    loop {
+        let pat = Path::new(&old_name);
+        let extension = pat.extension().unwrap().to_str().unwrap().to_string();
+        let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
+        let new_name = format!("{}/{file_name}{}.{extension}", setting.broken_files_dir, random_number);
+        if !Path::new(&new_name).exists() {
+            return new_name;
+        }
+        random_number += 1;
+    }
+}
+pub fn create_new_file_name_for_minimization(setting: &Setting, old_name: &str) -> String {
+    let mut random_number = rand::thread_rng().gen_range(1..1000);
     loop {
         let pat = Path::new(&old_name);
         let extension = pat.extension().unwrap().to_str().unwrap().to_string();
         let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
         let new_name = format!(
-            "{}/{file_name}{}.{extension}",
+            "{}/{file_name}_minimized_{random_number}.{extension}",
             setting.broken_files_dir,
-            rand::thread_rng().gen_range(1..10000)
         );
         if !Path::new(&new_name).exists() {
             return new_name;
         }
+        random_number += 1;
     }
 }
 
@@ -88,425 +96,19 @@ pub fn try_to_save_file(full_name: &str, new_name: &str) {
     };
 }
 
-#[allow(clippy::borrowed_box)]
-pub fn minimize_string_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
-    let Ok(data) = fs::read_to_string(full_name) else {
-        error!("INFO: Cannot read content of {full_name}, probably because is not valid UTF-8 - but should be");
-        return;
-    };
+pub fn minimize_new(obj: &Box<dyn ProgramConfig>, full_name: &str) {
+    let mut minimization_command = obj.get_minimize_command(full_name);
+    let minimization_command_str = format!(
+        "{:?} {:?}",
+        minimization_command.get_program(),
+        minimization_command.get_args()
+    );
+    let output = minimization_command.spawn().unwrap().wait_with_output().unwrap();
+    let str_out = collect_output(&output);
 
-    let output_result = execute_command_and_connect_output(obj, full_name);
-    if !output_result.is_broken() {
-        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
-        fs::write(full_name, data).unwrap();
-        return;
-    }
-
-    let mut lines = data.lines().map(str::to_string).collect::<Vec<String>>();
-    let mut rng = rand::thread_rng();
-
-    let old_line_number = lines.len();
-
-    let mut attempts = obj.get_number_of_minimization(&output_result);
-    let mut minimized_output = false;
-    let mut valid_output = false;
-    let mut current_alternative_idx: i32 = STRING_MINIMIZATION_LIMIT as i32;
-    let mut tries = 0;
-
-    while attempts > 0 {
-        attempts -= 1;
-        tries += 1;
-
-        let new_lines;
-
-        if lines.len() <= STRING_MINIMIZATION_LIMIT {
-            if current_alternative_idx >= lines.len() as i32 {
-                current_alternative_idx = lines.len() as i32 - 1;
-            }
-            if current_alternative_idx >= 0 {
-                new_lines = minimize_lines_one_by_one(full_name, &lines, current_alternative_idx as usize);
-                current_alternative_idx -= 1;
-            } else {
-                break;
-            }
-        } else {
-            new_lines = minimize_lines(full_name, &lines, &mut rng);
-        }
-
-        if new_lines.len() == lines.len() {
-            break;
-        };
-
-        if !obj.is_parsable(full_name) {
-            valid_output = false;
-            continue;
-        }
-
-        let output_result = execute_command_and_connect_output(obj, full_name);
-        if output_result.is_broken() {
-            attempts = obj.get_number_of_minimization(&output_result);
-            lines = new_lines;
-            minimized_output = true;
-            valid_output = true;
-            current_alternative_idx = STRING_MINIMIZATION_LIMIT as i32;
-        } else {
-            valid_output = false;
-        }
-    }
-
-    if !minimized_output || !valid_output {
-        let mut output_file = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(false)
-            .open(full_name)
-            .unwrap();
-
-        // Restore content of file
-        if !minimized_output {
-            write!(output_file, "{data}").unwrap();
-        }
-        // If minimization was successful, but last run broke file, restore latest good configuration
-        else if !valid_output {
-            write!(output_file, "{}", lines.join("\n")).unwrap();
-        }
-    }
-
-    let output_result = execute_command_and_connect_output(obj, full_name);
-    if !output_result.is_broken() {
-        error!(
-            "File was minimized ({}/{}), but last run was not broken, probably app is not reproducible",
-            full_name,
-            lines.len()
-        );
-    }
-
-    print_numbers(full_name, tries, old_line_number, lines.len(), "lines");
-}
-
-#[allow(clippy::borrowed_box)]
-pub fn minimize_binary_output(obj: &Box<dyn ProgramConfig>, full_name: &str) {
-    let Ok(data) = fs::read(full_name) else {
-        info!("INFO: Cannot read content of {full_name}");
-        return;
-    };
-
-    let output_result = execute_command_and_connect_output(obj, full_name);
-    if !output_result.is_broken() {
-        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
-        fs::write(full_name, data).unwrap();
-        return;
-    }
-
-    let mut rng = rand::thread_rng();
-
-    let mut old_new_data = data.clone();
-    let items_number = data.len();
-
-    let mut attempts = obj.get_number_of_minimization(&output_result);
-    let mut minimized_output = false;
-    let mut valid_output = false;
-    let mut tries = 0;
-
-    while attempts > 0 {
-        attempts -= 1;
-        tries += 1;
-
-        let Some(new_data) = minimize_binaries(full_name, &old_new_data, &mut rng) else {
-            break;
-        };
-        if new_data.len() == old_new_data.len() {
-            break;
-        }
-
-        if !obj.is_parsable(full_name) {
-            valid_output = false;
-            continue;
-        }
-
-        let output_result = execute_command_and_connect_output(obj, full_name);
-        if output_result.is_broken() {
-            attempts = obj.get_number_of_minimization(&output_result);
-            old_new_data = new_data;
-            minimized_output = true;
-            valid_output = true;
-        } else {
-            valid_output = false;
-        }
-    }
-
-    if !minimized_output || !valid_output {
-        let mut output_file = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .create(false)
-            .open(full_name)
-            .unwrap();
-
-        // Restore content of file
-        if !minimized_output {
-            output_file.write_all(&data).unwrap();
-        }
-        // If minimization was successful, but last run broke file, restore latest good configuration
-        else if !valid_output {
-            output_file.write_all(&old_new_data).unwrap();
-        }
-    }
-
-    let output_result = execute_command_and_connect_output(obj, full_name);
-    if !output_result.is_broken() {
-        error!("File {full_name} randomly is broken - probably app is not reproducible or timeouts are a little too low/high");
-    }
-
-    print_numbers(full_name, tries, items_number, old_new_data.len(), "bytes");
-}
-
-fn print_numbers(file_name: &str, tries: i32, items_before: usize, items_after: usize, txt: &str) {
-    if items_before == items_after {
-        info!("File {file_name}, was not minimized after {tries} attempts, had {items_before} {txt}",);
-    } else {
-        let original_percent = if items_before != 0 {
-            items_after as f64 / items_before as f64 * 100.0
-        } else {
-            0.0
-        };
-        info!(
-            "File {file_name}, minimized from {items_before} to {items_after} {txt} (now is {original_percent:.2}% original size) after {tries} attempts"
-
-        );
-    }
-}
-
-pub fn minimize_binaries(full_name: &str, data: &[u8], rng: &mut ThreadRng) -> Option<Vec<u8>> {
-    let mut output_file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .create(false)
-        .open(full_name)
-        .unwrap();
-
-    if data.len() <= 3 {
-        if data.len() == 1 {
-            return None;
-        }
-        let mut temp_data = data.to_vec();
-        temp_data.remove(rng.gen_range(0..data.len()));
-        output_file.write_all(&temp_data).unwrap();
-        return Some(temp_data);
-    }
-
-    let number = rng.gen_range(0..=20);
-    let content;
-
-    let limit = max(1, rng.gen_range(0..(max(1, data.len() / 5))));
-
-    if number == 0 {
-        // Removing from start
-        content = data[limit..].to_vec();
-    } else if number < 8 {
-        // Removing from end
-        let limit = data.len() - limit;
-        content = data[..limit].to_vec();
-    } else {
-        content = remove_random_from_middle(rng, data);
-    }
-
-    output_file.write_all(&content).unwrap();
-    Some(content)
-}
-
-pub fn remove_single_def(lines: &[String], rng: &mut ThreadRng) -> Option<Vec<String>> {
-    let mut list_def = Vec::new();
-    for (idx, line) in lines.iter().enumerate() {
-        if line.trim().starts_with("def ") {
-            list_def.push(idx);
-        }
-    }
-    if list_def.len() <= 1 {
-        return None;
-    }
-    let start_idx = rng.gen_range(0..list_def.len());
-    let start = list_def[start_idx];
-    let end = if start_idx == list_def.len() - 1 {
-        lines.len() - 1
-    } else {
-        list_def[start_idx + 1]
-    };
-    let start_end = start..end;
-
-    let mut new_list = Vec::new();
-    for (idx, s) in lines.iter().enumerate() {
-        if start_end.contains(&idx) {
-            continue;
-        }
-        new_list.push(s.clone());
-    }
-    Some(new_list)
-}
-
-pub fn remove_single_docstring(lines: &[String], rng: &mut ThreadRng) -> Option<Vec<String>> {
-    let mut list_def = Vec::new();
-    let mut curr_docstring = None;
-    for (idx, line) in lines.iter().enumerate() {
-        let line_trim = line.trim();
-        if line_trim.starts_with("\"\"\"") && line_trim.ends_with("\"\"\"") && line_trim.len() > 3 {
-            list_def.push((idx, idx));
-        } else if line_trim.starts_with("\"\"\"") || line_trim.ends_with("\"\"\"") {
-            if curr_docstring.is_none() {
-                curr_docstring = Some(idx);
-            } else {
-                list_def.push((curr_docstring.unwrap(), idx));
-                curr_docstring = None;
-            }
-        }
-    }
-    if list_def.is_empty() {
-        return None;
-    }
-    let start_idx = rng.gen_range(0..list_def.len());
-    let llen = list_def[start_idx];
-
-    let start_end = llen.0..=llen.1;
-    let mut new_list = Vec::new();
-    for (idx, s) in lines.iter().enumerate() {
-        if start_end.contains(&idx) {
-            continue;
-        }
-        new_list.push(s.clone());
-    }
-    Some(new_list)
-}
-
-pub fn remove_all_comments(lines: &Vec<String>) -> Vec<String> {
-    let mut new_data = Vec::new();
-    for line in lines {
-        if !line.trim().starts_with('#') {
-            new_data.push(line.clone());
-        }
-    }
-    new_data
-}
-
-pub fn minimize_lines(full_name: &str, lines: &Vec<String>, rng: &mut ThreadRng) -> Vec<String> {
-    assert!(lines.len() >= STRING_MINIMIZATION_LIMIT);
-    let mut output_file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .create(false)
-        .open(full_name)
-        .unwrap();
-
-    let number = rng.gen_range(0..=25);
-    let mut content = Vec::new();
-
-    let limit = max(1, rng.gen_range(0..(max(1, lines.len() / 5))));
-
-    // Methods to better remove lines but only for python code
-    if rng.gen_bool(0.25) {
-        if rng.gen_bool(0.5) {
-            if let Some(new_data) = remove_single_def(lines, rng) {
-                content = new_data;
-            }
-        } else if rng.gen_bool(0.9) {
-            if let Some(new_data) = remove_single_docstring(lines, rng) {
-                content = new_data;
-            }
-        } else {
-            content = remove_all_comments(lines);
-        }
-    }
-
-    // If python code was not changed, try again
-    if content.is_empty() || content.len() == lines.len() {
-        if number < 3 {
-            // Removing from start
-            content = lines[limit..].to_vec();
-        } else if number < 6 {
-            // Removing from end
-            let limit = lines.len() - limit;
-            content = lines[..limit].to_vec();
-        } else if number < 15 {
-            // Removing code between empty lines
-            content = remove_code_between_empty_lines(rng, lines);
-        } else if number <= 23 {
-            content = remove_random_from_middle(rng, lines);
-        } else {
-            // Removing randoms
-            content = remove_random_items(rng, lines, limit);
-        }
-    }
-
-    write!(output_file, "{}", content.join("\n")).unwrap();
-    content
-}
-
-pub fn minimize_lines_one_by_one(full_name: &str, lines: &[String], idx: usize) -> Vec<String> {
-    let mut output_file = OpenOptions::new()
-        .write(true)
-        .truncate(true)
-        .create(false)
-        .open(full_name)
-        .unwrap();
-
-    let mut temp_lines = lines.to_vec();
-    temp_lines.remove(idx);
-    write!(output_file, "{}", temp_lines.join("\n")).unwrap();
-    temp_lines
-}
-
-pub fn remove_code_between_empty_lines(rng: &mut ThreadRng, orig: &[String]) -> Vec<String> {
-    let mut indexes = Vec::new();
-    for (idx, line) in orig.iter().enumerate() {
-        if line.trim().is_empty() {
-            indexes.push(idx);
-        }
-    }
-    if indexes.len() < 2 {
-        return orig[0..(orig.len() / 2)].to_vec();
-    }
-
-    let limits = get_two_random_not_equal_ints(rng, orig.len());
-
-    orig[(limits.0)..(limits.1)].to_vec()
-}
-
-pub fn remove_random_from_middle<T>(rng: &mut ThreadRng, orig: &[T]) -> Vec<T>
-where
-    T: Clone,
-{
-    let limits = get_two_random_not_equal_ints(rng, orig.len());
-    orig[(limits.0)..(limits.1)].to_vec()
-}
-
-pub fn remove_random_items<T>(rng: &mut ThreadRng, orig: &[T], limit: usize) -> Vec<T>
-where
-    T: Clone,
-{
-    let content = orig.to_vec();
-    let mut indexes_to_remove = HashSet::new();
-    for _ in 0..limit {
-        indexes_to_remove.insert(rng.gen_range(0..content.len()));
-    }
-
-    let mut new_data = Vec::new();
-    for (idx, line) in content.into_iter().enumerate() {
-        if !indexes_to_remove.contains(&idx) {
-            new_data.push(line);
-        }
-    }
-    new_data
-}
-
-fn get_two_random_not_equal_ints(rng: &mut ThreadRng, length: usize) -> (usize, usize) {
-    loop {
-        let limits = (rng.gen_range(0..length), rng.gen_range(0..length));
-        if limits.0 == limits.1 {
-            continue;
-        }
-        if limits.0 > limits.1 {
-            return (limits.1, limits.0);
-        }
-        return (limits.0, limits.1);
+    if obj.get_settings().debug_print_results {
+        info!("Minimization output: {str_out}");
+        info!("Minimization command: {minimization_command_str}");
     }
 }
 
@@ -722,162 +324,4 @@ pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
 
     let _ = fs::remove_dir_all(format!("{dir_to_check}/__pycache__"));
     broken_files
-}
-
-#[test]
-fn test_remove_single_docstring() {
-    for _i in 0..100 {
-        let mut rng = rand::thread_rng();
-        let lines = r###"
-    """
-    DOCSTRING
-    """
-    def function():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-        let expected = r###"
-    def function():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-
-        assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
-    }
-}
-
-#[test]
-fn test_remove_single_docstring2() {
-    for _i in 0..100 {
-        let mut rng = rand::thread_rng();
-        let lines = r###"
-    """
-    DOCSTRING
-    """
-    def function():
-        pass
-    """
-    PORTORYKO
-    """
-    def romma():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-        let expected1 = r###"
-    def function():
-        pass
-    """
-    PORTORYKO
-    """
-    def romma():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-        let expected2 = r###"
-    """
-    DOCSTRING
-    """
-    def function():
-        pass
-    def romma():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-
-        let result = remove_single_docstring(&lines, &mut rng).unwrap();
-        assert!([expected1, expected2].contains(&result));
-    }
-}
-
-#[test]
-fn test_remove_single_docstring3() {
-    for _i in 0..100 {
-        let mut rng = rand::thread_rng();
-        let lines = r###"
-    """DOCSTRING"""
-    def function():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-        let expected = r###"
-    def function():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-
-        assert_eq!(remove_single_docstring(&lines, &mut rng).unwrap(), expected);
-    }
-}
-
-#[test]
-fn test_remove_single_def() {
-    for _i in 0..100 {
-        let mut rng = rand::thread_rng();
-        let lines = r###"
-    def function():
-        pass
-    def function2():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-        let expected1 = r###"
-    def function2():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-        let expected2 = r###"
-    def function():
-        pass
-    "###
-        .split('\n')
-        .map(String::from)
-        .collect::<Vec<String>>();
-
-        let ret = remove_single_def(&lines, &mut rng).unwrap();
-        if ![&expected2, &expected1].contains(&&ret) {
-            info!("RET {:?}", ret);
-            info!("EXP1 {:?}", expected1);
-            info!("EXP2 {:?}", expected2);
-            assert!([expected2, expected1].contains(&ret));
-        }
-    }
-}
-
-#[test]
-fn test_remove_all_comments() {
-    let lines = r###"
-    # comment
-    def function():
-        pass
-    "###
-    .split('\n')
-    .map(String::from)
-    .collect::<Vec<String>>();
-    let expected = r###"
-    def function():
-        pass
-    "###
-    .split('\n')
-    .map(String::from)
-    .collect::<Vec<String>>();
-
-    assert_eq!(remove_all_comments(&lines), expected);
 }

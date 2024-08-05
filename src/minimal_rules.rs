@@ -32,7 +32,7 @@ pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             // there is
         }
         _ => {
-            panic!("Unknown tool type: {}", tool_type);
+            panic!("Unknown tool type: {tool_type}",);
         }
     }
 }
@@ -144,7 +144,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let files_to_check = collect_broken_files_dir_files(settings);
     // files_to_check.truncate(100);
 
-    let files_to_check_new: Vec<_> = files_to_check.to_vec();
+    let files_to_check_new: Vec<_> = files_to_check.clone();
 
     info!(
         "Using only {} files from {} files, that are smaller than {} bytes",

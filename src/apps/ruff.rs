@@ -20,14 +20,16 @@ pub struct RuffStruct {
 
 // Try to not add D* rules if you are not really sure that this rule is broken
 // With this rule here, results can be invalid
-const BROKEN_ITEMS_TO_IGNORE: &[&str] = &["Ord violation", r#""stack backtrace:\n""#];
+pub const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
+    r#""stack backtrace:\n""#,
+    // "Failed to create fix" // Do not ignore, because normal reports can be hidden inside
+];
 
-const BROKEN_ITEMS_TO_FIND: &[&str] = &[
+pub const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "0: rust_begin_unwind", "AddressSanitizer:",
-    "LeakSanitizer:",
-    "Failed to converge after"
+    "LeakSanitizer:", "Failed to converge after",
     // "Failed to create fix", // Do not report that, probably not worth to fix
-    // "Fix introduced a syntax error", "Fix introduced a syntax error", "This indicates a bug in",
+    "Fix introduced a syntax error", "This indicates a bug in",
 ];
 
 const INVALID_RULES: &[&str] = &[
@@ -47,6 +49,13 @@ pub fn calculate_ignored_rules() -> String {
 }
 
 impl ProgramConfig for RuffStruct {
+    fn get_broken_items_list(&self) -> &[String] {
+        self.non_custom_items.search_items.as_slice()
+    }
+
+    fn get_ignored_items_list(&self) -> &[String] {
+        self.non_custom_items.ignored_items.as_slice()
+    }
     fn _get_basic_run_command(&self) -> Command {
         let timeout = self.get_settings().timeout;
 
@@ -55,7 +64,7 @@ impl ProgramConfig for RuffStruct {
         } else {
             let mut a = Command::new("timeout");
             a.arg("-v")
-                .arg(&timeout.to_string())
+                .arg(timeout.to_string())
                 .arg(&self.non_custom_items.app_binary);
             a
         };

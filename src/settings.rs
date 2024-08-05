@@ -1,5 +1,5 @@
 use crate::apps::custom::CustomStruct;
-use crate::apps::ruff::RuffStruct;
+use crate::apps::ruff::{RuffStruct, BROKEN_ITEMS_TO_FIND, BROKEN_ITEMS_TO_IGNORE};
 use crate::broken_files::LANGS;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
@@ -23,7 +23,6 @@ pub struct Setting {
     pub broken_files_dir: String,
     pub valid_input_files_dir: String,
     pub temp_possible_broken_files_dir: String,
-    pub binary_mode: bool,
     pub debug_print_results: bool,
     pub timeout: usize,
     pub allowed_error_statuses: Vec<i32>,
@@ -43,6 +42,8 @@ pub struct NonCustomItems {
     pub app_binary: String,
     pub app_config: String,
     pub tool_type: String,
+    pub search_items: Vec<String>,
+    pub ignored_items: Vec<String>,
 }
 #[derive(Clone, Debug)]
 pub struct CustomItems {
@@ -137,6 +138,8 @@ pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustom
         app_binary: tool_hashmap["app_binary"].clone(),
         app_config: tool_hashmap["app_config"].clone(),
         tool_type: tool_hashmap["tool_type"].clone(),
+        search_items: BROKEN_ITEMS_TO_FIND.iter().map(ToString::to_string).collect(),
+        ignored_items: BROKEN_ITEMS_TO_IGNORE.iter().map(ToString::to_string).collect(),
     }
 }
 pub fn load_settings() -> Setting {
@@ -170,14 +173,13 @@ pub fn load_settings() -> Setting {
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
-    let (custom_items, non_custom_items, binary_mode) = if current_mode == MODES::CUSTOM {
+    let (custom_items, non_custom_items) = if current_mode == MODES::CUSTOM {
         let ci = process_custom_struct(&general, &curr_setting);
-        let bm = ci.file_type == LANGS::BINARY;
-        (Some(ci), None, bm)
+        (Some(ci), None)
     } else {
         let nci = get_non_custom_items(&curr_setting);
         // Currently only ruff uses non custom mode, so it always have non binary mode
-        (None, Some(nci), false)
+        (None, Some(nci))
     };
 
     Setting {
@@ -196,7 +198,6 @@ pub fn load_settings() -> Setting {
         broken_files_dir: curr_setting["broken_files_dir"].parse().unwrap(),
         valid_input_files_dir: curr_setting["valid_input_files_dir"].parse().unwrap(),
         temp_possible_broken_files_dir: general["temp_possible_broken_files_dir"].parse().unwrap(),
-        binary_mode,
         debug_print_results: general["debug_print_results"].parse().unwrap(),
         allowed_error_statuses: general["allowed_error_statuses"]
             .split(',')
