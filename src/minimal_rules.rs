@@ -8,8 +8,9 @@ use rand::prelude::*;
 use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::fs;
-use std::fs::File;
+use std::fs::{File, Metadata};
 use std::io::Write;
+use std::path::Path;
 use std::process::{Command, Stdio};
 use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
@@ -17,6 +18,7 @@ use zip::ZipWriter;
 // THIS ONLY WORKS WITH RUFF
 
 pub const MAX_FILE_SIZE: u64 = 500; // Bytes
+pub const USE_MAX_FILE_SIZE: bool = false;
 
 pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let tool_type = settings.non_custom_items.as_ref().unwrap().tool_type.clone();
@@ -32,7 +34,7 @@ pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             // there is
         }
         _ => {
-            panic!("Unknown tool type: {tool_type}",);
+            panic!("Unknown tool type: {tool_type}");
         }
     }
 }
@@ -142,17 +144,21 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
     obj.remove_non_parsable_files(&settings.broken_files_dir);
     let files_to_check = collect_broken_files_dir_files(settings);
-    // files_to_check.truncate(100);
+    let old_files_number = files_to_check.len();
 
-    let files_to_check_new: Vec<_> = files_to_check.clone();
-
+    let files_to_check = if USE_MAX_FILE_SIZE {
+        files_to_check
+            .into_iter()
+            .filter(|e| Path::new(&e).metadata().map(|e| e.len()).unwrap_or(0) <= MAX_FILE_SIZE)
+            .collect::<Vec<_>>()
+    } else {
+        files_to_check
+    };
     info!(
         "Using only {} files from {} files, that are smaller than {} bytes",
-        files_to_check_new.len(),
-        files_to_check.len(),
+        files_to_check.len(),old_files_number
         MAX_FILE_SIZE
     );
-    let files_to_check = files_to_check_new;
 
     let all_ruff_rules = collect_all_ruff_rules();
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);

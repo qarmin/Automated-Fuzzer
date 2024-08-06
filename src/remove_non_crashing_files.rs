@@ -196,6 +196,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("panicked at ") => "panicked",
             _ if result.contains("RUST_BACKTRACE") => "panic",
             _ if result.contains("output status \"Some(124)\"") => "timeout",
+            _ if result.contains("Fix introduced a syntax error") => "syntax_error",
             _ => "",
         };
 

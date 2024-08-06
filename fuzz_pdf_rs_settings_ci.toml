@@ -35,6 +35,5 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
-ignored_item_1 = "src/crypt.rs"
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 
