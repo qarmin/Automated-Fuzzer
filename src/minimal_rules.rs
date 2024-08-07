@@ -8,7 +8,7 @@ use rand::prelude::*;
 use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::fs;
-use std::fs::{File, Metadata};
+use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::process::{Command, Stdio};
@@ -154,11 +154,20 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     } else {
         files_to_check
     };
-    info!(
-        "Using only {} files from {} files, that are smaller than {} bytes",
-        files_to_check.len(),old_files_number
-        MAX_FILE_SIZE
-    );
+    if USE_MAX_FILE_SIZE {
+        info!(
+            "Using only {} files from {} files, that are smaller than {} bytes",
+            files_to_check.len(),
+            old_files_number,
+            MAX_FILE_SIZE
+        );
+    } else {
+        info!(
+            "Using all {} files from {} files",
+            files_to_check.len(),
+            old_files_number
+        );
+    }
 
     let all_ruff_rules = collect_all_ruff_rules();
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
