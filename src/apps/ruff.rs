@@ -27,9 +27,10 @@ pub const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
 
 pub const BROKEN_ITEMS_TO_FIND: &[&str] = &[
     "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "0: rust_begin_unwind", "AddressSanitizer:",
-    "LeakSanitizer:", "Failed to converge after",
+    "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
     "Fix introduced a syntax error", "This indicates a bug in",
+    "Failed to converge after",
 ];
 
 const INVALID_RULES: &[&str] = &[

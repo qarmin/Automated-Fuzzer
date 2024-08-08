@@ -17,7 +17,7 @@ use zip::ZipWriter;
 
 // THIS ONLY WORKS WITH RUFF
 
-pub const MAX_FILE_SIZE: u64 = 500; // Bytes
+pub const MAX_FILE_SIZE: u64 = 1000; // Bytes
 pub const USE_MAX_FILE_SIZE: bool = false;
 
 pub fn check_code(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
@@ -177,12 +177,12 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         .filter_map(|i| {
             let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             if idx % 100 == 0 {
-                info!("_____ Processsed already {idx} / {all}");
+                info!("_____ Processed already {idx} / {all}");
             }
             let file_name = i.split('/').last().unwrap();
             let new_name = random::<u64>().to_string();
             let new_name = format!("{temp_folder}/{new_name}.py");
-            let original_content = fs::read_to_string(&i).unwrap();
+            let original_content = fs::read(&i).unwrap();
             let mut out;
 
             fs::write(&new_name, &original_content).unwrap();

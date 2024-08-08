@@ -62,7 +62,7 @@ fn remove_non_crashing_in_group(
         .enumerate()
         .filter_map(|(chunk_idx, chunk)| {
             let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
-            info!("_____ Processsed already {idx} / {all_chunks} chunk (step {group_size})");
+            info!("_____ Processed already {idx} / {all_chunks} chunk (step {group_size})");
             let temp_folder = format!("{}/{}", settings.temp_folder, random::<u64>());
             fs::create_dir_all(&temp_folder).unwrap();
 
@@ -112,7 +112,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
             let start_text = fs::read(&full_name).unwrap();
             let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
             if idx % 100 == 0 {
-                info!("_____ Processsed already {idx} / {all} (step {step})");
+                info!("_____ Processed already {idx} / {all} (step {step})");
             }
             let output_result = execute_command_and_connect_output(obj, &full_name);
             if settings.debug_print_results {
@@ -235,10 +235,10 @@ cause this
 $ERROR
 ```
 "#
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
