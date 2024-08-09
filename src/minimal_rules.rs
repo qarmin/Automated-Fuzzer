@@ -1,5 +1,5 @@
 use crate::apps::ruff::calculate_ignored_rules;
-use crate::common::{collect_output, remove_and_create_entire_folder};
+use crate::common::{check_if_app_ends, collect_output, remove_and_create_entire_folder};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 use jwalk::WalkDir;
@@ -175,6 +175,10 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let collected_rules: Vec<_> = files_to_check
         .into_par_iter()
         .filter_map(|i| {
+            if check_if_app_ends() {
+                return None;
+            }
+
             let idx = atomic_counter.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
             if idx % 100 == 0 {
                 info!("_____ Processed already {idx} / {all}");
@@ -197,7 +201,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
             if !happens_with_fix && !happens_with_check {
                 info!("File {new_name} ({i}) is not broken");
-                return None;
+                return Some(None);
             }
             // println!("Happens with fix {happens_with_fix} - happens with check {happens_with_check} ({new_name} - {i})");
 
@@ -265,8 +269,9 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
 
             fs::write(&new_name, &original_content).unwrap();
 
-            Some((valid_remove_rules, file_name.to_string(), i, out, only_check))
+            Some(Some((valid_remove_rules, file_name.to_string(), i, out, only_check)))
         })
+        .while_some()
         .collect();
 
     remove_and_create_entire_folder(&settings.temp_folder);

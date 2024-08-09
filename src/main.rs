@@ -299,9 +299,9 @@ fn test_files(
             let number = atomic.fetch_add(1, Ordering::Release);
             if number % 1000 == 0 {
                 info!("_____ {number} / {all}");
-                if check_if_app_ends() {
-                    return None;
-                }
+            }
+            if check_if_app_ends() {
+                return None;
             }
             let output_result = execute_command_and_connect_output(obj, &full_name);
             if settings.debug_print_results {
