@@ -29,4 +29,5 @@ extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 tool_type = "red_knot"
+additional_minimization_command = "python3 -m compileall {}"
 

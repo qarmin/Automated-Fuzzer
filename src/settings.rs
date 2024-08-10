@@ -41,6 +41,7 @@ pub struct Setting {
 pub struct NonCustomItems {
     pub app_binary: String,
     pub app_config: String,
+    pub additional_minimization_command: String,
     pub tool_type: String,
     pub search_items: Vec<String>,
     pub ignored_items: Vec<String>,
@@ -137,6 +138,7 @@ pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustom
     NonCustomItems {
         app_binary: tool_hashmap["app_binary"].clone(),
         app_config: tool_hashmap["app_config"].clone(),
+        additional_minimization_command: tool_hashmap["additional_minimization_command"].clone(),
         tool_type: tool_hashmap["tool_type"].clone(),
         search_items: BROKEN_ITEMS_TO_FIND.iter().map(ToString::to_string).collect(),
         ignored_items: BROKEN_ITEMS_TO_IGNORE.iter().map(ToString::to_string).collect(),

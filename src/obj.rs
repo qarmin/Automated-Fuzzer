@@ -7,6 +7,9 @@ use std::process::{Child, Command};
 pub trait ProgramConfig: Sync {
     fn get_broken_items_list(&self) -> &[String];
     fn get_ignored_items_list(&self) -> &[String];
+    fn get_minimize_additional_command(&self) -> Option<String> {
+        None
+    }
 
     fn is_broken(&self, content: &str) -> bool;
     fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
@@ -72,6 +75,9 @@ pub trait ProgramConfig: Sync {
             "--input-file", full_name, "--output-file", &new_full_name, "--command", &run_command_as_string,
             "--attempts", "1000", "-r",
         ]);
+        if let Some(additional_minimize_command) = self.get_minimize_additional_command() {
+            minimize_command.args(["--additional-command", &additional_minimize_command]);
+        }
         minimize_command.args(broken_info);
         minimize_command.args(ignored_info);
         minimize_command
