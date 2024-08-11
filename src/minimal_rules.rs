@@ -172,6 +172,10 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     let all_ruff_rules = collect_all_ruff_rules();
     let atomic_counter = std::sync::atomic::AtomicUsize::new(0);
     let all = files_to_check.len();
+    let all_rules_to_find = all_ruff_rules
+        .iter()
+        .map(|e| (e, vec![format!(" {e},"), format!(" {e}:")]))
+        .collect::<Vec<_>>();
     let collected_rules: Vec<_> = files_to_check
         .into_par_iter()
         .filter_map(|i| {
@@ -214,55 +218,27 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             let only_check = happens_with_check;
 
             let mut valid_remove_rules = all_ruff_rules.clone();
-            let mut rules_to_test;
+
+            let out_res = check_rules_by_existing_in_output(
+                &mut valid_remove_rules, &original_content, &new_name, obj, only_check, settings, &mut out,
+                &all_rules_to_find,
+            );
 
             let mut to_idx = 100;
-            while to_idx != 0 {
-                fs::write(&new_name, &original_content).unwrap();
-                // info!("TO_IDX - {to_idx}");
-                to_idx -= 1;
-                // Using bigger number, will add const additional checking time, but may decrease number of iterations
-                if valid_remove_rules.len() <= 6 {
-                    break;
-                }
-
-                rules_to_test = valid_remove_rules.clone();
-                rules_to_test.shuffle(&mut thread_rng());
-                rules_to_test.truncate(rules_to_test.len() / 2);
-                rules_to_test.sort();
-
-                let (crashing, output) =
-                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
-                // println!("CRASHHHHHH - {} ({only_check}) - {}", crashing, output);
-                if crashing {
-                    valid_remove_rules.clone_from(&rules_to_test);
-                    out = output;
-                }
+            if to_idx > 6 {
+                check_rules_by_dividing(
+                    &mut to_idx, &mut valid_remove_rules, &original_content, &new_name, obj, only_check, settings,
+                    &mut out,
+                );
             }
 
-            rules_to_test = valid_remove_rules.clone();
-            let mut curr_idx = valid_remove_rules.len();
             let mut rules_check = 0;
-            while curr_idx != 0 {
-                rules_check += 1;
-                fs::write(&new_name, &original_content).unwrap();
-                if valid_remove_rules.len() <= 1 {
-                    break;
-                }
-                // info!("CURR_IDX - {curr_idx}");
-                curr_idx -= 1;
-                rules_to_test.remove(curr_idx);
-                let (crashing, output) =
-                    check_if_rule_file_crashing(&new_name, &rules_to_test, obj, only_check, settings);
-                if crashing {
-                    valid_remove_rules.clone_from(&rules_to_test);
-                    out = output;
-                } else {
-                    rules_to_test = valid_remove_rules.clone();
-                }
-            }
+            check_rules_one_by_one(
+                &mut valid_remove_rules, &original_content, &new_name, obj, only_check, settings, &mut out,
+                &mut rules_check,
+            );
             info!(
-                "For file {i} ({} group checks + {rules_check} rules checks) valid rules are: {}",
+                "For file {i} ({out_res:?} initial check, {} group checks + {rules_check} rules checks) valid rules are: {}",
                 100 - to_idx,
                 valid_remove_rules.join(",")
             );
@@ -291,10 +267,116 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
         items.push((k, v));
     }
     items.sort_by(|a, b| b.1.cmp(&a.1));
-    info!("{items:?}");
 
     if !items.is_empty() {
         draw_table(items, &temp_folder).unwrap();
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn check_rules_by_existing_in_output(
+    valid_remove_rules: &mut Vec<String>,
+    original_content: &[u8],
+    new_name: &str,
+    obj: &Box<dyn ProgramConfig>,
+    only_check: bool,
+    settings: &Setting,
+    out: &mut String,
+    all_rules_to_find: &[(&String, Vec<String>)],
+) -> Option<(i32, i32)> {
+    let start_rules_len = valid_remove_rules.len();
+
+    let line_with_rule_codes = out.lines().find(|e| e.contains("with rule codes"));
+    let rules_in_output = if let Some(line_with_rule_codes) = line_with_rule_codes {
+        all_rules_to_find
+            .iter()
+            .filter(|(_a, b)| b.iter().any(|c| line_with_rule_codes.contains(c)))
+            .map(|(a, _)| *a)
+            .cloned()
+            .collect::<Vec<_>>()
+    } else {
+        Vec::new()
+    };
+
+    if rules_in_output.is_empty() {
+        return None;
+    }
+
+    let (crashing, output) = check_if_rule_file_crashing(new_name, &rules_in_output, obj, only_check, settings);
+    fs::write(new_name, original_content).unwrap();
+
+    if crashing {
+        valid_remove_rules.clone_from(&rules_in_output);
+        *out = output;
+        Some((rules_in_output.len() as i32, start_rules_len as i32))
+    } else {
+        None
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn check_rules_by_dividing(
+    to_idx: &mut i32,
+    valid_remove_rules: &mut Vec<String>,
+    original_content: &[u8],
+    new_name: &str,
+    obj: &Box<dyn ProgramConfig>,
+    only_check: bool,
+    settings: &Setting,
+    out: &mut String,
+) {
+    while *to_idx != 0 {
+        fs::write(new_name, original_content).unwrap();
+        // info!("TO_IDX - {to_idx}");
+        *to_idx -= 1;
+        // Using bigger number, will add const additional checking time, but may decrease number of iterations
+        if valid_remove_rules.len() <= 6 {
+            break;
+        }
+
+        let mut rules_to_test = valid_remove_rules.clone();
+        rules_to_test.shuffle(&mut thread_rng());
+        rules_to_test.truncate(rules_to_test.len() / 2);
+        rules_to_test.sort();
+
+        let (crashing, output) = check_if_rule_file_crashing(new_name, &rules_to_test, obj, only_check, settings);
+        // println!("CRASHHHHHH - {} ({only_check}) - {}", crashing, output);
+        if crashing {
+            valid_remove_rules.clone_from(&rules_to_test);
+            *out = output;
+        }
+    }
+}
+
+#[allow(clippy::too_many_arguments)]
+fn check_rules_one_by_one(
+    valid_remove_rules: &mut Vec<String>,
+    original_content: &[u8],
+    new_name: &str,
+    obj: &Box<dyn ProgramConfig>,
+    only_check: bool,
+    settings: &Setting,
+    out: &mut String,
+    rules_check: &mut i32,
+) {
+    let mut rules_to_test = valid_remove_rules.clone();
+    let mut curr_idx = valid_remove_rules.len();
+    while curr_idx != 0 {
+        *rules_check += 1;
+        fs::write(new_name, original_content).unwrap();
+        if valid_remove_rules.len() <= 1 {
+            break;
+        }
+        // info!("CURR_IDX - {curr_idx}");
+        curr_idx -= 1;
+        rules_to_test.remove(curr_idx);
+        let (crashing, output) = check_if_rule_file_crashing(new_name, &rules_to_test, obj, only_check, settings);
+        if crashing {
+            valid_remove_rules.clone_from(&rules_to_test);
+            *out = output;
+        } else {
+            rules_to_test = valid_remove_rules.clone();
+        }
     }
 }
 
