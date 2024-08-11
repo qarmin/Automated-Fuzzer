@@ -32,11 +32,11 @@ jobs:
             timeout: 6000
             files: "FILES_23.zip"
             asan_build: true
-          - name: SANITIZER_BROKEN_1
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 14400
-            files: "AA_PYTHON_BROKEN_FILES.7z"
-            asan_build: true
+          #          - name: SANITIZER_BROKEN_1
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 14400
+          #            files: "AA_PYTHON_BROKEN_FILES.7z"
+          #            asan_build: true
           #          - name: SHORT_NORMAL_1
           #            config-file: fuzz_ruff_settings_ci.toml
           #            timeout: 120
