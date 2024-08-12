@@ -112,7 +112,7 @@ checksum = "0ae92a5119aa49cdbcf6b9f893fe4e1d98b04ccbf82ee0584ad948a44a734dea"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -274,9 +274,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.1.7"
+version = "1.1.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26a5c3fd7bfa1ce3897a3a3501d362b2d87b7f2583ebcb4a949ec25911025cbc"
+checksum = "e9e8aabfac534be767c909e0690571677d49f41bd8465ae876fe043d52ba5292"
 dependencies = [
  "jobserver",
  "libc",
@@ -322,9 +322,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.13"
+version = "4.5.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fbb260a053428790f3de475e304ff84cdbc4face759ea7a3e64c1edd938a7fc"
+checksum = "11d8838454fda655dafd3accb2b6e2bea645b9e4078abe84a22ceb947235c5cc"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -332,9 +332,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.13"
+version = "4.5.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "64b17d7ea74e9f833c7dbf2cbe4fb12ff26783eda4782a8975b72f895c9b4d99"
+checksum = "216aec2b177652e3846684cbfe25c9964d18ec45234f0f5da5157b207ed1aab6"
 dependencies = [
  "anstream",
  "anstyle",
@@ -351,7 +351,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -396,9 +396,9 @@ dependencies = [
 
 [[package]]
 name = "core-foundation-sys"
-version = "0.8.6"
+version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06ea2b9bc92be3c2baa9334a323ebca2d6f074ff852cd1d7b11064035cd3868f"
+checksum = "773648b94d0e5d620f64f280777445740e61fe701025087ec8b57f45c791888b"
 
 [[package]]
 name = "core-graphics"
@@ -542,7 +542,7 @@ checksum = "67e77553c4162a157adbf834ebae5b415acbecbeafc7a74b0e886657506a7611"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -555,13 +555,13 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustc_version",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
 name = "dicom-core"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "chrono",
  "itertools",
@@ -574,7 +574,7 @@ dependencies = [
 [[package]]
 name = "dicom-dictionary-std"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "dicom-core",
  "once_cell",
@@ -583,7 +583,7 @@ dependencies = [
 [[package]]
 name = "dicom-dump"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "clap",
  "dicom-core",
@@ -599,7 +599,7 @@ dependencies = [
 [[package]]
 name = "dicom-encoding"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -612,7 +612,7 @@ dependencies = [
 [[package]]
 name = "dicom-json"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "base64",
  "dicom-core",
@@ -627,7 +627,7 @@ dependencies = [
 [[package]]
 name = "dicom-object"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -644,7 +644,7 @@ dependencies = [
 [[package]]
 name = "dicom-parser"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "chrono",
  "dicom-core",
@@ -658,7 +658,7 @@ dependencies = [
 [[package]]
 name = "dicom-transfer-syntax-registry"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -672,7 +672,7 @@ dependencies = [
 [[package]]
 name = "dicom-ul"
 version = "0.7.0"
-source = "git+https://github.com/Enet4/dicom-rs#45c9ccd49012ea2227e1e549a5a693a2be266a5b"
+source = "git+https://github.com/Enet4/dicom-rs#334273df1354de1ad71d8cd80937a2a52601d657"
 dependencies = [
  "byteordered",
  "dicom-encoding",
@@ -721,7 +721,7 @@ checksum = "97369cbbc041bc366949bc74d34658d6cda5621039731c6310521892a3a20ae0"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -857,9 +857,9 @@ dependencies = [
 
 [[package]]
 name = "flate2"
-version = "1.0.30"
+version = "1.0.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f54427cfd1c7829e2a139fcefea601bf088ebca651d2bf53ebc600eac295dae"
+checksum = "7f211bbe8e69bbd0cfdea405084f128ae8b4aaa6b0b522fc8f2b009084797920"
 dependencies = [
  "crc32fast",
  "miniz_oxide",
@@ -913,7 +913,7 @@ checksum = "1a5c6c585bc94aaf2c7b51dd4c2ba22680844aba4c687be581871a6f518c5742"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -1099,7 +1099,7 @@ checksum = "c34819042dc3d3971c46c2190835914dfbe0c3c13f61449b2997f4e9722dfa60"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -1209,7 +1209,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4979f22fdb869068da03c9f7528f8297c6fd2606bc3a4affe42e6a823fdb8da4"
 dependencies = [
  "cfg-if",
- "windows-targets 0.52.6",
+ "windows-targets 0.48.5",
 ]
 
 [[package]]
@@ -1227,12 +1227,6 @@ dependencies = [
  "bitflags 2.6.0",
  "libc",
 ]
-
-[[package]]
-name = "linked-hash-map"
-version = "0.5.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0717cef1bc8b636c6e1c1bbdefc09e6322da8a9321966e8928ef80d20f7f770f"
 
 [[package]]
 name = "linux-raw-sys"
@@ -1268,7 +1262,7 @@ checksum = "28bd4b9d8a5af74808932492521cdd272019b056f75fcc70056bd2c09fceb550"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -1289,14 +1283,13 @@ dependencies = [
 [[package]]
 name = "lopdf"
 version = "0.33.0"
-source = "git+https://github.com/J-F-Liu/lopdf.git#2cf9f9827959529255a855e263d4e638ef860e91"
+source = "git+https://github.com/J-F-Liu/lopdf.git#df8310d6e784b0b266d6444014503ed4af1e8b8f"
 dependencies = [
  "chrono",
  "encoding_rs",
  "flate2",
  "indexmap",
  "itoa",
- "linked-hash-map",
  "log",
  "md-5",
  "nom",
@@ -1402,7 +1395,7 @@ checksum = "ed3955f1a9c7c0c15e092f9c887db08b1fc683305fdf6eb6684f22555355e202"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -1564,7 +1557,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8021cf59c8ec9c432cfc2526ac6b8aa508ecaf29cd415f271b8406c1b851c3fd"
 dependencies = [
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -1658,9 +1651,9 @@ dependencies = [
 
 [[package]]
 name = "ravif"
-version = "0.11.9"
+version = "0.11.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5797d09f9bd33604689e87e8380df4951d4912f01b63f71205e2abd4ae25e6b6"
+checksum = "a8f0bfd976333248de2078d350bfdf182ff96e168a24d23d2436cef320dd4bdd"
 dependencies = [
  "avif-serialize",
  "imgref",
@@ -1703,9 +1696,9 @@ dependencies = [
 
 [[package]]
 name = "rgb"
-version = "0.8.45"
+version = "0.8.48"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ade4539f42266ded9e755c605bdddf546242b2c961b03b06a7375260788a0523"
+checksum = "0f86ae463694029097b846d8f99fd5536740602ae00022c0c50c5600720b2f71"
 dependencies = [
  "bytemuck",
 ]
@@ -1734,8 +1727,8 @@ dependencies = [
 
 [[package]]
 name = "rustybuzz"
-version = "0.17.0"
-source = "git+https://github.com/RazrFalcon/rustybuzz.git#eb9638d5857991841db32f8bab3020a6861ef45e"
+version = "0.18.0"
+source = "git+https://github.com/RazrFalcon/rustybuzz.git#f5a23d3648aae17e8540e03cbf2b50f97a927bbc"
 dependencies = [
  "bitflags 2.6.0",
  "bytemuck",
@@ -1778,29 +1771,29 @@ checksum = "61697e0a1c7e512e84a621326239844a24d8207b4669b41bc18b32ea5cbf988b"
 
 [[package]]
 name = "serde"
-version = "1.0.204"
+version = "1.0.206"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bc76f558e0cbb2a839d37354c575f1dc3fdc6546b5be373ba43d95f231bf7c12"
+checksum = "5b3e4cd94123dd520a128bcd11e34d9e9e423e7e3e50425cb1b4b1e3549d0284"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.204"
+version = "1.0.206"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e0cd7e117be63d3c3678776753929474f3b04a43a080c744d6b0ae2a8c28e222"
+checksum = "fabfb6138d2383ea8208cf98ccf69cdfb1aff4088460681d84189aa259762f97"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
 name = "serde_json"
-version = "1.0.122"
+version = "1.0.124"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "784b6203951c57ff748476b126ccb5e8e2959a5c19e5c617ab1956be3dbc68da"
+checksum = "66ad62847a56b3dba58cc891acd13884b9c61138d330c0d7b6181713d4fce38d"
 dependencies = [
  "indexmap",
  "itoa",
@@ -1877,7 +1870,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -2094,9 +2087,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.72"
+version = "2.0.74"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dc4b9b9bf2add8093d3f2c0204471e951b2285580335de42f9d2534f3ae7a8af"
+checksum = "1fceb41e3d546d0bd83421d3409b1460cc7444cd389341a4c880fe7a042cb3d7"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -2149,7 +2142,7 @@ checksum = "a4558b58466b9ad7ca0f102865eccc95938dca1a74a856f2b57b6629050da261"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -2236,7 +2229,7 @@ checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -2250,8 +2243,9 @@ dependencies = [
 
 [[package]]
 name = "ttf-parser"
-version = "0.24.0"
-source = "git+https://github.com/RazrFalcon/ttf-parser?rev=85c1ff2#85c1ff2aca2deaa5fe38dc7c5dc5b96179ac3b24"
+version = "0.24.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5be21190ff5d38e8b4a2d3b6a3ae57f612cc39c96e83cedeaf7abc338a8bac4a"
 dependencies = [
  "core_maths",
 ]
@@ -2358,7 +2352,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
  "wasm-bindgen-shared",
 ]
 
@@ -2380,7 +2374,7 @@ checksum = "e94f17b526d0a461a191c78ea52bbce64071ed5c04c9ffe424dcb38f74171bb7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -2632,7 +2626,7 @@ checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
@@ -2652,13 +2646,13 @@ checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.72",
+ "syn 2.0.74",
 ]
 
 [[package]]
 name = "zip"
 version = "2.1.6"
-source = "git+https://github.com/zip-rs/zip2.git#3a427c4f781719091ca7a5b58617dc31eb9a25cb"
+source = "git+https://github.com/zip-rs/zip2.git#af33ed343da5769e0587d638e435d67151990f10"
 dependencies = [
  "aes",
  "arbitrary",

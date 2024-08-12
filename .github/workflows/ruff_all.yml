@@ -32,6 +32,67 @@ jobs:
             timeout: 6000
             files: "FILES_23.zip"
             asan_build: true
+
+          - name: S1
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S2
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S3
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S4
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S5
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S6
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S7
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S8
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S9
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S10
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S11
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
+          - name: S12
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 18000
+            files: "FILES_23.zip"
+            asan_build: true
           #          - name: SANITIZER_BROKEN_1
           #            config-file: fuzz_ruff_settings_ci.toml
           #            timeout: 14400
