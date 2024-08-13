@@ -182,7 +182,7 @@ jobs:
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           
-          if ${{ matrix.debug_build }}; then
+          if [ "${{ matrix.debug_build }}" = "true" ]; then
             sd "debug_print_results = false" "debug_print_results = true" fuzz_settings.toml
             sd "debug_executed_commands = false" "debug_executed_commands = true" fuzz_settings.toml
           fi

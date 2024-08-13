@@ -19,43 +19,43 @@ jobs:
         include:
           #          - name: LOFTY # Broken yet
           #            fuzz_target: lofty
-          #            timeout: 6000
+          #            timeout: 14400
           #            files: "AA_MUSIC_VALID_FILES.7z"
           - name: DICOM
             fuzz_target: dicom
-            timeout: 6000
+            timeout: 14400
             files: "AA_DCM_VALID_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
-          #            timeout: 6000
+          #            timeout: 14400
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
           #          - name: FULL_MOON
           #            fuzz_target: full_moon
-          #            timeout: 6000
+          #            timeout: 14400
           #            files: "AA_LUA_VALID_FILES.7z"
           - name: IMAGE
             fuzz_target: image
-            timeout: 6000
+            timeout: 14400
             files: "AA_IMAGE_VALID_FILES.7z"
           - name: LOPDF
             fuzz_target: lopdf
-            timeout: 6000
+            timeout: 14400
             files: "AA_PDF_VALID_FILES.7z"
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
-          #            timeout: 6000
+          #            timeout: 14400
           #            files: "AA_PDF_VALID_FILES.7z"
           #          - name: RSBUZZ
           #            fuzz_target: rsbuzz
-          #            timeout: 6000
+          #            timeout: 14400
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
           #          - name: SYMPHONIA
           #            fuzz_target: symphonia
-          #            timeout: 6000
+          #            timeout: 14400
           #            files: "AA_MUSIC_VALID_FILES.7z"
           - name: ZIP_RS
             fuzz_target: zip_rs
-            timeout: 6000
+            timeout: 14400
             files: "AA_ZIP_VALID_FILES.7z"
 
     steps:
@@ -132,7 +132,7 @@ jobs:
         with:
           if-no-files-found: ignore
           name: CARGO_FUZZ___${{ matrix.name }}___corpus
-          path: ''
+          path: /opt/INPUT_FILES_DIR
 
       # TODO this not works due out-of-memory crash - strange that this not happens in command from above
       #      - name: Minimalize fuzz results
