@@ -77,7 +77,6 @@ jobs:
         run: cargo install cargo-fuzz
 
       - name: Restore cached data
-        id: cache-${{ matrix.name }}
         uses: actions/cache/restore@v4
         with:
           path: |
@@ -153,7 +152,6 @@ jobs:
       #          path: fuzz/artifacts
 
       - name: Save cache
-        id: cache-${{ matrix.name }}-save
         uses: actions/cache/save@v4
         with:
           path: |
