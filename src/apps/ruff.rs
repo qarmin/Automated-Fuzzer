@@ -34,6 +34,8 @@ pub const BROKEN_ITEMS_TO_FIND: &[&str] = &[
 
 const INVALID_RULES: &[&str] = &[
     "E999", // Cannot use with preview
+    "E302", // Causes loop, a lot of problematic files - https://github.com/astral-sh/ruff/issues/12611
+    "I101", // Causes loop, a lot of problematic files - https://github.com/astral-sh/ruff/issues/12611
 ];
 
 #[must_use]

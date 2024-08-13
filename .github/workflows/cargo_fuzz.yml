@@ -1,7 +1,7 @@
 name: 🐧 Cargo Fuzz Check
 on:
-  #push:
-  #pull_request:
+  push:
+  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -17,10 +17,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LOFTY
-            fuzz_target: lofty
-            timeout: 6000
-            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY # Broken yet
+          #            fuzz_target: lofty
+          #            timeout: 6000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
           - name: DICOM
             fuzz_target: dicom
             timeout: 6000
@@ -37,10 +37,10 @@ jobs:
             fuzz_target: image
             timeout: 6000
             files: "AA_IMAGE_VALID_FILES.7z"
-          #          - name: LOPDF # Stack overflow
-          #            fuzz_target: lopdf
-          #            timeout: 6000
-          #            files: "AA_PDF_VALID_FILES.7z"
+          - name: LOPDF
+            fuzz_target: lopdf
+            timeout: 6000
+            files: "AA_PDF_VALID_FILES.7z"
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
           #            timeout: 6000
