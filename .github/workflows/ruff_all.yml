@@ -17,6 +17,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: DEBUG_1
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 1200
+            files: "FILES_23.zip"
+            asan_build: true
+            debug_build: true
           - name: SANITIZER_1
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 6000
@@ -33,66 +39,66 @@ jobs:
             files: "FILES_23.zip"
             asan_build: true
 
-          - name: S1
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S2
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S3
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S4
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S5
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S6
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S7
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S8
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S9
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S10
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S11
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
-          - name: S12
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 18000
-            files: "FILES_23.zip"
-            asan_build: true
+          #          - name: S1
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S2
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S3
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S4
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S5
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S6
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S7
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S8
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S9
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S10
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S11
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
+          #          - name: S12
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 18000
+          #            files: "FILES_23.zip"
+          #            asan_build: true
           #          - name: SANITIZER_BROKEN_1
           #            config-file: fuzz_ruff_settings_ci.toml
           #            timeout: 14400
@@ -175,6 +181,12 @@ jobs:
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
+          
+          if ${{ matrix.debug_build }}; then
+            sd "debug_print_results = false" "debug_print_results = true" fuzz_settings.toml
+            sd "debug_executed_commands = false" "debug_executed_commands = true" fuzz_settings.toml
+          fi
+          
           export RUST_BACKTRACE=1
           target/release/automated_fuzzer ${{ matrix.timeout }} || true
 
@@ -189,7 +201,7 @@ jobs:
           name: ${{ matrix.name }}-before
           path: /opt/BROKEN_FILES_DIR
 
-      # Some output files can be not parsable or not broken if closed app before finish
+      # Some output files can be not parsable or not broken if closed app before finishing all iterations
       - name: Remove non crashing files
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml

@@ -76,14 +76,23 @@ jobs:
       - name: Install cargo fuzz
         run: cargo install cargo-fuzz
 
+      - name: Restore cached data
+        id: cache-${{ matrix.name }}
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            /opt/INPUT_FILES_DIR
+          key: ${{ matrix.name }}-cache
+
       - name: Download and prepare data files
         run: |
           CURR_DIR=$(pwd)
-          mkdir -p /opt/INPUT_FILES_DIR
+          mkdir -p /opt/INPUT_FILES_DIR || true
           cd /opt/INPUT_FILES_DIR
           
-          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
-          
+          if [ -z "$(ls -A /opt/INPUT_FILES_DIR)" ]; then
+            python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          fi          
           cd $CURR_DIR
 
       - name: Configure fuzzer
@@ -116,10 +125,17 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: CARGO_FUZZ___${{ matrix.name }}___before
+          name: CARGO_FUZZ___${{ matrix.name }}___broken
           path: fuzz/artifacts
 
-      # TODO this not works due out-of-memory crash -
+      - name: Store fuzz corpus
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: CARGO_FUZZ___${{ matrix.name }}___corpus
+          path: ''
+
+      # TODO this not works due out-of-memory crash - strange that this not happens in command from above
       #      - name: Minimalize fuzz results
       #        run: |
       #          export RUST_BACKTRACE=1
@@ -135,6 +151,14 @@ jobs:
       #          if-no-files-found: ignore
       #          name: CARGO_FUZZ___${{ matrix.name }}___after
       #          path: fuzz/artifacts
+
+      - name: Save cache
+        id: cache-${{ matrix.name }}-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            /opt/INPUT_FILES_DIR
+          key: ${{ matrix.name }}-cache
 
       - name: Exit when found broken files
         run: |
