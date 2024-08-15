@@ -120,6 +120,10 @@ jobs:
           # cargo fuzz build oxc --release --features "oxc_f"
           cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
+      - name: Remove slow files
+        run: |
+          find fuzz/artifacts/ -type f -name 'slow*' -exec rm {} +
+
       - name: Store fuzz results before minimization
         uses: actions/upload-artifact@v4
         with:
