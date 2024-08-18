@@ -188,7 +188,7 @@ jobs:
           fi
           
           export RUST_BACKTRACE=1
-          target/release/automated_fuzzer ${{ matrix.timeout }} || true
+          target/release/automated_fuzzer ${{ matrix.timeout }}
 
       - name: Remove pycache
         run: |

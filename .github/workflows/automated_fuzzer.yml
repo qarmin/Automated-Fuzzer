@@ -261,7 +261,7 @@ jobs:
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           export RUST_BACKTRACE=1
-          target/release/automated_fuzzer ${{ matrix.timeout }} || true
+          target/release/automated_fuzzer ${{ matrix.timeout }}
 
       - name: Create broken file to fail ci
         run: |

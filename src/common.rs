@@ -1,8 +1,9 @@
-use std::fs;
+use std::os::unix::fs::PermissionsExt;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output, Stdio};
 use std::time::Instant;
+use std::{fs, process};
 
 use jwalk::WalkDir;
 use log::{error, info};
@@ -324,4 +325,78 @@ pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
 
     let _ = fs::remove_dir_all(format!("{dir_to_check}/__pycache__"));
     broken_files
+}
+
+pub fn check_files_number(name: &str, dir: &str) {
+    info!(
+        "{name} - {} - Files Number {}.",
+        dir,
+        WalkDir::new(dir)
+            .max_depth(999)
+            .into_iter()
+            .flatten()
+            .filter(|e| e.path().is_file())
+            .count()
+    );
+}
+pub fn calculate_number_of_files(dir: &str) -> usize {
+    let mut number_of_files = 0;
+    for i in WalkDir::new(dir).max_depth(999).into_iter().flatten() {
+        if i.path().is_file() {
+            number_of_files += 1;
+        }
+    }
+    number_of_files
+}
+
+pub fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
+    let command = obj.broken_file_creator();
+    let output = command.wait_with_output().unwrap();
+    let out = String::from_utf8(output.stdout).unwrap();
+    if !output.status.success() {
+        error!("{:?}", output.status);
+        error!("{out}");
+        error!("Failed to generate files");
+        process::exit(1);
+    }
+    if settings.debug_print_broken_files_creator {
+        info!("{out}");
+    };
+}
+
+pub fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
+    let mut size_all = 0;
+    let mut files = Vec::new();
+    assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());
+    for i in WalkDir::new(&settings.temp_possible_broken_files_dir)
+        .max_depth(999)
+        .into_iter()
+        .flatten()
+    {
+        let path = i.path();
+        if !path.is_file() {
+            continue;
+        }
+        let Ok(metadata) = i.metadata() else {
+            continue;
+        };
+        metadata.permissions().set_mode(0o777);
+        let Some(s) = path.to_str() else {
+            continue;
+        };
+        if settings.extensions.iter().any(|e| s.to_lowercase().ends_with(e)) {
+            files.push(s.to_string());
+            size_all += metadata.len();
+        }
+    }
+    if files.len() > settings.max_collected_files {
+        files.truncate(settings.max_collected_files);
+    }
+
+    if files.is_empty() {
+        dbg!(&settings);
+        assert!(!files.is_empty());
+    }
+
+    (files, size_all)
 }

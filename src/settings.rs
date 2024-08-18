@@ -34,8 +34,18 @@ pub struct Setting {
     pub ignore_timeout_errors: bool,
     pub grouping: u32,
     pub debug_executed_commands: bool,
+    pub check_for_stability: bool,
+    pub stability_runs: bool,
     pub custom_items: Option<CustomItems>,
     pub non_custom_items: Option<NonCustomItems>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum StabilityMode {
+    None,
+    ConsoleOutput,
+    FileContent,
+    OutputContent,
 }
 #[derive(Clone, Debug)]
 pub struct NonCustomItems {
@@ -45,6 +55,7 @@ pub struct NonCustomItems {
     pub tool_type: String,
     pub search_items: Vec<String>,
     pub ignored_items: Vec<String>,
+    pub stability_mode: StabilityMode,
 }
 #[derive(Clone, Debug)]
 pub struct CustomItems {
@@ -53,9 +64,20 @@ pub struct CustomItems {
     pub search_items: Vec<String>,
     pub ignored_items: Vec<String>,
     pub file_type: LANGS,
+    pub stability_mode: StabilityMode,
 }
 
+fn get_stability_mode(tool_hashmap: &HashMap<String, String>) -> StabilityMode {
+    match tool_hashmap["stability_mode"].as_str() {
+        "none" => StabilityMode::None,
+        "console_output" => StabilityMode::ConsoleOutput,
+        "file_content" => StabilityMode::FileContent,
+        "output_content" => StabilityMode::OutputContent,
+        _ => panic!("Invalid stability mode {}", tool_hashmap["stability_mode"]),
+    }
+}
 pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &HashMap<String, String>) -> CustomItems {
+    let stability_mode = get_stability_mode(tool_hashmap);
     let group_mode = match tool_hashmap["group_mode"].as_str() {
         "none" => CheckGroupFileMode::None,
         "by_files" => CheckGroupFileMode::ByFilesGroup,
@@ -132,9 +154,11 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         search_items,
         ignored_items,
         file_type,
+        stability_mode,
     }
 }
 pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustomItems {
+    let stability_mode = get_stability_mode(tool_hashmap);
     NonCustomItems {
         app_binary: tool_hashmap["app_binary"].clone(),
         app_config: tool_hashmap["app_config"].clone(),
@@ -142,6 +166,7 @@ pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustom
         tool_type: tool_hashmap["tool_type"].clone(),
         search_items: BROKEN_ITEMS_TO_FIND.iter().map(ToString::to_string).collect(),
         ignored_items: BROKEN_ITEMS_TO_IGNORE.iter().map(ToString::to_string).collect(),
+        stability_mode,
     }
 }
 pub fn load_settings() -> Setting {
@@ -216,6 +241,8 @@ pub fn load_settings() -> Setting {
         debug_executed_commands,
         custom_items,
         non_custom_items,
+        check_for_stability: general["check_for_stability"].parse().unwrap(),
+        stability_runs: general["stability_runs"].parse().unwrap(),
     }
 }
 
