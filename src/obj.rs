@@ -1,7 +1,7 @@
 use crate::common::{
     create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode, OutputResult,
 };
-use crate::settings::Setting;
+use crate::settings::{Setting, StabilityMode};
 use log::error;
 use std::process::{Child, Command};
 pub trait ProgramConfig: Sync {
@@ -14,11 +14,31 @@ pub trait ProgramConfig: Sync {
     fn is_broken(&self, content: &str) -> bool;
     fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
-        let new_name_not_minimized = create_new_file_name(self.get_settings(), &full_name);
         error!("File {full_name} saved to {new_name}\n{output}");
 
         try_to_save_file(&full_name, &new_name);
-        try_to_save_file(&full_name, &new_name_not_minimized);
+        Some(new_name)
+    }
+    fn get_stability_mode(&self) -> StabilityMode;
+
+    fn validate_txt_and_save_file(&self, full_name: String, data: &[String]) -> Option<String> {
+        let new_name = create_new_file_name(self.get_settings(), &full_name);
+        let mut diff = match self.get_stability_mode() {
+            StabilityMode::None => unreachable!(),
+            StabilityMode::FileContent => "File content between runs differs",
+            StabilityMode::ConsoleOutput => "Console output between runs differs",
+            StabilityMode::OutputContent => "Console output or file content between runs differs",
+        }
+        .to_string();
+
+        for d in data {
+            diff.push_str(&format!("\n=========================\n{}", d));
+        }
+        diff.push_str("\n=========================\n");
+
+        error!("File {full_name} saved to {new_name}\n{diff}");
+
+        try_to_save_file(&full_name, &new_name);
         Some(new_name)
     }
 

@@ -1,7 +1,7 @@
 use crate::broken_files::create_broken_files;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
-use crate::settings::{CustomItems, Setting};
+use crate::settings::{CustomItems, Setting, StabilityMode};
 use std::process::{Child, Command, Stdio};
 
 pub struct CustomStruct {
@@ -21,6 +21,11 @@ impl ProgramConfig for CustomStruct {
     fn is_broken(&self, content: &str) -> bool {
         self.custom_items.search_items.iter().any(|x| content.contains(x)) && !self.ignored_signal_output(content)
     }
+
+    fn get_stability_mode(&self) -> StabilityMode {
+        self.custom_items.stability_mode
+    }
+
     fn ignored_signal_output(&self, content: &str) -> bool {
         !self.custom_items.ignored_items.is_empty()
             && self.custom_items.ignored_items.iter().any(|x| content.contains(x))

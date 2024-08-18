@@ -2,6 +2,7 @@
 #![allow(clippy::borrowed_box)]
 
 use crate::common::{calculate_number_of_files, check_files_number, TIMEOUT_SECS};
+use crate::finding_different_output::find_broken_files_by_different_output;
 use crate::finding_text_status::find_broken_files_by_text_status;
 use crate::settings::{get_object, load_settings};
 use log::info;
@@ -68,5 +69,9 @@ fn main() {
         calculate_number_of_files(&settings.valid_input_files_dir)
     );
 
-    find_broken_files_by_text_status(&settings, &obj);
+    if settings.check_for_stability {
+        find_broken_files_by_different_output(&settings, &obj);
+    } else {
+        find_broken_files_by_text_status(&settings, &obj);
+    }
 }

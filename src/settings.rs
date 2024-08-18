@@ -35,12 +35,12 @@ pub struct Setting {
     pub grouping: u32,
     pub debug_executed_commands: bool,
     pub check_for_stability: bool,
-    pub stability_runs: bool,
+    pub stability_runs: u32,
     pub custom_items: Option<CustomItems>,
     pub non_custom_items: Option<NonCustomItems>,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub enum StabilityMode {
     None,
     ConsoleOutput,

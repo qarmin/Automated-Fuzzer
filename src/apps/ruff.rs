@@ -4,7 +4,7 @@ use crate::common::{
     CheckGroupFileMode,
 };
 use crate::obj::ProgramConfig;
-use crate::settings::{NonCustomItems, Setting};
+use crate::settings::{NonCustomItems, Setting, StabilityMode};
 use jwalk::WalkDir;
 use log::{error, info};
 use rand::Rng;
@@ -300,5 +300,9 @@ impl ProgramConfig for RuffStruct {
             "red_knot" => CheckGroupFileMode::None,
             _ => CheckGroupFileMode::None,
         }
+    }
+
+    fn get_stability_mode(&self) -> StabilityMode {
+        self.non_custom_items.stability_mode
     }
 }
