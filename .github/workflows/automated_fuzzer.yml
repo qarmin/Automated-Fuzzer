@@ -17,6 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        stability_check: [ false, true ]
         include:
           - name: DICOM
             config-file: fuzz_dicom_rs_settings_ci.toml
@@ -260,6 +261,11 @@ jobs:
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
+
+          if [ "${{ matrix.stability_check }}" = "false" ]; then
+            sd "check_for_stability = false" "check_for_stability = true" fuzz_settings.toml
+          fi
+
           export RUST_BACKTRACE=1
           target/release/automated_fuzzer ${{ matrix.timeout }}
 
@@ -275,6 +281,7 @@ jobs:
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
+        if: ${{ matrix.stability_check == 'false' }}
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           export RUST_BACKTRACE=1

@@ -16,6 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        stability_check: [ false, true ]
         include:
           - name: DEBUG_1
             config-file: fuzz_ruff_settings_ci.toml
@@ -203,6 +204,7 @@ jobs:
 
       # Some output files can be not parsable or not broken if closed app before finishing all iterations
       - name: Remove non crashing files
+        if: ${{ matrix.stability_check == 'false' }}
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           export RUST_BACKTRACE=1
@@ -218,6 +220,7 @@ jobs:
           path: /tmp/tmp_folder/data
 
       - name: Find minimal rules
+        if: ${{ matrix.stability_check == 'false' }}
         run: |
           if [ -f settings.toml.temp ]; then
             mv settings.toml.temp fuzz_settings.toml

@@ -9,6 +9,8 @@ debug_print_results = false # Debug prints output of commands
 debug_executed_commands = false # Debug prints executed commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
+check_for_stability = false # Check if output is stable - only able to set if stability_mode is not none
+stability_runs = 3 # How many times output will be checked for stability
 find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
@@ -37,4 +39,5 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 file_type = "js" # Available: text, binary, js, go, rust, lua, python
+stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

@@ -3,7 +3,7 @@ use crate::common::{
     remove_and_create_entire_folder,
 };
 use crate::obj::ProgramConfig;
-use crate::settings::Setting;
+use crate::settings::{Setting, StabilityMode};
 use humansize::format_size;
 use log::info;
 use rayon::prelude::*;
@@ -83,6 +83,7 @@ fn test_files(
     atomic_broken: &AtomicU32,
     atomic_all_broken: &AtomicU32,
 ) {
+    assert_ne!(obj.get_stability_mode(), StabilityMode::None);
     let atomic = AtomicU32::new(0);
     let all = files.len();
 
@@ -90,7 +91,7 @@ fn test_files(
         .into_par_iter()
         .map(|full_name| {
             let number = atomic.fetch_add(1, Ordering::Release);
-            if number % 1000 == 0 {
+            if number % 100 == 0 {
                 info!("_____ {number} / {all}");
             }
             if check_if_app_ends() {
@@ -105,8 +106,12 @@ fn test_files(
                     info!("{}", output_result.get_output());
                 }
 
-                outputs.push(output_result.get_output().to_string());
-                file_after_content.push(fs::read(&full_name).unwrap());
+                if [StabilityMode::OutputContent, StabilityMode::FileContent].contains(&obj.get_stability_mode()) {
+                    file_after_content.push(fs::read(&full_name).unwrap());
+                }
+                if [StabilityMode::OutputContent, StabilityMode::ConsoleOutput].contains(&obj.get_stability_mode()) {
+                    outputs.push(output_result.get_output().to_string());
+                }
                 fs::write(&full_name, &file_content).unwrap();
             }
 
