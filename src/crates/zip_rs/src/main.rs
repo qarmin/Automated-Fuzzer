@@ -31,7 +31,7 @@ fn check_file(file_path: &str) {
     let mut zip = match zip::ZipArchive::new(cursor) {
         Ok(t) => t,
         Err(e) => {
-            println!("{e}");
+            eprintln!("{e}");
             return;
         }
     };
@@ -43,7 +43,7 @@ fn check_file(file_path: &str) {
                 let _ = file.read(&mut buf);
             }
             Err(e) => {
-                println!("{e}");
+                eprintln!("{e}");
             }
         }
     }

@@ -34,6 +34,6 @@ fn check_file(file_path: &str) {
                 let _ = file.get_root();
             }
         }
-        Err(e) => println!("{}    -     {:?}", file_path, e),
+        Err(e) => println!("Error {}", e),
     }
 }

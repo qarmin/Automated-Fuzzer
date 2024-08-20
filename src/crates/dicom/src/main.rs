@@ -29,12 +29,26 @@ fn check_file(path: &str) {
         return;
     };
     let cursor = std::io::Cursor::new(file_content);
-    let Ok(res) = from_reader(cursor) else {
+    let res =
+        match from_reader(cursor) {
+            Ok(res) => res,
+            Err(e) => {
+                eprintln!("Error: {}", e);
+                return;
+            }
+        };
+    let mut item_to_dump = Vec::new();
+    if let Err(e) = DumpOptions::new().dump_object_to(&mut item_to_dump, &res) {
+        eprintln!("Error: {}", e);
         return;
     };
+    if let Err(e) = dicom_json::to_string(&res) {
+        eprintln!("Error: {}", e);
+        return;
+    }
     let mut item_to_dump = Vec::new();
-    let _ = DumpOptions::new().dump_object_to(&mut item_to_dump, &res);
-    let _ = dicom_json::to_string(&res);
-    let mut item_to_dump = Vec::new();
-    let _ = res.write_dataset(&mut item_to_dump);
+    if let Err(e) = res.write_dataset(&mut item_to_dump) {
+        eprintln!("Error: {}", e);
+        return;
+    }
 }

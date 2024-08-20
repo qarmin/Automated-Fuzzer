@@ -41,7 +41,9 @@ fn check_file(file_path: &str) {
                 let _text = document.extract_text(&[page_number]);
             }
 
-            let _ = document.save_to(&mut Cursor::new(Vec::new()));
+            if let Err(e) =  document.save_to(&mut Cursor::new(Vec::new())) {
+                eprintln!("Error: {}", e);
+            };
         }
         Err(err) => {
             eprintln!("Error reading PDF contents: {}", err)

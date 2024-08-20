@@ -32,7 +32,9 @@ fn check_file(path: &str) {
         return;
     };
 
-    let _ = parse_audio_file(content);
+    if let Err(e) =  parse_audio_file(content) {
+        eprintln!("{e}");
+    };
 }
 
 pub fn parse_audio_file(content: Vec<u8>) -> Result<(), Error> {
@@ -46,9 +48,9 @@ pub fn parse_audio_file(content: Vec<u8>) -> Result<(), Error> {
         &Default::default(),
     ) {
         Ok(t) => t,
-        Err(_) => {
+        Err(_e) => {
             return Err(Error::Unsupported(
-                "probe info not available/file not recognized",
+               "probe info not available/file not recognized",
             ))
         }
     };

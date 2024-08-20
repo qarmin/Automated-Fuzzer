@@ -32,7 +32,7 @@ fn check_file(path: &str) {
     let content = match fs::read(&path) {
         Ok(content) => content,
         Err(e) => {
-            println!("{e} - {path}");
+            println!("{e}");
             return;
         }
     };
@@ -41,7 +41,8 @@ fn check_file(path: &str) {
         let s = std::io::Cursor::new(&content);
         let tagged_file = match Probe::with_file_type(s, *i).read() {
             Ok(t) => t,
-            Err(_e) => {
+            Err(e) => {
+                eprintln!("{e}");
                 continue;
             }
         };
