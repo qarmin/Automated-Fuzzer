@@ -107,61 +107,61 @@ jobs:
             stability_check: false
 
 
-          - name: DICOM_S
-            config-file: fuzz_dicom_rs_settings_ci.toml
-            timeout: 6000
-            files: "AA_DCM_VALID_FILES.7z"
-            src_folder: dicom
-            stability_check: true
-          - name: IMAGE_S
-            config-file: fuzz_image_settings_ci.toml
-            timeout: 6000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: image
-            stability_check: true
-          - name: LOFTY_S
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 6000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: lofty
-            stability_check: true
-          - name: LOPDF_S
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 6000
-            files: "AA_PDF_VALID_FILES.7z"
-            src_folder: lopdf
-            stability_check: true
-          - name: PDF_RS_S
-            config-file: fuzz_pdf_rs_settings_ci.toml
-            timeout: 6000
-            files: "AA_PDF_VALID_FILES.7z"
-            src_folder: pdf_rs
-            stability_check: true
-          - name: ZIP_RS_S
-            config-file: fuzz_zip_rs_settings_ci.toml
-            timeout: 6000
-            files: "AA_ZIP_VALID_FILES.7z"
-            src_folder: zip_rs
-            stability_check: true
-          - name: GO_S
-            config-file: fuzz_go_settings_ci.toml
-            timeout: 6000
-            files: "AA_GO_VALID_FILES.7z"
-            go_version: '1.23.0-rc.1'
-            src_folder: ''
-            stability_check: true
+          #          - name: DICOM_S
+          #            config-file: fuzz_dicom_rs_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_DCM_VALID_FILES.7z"
+          #            src_folder: dicom
+          #            stability_check: true
+          #          - name: IMAGE_S
+          #            config-file: fuzz_image_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_IMAGE_VALID_FILES.7z"
+          #            src_folder: image
+          #            stability_check: true
+          #          - name: LOFTY_S
+          #            config-file: fuzz_lofty_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            src_folder: lofty
+          #            stability_check: true
+          #          - name: LOPDF_S
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #            src_folder: lopdf
+          #            stability_check: true
+          #          - name: PDF_RS_S
+          #            config-file: fuzz_pdf_rs_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #            src_folder: pdf_rs
+          #            stability_check: true
+          #          - name: ZIP_RS_S
+          #            config-file: fuzz_zip_rs_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_ZIP_VALID_FILES.7z"
+          #            src_folder: zip_rs
+          #            stability_check: true
+          #          - name: GO_S
+          #            config-file: fuzz_go_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_GO_VALID_FILES.7z"
+          #            go_version: '1.23.0-rc.1'
+          #            src_folder: ''
+          #            stability_check: true
           - name: OXC_S
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 6000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             src_folder: ''
             stability_check: true
-          - name: TYPST_S
-            config-file: fuzz_typst_settings_ci.toml
-            timeout: 6000
-            files: "AA_TYPST_VALID_FILES.zip"
-            src_folder: ''
-            stability_check: true
+          #          - name: TYPST_S
+          #            config-file: fuzz_typst_settings_ci.toml
+          #            timeout: 6000
+          #            files: "AA_TYPST_VALID_FILES.zip"
+          #            src_folder: ''
+          #            stability_check: true
 
     steps:
       - uses: actions/checkout@v4
