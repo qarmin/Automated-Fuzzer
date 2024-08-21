@@ -351,7 +351,7 @@ jobs:
           path: /opt/BROKEN_FILES_DIR
 
       - name: Remove non crashing files
-        if: ${{ matrix.stability_check == 'false' }}
+        if: ${{ matrix.stability_check == false }}
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
           export RUST_BACKTRACE=1
