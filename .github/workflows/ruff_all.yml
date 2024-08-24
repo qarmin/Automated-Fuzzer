@@ -55,6 +55,12 @@ jobs:
             files: "FILES_23.zip"
             asan_build: true
             stability_check: true
+          - name: SANITIZER_STABILITY_CHECK_3
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 1000
+            files: "FILES_22.zip"
+            asan_build: true
+            stability_check: true
 
           #          - name: S1
           #            config-file: fuzz_ruff_settings_ci.toml
@@ -198,6 +204,10 @@ jobs:
         run: |
           mv ${{ matrix.config-file }} fuzz_settings.toml
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
+
+          if [ "${{ matrix.stability_check }}" = "true" ]; then
+            sd "check_for_stability = false" "check_for_stability = true" fuzz_settings.toml
+          fi
           
           if [ "${{ matrix.debug_build }}" = "true" ]; then
             sd "debug_print_results = false" "debug_print_results = true" fuzz_settings.toml
