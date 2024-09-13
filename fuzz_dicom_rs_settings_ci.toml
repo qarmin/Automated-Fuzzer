@@ -37,6 +37,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
+search_item_200 = "DIFFERENT CONTENT"
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

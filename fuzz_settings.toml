@@ -1,6 +1,6 @@
 [general]
 loop_number = 100 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 1# Number of broken files that will be created for each 1 valid file # Copy broken files to broken dir, disable if testing new settings
+broken_files_for_each_file = 20# Number of broken files that will be created for each 1 valid file # Copy broken files to broken dir, disable if testing new settings
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
 minimization_attempts = 200 # Attemps to minimize code, counter reset when found minimized test case
@@ -21,7 +21,7 @@ max_collected_files = 999999999999999 # Max number of files that will be collect
 check_if_file_is_parsable = false # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 
-current_mode = "ruff"
+current_mode = "custom" # custom or ruff
 
 # app_binary - place where binary exists
 # app_config - path to configuration
@@ -122,13 +122,23 @@ valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/swc/Broken"
 tool_type = ""
 
-[dicom]
-app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/dicom/target/release/dicom"
-app_config = ""
+[custom]
+name = "dicom_rs"
+command = "dicom|FILE_PATHS_TO_PROVIDE"
+
 extensions = "dcm"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_DICOM_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dicom/Broken"
-tool_type = ""
+group_mode = "by_group" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
+search_item_200 = "DIFFERENT CONTENT"
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python
+stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
 [pdfrs]
 app_binary = "pdf"

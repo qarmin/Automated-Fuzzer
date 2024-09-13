@@ -20,88 +20,88 @@ jobs:
         include:
           - name: DICOM
             config-file: fuzz_dicom_rs_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_DCM_VALID_FILES.7z"
             src_folder: dicom
             stability_check: false
           #          - name: Ffull_moonder: font_kit
           #          - name: FULL_MOON
           #            config-file: fuzz_full_moon_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_LUA_VALID_FILES.7z"
           #            src_folder: full_moon
           #  stability_check: false
           - name: IMAGE
             config-file: fuzz_image_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_IMAGE_VALID_FILES.7z"
             src_folder: image
             stability_check: false
           - name: LOFTY
             config-file: fuzz_lofty_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_MUSIC_VALID_FILES.7z"
             src_folder: lofty
             stability_check: false
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: lopdf
             stability_check: false
           - name: PDF_RS
             config-file: fuzz_pdf_rs_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_rs
             stability_check: false
           #          - name: RSBUZZ
           #            config-file: fuzz_rsbuzz_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
           #            src_folder: rsbuzz
           #            stability_check: false
           #          - name: SYMPHONIA
           #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_MUSIC_VALID_FILES.7z"
           #            src_folder: symphonia
           #            stability_check: false
           - name: ZIP_RS
             config-file: fuzz_zip_rs_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_ZIP_VALID_FILES.7z"
             src_folder: zip_rs
             stability_check: false
 
           - name: GO
             config-file: fuzz_go_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_GO_VALID_FILES.7z"
             go_version: '1.23.0-rc.1'
             src_folder: ''
             stability_check: false
           - name: OXC
             config-file: fuzz_oxc_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             src_folder: ''
             stability_check: false
           #          - name: STYLUA
           #            config-file: fuzz_stylua_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_LUA_VALID_FILES.7z"
           #            src_folder: ''
           #            stability_check: false
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
           #            src_folder: ''
           #            stability_check: false
           - name: TYPST
             config-file: fuzz_typst_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_TYPST_VALID_FILES.zip"
             src_folder: ''
             stability_check: false
@@ -109,56 +109,56 @@ jobs:
 
           #          - name: DICOM_S
           #            config-file: fuzz_dicom_rs_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_DCM_VALID_FILES.7z"
           #            src_folder: dicom
           #            stability_check: true
           #          - name: IMAGE_S
           #            config-file: fuzz_image_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_IMAGE_VALID_FILES.7z"
           #            src_folder: image
           #            stability_check: true
           #          - name: LOFTY_S
           #            config-file: fuzz_lofty_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_MUSIC_VALID_FILES.7z"
           #            src_folder: lofty
           #            stability_check: true
           #          - name: LOPDF_S
           #            config-file: fuzz_lopdf_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_PDF_VALID_FILES.7z"
           #            src_folder: lopdf
           #            stability_check: true
           #          - name: PDF_RS_S
           #            config-file: fuzz_pdf_rs_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_PDF_VALID_FILES.7z"
           #            src_folder: pdf_rs
           #            stability_check: true
           #          - name: ZIP_RS_S
           #            config-file: fuzz_zip_rs_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_ZIP_VALID_FILES.7z"
           #            src_folder: zip_rs
           #            stability_check: true
           #          - name: GO_S
           #            config-file: fuzz_go_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_GO_VALID_FILES.7z"
           #            go_version: '1.23.0-rc.1'
           #            src_folder: ''
           #            stability_check: true
           - name: OXC_S
             config-file: fuzz_oxc_settings_ci.toml
-            timeout: 6000
+            timeout: 15000
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             src_folder: ''
             stability_check: true
           #          - name: TYPST_S
           #            config-file: fuzz_typst_settings_ci.toml
-          #            timeout: 6000
+          #            timeout: 15000
           #            files: "AA_TYPST_VALID_FILES.zip"
           #            src_folder: ''
           #            stability_check: true
