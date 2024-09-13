@@ -19,43 +19,43 @@ jobs:
         include:
           #          - name: LOFTY # Broken yet
           #            fuzz_target: lofty
-          #            timeout: 14400
+          #            timeout: 16000
           #            files: "AA_MUSIC_VALID_FILES.7z"
           - name: DICOM
             fuzz_target: dicom
-            timeout: 14400
+            timeout: 16000
             files: "AA_DCM_VALID_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
-          #            timeout: 14400
+          #            timeout: 16000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
           #          - name: FULL_MOON
           #            fuzz_target: full_moon
-          #            timeout: 14400
+          #            timeout: 16000
           #            files: "AA_LUA_VALID_FILES.7z"
           - name: IMAGE
             fuzz_target: image
-            timeout: 14400
+            timeout: 16000
             files: "AA_IMAGE_VALID_FILES.7z"
-          - name: LOPDF
-            fuzz_target: lopdf
-            timeout: 14400
-            files: "AA_PDF_VALID_FILES.7z"
+          #          - name: LOPDF # A lot of problems
+          #            fuzz_target: lopdf
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES.7z"
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
-          #            timeout: 14400
+          #            timeout: 16000
           #            files: "AA_PDF_VALID_FILES.7z"
           #          - name: RSBUZZ
           #            fuzz_target: rsbuzz
-          #            timeout: 14400
+          #            timeout: 16000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
           #          - name: SYMPHONIA
           #            fuzz_target: symphonia
-          #            timeout: 14400
+          #            timeout: 16000
           #            files: "AA_MUSIC_VALID_FILES.7z"
           - name: ZIP_RS
             fuzz_target: zip_rs
-            timeout: 14400
+            timeout: 16000
             files: "AA_ZIP_VALID_FILES.7z"
 
     steps:
@@ -63,7 +63,7 @@ jobs:
 
       - name: Setup rust version
         run: |
-          rustup default nightly-2024-09-10
+          rustup default nightly
           rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
           rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
 
