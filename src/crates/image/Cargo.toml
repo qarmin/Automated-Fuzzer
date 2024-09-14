@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-image = { git = "https://github.com/image-rs/image", default-features = false, features = ["default-formats"]}
+image = { git = "https://github.com/image-rs/image", default-features = false, features = ["avif", "bmp", "dds", "ff", "gif", "hdr", "ico", "png", "pnm", "qoi", "tga", "webp"]}
 walkdir = "2.5.0"
 
 [profile.release]

@@ -103,7 +103,7 @@ jobs:
       - name: Build Fuzzer
         run: |
           cd fuzz
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
           export RUSTFLAGS="-Zsanitizer=address"
@@ -112,7 +112,7 @@ jobs:
 
       - name: Run Fuzzer
         run: |
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
           export RUSTFLAGS="-Zsanitizer=address"
@@ -141,7 +141,7 @@ jobs:
       # TODO this not works due out-of-memory crash - strange that this not happens in command from above
       #      - name: Minimalize fuzz results
       #        run: |
-      #          export RUST_BACKTRACE=1
+      #          export RUST_BACKTRACE=full
       #          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
       #          export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
       #          export RUSTFLAGS="-Zsanitizer=address"

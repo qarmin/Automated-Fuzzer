@@ -214,7 +214,7 @@ jobs:
             sd "debug_executed_commands = false" "debug_executed_commands = true" fuzz_settings.toml
           fi
           
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           target/release/automated_fuzzer ${{ matrix.timeout }}
 
       - name: Remove pycache
@@ -233,7 +233,7 @@ jobs:
         if: ${{ matrix.stability_check == false }}
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer
@@ -253,7 +253,7 @@ jobs:
           fi
           sd "remove_non_crashing_items_from_broken_files = true" "remove_non_crashing_items_from_broken_files = false" fuzz_settings.toml
           sd 'find_minimal_rules = false' 'find_minimal_rules = true' fuzz_settings.toml
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer

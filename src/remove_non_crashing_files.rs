@@ -224,7 +224,7 @@ rustup default nightly
 rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
 
-export RUST_BACKTRACE=1
+export RUST_BACKTRACE=full
 export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
 export ASAN_OPTIONS=symbolize=1
 RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --target x86_64-unknown-linux-gnu
@@ -235,10 +235,10 @@ cause this
 $ERROR
 ```
 "#
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 

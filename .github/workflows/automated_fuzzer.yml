@@ -336,7 +336,7 @@ jobs:
             sd "check_for_stability = false" "check_for_stability = true" fuzz_settings.toml
           fi
 
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           target/release/automated_fuzzer ${{ matrix.timeout }}
 
       - name: Create broken file to fail ci
@@ -354,7 +354,7 @@ jobs:
         if: ${{ matrix.stability_check == false }}
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-          export RUST_BACKTRACE=1
+          export RUST_BACKTRACE=full
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer

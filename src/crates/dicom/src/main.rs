@@ -57,6 +57,6 @@ fn check_file(path: &str) {
     if item_to_dump != file_content {
         eprintln!("DIFFERENT CONTENT");
     }
-    // fs::write("a.dcm", item_to_dump).unwrap();
+    fs::write("a.dcm", item_to_dump).unwrap();
     // fs::write("b.dcm", file_content).unwrap()
 }
