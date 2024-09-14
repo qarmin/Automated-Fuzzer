@@ -1,8 +1,8 @@
-use dicom_dump::DumpOptions;
 use dicom_object::from_reader;
 use std::env::args;
 use std::fs;
 use std::path::Path;
+use dicom_core::header::Header;
 use walkdir::WalkDir;
 
 fn main() {
@@ -42,21 +42,21 @@ fn check_file(path: &str) {
         return;
     }
 
-    let mut item_to_dump = Vec::new();
-    if let Err(e) = DumpOptions::new().dump_object_to(&mut item_to_dump, &res) {
-        eprintln!("Error: {}", e);
-        return;
-    };
-    let mut item_to_dump = Vec::new();
+    let all_items = res.clone().into_iter().collect::<Vec<_>>();
+    let hash_map = all_items.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
 
+    let mut item_to_dump = Vec::new();
     if let Err(e) = res.write_all(&mut item_to_dump) {
         eprintln!("Error: {}", e);
         return;
+    };
+    let res2 = from_reader(std::io::Cursor::new(item_to_dump)).unwrap();
+    let all_items2 = res2.clone().into_iter().collect::<Vec<_>>();
+    let hash_map2 = all_items2.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
+    assert_eq!(hash_map.len(), hash_map2.len(), "DIFFERENT CONTENT, Different number of items");
+    dbg!(hash_map.len());
+    for (tag, item) in hash_map {
+        let item2 = &hash_map2[&tag];
+        assert_eq!(&item, item2, "DIFFERENT CONTENT, tag: {:?}", tag);
     }
-
-    if item_to_dump != file_content {
-        eprintln!("DIFFERENT CONTENT");
-    }
-    fs::write("a.dcm", item_to_dump).unwrap();
-    // fs::write("b.dcm", file_content).unwrap()
 }

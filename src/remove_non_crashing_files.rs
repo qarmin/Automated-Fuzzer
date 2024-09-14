@@ -218,13 +218,14 @@ $COMMAND
 ```
 
 App was compiled with nightly rust compiler to be able to use address sanitizer
+(You can ignore this part if there is no address sanitizer error)
 On Ubuntu 24.04, the commands to compile were:
 ```
 rustup default nightly
 rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
 rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
 
-export RUST_BACKTRACE=full
+export RUST_BACKTRACE=1 # or full depending on project
 export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
 export ASAN_OPTIONS=symbolize=1
 RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --target x86_64-unknown-linux-gnu
