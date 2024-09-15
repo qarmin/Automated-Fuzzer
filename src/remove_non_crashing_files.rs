@@ -13,10 +13,12 @@ use std::fs;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
+pub const MAX_FILES: usize = 999999999999;
+
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
 
-    let broken_files: Vec<String> = collect_broken_files(settings);
+    let broken_files: Vec<String> = collect_broken_files(settings).into_iter().take(MAX_FILES).collect();
     info!("Found {} broken files to check", broken_files.len());
     // let broken_files_before = broken_files.len();
 

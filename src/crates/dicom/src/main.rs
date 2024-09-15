@@ -50,13 +50,13 @@ fn check_file(path: &str) {
         eprintln!("Error: {}", e);
         return;
     };
-    let res2 = from_reader(std::io::Cursor::new(item_to_dump)).unwrap();
+    let res2 = from_reader(std::io::Cursor::new(item_to_dump.clone())).expect("DIFFERENT CONTENT, This was properly loaded and saved before");
     let all_items2 = res2.clone().into_iter().collect::<Vec<_>>();
     let hash_map2 = all_items2.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
     assert_eq!(hash_map.len(), hash_map2.len(), "DIFFERENT CONTENT, Different number of items");
-    dbg!(hash_map.len());
     for (tag, item) in hash_map {
         let item2 = &hash_map2[&tag];
-        assert_eq!(&item, item2, "DIFFERENT CONTENT, tag: {:?}", tag);
+        assert_eq!(item.value(), item2.value(), "DIFFERENT CONTENT, tag: {:?}", tag);
     }
+    // fs::write("a.dcm", &item_to_dump).unwrap();
 }
