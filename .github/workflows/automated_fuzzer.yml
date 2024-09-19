@@ -245,7 +245,7 @@ jobs:
           rm rust-toolchain.toml
           sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
           sd "debug = false" "debug = true" Cargo.toml
-          sd "strip = \"symbols\"" "strip = \"false\"" Cargo.toml
+          sd "strip = \"symbols\"" "strip = \"none\"" Cargo.toml
           sd "lto =" "#lto =" Cargo.toml
           
           if [ "${{ env.SANITIZER }}" = "true" ]; then
