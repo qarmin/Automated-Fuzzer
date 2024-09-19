@@ -50,7 +50,9 @@ fn check_file(path: &str) {
         eprintln!("Error: {}", e);
         return;
     };
-    let res2 = from_reader(std::io::Cursor::new(item_to_dump.clone())).expect("DIFFERENT CONTENT, This was properly loaded and saved before");
+    let Ok(res2) = from_reader(std::io::Cursor::new(item_to_dump.clone())) else {
+        panic!("DIFFERENT CONTENT, This was properly loaded and saved before");
+    };
     let all_items2 = res2.clone().into_iter().collect::<Vec<_>>();
     let hash_map2 = all_items2.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
     assert_eq!(hash_map.len(), hash_map2.len(), "DIFFERENT CONTENT, Different number of items");

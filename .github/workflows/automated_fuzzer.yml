@@ -105,7 +105,6 @@ jobs:
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
             src_folder: ''
             stability_check: false
-            full_rust_backtrace: true
           #          - name: STYLUA
           #            config-file: fuzz_stylua_settings_ci.toml
           #            timeout: 16000
@@ -245,7 +244,9 @@ jobs:
           cd oxc-main
           rm rust-toolchain.toml
           sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
-          sd "debug         = false" "debug = true" Cargo.toml
+          sd "debug = false" "debug = true" Cargo.toml
+          sd "strip = \"symbols\"" "strip = \"false\"" Cargo.toml
+          sd "lto =" "#lto =" Cargo.toml
           
           if [ "${{ env.SANITIZER }}" = "true" ]; then
             echo "ASAN BUILD___"
@@ -355,12 +356,7 @@ jobs:
             sd "check_for_stability = false" "check_for_stability = true" fuzz_settings.toml
           fi
 
-          if [ "${{ matrix.full_rust_backtrace }}" = "true" ]; then
-            export RUST_BACKTRACE=full
-          else
-            export RUST_BACKTRACE=1
-          fi
-          
+          export RUST_BACKTRACE=1
           target/release/automated_fuzzer ${{ matrix.timeout }}
 
       - name: Create broken file to fail ci
@@ -379,12 +375,7 @@ jobs:
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
 
-          if [ "${{ matrix.full_rust_backtrace }}" = "true" ]; then
-            export RUST_BACKTRACE=full
-          else
-            export RUST_BACKTRACE=1
-          fi
-          
+          export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS=symbolize=1
           target/release/automated_fuzzer
