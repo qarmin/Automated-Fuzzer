@@ -1,0 +1,13 @@
+[package]
+name = "pdf_extract"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+pdf-extract = {git = "https://github.com/jrmuizel/pdf-extract"}
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true

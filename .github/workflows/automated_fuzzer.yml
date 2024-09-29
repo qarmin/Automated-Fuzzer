@@ -24,24 +24,24 @@ jobs:
             files: "AA_DCM_VALID_FILES.7z"
             src_folder: dicom
             stability_check: false
-          - name: DICOM2
-            config-file: fuzz_dicom_rs_settings_ci.toml
-            timeout: 16000
-            files: "AA_DCM_VALID_FILES.7z"
-            src_folder: dicom
-            stability_check: false
-          - name: DICOM3
-            config-file: fuzz_dicom_rs_settings_ci.toml
-            timeout: 16000
-            files: "AA_DCM_VALID_FILES.7z"
-            src_folder: dicom
-            stability_check: false
-          - name: DICOM4
-            config-file: fuzz_dicom_rs_settings_ci.toml
-            timeout: 1000
-            files: "AA_DCM_VALID_FILES.7z"
-            src_folder: dicom
-            stability_check: false
+          #          - name: DICOM2
+          #            config-file: fuzz_dicom_rs_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_DCM_VALID_FILES.7z"
+          #            src_folder: dicom
+          #            stability_check: false
+          #          - name: DICOM3
+          #            config-file: fuzz_dicom_rs_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_DCM_VALID_FILES.7z"
+          #            src_folder: dicom
+          #            stability_check: false
+          #          - name: DICOM4
+          #            config-file: fuzz_dicom_rs_settings_ci.toml
+          #            timeout: 1000
+          #            files: "AA_DCM_VALID_FILES.7z"
+          #            src_folder: dicom
+          #            stability_check: false
           #          - name: Ffull_moonder: font_kit
           #          - name: FULL_MOON
           #            config-file: fuzz_full_moon_settings_ci.toml
@@ -72,6 +72,12 @@ jobs:
             timeout: 16000
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_rs
+            stability_check: false
+          - name: PDF_EXTRACT
+            config-file: fuzz_pdf_extract_rs_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: pdf_extract
             stability_check: false
           #          - name: RSBUZZ
           #            config-file: fuzz_rsbuzz_settings_ci.toml
