@@ -79,6 +79,24 @@ jobs:
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_extract
             stability_check: false
+          - name: PDF_EXTRACT_2
+            config-file: fuzz_pdf_extract_settings_ci.toml
+            timeout: 4000
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: pdf_extract
+            stability_check: false
+          - name: PDF_EXTRACT_3
+            config-file: fuzz_pdf_extract_settings_ci.toml
+            timeout: 1000
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: pdf_extract
+            stability_check: false
+          - name: PDF_EXTRACT_4
+            config-file: fuzz_pdf_extract_settings_ci.toml
+            timeout: 500
+            files: "AA_PDF_VALID_FILES.7z"
+            src_folder: pdf_extract
+            stability_check: false
           #          - name: RSBUZZ
           #            config-file: fuzz_rsbuzz_settings_ci.toml
           #            timeout: 16000

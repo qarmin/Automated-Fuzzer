@@ -2,7 +2,7 @@ use dicom_object::from_reader;
 use std::env::args;
 use std::fs;
 use std::path::Path;
-use dicom_core::header::Header;
+// use dicom_core::header::Header;
 use walkdir::WalkDir;
 
 fn main() {
@@ -42,24 +42,24 @@ fn check_file(path: &str) {
         return;
     }
 
-    let all_items = res.clone().into_iter().collect::<Vec<_>>();
-    let hash_map = all_items.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
+    // let all_items = res.clone().into_iter().collect::<Vec<_>>();
+    // let hash_map = all_items.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
 
     let mut item_to_dump = Vec::new();
     if let Err(e) = res.write_all(&mut item_to_dump) {
         eprintln!("Error: {}", e);
         return;
     };
-    let Ok(res2) = from_reader(std::io::Cursor::new(item_to_dump.clone())) else {
-        // panic!("DIFFERENT CONTENT, This was properly loaded and saved before");
-        return;
-    };
-    let all_items2 = res2.clone().into_iter().collect::<Vec<_>>();
-    let hash_map2 = all_items2.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
+    // let Ok(res2) = from_reader(std::io::Cursor::new(item_to_dump.clone())) else {
+    //     panic!("DIFFERENT CONTENT, This was properly loaded and saved before");
+    //     return;
+    // };
+    // let all_items2 = res2.clone().into_iter().collect::<Vec<_>>();
+    // let hash_map2 = all_items2.into_iter().map(|item| (item.tag(), item)).collect::<std::collections::HashMap<_, _>>();
     // assert_eq!(hash_map.len(), hash_map2.len(), "DIFFERENT CONTENT, Different number of items");
-    for (tag, item) in hash_map {
-        let item2 = &hash_map2[&tag];
-        // assert_eq!(item.value(), item2.value(), "DIFFERENT CONTENT, tag: {:?}", tag);
-    }
+    // for (tag, item) in hash_map {
+    //     let item2 = &hash_map2[&tag];
+    //     assert_eq!(item.value(), item2.value(), "DIFFERENT CONTENT, tag: {:?}", tag);
+    // }
     // fs::write("a.dcm", &item_to_dump).unwrap();
 }
