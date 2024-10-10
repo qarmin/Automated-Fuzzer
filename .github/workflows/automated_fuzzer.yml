@@ -61,6 +61,12 @@ jobs:
             files: "AA_MUSIC_VALID_FILES.7z"
             src_folder: lofty
             stability_check: false
+          - name: SLINT
+            config-file: fuzz_slint_settings_ci.toml
+            timeout: 16000
+            files: "AA_SLINT_FILES.7z"
+            src_folder: slint
+            stability_check: false
           #          - name: LOPDF
           #            config-file: fuzz_lopdf_settings_ci.toml
           #            timeout: 16000

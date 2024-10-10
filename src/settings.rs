@@ -145,6 +145,7 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         "rust" => LANGS::RUST,
         "lua" => LANGS::LUA,
         "python" => LANGS::PYTHON,
+        "slint" => LANGS::SLINT,
         _ => panic!("Invalid file type {}", tool_hashmap["file_type"]),
     };
 

@@ -45,8 +45,6 @@ fn check_file(file_path: &str) {
     let (_, _, _) = spin_on::spin_on(i_slint_compiler::compile_syntax_node(
         doc_node,
         diags,
-        i_slint_compiler::CompilerConfiguration::new(
-            i_slint_compiler::generator::OutputFormat::Llr,
-        ),
+        i_slint_compiler::CompilerConfiguration::new(i_slint_compiler::generator::OutputFormat::Llr),
     ));
 }

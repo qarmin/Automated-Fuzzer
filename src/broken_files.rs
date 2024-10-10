@@ -13,7 +13,20 @@ pub enum LANGS {
     SLINT,
 }
 
-const SLINT_ARGS: &[&str] = &[];
+const SLINT_ARGS: &[&str] = &[
+    "Rectangle", "width", "height", ":", ";", "phx", "px", ":=", "=", "{", "}", "<", ">", "bool", "int", "float", "=>",
+    "<=", "<=>", "=>", "(_)", "pure", "callback", "-", "^^", "^", "/", "*", "+", ".", "_", "==", "//", "@",
+    "@image-url", "@tr", "(", ")", "\"", "import ", "from", "changed", ",", "return", "#", "transparent", "inherits",
+    "Window", "false", "true", "clicked()", "%", "init", "debug", "accept", "visible", "property", "string", "in-out ",
+    "in-out property", "[", "]", "out", "out property", "in", "in property", "export", "||", "!=", "[string]",
+    "length", "x", "y", "z", "min-width", "max-width", "opacity", "animation-tick", "accessible-role", "component",
+    "icon", "Palette", "Palette.background", "TextInputInterface", "Colors", "Key", "Math", "abs", "abs", "acos",
+    "ceil", "clamp", "log", "max", "mod", "sqrt", "pow", "TableColumn", "StandardListViewItem", "PointerScrollEvent",
+    "PointerEvent", "Point", "KeyboardModifiers", "KeyEvent", "if", "/*", "*/", "angle", "brush", "color", "duration",
+    "easing", "image", "percent", "physical-length", "relative-font-size", "to-float", "[0]", "[100]", "[999999999]",
+    "self", "self.", "parent", "parent.", "?", "!", "function", "root", "root.", "public", "for", "for r[idx] in",
+    "in", "animate", "states", "global", "export global",
+];
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except", "in", "raise",
@@ -85,6 +98,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::LUA => com = com.args(LUA_ARGS),
         LANGS::GO => com = com.args(GO_ARGS),
         LANGS::RUST => com = com.args(RUST_ARGS),
+        LANGS::SLINT => com = com.args(SLINT_ARGS),
         LANGS::BINARY => {
             com = com.args(
                 format!(
