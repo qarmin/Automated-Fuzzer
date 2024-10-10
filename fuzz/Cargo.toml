@@ -28,6 +28,7 @@ dicom-transfer-syntax-registry = { git = "https://github.com/Enet4/dicom-rs", op
 dicom-dump = { git = "https://github.com/Enet4/dicom-rs", optional = true }
 dicom-json = { git = "https://github.com/Enet4/dicom-rs", optional = true }
 i-slint-compiler = { git = "https://github.com/slint-ui/slint.git", optional = true }
+spin_on = { version = "0.1.1", optional = true }
 
 [features]
 default = []
@@ -43,6 +44,7 @@ zip_rs_f = ["zip"]
 full_moon_f = ["full_moon"]
 dicom_f = ["dicom-core", "dicom-object", "dicom-ul", "dicom-encoding", "dicom-dictionary-std", "dicom-transfer-syntax-registry", "dicom-dump", "dicom-json"]
 slint_f = ["i-slint-compiler"]
+slintc_f = ["i-slint-compiler", "spin_on"]
 
 [[bin]]
 name = "lofty"
@@ -110,6 +112,13 @@ bench = false
 [[bin]]
 name = "slint"
 path = "fuzz_targets/slint.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "slintc"
+path = "fuzz_targets/slintc.rs"
 test = false
 doc = false
 bench = false
