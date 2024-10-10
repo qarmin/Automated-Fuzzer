@@ -44,7 +44,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
-file_type = "text" # Available: text, binary, js, go, rust, lua, python
+file_type = "text" # Available: text, binary, js, go, rust, lua, python, slint
 
 
 [custom_image]
@@ -62,7 +62,7 @@ search_item_2 = "panicked at"
 ignored_item_3 = "zune-jpeg-0.4.11/src/mcu.rs:209:9"
 ignored_item_34 = "src/codecs/tiff.rs:247:21"
 ignored_item_35 = "src/compression/piz/huffman.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 
 [custom_zip]
 name = "zip_rs"
@@ -75,7 +75,7 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 
 [custom_full_moon]
 name = "name"
@@ -88,7 +88,7 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-file_type = "lua" # Available: text, binary, js, go, rust, lua, python
+file_type = "lua" # Available: text, binary, js, go, rust, lua, python, slint
 
 [ruff]
 name = "ruff"
@@ -137,7 +137,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_200 = "DIFFERENT CONTENT"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
 [pdfrs]

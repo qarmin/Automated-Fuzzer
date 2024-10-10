@@ -10,7 +10,10 @@ pub enum LANGS {
     RUST,
     BINARY,
     TEXT,
+    SLINT,
 }
+
+const SLINT_ARGS: &[&str] = &[];
 
 const PYTHON_ARGS: &[&str] = &[
     "noqa", "#", "'", "\"", "False", "await", "else", "import", "pass", "None", "break", "except", "in", "raise",
@@ -73,7 +76,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
             format!(
                 "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c -s"
             )
-            .split(' '),
+                .split(' '),
         );
     }
     match lang {
@@ -87,7 +90,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
                 format!(
                     "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file}"
                 )
-                .split(' '),
+                    .split(' '),
             );
         }
         LANGS::TEXT => {
@@ -95,7 +98,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
                 format!(
                     "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c"
                 )
-                .split(' '),
+                    .split(' '),
             );
         }
     }

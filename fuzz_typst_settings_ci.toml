@@ -40,6 +40,6 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_2 = "crates/typst-pdf/src/font.rs" # https://github.com/typst/typst/issues/4572
 ignored_item_3 = "crates/typst-syntax/src/parser.rs" # https://github.com/typst/typst/issues/4573
 ignored_item_4 = "bounded paragraph layout is incomplete" # https://github.com/typst/typst/issues/4651
-file_type = "text" # Available: text, binary, js, go, rust, lua, python
+file_type = "text" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

@@ -40,6 +40,6 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_3 = "Parser should not call bump()" # 1145
 ignored_item_4 = "on a `None` value', src/js_regex/validator.rs" # 1145
 ignored_item_5 = "on a `None` value', src/rules/getter_return.rs" # 1145
-file_type = "js" # Available: text, binary, js, go, rust, lua, python
+file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

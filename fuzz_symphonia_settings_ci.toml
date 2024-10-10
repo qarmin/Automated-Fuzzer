@@ -45,5 +45,5 @@ ignored_item_5 = "src/units.rs"
 ignored_item_6 = "src/ebml.rs"
 ignored_item_7 = "src/wave/chunks.rs"
 ignored_item_8 = "src/atoms/stsc.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
