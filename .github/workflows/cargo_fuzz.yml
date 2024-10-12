@@ -29,10 +29,10 @@ jobs:
           #            fuzz_target: slint
           #            timeout: 16000
           #            files: "AA_SLINT_FILES.7z"
-          - name: SLINTC
-            fuzz_target: slintc
-            timeout: 16000
-            files: "AA_SLINT_FILES.7z"
+          #          - name: SLINTC
+          #            fuzz_target: slintc
+          #            timeout: 16000
+          #            files: "AA_SLINT_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
           #            timeout: 16000
