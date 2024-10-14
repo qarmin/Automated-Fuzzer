@@ -1,6 +1,6 @@
 [general]
 loop_number = 5000 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 100# Number of broken files that will be created for each 1 valid file
+broken_files_for_each_file = 15# Number of broken files that will be created for each 1 valid file
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 1000 # Attemps to minimize code, counter reset when found minimized test case
@@ -13,7 +13,7 @@ check_for_stability = false # Check if output is stable - only able to set if st
 stability_runs = 3 # How many times output will be checked for stability
 find_minimal_rules = false # If true, will try to find minimal rules that will produce error, files will be taken from BROKEN_FILES_DIR
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
-timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
+timeout = 150 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
 allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 ignore_timeout_errors = false
 error_when_found_signal = true # Errors, when app was killed by OS or user

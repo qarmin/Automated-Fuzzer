@@ -37,6 +37,5 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
-ignored_item_1 = "is not a char boundary"
 file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"
