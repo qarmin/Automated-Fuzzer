@@ -248,6 +248,7 @@ jobs:
           echo "overflow-checks = true" >> Cargo.toml
           echo "debug = true" >> Cargo.toml
           echo "panic = 'abort'" >> Cargo.toml
+          rm -rf .cargo # Removes lto = true
           
           if [ "${{ env.SANITIZER }}" = "true" ]; then
             echo "ASAN BUILD___"
