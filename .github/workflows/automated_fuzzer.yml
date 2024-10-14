@@ -237,7 +237,7 @@ jobs:
 
       #### BIOME
       - name: Install biome
-        if: ${{ contains(matrix.name, 'OXC') }}
+        if: ${{ contains(matrix.name, 'BIOME') }}
         run: |
           wget -q https://github.com/biomejs/biome/archive/refs/heads/main.zip
           unzip -q main.zip
