@@ -40,6 +40,7 @@ search_item_102 = "ThreadSanitizer"
 ignored_item_1 = "\"Missing \", Expression" # https://github.com/slint-ui/slint/issues/6512
 ignored_item_2 = "private function must be local and defined" # https://github.com/slint-ui/slint/issues/6518
 ignored_item_3 = "lhs_lookup.is_local_to_component" # https://github.com/slint-ui/slint/issues/6519
+ignored_item_4 = "called `Result::unwrap()` on an `Err` value: 0" # https://github.com/slint-ui/slint/issues/6559
 file_type = "slint" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

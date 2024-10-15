@@ -29,7 +29,7 @@ pub trait ProgramConfig: Sync {
             StabilityMode::ConsoleOutput => "Console output between runs differs",
             StabilityMode::OutputContent => "Console output or file content between runs differs",
         }
-        .to_string();
+            .to_string();
 
         for d in data {
             diff.push_str(&format!("\n=========================\n{}", d));
@@ -93,8 +93,11 @@ pub trait ProgramConfig: Sync {
             .collect::<Vec<_>>();
         minimize_command.args([
             "--input-file", full_name, "--output-file", &new_full_name, "--command", &run_command_as_string,
-            "--attempts", "1000", "-r",
+            "--attempts", &self.get_settings().minimization_attempts.to_string(),
         ]);
+        if self.get_settings().minimization_repeat {
+            minimize_command.args(["-r"]);
+        }
         if let Some(additional_minimize_command) = self.get_minimize_additional_command() {
             minimize_command.args(["--additional-command", &additional_minimize_command]);
         }

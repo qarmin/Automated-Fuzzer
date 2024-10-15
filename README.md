@@ -14,11 +14,11 @@ via [create_broken_files](https://crates.io/crates/create_broken_files) and test
 
 ## How to use it?
 
-- Install tool to create broken files(rust and cargo can be installed directly from https://rustup.rs/ via simple
+- Install tool to create broken files and minimizer(rust and cargo can be installed directly from https://rustup.rs/ via simple
   command)
 
 ```
-cargo install create_broken_files
+cargo install create_broken_files minimizer
 ```
 
 - Create file inside `apps` folder and customize class name
@@ -45,9 +45,30 @@ Video, how output should look:
 
 https://user-images.githubusercontent.com/41945903/227783281-a73112ee-b564-41f3-9d6a-f63b294abbce.mp4
 
+## How it is different from other fuzzers?
+
+Compared to cargo fuzz:
+
+- runs applications through the CLI, rather than using its API
+- automatically minimizes output files(if of course you have checked this in the settings) - cargo fuzz requires running a separate tool
+- automatic running of tested application on multiple threads
+- not using advanced input modification techniques
+- worse performance, due to overhead associated with running applications via CLI
+- automatic generation of a report that can be uploaded to github as an issue
+- possibility to collect multiple results at one time, cargo fuzz aborts after the first error found
+
+## So when to use it?
+- you have a tool that can be run from the command line (if you have a library, you can create a simple CLI wrapper)
+- tool uses file content as input, without needing to setup a complex environment
+
+I is very useful, especially when starting fuzzing a new project.  
+I recommend to use two tools at the same time - cargo fuzz and this tool to get best results.
+
+If you are using rust applications, remember to compile them with release flag, debug symbols enabled, overflow checks and address sanitizer support(you can find in github ci how to do it).
+
 ## Modes
 
-Currently app only search for specific messages in output or checks for specific exit codes.
+Currently, app only search for specific messages in output or checks for specific exit codes.
 
 I plan to add also mode to compare stability of output, sorted output and file content after 2 or more iterations.
 
@@ -58,10 +79,11 @@ Yes, it found thousands of crashes in several projects(some are checked daily in
 - Selene - https://github.com/Kampfkarren/selene/issues/505 (1375 files)
 - Rome - https://github.com/rome/tools/issues/4323 (>2000 files)
 - Ruff - https://github.com/charliermarsh/ruff/issues/3721 (>2000 files)
-- Symphonia - https://github.com/pdeljanov/Symphonia/issues/201, https://github.com/pdeljanov/Symphonia/issues/200 (30
-  files)
+- Symphonia - https://github.com/pdeljanov/Symphonia/issues/201, https://github.com/pdeljanov/Symphonia/issues/200 (30 files)
 - Lofty - https://github.com/Serial-ATA/lofty-rs/issues/174 - (1 file)
 - Deno lint - https://github.com/denoland/deno_lint/issues/1145 - (873 files)
 - Oxc - https://github.com/Boshen/oxc/issues/232 - (>300 files)
 - Static Check Go Tools - https://github.com/dominikh/go-tools/issues/1393 - (10 files)
 - Quick Lint js - https://github.com/quick-lint/quick-lint-js/issues/974 - (81 files)
+
+it found a lot of more bugs, but I'm lazy to add them all here.
