@@ -169,12 +169,12 @@ jobs:
           #            go_version: '1.23.0-rc.1'
           #            src_folder: ''
           #            stability_check: true
-          - name: OXC_S
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: true
+          #          - name: OXC_S
+          #            config-file: fuzz_oxc_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            src_folder: ''
+          #            stability_check: true
           #          - name: TYPST_S
           #            config-file: fuzz_typst_settings_ci.toml
           #            timeout: 16000

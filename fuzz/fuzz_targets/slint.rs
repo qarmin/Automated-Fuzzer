@@ -1,28 +1,30 @@
 #![no_main]
 
-use i_slint_compiler::diagnostics::BuildDiagnostics;
-use i_slint_compiler::parser::parse;
+use i_slint_compiler::diagnostics::{BuildDiagnostics, SourceFile};
+use i_slint_compiler::lexer;
+use i_slint_compiler::parser::parse_tokens;
 use libfuzzer_sys::{fuzz_target, Corpus};
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     if let Ok(s) = std::str::from_utf8(data) {
-        let mut open_brackets = 0;
-        for b in s.bytes() {
-            if b == b'{' {
-                open_brackets += 1;
-                if open_brackets > 200 {
-                    return Corpus::Reject;
-                }
-            }
+        let tokens = lexer::lex(s);
+        if tokens.is_empty() {
+            return Corpus::Reject;
         }
 
-        let mut b = BuildDiagnostics::default();
-        parse(s.to_string(), None, &mut b);
-        // if lexer::lex(s).is_empty() {
-        //     Corpus::Reject
-        // } else {
-        //     Corpus::Keep
-        // }
+        let source_file = SourceFile::default();
+        let mut diags = BuildDiagnostics::default();
+
+        let doc_node = parse_tokens(tokens, source_file, &mut diags);
+
+        let (_, _, _) = spin_on::spin_on(i_slint_compiler::compile_syntax_node(
+            doc_node,
+            diags,
+            i_slint_compiler::CompilerConfiguration::new(
+                i_slint_compiler::generator::OutputFormat::Llr,
+            ),
+        ));
+
         Corpus::Keep
     } else {
         Corpus::Reject

@@ -43,8 +43,7 @@ symphonia_f = ["symphonia"]
 zip_rs_f = ["zip"]
 full_moon_f = ["full_moon"]
 dicom_f = ["dicom-core", "dicom-object", "dicom-ul", "dicom-encoding", "dicom-dictionary-std", "dicom-transfer-syntax-registry", "dicom-dump", "dicom-json"]
-slint_f = ["i-slint-compiler"]
-slintc_f = ["i-slint-compiler", "spin_on"]
+slint_f = ["i-slint-compiler", "spin_on"]
 
 [[bin]]
 name = "lofty"
@@ -112,13 +111,6 @@ bench = false
 [[bin]]
 name = "slint"
 path = "fuzz_targets/slint.rs"
-test = false
-doc = false
-bench = false
-
-[[bin]]
-name = "slintc"
-path = "fuzz_targets/slintc.rs"
 test = false
 doc = false
 bench = false
