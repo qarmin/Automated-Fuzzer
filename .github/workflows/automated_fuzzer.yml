@@ -18,36 +18,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: BIOME
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-          - name: BIOME2
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 1600
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-          - name: BIOME3
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 3600
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-          - name: BIOME4
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 7200
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-          - name: BIOME5
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 100000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
+          #          - name: BIOME
+          #            config-file: fuzz_biome_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            src_folder: ''
+          #            stability_check: false
           - name: DICOM
             config-file: fuzz_dicom_rs_settings_ci.toml
             timeout: 16000
