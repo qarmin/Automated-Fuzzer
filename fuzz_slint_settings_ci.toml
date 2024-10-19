@@ -39,6 +39,8 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 ignored_item_4 = "called `Result::unwrap()` on an `Err` value: 0" # https://github.com/slint-ui/slint/issues/6559
+ignored_item_5 = "lhs_lookup.is_local_to_component" # https://github.com/slint-ui/slint/issues/6587
+ignored_item_6 = "state.borrow().diag.has_errors()" # https://github.com/slint-ui/slint/issues/6588
 file_type = "slint" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

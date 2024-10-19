@@ -13,3 +13,4 @@ walkdir = "2"
 overflow-checks = true
 panic = "abort"
 debug = true
+debug-assertions = true
