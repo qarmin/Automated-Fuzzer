@@ -67,6 +67,12 @@ jobs:
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: pdf_rs
             stability_check: false
+          - name: TTF_PARSER
+            config-file: fuzz_ttf_parser_settings_ci.toml
+            timeout: 16000
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            src_folder: ttf_parser
+            stability_check: false
           # https://github.com/jrmuizel/pdf-extract/issues/96
           #          - name: PDF_EXTRACT
           #            config-file: fuzz_pdf_extract_settings_ci.toml

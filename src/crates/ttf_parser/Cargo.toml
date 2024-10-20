@@ -1,0 +1,14 @@
+[package]
+name = "ttf_parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+ttf-parser = { git = "https://github.com/RazrFalcon/ttf-parser.git" }
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

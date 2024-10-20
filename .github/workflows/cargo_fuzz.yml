@@ -17,10 +17,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #          - name: LOFTY # Broken yet
-          #            fuzz_target: lofty
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: LOFTY
+            fuzz_target: lofty
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
           - name: DICOM
             fuzz_target: dicom
             timeout: 16000
