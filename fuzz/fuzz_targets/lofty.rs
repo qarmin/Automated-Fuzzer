@@ -16,7 +16,7 @@ const ALL_FILE_TYPES: &[FileType] = &[
     FileType::Opus,
     FileType::Vorbis,
     FileType::Speex,
-    FileType::Wav,
+    // FileType::Wav,
     FileType::WavPack,
 ];
 
