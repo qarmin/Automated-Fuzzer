@@ -12,7 +12,7 @@ const ALL_FILE_TYPES: &[FileType] = &[
     FileType::Flac,
     FileType::Mpeg,
     FileType::Mp4,
-    FileType::Mpc,
+    // FileType::Mpc,  // https://github.com/Serial-ATA/lofty-rs/issues/470
     FileType::Opus,
     FileType::Vorbis,
     FileType::Speex,

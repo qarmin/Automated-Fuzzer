@@ -62,7 +62,8 @@ Compared to cargo fuzz:
 - tool uses file content as input, without needing to setup a complex environment
 
 I is very useful, especially when starting fuzzing a new project.  
-I recommend to use two tools at the same time - cargo fuzz and this tool to get best results.
+I recommend to use two tools at the same time - cargo fuzz and this tool to get best results.  
+Automated fuzzer is good to find and group a lot of simpler bugs, while cargo fuzz is good to find more complex bugs one by one.
 
 If you are using rust applications, remember to compile them with release flag, debug symbols enabled, overflow checks and address sanitizer support(you can find in github ci how to do it).
 
