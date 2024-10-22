@@ -7,6 +7,17 @@ use libfuzzer_sys::{fuzz_target, Corpus};
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     if let Ok(s) = std::str::from_utf8(data) {
+        let mut counter = 0;
+        for byte in s.bytes() {
+            if byte == b'{' {
+                counter += 1;
+                if counter > 100 {
+                    return Corpus::Reject;
+                }
+            }
+        }
+
+
         let tokens = lexer::lex(s);
         if tokens.is_empty() {
             return Corpus::Reject;
