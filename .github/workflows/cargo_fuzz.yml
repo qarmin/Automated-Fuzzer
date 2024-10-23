@@ -142,14 +142,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: broken___CARGO_FUZZ___${{ matrix.name }}
+          name: ___broken___CARGO_FUZZ___${{ matrix.name }}
           path: fuzz/artifacts
 
       - name: Store fuzz corpus
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
-          name: corpus___CARGO_FUZZ___${{ matrix.name }}
+          name: ___corpus___CARGO_FUZZ___${{ matrix.name }}
           path: /opt/INPUT_FILES_DIR
 
       # Minimizing, but not with builtin cargo fuzz minimizer, but minimizer command which should look like this:
@@ -163,9 +163,15 @@ jobs:
           export RUSTFLAGS="-Zsanitizer=address"
           
           for file in fuzz/artifacts/${{ matrix.fuzz_target }}/*; do
-            minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 100000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -v
+            minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 10000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -v
           done
-          
+
+      - name: Store fuzz results after minimization
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: minimized___CARGO_FUZZ___${{ matrix.name }}
+          path: fuzz/artifacts
 
       # TODO this not works due out-of-memory crash - strange that this not happens in command from above
       #      - name: Minimalize fuzz results
@@ -177,12 +183,6 @@ jobs:
       #
       #          for file in fuzz/artifacts/*; do cargo fuzz tmin "${{ matrix.fuzz_target }}" "$file" --release --features "${{ matrix.fuzz_target }}_f" -- -rss_limit_mb=20000 || true; done
 
-      #      - name: Store fuzz results after minimization
-      #        uses: actions/upload-artifact@v4
-      #        with:
-      #          if-no-files-found: ignore
-      #          name: CARGO_FUZZ___${{ matrix.name }}___after
-      #          path: fuzz/artifacts
 
       #      - name: Save cache
       #        uses: actions/cache/save@v4
