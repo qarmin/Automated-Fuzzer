@@ -163,7 +163,7 @@ jobs:
           export RUSTFLAGS="-Zsanitizer=address"
           
           for file in fuzz/artifacts/${{ matrix.fuzz_target }}/*; do
-            minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 100000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -- -v
+            minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 100000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -v
           done
           
 
