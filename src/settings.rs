@@ -186,7 +186,7 @@ pub fn load_settings() -> Setting {
     let current_mode = if current_mode_string.contains("custom") {
         MODES::CUSTOM
     } else {
-        MODES::from_str(&current_mode_string).expect(&format!("Invalid mode {}.", current_mode_string))
+        MODES::from_str(&current_mode_string).unwrap_or_else(|_| panic!("Invalid mode {}.", current_mode_string))
     };
     let curr_setting = config[&current_mode_string].clone();
 

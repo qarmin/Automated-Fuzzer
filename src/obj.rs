@@ -29,7 +29,7 @@ pub trait ProgramConfig: Sync {
             StabilityMode::ConsoleOutput => "Console output between runs differs",
             StabilityMode::OutputContent => "Console output or file content between runs differs",
         }
-            .to_string();
+        .to_string();
 
         for d in data {
             diff.push_str(&format!("\n=========================\n{}", d));
@@ -92,8 +92,14 @@ pub trait ProgramConfig: Sync {
             .flat_map(|e| vec!["--ignored-info".to_string(), e.to_string()])
             .collect::<Vec<_>>();
         minimize_command.args([
-            "--input-file", full_name, "--output-file", &new_full_name, "--command", &run_command_as_string,
-            "--attempts", &self.get_settings().minimization_attempts.to_string(),
+            "--input-file",
+            full_name,
+            "--output-file",
+            &new_full_name,
+            "--command",
+            &run_command_as_string,
+            "--attempts",
+            &self.get_settings().minimization_attempts.to_string(),
         ]);
         if self.get_settings().minimization_repeat {
             minimize_command.args(["-r"]);

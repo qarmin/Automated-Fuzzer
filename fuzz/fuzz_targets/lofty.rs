@@ -10,14 +10,14 @@ const ALL_FILE_TYPES: &[FileType] = &[
     FileType::Aiff,
     FileType::Ape,
     FileType::Flac,
-    FileType::Mpeg,
+    // FileType::Mpeg, // https://github.com/Serial-ATA/lofty-rs/issues/474
     FileType::Mp4,
     // FileType::Mpc,  // https://github.com/Serial-ATA/lofty-rs/issues/470
     FileType::Opus,
     FileType::Vorbis,
     FileType::Speex,
-    // FileType::Wav, // TODO
-    // FileType::WavPack, // TODO
+    // FileType::Wav, // https://github.com/Serial-ATA/lofty-rs/issues/471,
+    // FileType::WavPack, // https://github.com/Serial-ATA/lofty-rs/issues/472, https://github.com/Serial-ATA/lofty-rs/issues/473
 ];
 
 fuzz_target!(|data: &[u8]| -> Corpus {
