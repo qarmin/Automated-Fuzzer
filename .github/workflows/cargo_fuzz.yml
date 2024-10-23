@@ -13,6 +13,8 @@ jobs:
 
     runs-on: ubuntu-24.04
 
+    # Remember, fuzz target should be same as folders in src/crates
+
     strategy:
       fail-fast: false
       matrix:
@@ -77,15 +79,22 @@ jobs:
           sudo apt install -y wget earlyoom libasan8
           sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
-      - name: Install cargo fuzz
-        run: cargo install cargo-fuzz
+      - name: Install cargo fuzz and minimizer
+        run: cargo install cargo-fuzz minimizer
 
-      - name: Restore cached data
-        uses: actions/cache/restore@v4
-        with:
-          path: |
-            /opt/INPUT_FILES_DIR
-          key: ${{ matrix.name }}-cache
+      - name: Install crate
+        run: |
+          cd src/crates/${{ matrix.fuzz_target }}
+          cargo update
+          cargo install --path .
+          cd ../../..
+
+      #      - name: Restore cached data
+      #        uses: actions/cache/restore@v4
+      #        with:
+      #          path: |
+      #            /opt/INPUT_FILES_DIR
+      #          key: ${{ matrix.name }}-cache
 
       - name: Download and prepare data files
         run: |
@@ -143,6 +152,21 @@ jobs:
           name: corpus___CARGO_FUZZ___${{ matrix.name }}
           path: /opt/INPUT_FILES_DIR
 
+      # Minimizing, but not with builtin cargo fuzz minimizer, but minimizer command which should look like this:
+      # minimizer --input-file input.webp --output-file output --command "image {}" --attempts 100000 -r --broken-info "overflow" -v
+
+      - name: Minimize with minimizer
+        run: |
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
+          export RUSTFLAGS="-Zsanitizer=address"
+          
+          for file in fuzz/artifacts/${{ matrix.fuzz_target }}/*; do
+            minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 100000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -- -v
+          done
+          
+
       # TODO this not works due out-of-memory crash - strange that this not happens in command from above
       #      - name: Minimalize fuzz results
       #        run: |
@@ -160,12 +184,12 @@ jobs:
       #          name: CARGO_FUZZ___${{ matrix.name }}___after
       #          path: fuzz/artifacts
 
-      - name: Save cache
-        uses: actions/cache/save@v4
-        with:
-          path: |
-            /opt/INPUT_FILES_DIR
-          key: ${{ matrix.name }}-cache
+      #      - name: Save cache
+      #        uses: actions/cache/save@v4
+      #        with:
+      #          path: |
+      #            /opt/INPUT_FILES_DIR
+      #          key: ${{ matrix.name }}-cache
 
       - name: Exit when found broken files
         run: |

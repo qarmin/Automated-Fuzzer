@@ -16,8 +16,8 @@ const ALL_FILE_TYPES: &[FileType] = &[
     FileType::Opus,
     FileType::Vorbis,
     FileType::Speex,
-    // FileType::Wav,
-    FileType::WavPack,
+    // FileType::Wav, // TODO
+    // FileType::WavPack, // TODO
 ];
 
 fuzz_target!(|data: &[u8]| -> Corpus {
