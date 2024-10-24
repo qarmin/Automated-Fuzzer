@@ -7,12 +7,12 @@ edition = "2021"
 
 [dependencies]
 image = { version = "0.25"}
-#image_hasher = { git = "https://github.com/qarmin/img_hash.git" }
-image_hasher = {path = "/home/rafal/Projekty/Rust/A/image_hasher"}
+image_hasher = { git = "https://github.com/qarmin/img_hash.git" }
+#image_hasher = {path = "/home/rafal/Projekty/Rust/A/image_hasher"}
 walkdir = "2.5.0"
 
 [profile.release]
 overflow-checks = true
-panic = "abort"
+panic = "unwind" # Unwinding because of panics in image happens
 debug = true
 debug-assertions = true
