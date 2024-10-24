@@ -1,0 +1,18 @@
+[package]
+name = "image_hasher"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+image = { version = "0.25"}
+#image_hasher = { git = "https://github.com/qarmin/img_hash.git" }
+image_hasher = {path = "/home/rafal/Projekty/Rust/A/image_hasher"}
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

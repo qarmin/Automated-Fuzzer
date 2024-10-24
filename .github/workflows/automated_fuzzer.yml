@@ -43,6 +43,12 @@ jobs:
             files: "AA_IMAGE_VALID_FILES.7z"
             src_folder: image
             stability_check: false
+          - name: IMAGE_HASHER
+            config-file: fuzz_image_hasher_settings_ci.toml
+            timeout: 16000
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: image_hasher
+            stability_check: false
           - name: LOFTY
             config-file: fuzz_lofty_settings_ci.toml
             timeout: 16000
