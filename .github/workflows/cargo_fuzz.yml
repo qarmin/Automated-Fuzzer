@@ -162,7 +162,7 @@ jobs:
           export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
           export RUSTFLAGS="-Zsanitizer=address"
           
-          if [ -d "fuzz/artifacts/${{ matrix.fuzz_target }}" ]; then
+          if [ -d "fuzz/artifacts/${{ matrix.fuzz_target }}" ] && [ "$(ls -A fuzz/artifacts/${{ matrix.fuzz_target }})" ]; then
             for file in fuzz/artifacts/${{ matrix.fuzz_target }}/*; do
               minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 10000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -v
             done
