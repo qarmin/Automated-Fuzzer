@@ -465,7 +465,7 @@ jobs:
 
       - name: Pack files
         run: |
-          time 7z a "${{ matrix.binary }}.7z" "${{ matrix.binary }}"
+          time 7z a "${{ matrix.binary }}.7z" "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
 
       - name: Release
         uses: softprops/action-gh-release@v2
