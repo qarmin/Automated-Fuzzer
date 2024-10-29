@@ -465,14 +465,16 @@ jobs:
 
       - name: Pack files
         run: |
+          echo "Path to binary: $(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
           time 7z a "${{ matrix.binary }}.7z" "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
+          ls -al
 
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "Nightly"
           files: |
-            "${{ matrix.binary }}.7z"
+            ${{ matrix.binary }}.7z
           token: ${{ secrets.PAT_REPOSITORY }}
 
       - name: Exit when found broken files
