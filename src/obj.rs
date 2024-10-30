@@ -29,7 +29,7 @@ pub trait ProgramConfig: Sync {
             StabilityMode::ConsoleOutput => "Console output between runs differs",
             StabilityMode::OutputContent => "Console output or file content between runs differs",
         }
-        .to_string();
+            .to_string();
 
         for d in data {
             diff.push_str(&format!("\n=========================\n{}", d));
@@ -100,6 +100,7 @@ pub trait ProgramConfig: Sync {
             &run_command_as_string,
             "--attempts",
             &self.get_settings().minimization_attempts.to_string(),
+            "-v" // Disable verbose flag if not needed
         ]);
         if self.get_settings().minimization_repeat {
             minimize_command.args(["-r"]);
