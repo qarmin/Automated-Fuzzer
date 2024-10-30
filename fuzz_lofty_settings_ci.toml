@@ -38,10 +38,6 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
-ignored_item_1 = "src/wavpack/properties.rs" # https://github.com/Serial-ATA/lofty-rs/issues/473
-ignored_item_2 = "src/iff/wav/properties.rs" # https://github.com/Serial-ATA/lofty-rs/issues/471
-ignored_item_3 = "src/musepack/read.rs" # https://github.com/Serial-ATA/lofty-rs/issues/470
-ignored_item_4 = "src/mpeg/read.rs" # https://github.com/Serial-ATA/lofty-rs/issues/474
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
