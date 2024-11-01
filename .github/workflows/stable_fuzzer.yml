@@ -1,9 +1,10 @@
-name: 🐧 Automated Fuzzer Check
+# This job contains fuzzers, that won't found any bugs recently, so they don't need to be checked so often
+name: 🐧 Stable Fuzzer Check
 on:
-  push: # Once daily
-  pull_request: # Once daily
+  #  push: # Once daily
+  #  pull_request: # Once daily
   schedule:
-    - cron: '0 21 * * *'
+    - cron: '0 20 * * *'
 
 env:
   CARGO_TERM_COLOR: always
@@ -18,106 +19,56 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: IMAGE
-            config-file: fuzz_image_settings_ci.toml
-            timeout: 16000
+          - name: DICOM
+            config-file: fuzz_dicom_rs_settings_ci.toml
+            timeout: 3600
+            files: "AA_DCM_VALID_FILES.7z"
+            src_folder: dicom
+            stability_check: false
+            binary: dicom
+          - name: IMAGE_HASHER
+            config-file: fuzz_image_hasher_settings_ci.toml
+            timeout: 3600
             files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: image
+            src_folder: image_hasher
             stability_check: false
-            binary: image
-          - name: NOM_PARSER
-            config-file: fuzz_nom_parser_settings_ci.toml
-            timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: nom_parser
-            stability_check: false
-            binary: image
-          - name: LOFTY
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: lofty
-            stability_check: false
-            binary: lofty
-          - name: SLINT
-            config-file: fuzz_slint_settings_ci.toml
-            timeout: 16000
-            files: "AA_SLINT_FILES.7z"
-            src_folder: slint
-            stability_check: false
-            binary: slint
-          - name: LOPDF
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 16000
+            binary: image_hasher
+          - name: PDF_RS
+            config-file: fuzz_pdf_rs_settings_ci.toml
+            timeout: 3600
             files: "AA_PDF_VALID_FILES.7z"
-            src_folder: lopdf
+            src_folder: pdf_rs
             stability_check: false
-            binary: lopdf
+            binary: pdf_rs
           - name: TTF_PARSER
             config-file: fuzz_ttf_parser_settings_ci.toml
-            timeout: 16000
+            timeout: 3600
             files: "AA_FONT_VALID_FILES_MORE.7z"
             src_folder: ttf_parser
             stability_check: false
             binary: ttf_parser
-          - name: OXC
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          - name: ZIP_RS
+            config-file: fuzz_zip_rs_settings_ci.toml
+            timeout: 3600
+            files: "AA_ZIP_VALID_FILES.7z"
+            src_folder: zip_rs
+            stability_check: false
+            binary: zip_rs
+          - name: GO
+            config-file: fuzz_go_settings_ci.toml
+            timeout: 3600
+            files: "AA_GO_VALID_FILES.7z"
+            go_version: '1.23.0-rc.1'
             src_folder: ''
             stability_check: false
-            binary: oxlint
-          #          - name: BIOME
-          #            config-file: fuzz_biome_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: biome
-          #          - name: Ffull_moonder: font_kit
-          #          - name: FULL_MOON
-          #            config-file: fuzz_full_moon_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_LUA_VALID_FILES.7z"
-          #            src_folder: full_moon
-          #  stability_check: false
-          # binary: full_moon
-          # https://github.com/jrmuizel/pdf-extract/issues/96
-          #          - name: PDF_EXTRACT
-          #            config-file: fuzz_pdf_extract_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES.7z"
-          #            src_folder: pdf_extract
-          #            stability_check: false
-          #            binary: pdf_extract
-          #          - name: RSBUZZ
-          #            config-file: fuzz_rsbuzz_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            src_folder: rsbuzz
-          #            stability_check: false
-          #            binary: rsbuzz
-          #          - name: SYMPHONIA
-          #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            src_folder: symphonia
-          #            stability_check: false
-          #            binary: symphonia
-          #          - name: STYLUA
-          #            config-file: fuzz_stylua_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_LUA_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: stylua
-          #          - name: SWC
-          #            config-file: fuzz_swc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: swc
+            binary: staticcheck
+          - name: TYPST
+            config-file: fuzz_typst_settings_ci.toml
+            timeout: 3600
+            files: "AA_TYPST_VALID_FILES.zip"
+            src_folder: ''
+            stability_check: false
+            binary: typst
 
     steps:
       - uses: actions/checkout@v4
