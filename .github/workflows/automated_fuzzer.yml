@@ -25,13 +25,41 @@ jobs:
             src_folder: image
             stability_check: false
             binary: image
-          - name: NOM_PARSER
-            config-file: fuzz_nom_parser_settings_ci.toml
+          - name: NOM_EXIF
+            config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
             files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: nom_parser
+            src_folder: nom_exif
             stability_check: false
-            binary: image
+            binary: nom_exif
+          - name: NOM_EXIF_15
+            config-file: fuzz_nom_exif_settings_ci.toml
+            timeout: 900
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: nom_exif
+            stability_check: false
+            binary: nom_exif
+          - name: NOM_EXIF_2
+            config-file: fuzz_nom_exif_settings_ci.toml
+            timeout: 1800
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: nom_exif
+            stability_check: false
+            binary: nom_exif
+          - name: NOM_EXIF_3
+            config-file: fuzz_nom_exif_settings_ci.toml
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: nom_exif
+            stability_check: false
+            binary: nom_exif
+          - name: NOM_EXIF_4
+            config-file: fuzz_nom_exif_settings_ci.toml
+            timeout: 7200
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: nom_exif
+            stability_check: false
+            binary: nom_exif
           - name: LOFTY
             config-file: fuzz_lofty_settings_ci.toml
             timeout: 16000
