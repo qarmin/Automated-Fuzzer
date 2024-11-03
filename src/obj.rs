@@ -100,7 +100,9 @@ pub trait ProgramConfig: Sync {
             &run_command_as_string,
             "--attempts",
             &self.get_settings().minimization_attempts.to_string(),
-            "-v" // Disable verbose flag if not needed
+            "-v", // Disable verbose flag if not needed
+            "-t",
+            "600", // 10 minutes timout should be enough for most cases
         ]);
         if self.get_settings().minimization_repeat {
             minimize_command.args(["-r"]);

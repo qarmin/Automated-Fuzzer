@@ -168,7 +168,7 @@ jobs:
           
           if [ -d "fuzz/artifacts/${{ matrix.fuzz_target }}" ] && [ "$(ls -A fuzz/artifacts/${{ matrix.fuzz_target }})" ]; then
             for file in fuzz/artifacts/${{ matrix.fuzz_target }}/*; do
-              minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "${{ matrix.fuzz_target }} {}" --attempts 10000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -v
+              minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "timeout -v 100 ${{ matrix.fuzz_target }} {}" --attempts 10000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -v -t 1200
             done
           fi
 
