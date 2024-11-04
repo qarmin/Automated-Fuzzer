@@ -50,7 +50,6 @@ fn check_file(path: &str) {
         eprintln!("Error: {}", e);
         return;
     };
-    panic!("A");
     // let Ok(res2) = from_reader(std::io::Cursor::new(item_to_dump.clone())) else {
     //     panic!("DIFFERENT CONTENT, This was properly loaded and saved before");
     //     return;
