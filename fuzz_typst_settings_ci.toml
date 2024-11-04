@@ -38,6 +38,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
 ignored_item_2 = "crates/typst-pdf/src/font.rs" # https://github.com/typst/typst/issues/4572
 ignored_item_3 = "crates/typst-syntax/src/parser.rs" # https://github.com/typst/typst/issues/4573
 ignored_item_4 = "bounded paragraph layout is incomplete" # https://github.com/typst/typst/issues/4651

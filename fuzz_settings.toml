@@ -31,6 +31,24 @@ current_mode = "custom" # custom or ruff
 # valid_input_files_dir - place with valid files
 # broken_files_dir - place where to save broken files
 
+[custom_lofty]
+name = "lofty"
+command = "lofty|FILE_PATHS_TO_PROVIDE"
+
+extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
+valid_input_files_dir = "/home/rafal/Downloads"
+broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/lofty/Broken"
+group_mode = "none" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
+stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
+
 [custom_typst]
 name = "typst"
 command = "typst|compile|FILE_PATHS_TO_PROVIDE"
@@ -45,8 +63,8 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
 file_type = "text" # Available: text, binary, js, go, rust, lua, python, slint
-
 
 [custom_image]
 name = "image_rs"
@@ -137,6 +155,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
 search_item_200 = "DIFFERENT CONTENT"
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
@@ -189,13 +208,6 @@ valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_PYTHON_VALID_FIL
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/mypy/Broken"
 tool_type = ""
 
-[dlint]
-app_binary = "/home/rafal/test/deno_lint/target/release/examples/dlint"
-app_config = ""
-extensions = "ts,js,mjs,mts"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/dlint/Broken"
-tool_type = ""
 
 [biome]
 app_binary = "biome"
@@ -205,13 +217,6 @@ valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/biome/Broken"
 tool_type = ""
 
-[lofty]
-app_binary = "lofty"
-app_config = ""
-extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_MUSIC_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/lofty/Broken"
-tool_type = ""
 
 [symphonia]
 app_binary = "/home/rafal/Projekty/Rust/run_command_for_every_file/src/crates/symphonia/target/release/symphonia"

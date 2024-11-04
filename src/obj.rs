@@ -75,10 +75,11 @@ pub trait ProgramConfig: Sync {
             run_command.get_program().to_string_lossy(),
             run_command
                 .get_args()
-                .map(|e| e.to_string_lossy().replace(temp_file_name, &new_full_name))
+                .map(|e| e.to_string_lossy().replace(temp_file_name, "{}"))
                 .collect::<Vec<_>>()
                 .join("' '")
         );
+
         // minimizer --input-file input.txt --output-file output.txt --command "echo {}" --attempts 300 --broken-info "BROKEN"
         let mut minimize_command = Command::new("minimizer");
         let broken_info = self

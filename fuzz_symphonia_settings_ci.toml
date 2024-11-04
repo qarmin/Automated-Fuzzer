@@ -38,6 +38,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
 ignored_item_1 = "memory allocation of" # https://github.com/pdeljanov/Symphonia/issues/297
 ignored_item_2 = "symphonia_format_mkv::ebml::read_vint" # https://github.com/pdeljanov/Symphonia/issues/298
 ignored_item_3 = "symphonia_core::units::TimeBase::new" # https://github.com/pdeljanov/Symphonia/issues/299

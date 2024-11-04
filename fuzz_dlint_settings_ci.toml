@@ -38,6 +38,7 @@ search_item_2 = "panicked at"
 search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
 ignored_item_3 = "Parser should not call bump()" # 1145
 ignored_item_4 = "on a `None` value', src/js_regex/validator.rs" # 1145
 ignored_item_5 = "on a `None` value', src/rules/getter_return.rs" # 1145
