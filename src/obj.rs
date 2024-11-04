@@ -79,6 +79,7 @@ pub trait ProgramConfig: Sync {
                 .collect::<Vec<_>>()
                 .join("' '")
         );
+        let run_command_as_string = run_command_as_string.replace("\'{}\'", "{}");
 
         // minimizer --input-file input.txt --output-file output.txt --command "echo {}" --attempts 300 --broken-info "BROKEN"
         let mut minimize_command = Command::new("minimizer");
@@ -101,7 +102,9 @@ pub trait ProgramConfig: Sync {
             &run_command_as_string,
             "--attempts",
             &self.get_settings().minimization_attempts.to_string(),
-            "-v", // Disable verbose flag if not needed
+            // "-v", // Disable verbose flag if not needed
+            // "-e",
+            // "-p",
             "-t",
             "600", // 10 minutes timout should be enough for most cases
         ]);

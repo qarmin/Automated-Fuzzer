@@ -7,7 +7,7 @@ use walkdir::WalkDir;
 fn main() {
     let path = args().nth(1).unwrap().clone();
     if !Path::new(&path).exists() {
-        panic!("Missing file");
+        panic!("Missing file, {path:?}");
     }
 
     if Path::new(&path).is_dir() {

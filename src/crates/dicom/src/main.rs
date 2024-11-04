@@ -8,7 +8,7 @@ use walkdir::WalkDir;
 fn main() {
     let path = args().nth(1).unwrap().clone();
     if !Path::new(&path).exists() {
-        panic!("Missing file");
+        panic!("Missing file, {path:?}");
     }
 
     if Path::new(&path).is_dir() {
@@ -50,6 +50,7 @@ fn check_file(path: &str) {
         eprintln!("Error: {}", e);
         return;
     };
+    panic!("A");
     // let Ok(res2) = from_reader(std::io::Cursor::new(item_to_dump.clone())) else {
     //     panic!("DIFFERENT CONTENT, This was properly loaded and saved before");
     //     return;
