@@ -70,14 +70,26 @@ pub trait ProgramConfig: Sync {
         let temp_file_name = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
         let run_command = self.get_full_command(temp_file_name);
 
+        let mut program_as_str = run_command.get_program().to_string_lossy().to_string();
+        if program_as_str.contains(" ") {
+            program_as_str = format!("\"{}\"", program_as_str);
+        }
+
         let run_command_as_string = format!(
-            "'{}' '{}'",
+            "{} {}",
             run_command.get_program().to_string_lossy(),
             run_command
                 .get_args()
                 .map(|e| e.to_string_lossy().replace(temp_file_name, "{}"))
+                .map(|e| {
+                    if e.contains(" ") {
+                        format!("\"{}\"", e)
+                    } else {
+                        e
+                    }
+                })
                 .collect::<Vec<_>>()
-                .join("' '")
+                .join(" ")
         );
         let run_command_as_string = run_command_as_string.replace("\'{}\'", "{}");
 
