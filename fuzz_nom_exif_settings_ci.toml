@@ -39,6 +39,8 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+ignored_item_1 = "timeout:" # https://github.com/mindeng/nom-exif/issues/19
+ignored_item_2 = "depth shouldn't be greater than" # https://github.com/mindeng/nom-exif/issues/20
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
