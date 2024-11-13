@@ -1,5 +1,5 @@
 use crate::common::{
-    create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode, OutputResult,
+    create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode,
 };
 use crate::settings::{Setting, StabilityMode};
 use log::error;
@@ -70,11 +70,6 @@ pub trait ProgramConfig: Sync {
         let temp_file_name = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
         let run_command = self.get_full_command(temp_file_name);
 
-        let mut program_as_str = run_command.get_program().to_string_lossy().to_string();
-        if program_as_str.contains(" ") {
-            program_as_str = format!("\"{}\"", program_as_str);
-        }
-
         let run_command_as_string = format!(
             "{} {}",
             run_command.get_program().to_string_lossy(),
@@ -135,22 +130,22 @@ pub trait ProgramConfig: Sync {
     fn get_settings(&self) -> &Setting;
     fn init(&mut self) {}
     fn remove_non_parsable_files(&self, _dir_to_check: &str) {}
-    fn is_parsable(&self, _file_to_check: &str) -> bool {
-        true
-    }
+    // fn is_parsable(&self, _file_to_check: &str) -> bool {
+    //     true
+    // }
     fn get_version(&self) -> String {
         panic!()
     }
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
         CheckGroupFileMode::None
     }
-    fn get_number_of_minimization(&self, output_result: &OutputResult) -> u32 {
-        if output_result.is_only_signal_broken() {
-            self.get_settings().minimization_attempts_with_signal_timeout
-        } else {
-            self.get_settings().minimization_attempts
-        }
-    }
+    // fn get_number_of_minimization(&self, output_result: &OutputResult) -> u32 {
+    //     if output_result.is_only_signal_broken() {
+    //         self.get_settings().minimization_attempts_with_signal_timeout
+    //     } else {
+    //         self.get_settings().minimization_attempts
+    //     }
+    // }
     // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
     //     output
     // }

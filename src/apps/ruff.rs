@@ -184,24 +184,24 @@ impl ProgramConfig for RuffStruct {
         self.ignored_rules = calculate_ignored_rules();
     }
 
-    fn is_parsable(&self, file_to_check: &str) -> bool {
-        if !self.settings.check_if_file_is_parsable {
-            return true;
-        }
-        let output = Command::new("ruff")
-            .arg("format")
-            .arg(file_to_check)
-            .arg("--check")
-            .stderr(Stdio::piped())
-            .stdout(Stdio::piped())
-            .spawn()
-            .unwrap()
-            .wait_with_output()
-            .unwrap();
-        let out = String::from_utf8_lossy(&output.stdout);
-        let err = String::from_utf8_lossy(&output.stderr);
-        !(out.contains("error: Failed to format ") || err.contains("error: Failed to format "))
-    }
+    // fn is_parsable(&self, file_to_check: &str) -> bool {
+    //     if !self.settings.check_if_file_is_parsable {
+    //         return true;
+    //     }
+    //     let output = Command::new("ruff")
+    //         .arg("format")
+    //         .arg(file_to_check)
+    //         .arg("--check")
+    //         .stderr(Stdio::piped())
+    //         .stdout(Stdio::piped())
+    //         .spawn()
+    //         .unwrap()
+    //         .wait_with_output()
+    //         .unwrap();
+    //     let out = String::from_utf8_lossy(&output.stdout);
+    //     let err = String::from_utf8_lossy(&output.stderr);
+    //     !(out.contains("error: Failed to format ") || err.contains("error: Failed to format "))
+    // }
 
     fn get_version(&self) -> String {
         let output = Command::new("ruff")
