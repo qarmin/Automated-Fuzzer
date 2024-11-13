@@ -28,35 +28,35 @@ jobs:
           - name: NOM_EXIF
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
             src_folder: nom_exif
             stability_check: false
             binary: nom_exif
           - name: NOM_EXIF_15
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
             src_folder: nom_exif
             stability_check: false
             binary: nom_exif
           - name: NOM_EXIF_2
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
             src_folder: nom_exif
             stability_check: false
             binary: nom_exif
           - name: NOM_EXIF_3
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
             src_folder: nom_exif
             stability_check: false
             binary: nom_exif
           - name: NOM_EXIF_4
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
             src_folder: nom_exif
             stability_check: false
             binary: nom_exif

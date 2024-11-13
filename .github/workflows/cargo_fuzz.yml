@@ -43,10 +43,14 @@ jobs:
             fuzz_target: image
             timeout: 18000
             files: "AA_IMAGE_VALID_FILES.7z"
+          - name: IMAGE_HASHER
+            fuzz_target: image_hasher
+            timeout: 18000
+            files: "AA_IMAGE_VALID_FILES.7z"
           - name: NOM_EXIF
             fuzz_target: nom_exif
             timeout: 18000
-            files: "AA_IMAGE_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
           #          - name: LOPDF # A lot of problems
           #            fuzz_target: lopdf
           #            timeout: 18000

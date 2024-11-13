@@ -12,6 +12,7 @@ fuzz_target!(|data: &[u8]| -> Corpus {
             }
         }
     });
+
     let dynamic_image = match res {
         Ok(res) => {
             match res {
