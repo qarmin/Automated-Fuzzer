@@ -131,10 +131,13 @@ pub fn execute_command_on_pack_of_files(
         && !obj.ignored_signal_output(&str_out);
 
     let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
-        && output
-            .status
-            .code()
-            .map_or(false, |code| !obj.get_settings().allowed_error_statuses.contains(&code));
+        && output.status.code().map_or(false, |code| {
+            if obj.get_settings().ignore_timeout_errors && code == 124 {
+                false
+            } else {
+                !obj.get_settings().allowed_error_statuses.contains(&code)
+            }
+        });
 
     let timeouted = obj.get_settings().timeout > 0
         && str_out.contains(TIMEOUT_MESSAGE)
@@ -218,10 +221,13 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
         && !obj.ignored_signal_output(&str_out);
 
     let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
-        && output
-            .status
-            .code()
-            .map_or(false, |code| !obj.get_settings().allowed_error_statuses.contains(&code));
+        && output.status.code().map_or(false, |code| {
+            if obj.get_settings().ignore_timeout_errors && code == 124 {
+                false
+            } else {
+                !obj.get_settings().allowed_error_statuses.contains(&code)
+            }
+        });
 
     let timeouted = obj.get_settings().timeout > 0
         && str_out.contains(TIMEOUT_MESSAGE)

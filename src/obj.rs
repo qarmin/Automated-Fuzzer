@@ -29,7 +29,7 @@ pub trait ProgramConfig: Sync {
             StabilityMode::ConsoleOutput => "Console output between runs differs",
             StabilityMode::OutputContent => "Console output or file content between runs differs",
         }
-            .to_string();
+        .to_string();
 
         for d in data {
             diff.push_str(&format!("\n=========================\n{}", d));
