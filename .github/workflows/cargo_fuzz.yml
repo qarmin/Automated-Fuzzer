@@ -51,10 +51,10 @@ jobs:
             fuzz_target: nom_exif
             timeout: 18000
             files: "AA_NOM_EXIF_VALID_FILES.7z"
-          #          - name: LOPDF # A lot of problems
-          #            fuzz_target: lopdf
-          #            timeout: 18000
-          #            files: "AA_PDF_VALID_FILES.7z"
+          - name: LOPDF
+            fuzz_target: lopdf
+            timeout: 18000
+            files: "AA_PDF_VALID_FILES.7z"
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
           #            timeout: 18000

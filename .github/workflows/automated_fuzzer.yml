@@ -116,13 +116,13 @@ jobs:
           #            src_folder: ''
           #            stability_check: false
           #            binary: oxlint
-          #          - name: BIOME
-          #            config-file: fuzz_biome_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: biome
+          - name: BIOME
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 16000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: biome
           #          - name: Ffull_moonder: font_kit
           #          - name: FULL_MOON
           #            config-file: fuzz_full_moon_settings_ci.toml
@@ -153,13 +153,13 @@ jobs:
           #            src_folder: symphonia
           #            stability_check: false
           #            binary: symphonia
-          #          - name: STYLUA
-          #            config-file: fuzz_stylua_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_LUA_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: stylua
+          - name: STYLUA
+            config-file: fuzz_stylua_settings_ci.toml
+            timeout: 16000
+            files: "AA_LUA_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: stylua
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000
