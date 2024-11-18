@@ -77,7 +77,7 @@ jobs:
           - name: BIOME
             config-file: fuzz_biome_settings_ci.toml
             timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
             src_folder: ''
             stability_check: false
             binary: biome

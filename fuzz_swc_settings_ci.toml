@@ -49,6 +49,6 @@ ignored_item_9 = "timeout: the monitored command dumped core"
 ignored_item_11 = "crates/swc_ecma_compat_es2015/src/generator.rs"
 ignored_item_12 = "stack-overflow"
 ignored_item_14 = "AddressSanitizer: SEGV on unknown address"
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint
+file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

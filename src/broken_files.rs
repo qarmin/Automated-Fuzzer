@@ -11,6 +11,7 @@ pub enum LANGS {
     BINARY,
     TEXT,
     SLINT,
+    JSVUESVELTE,
 }
 
 const SLINT_ARGS: &[&str] = &[
@@ -49,6 +50,18 @@ const JAVASCRIPT_ARGS: &[&str] = &[
     "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws", "transient",
     "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield", "                                ",
 ];
+
+const JS_VUE_SVELTE: &[&str] = &[
+    ":", "?", "[", "\"", "\"\"\"", "\'", "]", "}", "%", "f\"", "f'", "<", "<=", ">=", ">", ".", ",", "==", "!=", "{",
+    "=", "|", "\\", ";", "_", "-", "**", "*", "/", "!", "(", ")", "(True)", "{}", "()", "[]", "pylint", "\n", "\t",
+    "#", "'", "\"", "//", "abstract", "arguments", "await", "boolean", "break", "byte", "case", "catch", "char",
+    "class", "const", "continue", "debugger", "default", "delete", "do", "double", "else", "enum", "eval", "export",
+    "extends", "false", "final", "finally", "float", "for", "function", "goto", "if", "implements", "import", "in",
+    "instanceof", "int", "interface", "let", "long", "native", "new", "null", "package", "private", "protected",
+    "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws", "transient",
+    "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield", "                                ",
+];
+
 const LUA_ARGS: &[&str] = &[
     "and", "break", "do", "else", "elseif", "end", "false", "for", "function", "if", "in", "local", "nil", "not", "or",
     "repeat", "return", "then", "true", "until", "while", "+", "-", "*", "/", "%", "^", "#", "==", "~=", "<=", ">=",
@@ -89,7 +102,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
             format!(
                 "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c -s"
             )
-            .split(' '),
+                .split(' '),
         );
     }
     match lang {
@@ -99,12 +112,13 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
         LANGS::GO => com = com.args(GO_ARGS),
         LANGS::RUST => com = com.args(RUST_ARGS),
         LANGS::SLINT => com = com.args(SLINT_ARGS),
+        LANGS::JSVUESVELTE => com = com.args(JS_VUE_SVELTE),
         LANGS::BINARY => {
             com = com.args(
                 format!(
                     "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file}"
                 )
-                .split(' '),
+                    .split(' '),
             );
         }
         LANGS::TEXT => {
@@ -112,7 +126,7 @@ pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
                 format!(
                     "-i {valid_input_files_dir} -o {temp_possible_broken_files_dir} -n {broken_files_for_each_file} -c"
                 )
-                .split(' '),
+                    .split(' '),
             );
         }
     }

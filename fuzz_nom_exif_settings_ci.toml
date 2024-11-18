@@ -39,6 +39,6 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

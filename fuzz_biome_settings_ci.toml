@@ -28,7 +28,7 @@ current_mode = "custom"
 name = "biome"
 command = "biome|lint|FILE_PATHS_TO_PROVIDE"
 
-extensions = "ts,js,mjs,mts"
+extensions = "ts,js,mjs,mts,vue,svelte"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "by_group" # available: none, by_files, by_group
@@ -47,6 +47,6 @@ ignored_item_4 = "out of range for slice of length" # https://github.com/biomejs
 ignored_item_5 = "Missing switch clause" # https://github.com/biomejs/biome/issues/4566
 ignored_item_6 = "The declaration should be resolved to its prent declaration" # https://github.com/biomejs/biome/issues/4567
 ignored_item_7 = "use_exhaustive_dependencies.rs" # https://github.com/biomejs/biome/issues/4568
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint
+file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

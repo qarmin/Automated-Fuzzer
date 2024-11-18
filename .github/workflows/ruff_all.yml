@@ -43,25 +43,6 @@ jobs:
             asan_build: true
             stability_check: false
 
-          - name: SANITIZER_STABILITY_CHECK_2
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 16000
-            files: "FILES_22.zip"
-            asan_build: true
-            stability_check: true
-          - name: SANITIZER_STABILITY_CHECK_1
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            asan_build: true
-            stability_check: true
-          - name: SANITIZER_STABILITY_CHECK_3
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 1000
-            files: "FILES_22.zip"
-            asan_build: true
-            stability_check: true
-
           #          - name: S1
           #            config-file: fuzz_ruff_settings_ci.toml
           #            timeout: 16000
