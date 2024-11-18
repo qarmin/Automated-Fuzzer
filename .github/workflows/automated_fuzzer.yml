@@ -25,35 +25,14 @@ jobs:
             src_folder: image
             stability_check: false
             binary: image
-          - name: NOM_EXIF
-            config-file: fuzz_nom_exif_settings_ci.toml
+          - name: IMAGE_HASHER
+            config-file: fuzz_image_hasher_settings_ci.toml
             timeout: 16000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-            src_folder: nom_exif
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: image_hasher
             stability_check: false
-            binary: nom_exif
-          - name: NOM_EXIF_15
-            config-file: fuzz_nom_exif_settings_ci.toml
-            timeout: 1600
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-            src_folder: nom_exif
-            stability_check: false
-            binary: nom_exif
-          - name: NOM_EXIF_2
-            config-file: fuzz_nom_exif_settings_ci.toml
-            timeout: 3200
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-            src_folder: nom_exif
-            stability_check: false
-            binary: nom_exif
-          - name: NOM_EXIF_3
-            config-file: fuzz_nom_exif_settings_ci.toml
-            timeout: 4800
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-            src_folder: nom_exif
-            stability_check: false
-            binary: nom_exif
-          - name: NOM_EXIF_4
+            binary: image_hasher
+          - name: NOM_EXIF
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
             files: "AA_NOM_EXIF_VALID_FILES.7z"
@@ -76,21 +55,7 @@ jobs:
             binary: slint
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 900
-            files: "AA_PDF_VALID_FILES.7z"
-            src_folder: lopdf
-            stability_check: false
-            binary: lopdf
-          - name: LOPDF1
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 1800
-            files: "AA_PDF_VALID_FILES.7z"
-            src_folder: lopdf
-            stability_check: false
-            binary: lopdf
-          - name: LOPDF2
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 3600
+            timeout: 16000
             files: "AA_PDF_VALID_FILES.7z"
             src_folder: lopdf
             stability_check: false
@@ -109,27 +74,6 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: oxlint
-          #          - name: OXC_2
-          #            config-file: fuzz_oxc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: oxlint
-          #          - name: OXC_3
-          #            config-file: fuzz_oxc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: oxlint
-          #          - name: OXC_4
-          #            config-file: fuzz_oxc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: oxlint
           - name: BIOME
             config-file: fuzz_biome_settings_ci.toml
             timeout: 16000
