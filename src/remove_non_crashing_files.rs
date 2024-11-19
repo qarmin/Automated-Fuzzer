@@ -184,6 +184,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             _ if result.contains("attempt to shift left with overflow") => "overflow_sl",
             _ if result.contains("index out of bounds:") => "index_out_of_bounds",
             _ if result.contains("is out of bounds:") => "out_of_bounds",
+            _ if result.contains("is out of bounds of") => "out_of_bounds_of",
             _ if result.contains("Option::unwrap()") => "option_unwrap",
             _ if result.contains("Result::unwrap()") => "result_unwrap",
             _ if result.contains("when slicing `") => "slicing",
@@ -242,10 +243,10 @@ cause this
 $ERROR
 ```
 "#
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+            .replace("$CNT_TEXT", &cnt_text)
+            .replace("$COMMAND", &command_str_with_extension)
+            .replace("$ERROR", &result)
+            .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
