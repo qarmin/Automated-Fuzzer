@@ -40,7 +40,6 @@ search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
 ignored_item_4 = "called `Result::unwrap()` on an `Err` value: 0" # https://github.com/slint-ui/slint/issues/6559
-ignored_item_6 = "assertion failed: ctx.diag.has_errors()" # https://github.com/slint-ui/slint/issues/6650
 file_type = "slint" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
