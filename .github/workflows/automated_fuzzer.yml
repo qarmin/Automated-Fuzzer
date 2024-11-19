@@ -81,6 +81,20 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: biome
+          - name: BIOME2
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 900
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: biome
+          - name: BIOME3
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 1800
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: biome
           #          - name: Ffull_moonder: font_kit
           #          - name: FULL_MOON
           #            config-file: fuzz_full_moon_settings_ci.toml
