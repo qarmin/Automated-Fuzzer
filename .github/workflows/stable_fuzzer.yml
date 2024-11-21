@@ -69,6 +69,27 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: typst
+          - name: IMAGE
+            config-file: fuzz_image_settings_ci.toml
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: image
+            stability_check: false
+            binary: image
+          - name: IMAGE_HASHER
+            config-file: fuzz_image_hasher_settings_ci.toml
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: image_hasher
+            stability_check: false
+            binary: image_hasher
+          - name: TTF_PARSER
+            config-file: fuzz_ttf_parser_settings_ci.toml
+            timeout: 3600
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+            src_folder: ttf_parser
+            stability_check: false
+            binary: ttf_parser
 
     steps:
       - uses: actions/checkout@v4

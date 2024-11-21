@@ -1,7 +1,8 @@
-name: 🐧 Cargo Fuzz Check
+# This job contains fuzzers, that won't found any bugs recently, so they don't need to be checked so often
+name: 🐧 Stable Cargo Fuzz Check
 on:
-  push:
-  pull_request:
+#  push:
+#  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -19,82 +20,30 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LOFTY
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: LOFTY2
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF2
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: LOFTY3
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF3
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: LOFTY4
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF4
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: LOFTY5
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF5
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: LOFTY6
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF6
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: LOFTY7
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF7
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
-          #            fuzz_target: font_kit
-          #            timeout: 18000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #          - name: FULL_MOON
-          #            fuzz_target: full_moon
-          #            timeout: 18000
-          #            files: "AA_LUA_VALID_FILES.7z"
-          #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
-          #            fuzz_target: pdf_rs
-          #            timeout: 18000
-          #            files: "AA_PDF_VALID_FILES.7z"
-          #          - name: RSBUZZ
-          #            fuzz_target: rsbuzz
-          #            timeout: 18000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #          - name: SYMPHONIA
-          #            fuzz_target: symphonia
-          #            timeout: 18000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: DICOM
+            fuzz_target: dicom
+            timeout: 3600
+            files: "AA_DCM_VALID_FILES.7z"
+          - name: SLINT
+            fuzz_target: slint
+            timeout: 3600
+            files: "AA_SLINT_FILES.7z"
+          - name: IMAGE
+            fuzz_target: image
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+          - name: IMAGE_HASHER
+            fuzz_target: image_hasher
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+          - name: LOPDF
+            fuzz_target: lopdf
+            timeout: 3600
+            files: "AA_PDF_VALID_FILES.7z"
+          - name: ZIP_RS
+            fuzz_target: zip_rs
+            timeout: 3600
+            files: "AA_ZIP_VALID_FILES.7z"
 
     steps:
       - uses: actions/checkout@v4
@@ -163,7 +112,7 @@ jobs:
           export RUSTFLAGS="-Zsanitizer=address"
           # Example
           # cargo fuzz build oxc --release --features "oxc_f"
-          # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=18000 -rss_limit_mb=20000
+          # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
           cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
       - name: Remove slow files
