@@ -1,13 +1,15 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
 
+use std::fs;
+use std::path::Path;
+
+use log::info;
+
 use crate::common::{calculate_number_of_files, check_files_number, TIMEOUT_SECS};
 use crate::finding_different_output::find_broken_files_by_different_output;
 use crate::finding_text_status::find_broken_files_by_text_status;
 use crate::settings::{get_object, load_settings, StabilityMode};
-use log::info;
-use std::fs;
-use std::path::Path;
 
 pub mod apps;
 mod broken_files;
@@ -58,7 +60,8 @@ fn main() {
     check_files_number("Valid input dir", &settings.valid_input_files_dir);
     check_files_number("Broken files dir", &settings.broken_files_dir);
     check_files_number(
-        "Temp possible broken files dir", &settings.temp_possible_broken_files_dir,
+        "Temp possible broken files dir",
+        &settings.temp_possible_broken_files_dir,
     );
 
     assert!(Path::new(&settings.valid_input_files_dir).exists());

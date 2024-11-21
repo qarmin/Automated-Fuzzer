@@ -1,8 +1,9 @@
+use std::process::{Child, Command, Stdio};
+
 use crate::broken_files::create_broken_files;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
 use crate::settings::{CustomItems, Setting, StabilityMode};
-use std::process::{Child, Command, Stdio};
 
 pub struct CustomStruct {
     pub settings: Setting,

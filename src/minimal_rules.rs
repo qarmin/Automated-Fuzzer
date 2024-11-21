@@ -1,19 +1,21 @@
-use crate::apps::ruff::calculate_ignored_rules;
-use crate::common::{check_if_app_ends, collect_output, remove_and_create_entire_folder};
-use crate::obj::ProgramConfig;
-use crate::settings::Setting;
-use jwalk::WalkDir;
-use log::info;
-use rand::prelude::*;
-use rayon::prelude::*;
 use std::collections::BTreeMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::process::{Command, Stdio};
+
+use jwalk::WalkDir;
+use log::info;
+use rand::prelude::*;
+use rayon::prelude::*;
 use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
+
+use crate::apps::ruff::calculate_ignored_rules;
+use crate::common::{check_if_app_ends, collect_output, remove_and_create_entire_folder};
+use crate::obj::ProgramConfig;
+use crate::settings::Setting;
 
 // THIS ONLY WORKS WITH RUFF
 

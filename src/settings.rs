@@ -1,12 +1,14 @@
+use std::collections::HashMap;
+use std::str::FromStr;
+
+use config::Config;
+use strum_macros::{Display, EnumString};
+
 use crate::apps::custom::CustomStruct;
 use crate::apps::ruff::{RuffStruct, BROKEN_ITEMS_TO_FIND, BROKEN_ITEMS_TO_IGNORE};
 use crate::broken_files::LANGS;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
-use config::Config;
-use std::collections::HashMap;
-use std::str::FromStr;
-use strum_macros::{Display, EnumString};
 pub const TIMEOUT_MESSAGE: &str = "timeout: sending signal";
 #[derive(Clone, Debug)]
 pub struct Setting {
@@ -187,7 +189,7 @@ pub fn load_settings() -> Setting {
     let current_mode = if current_mode_string.contains("custom") {
         MODES::CUSTOM
     } else {
-        MODES::from_str(&current_mode_string).unwrap_or_else(|_| panic!("Invalid mode {}.", current_mode_string))
+        MODES::from_str(&current_mode_string).unwrap_or_else(|_| panic!("Invalid mode {current_mode_string}."))
     };
     let curr_setting = config[&current_mode_string].clone();
 

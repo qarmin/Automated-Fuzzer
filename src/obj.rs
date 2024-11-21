@@ -1,9 +1,11 @@
+use std::process::{Child, Command};
+
+use log::error;
+
 use crate::common::{
     create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode,
 };
 use crate::settings::{Setting, StabilityMode};
-use log::error;
-use std::process::{Child, Command};
 pub trait ProgramConfig: Sync {
     fn get_broken_items_list(&self) -> &[String];
     fn get_ignored_items_list(&self) -> &[String];
@@ -32,7 +34,7 @@ pub trait ProgramConfig: Sync {
         .to_string();
 
         for d in data {
-            diff.push_str(&format!("\n=========================\n{}", d));
+            diff.push_str(&format!("\n=========================\n{d}"));
         }
         diff.push_str("\n=========================\n");
 
@@ -77,8 +79,8 @@ pub trait ProgramConfig: Sync {
                 .get_args()
                 .map(|e| e.to_string_lossy().replace(temp_file_name, "{}"))
                 .map(|e| {
-                    if e.contains(" ") {
-                        format!("\"{}\"", e)
+                    if e.contains(' ') {
+                        format!("\"{e}\"")
                     } else {
                         e
                     }

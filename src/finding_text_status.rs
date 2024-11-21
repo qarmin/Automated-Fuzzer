@@ -1,3 +1,14 @@
+use std::collections::HashMap;
+use std::fs;
+use std::path::Path;
+use std::sync::atomic::{AtomicU32, Ordering};
+
+use humansize::format_size;
+use log::info;
+use rand::random;
+use rayon::iter::{IndexedParallelIterator, IntoParallelIterator};
+use rayon::prelude::*;
+
 use crate::common::{
     check_if_app_ends, close_app_if_timeouts, collect_files, execute_command_and_connect_output,
     execute_command_on_pack_of_files, generate_files, minimize_new, remove_and_create_entire_folder,
@@ -5,15 +16,6 @@ use crate::common::{
 };
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
-use humansize::format_size;
-use log::info;
-use rand::random;
-use rayon::iter::{IndexedParallelIterator, IntoParallelIterator};
-use rayon::prelude::*;
-use std::collections::HashMap;
-use std::fs;
-use std::path::Path;
-use std::sync::atomic::{AtomicU32, Ordering};
 
 pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     info!("Starting finding broken files by text status");

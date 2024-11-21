@@ -1,14 +1,16 @@
+use std::fs;
+use std::sync::atomic::{AtomicU32, Ordering};
+
+use humansize::format_size;
+use log::info;
+use rayon::prelude::*;
+
 use crate::common::{
     check_if_app_ends, collect_files, execute_command_and_connect_output, generate_files,
     remove_and_create_entire_folder,
 };
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, StabilityMode};
-use humansize::format_size;
-use log::info;
-use rayon::prelude::*;
-use std::fs;
-use std::sync::atomic::{AtomicU32, Ordering};
 
 pub fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     info!("Starting finding broken files by different output");

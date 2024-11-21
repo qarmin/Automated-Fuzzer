@@ -1,2 +1,8 @@
-short_array_element_width_threshold = 1000000
+newline_style = "Unix"
 max_width = 120
+remove_nested_parens = true
+short_array_element_width_threshold = 1000000
+
+# Enable only with nightly channel via - cargo +nightly fmt
+imports_granularity = "Module"
+group_imports = "StdExternalCrate"

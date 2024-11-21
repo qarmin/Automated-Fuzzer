@@ -1,3 +1,12 @@
+use std::fs;
+use std::process::{Child, Command, Stdio};
+use std::sync::atomic::AtomicU32;
+
+use jwalk::WalkDir;
+use log::{error, info};
+use rand::Rng;
+use rayon::prelude::*;
+
 use crate::broken_files::{create_broken_files, LANGS};
 use crate::common::{
     collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
@@ -5,13 +14,6 @@ use crate::common::{
 };
 use crate::obj::ProgramConfig;
 use crate::settings::{NonCustomItems, Setting, StabilityMode};
-use jwalk::WalkDir;
-use log::{error, info};
-use rand::Rng;
-use rayon::prelude::*;
-use std::fs;
-use std::process::{Child, Command, Stdio};
-use std::sync::atomic::AtomicU32;
 pub struct RuffStruct {
     pub settings: Setting,
     pub ignored_rules: String,
@@ -26,7 +28,10 @@ pub const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
 ];
 
 pub const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "0: rust_begin_unwind", "AddressSanitizer:",
+    "std::rt::lang_start_internal",
+    "catch_unwind::{{closure}}",
+    "0: rust_begin_unwind",
+    "AddressSanitizer:",
     "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
     // "Fix introduced a syntax error", "This indicates a bug in", "Failed to converge after",

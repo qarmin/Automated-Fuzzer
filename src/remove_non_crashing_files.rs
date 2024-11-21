@@ -1,3 +1,12 @@
+use std::fs;
+use std::path::Path;
+use std::sync::atomic::{AtomicUsize, Ordering};
+
+use jwalk::WalkDir;
+use log::info;
+use rand::random;
+use rayon::prelude::*;
+
 use crate::common::{
     execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder,
     CheckGroupFileMode,
@@ -5,13 +14,6 @@ use crate::common::{
 use crate::minimal_rules::zip_file;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
-use jwalk::WalkDir;
-use log::info;
-use rand::random;
-use rayon::prelude::*;
-use std::fs;
-use std::path::Path;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 pub const MAX_FILES: usize = 999999999999;
 
@@ -243,10 +245,10 @@ cause this
 $ERROR
 ```
 "#
-            .replace("$CNT_TEXT", &cnt_text)
-            .replace("$COMMAND", &command_str_with_extension)
-            .replace("$ERROR", &result)
-            .replace("\n\n```", "\n```");
+        .replace("$CNT_TEXT", &cnt_text)
+        .replace("$COMMAND", &command_str_with_extension)
+        .replace("$ERROR", &result)
+        .replace("\n\n```", "\n```");
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
