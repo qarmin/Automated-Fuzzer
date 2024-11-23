@@ -28,10 +28,7 @@ pub const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
 ];
 
 pub const BROKEN_ITEMS_TO_FIND: &[&str] = &[
-    "std::rt::lang_start_internal",
-    "catch_unwind::{{closure}}",
-    "0: rust_begin_unwind",
-    "AddressSanitizer:",
+    "std::rt::lang_start_internal", "catch_unwind::{{closure}}", "0: rust_begin_unwind", "AddressSanitizer:",
     "LeakSanitizer:",
     // "Failed to create fix", // Do not report that, probably not worth to fix
     // "Fix introduced a syntax error", "This indicates a bug in", "Failed to converge after",
@@ -300,6 +297,7 @@ impl ProgramConfig for RuffStruct {
     }
 
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
+        #[allow(clippy::match_same_arms)]
         match self.non_custom_items.tool_type.as_str() {
             "lint_check_fix" | "lint_check" | "format" => CheckGroupFileMode::ByFolder,
             "red_knot" => CheckGroupFileMode::None,

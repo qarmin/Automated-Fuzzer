@@ -174,6 +174,7 @@ pub(crate) struct OutputResult {
     timeouted: bool,
 }
 impl OutputResult {
+    #[allow(clippy::fn_params_excessive_bools)]
     pub fn new(
         code: Option<i32>,
         signal: Option<i32>,

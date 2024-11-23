@@ -26,7 +26,7 @@ current_mode = "custom"
 
 [custom]
 name = "oxc_linter"
-command = "oxlint|-D|all|-D|nursery|--import-plugin|--jsdoc-plugin|--jest-plugin|--vitest-plugin|--jsx-a11y-plugin|--nextjs-plugin|--react-perf-plugin|FILE_PATHS_TO_PROVIDE|--fix"
+command = "oxlint|-D|all|-D|nursery|--import-plugin|--jsdoc-plugin|--jest-plugin|--vitest-plugin|--jsx-a11y-plugin|--nextjs-plugin|--react-perf-plugin|FILE_PATHS_TO_PROVIDE|--fix|--fix-suggestions|--fix-dangerously"
 
 extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

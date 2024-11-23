@@ -15,7 +15,7 @@ use crate::minimal_rules::zip_file;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
-pub const MAX_FILES: usize = 999999999999;
+pub const MAX_FILES: usize = 999_999_999_999;
 
 pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
