@@ -28,7 +28,7 @@ current_mode = "custom"
 name = "oxc_linter"
 command = "oxlint|-D|all|-D|nursery|--import-plugin|--jsdoc-plugin|--jest-plugin|--vitest-plugin|--jsx-a11y-plugin|--nextjs-plugin|--react-perf-plugin|FILE_PATHS_TO_PROVIDE|--fix|--fix-suggestions|--fix-dangerously"
 
-extensions = "ts,js,mjs,mts"
+extensions = "ts,js,mjs,mts,vue,svelte"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "by_group" # available: none, by_files, by_group
@@ -39,5 +39,5 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"

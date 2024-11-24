@@ -23,54 +23,54 @@ jobs:
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: LOFTY2
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF2
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: LOFTY3
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF3
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: LOFTY4
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF4
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: LOFTY5
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF5
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: LOFTY6
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF6
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: LOFTY7
             fuzz_target: lofty
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
+          - name: NOM_EXIF
+            fuzz_target: nom_exif
+            timeout: 18000
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          - name: NOM_EXIF2
+            fuzz_target: nom_exif
+            timeout: 18000
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          - name: NOM_EXIF3
+            fuzz_target: nom_exif
+            timeout: 18000
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          - name: NOM_EXIF4
+            fuzz_target: nom_exif
+            timeout: 18000
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          - name: NOM_EXIF5
+            fuzz_target: nom_exif
+            timeout: 18000
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          - name: NOM_EXIF6
+            fuzz_target: nom_exif
+            timeout: 18000
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
           - name: NOM_EXIF7
             fuzz_target: nom_exif
             timeout: 18000
