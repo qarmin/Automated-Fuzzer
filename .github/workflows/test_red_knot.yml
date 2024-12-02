@@ -1,0 +1,77 @@
+name: 🐧 Ruff build
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 21 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  ruff-normal-ci:
+
+    runs-on: ubuntu-22.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: RED_KNOT_1
+            timeout: 600
+          - name: RED_KNOT_2
+            timeout: 1800
+          - name: RED_KNOT_3
+            timeout: 3600
+          - name: RED_KNOT_4
+            timeout: 7200
+          - name: RED_KNOT_5
+            timeout: 18000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y wget
+
+      - name: Install sd
+        run: cargo install sd
+
+      - name: Install ruff and red knot
+        run: |
+          git clone https://github.com/astral-sh/ruff.git ruff
+          cd ruff
+          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
+          rm rust-toolchain.toml
+          cargo install --path .
+          cd ..
+          
+          cargo install --path test_red_knot
+
+      - name: Prepare files
+        run: |
+          mkdir -p input
+          mkdir -p broken
+          mkdir -p test1
+          mkdir -p test2
+          
+          cd input
+          wget 
+          python3 "../download_helper.py" "FILES_999.zip"
+          cd ..
+
+      - name: Run fuzzer
+        run: |
+          test_red_knot ${{ matrix.timeout }}
+
+      - name: Store results
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: ${{ matrix.name }}
+          path: broken
