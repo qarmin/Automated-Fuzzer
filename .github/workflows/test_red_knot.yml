@@ -37,7 +37,14 @@ jobs:
           sudo apt install -y wget
 
       - name: Install sd
-        run: cargo install sd
+        run: |
+          mkdir -p ~/.cargo/bin
+          
+          wget https://github.com/chmln/sd/releases/download/v1.0.0/sd-v1.0.0-x86_64-unknown-linux-musl.tar.gz -O sd.tar.gz
+          tar -xvf sd.tar.gz sd-v1.0.0-x86_64-unknown-linux-musl/sd
+          mv sd.tar.gz sd-v1.0.0-x86_64-unknown-linux-musl/sd ~/.cargo/bin
+          rm -rf sd-v1.0.0-x86_64-unknown-linux-musl
+          rm -f sd.tar.gz
 
       - name: Install ruff and red knot
         run: |
