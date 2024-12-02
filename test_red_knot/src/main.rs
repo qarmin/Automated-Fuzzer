@@ -207,6 +207,11 @@ fn main() {
     fs::create_dir_all(FILES_TO_TEST_DIR).unwrap();
     fs::create_dir_all(TEMP_TEST_DIR).unwrap();
     fs::create_dir_all(BROKEN_FILES_DIR).unwrap();
+
+    assert!(Path::new(INPUT_FILES_DIR).exists());
+    assert!(Path::new(FILES_TO_TEST_DIR).exists());
+    assert!(Path::new(TEMP_TEST_DIR).exists());
+    assert!(Path::new(BROKEN_FILES_DIR).exists());
     create_broken_files();
 
     let broken_files = WalkDir::new(FILES_TO_TEST_DIR)
