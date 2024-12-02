@@ -49,6 +49,9 @@ fn create_broken_files() {
         .to_string_lossy()
         .to_string();
 
+    assert!(Path::new(&input_c).exists());
+    assert!(Path::new(&test_c).exists());
+
     println!("Creating broken files from {input_c} to {test_c}");
 
     let child = Command::new("create_broken_files")
