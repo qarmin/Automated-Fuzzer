@@ -43,8 +43,13 @@ pub fn check_if_time_exceeded() -> bool {
 }
 
 fn create_broken_files() {
-    let input_c = fs::canonicalize(INPUT_FILES_DIR).unwrap();
-    let test_c = fs::canonicalize(FILES_TO_TEST_DIR).unwrap();
+    let input_c = fs::canonicalize(INPUT_FILES_DIR).unwrap().to_string_lossy().to_string();
+    let test_c = fs::canonicalize(FILES_TO_TEST_DIR)
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
+
+    println!("Creating broken files from {input_c} to {test_c}");
 
     let child = Command::new("create_broken_files")
         .arg("--input-path")
