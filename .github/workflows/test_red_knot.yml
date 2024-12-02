@@ -106,4 +106,4 @@ jobs:
 
       - name: Exit when found broken files
         run: |
-          [ "$(ls -A broken" ] && exit 1 || true
+          [ "$(ls -A broken)" ] && exit 1 || true
