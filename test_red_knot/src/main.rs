@@ -213,6 +213,7 @@ fn main() {
     //     .num_threads(threads)
     //     .build_global()
     //     .unwrap();
+    let threads = std::thread::available_parallelism().map(|e| e.get()).unwrap_or(8);
 
     let _ = fs::remove_dir_all(FILES_TO_TEST_DIR);
     let _ = fs::remove_dir_all(TEMP_TEST_DIR);
