@@ -116,6 +116,10 @@ fn test_with_red_knot(files_to_test: &[String]) {
 
     println!("Before: {} After: {}", files_to_test.len(), files.len());
 
+    if !files.is_empty() {
+        println!("-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+");
+    }
+
     for file in files {
         if check_if_time_exceeded() {
             break;
