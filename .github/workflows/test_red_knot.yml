@@ -45,6 +45,8 @@ jobs:
           mv sd.tar.gz sd-v1.0.0-x86_64-unknown-linux-musl/sd ~/.cargo/bin
           rm -rf sd-v1.0.0-x86_64-unknown-linux-musl
           rm -f sd.tar.gz
+          
+          cargo install create_broken_files
 
       - name: Install ruff and red knot
         run: |
