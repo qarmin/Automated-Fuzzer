@@ -163,15 +163,6 @@ fn test_with_red_knot(files_to_test: &[String]) {
 }
 
 fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
-    // First argument is max time in seconds
-    let max_time = args()
-        .nth(1)
-        .expect("Missing max time")
-        .parse()
-        .expect("Invalid max time");
-    MAX_TIME.set(max_time).unwrap();
-    println!("Max time set to {}", MAX_TIME.get().unwrap());
-
     // minimizer --input-file /home/rafal/Desktop/RunEveryCommand/C/PY_FILE_TEST_25518.py --output-file a.py --command "red_knot" --attempts 1000 --broken-info "RUST_BACKTRACE" -z "not yet implemented" -z "failed to parse" -z "SyntaxError" -z "Sorry:" -z "IndentationError" -k "python3 -m compileall {}" -r -v
     let child = Command::new("minimizer")
         .arg("--input-file")
@@ -208,11 +199,20 @@ fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
 }
 
 fn main() {
-    let threads = 8;
-    rayon::ThreadPoolBuilder::new()
-        .num_threads(threads)
-        .build_global()
-        .unwrap();
+    // First argument is max time in seconds
+    let max_time = args()
+        .nth(1)
+        .expect("Missing max time")
+        .parse()
+        .expect("Invalid max time");
+    MAX_TIME.set(max_time).unwrap();
+    println!("Max time set to {}", MAX_TIME.get().unwrap());
+
+    // let threads = 8;
+    // rayon::ThreadPoolBuilder::new()
+    //     .num_threads(threads)
+    //     .build_global()
+    //     .unwrap();
 
     let _ = fs::remove_dir_all(FILES_TO_TEST_DIR);
     let _ = fs::remove_dir_all(TEMP_TEST_DIR);
