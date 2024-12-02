@@ -40,7 +40,7 @@ jobs:
         run: |
           mkdir -p ~/.cargo/bin
           
-          wget https://github.com/chmln/sd/releases/download/v1.0.0/sd-v1.0.0-x86_64-unknown-linux-musl.tar.gz -O sd.tar.gz
+          wget -q https://github.com/chmln/sd/releases/download/v1.0.0/sd-v1.0.0-x86_64-unknown-linux-musl.tar.gz -O sd.tar.gz
           tar -xvf sd.tar.gz sd-v1.0.0-x86_64-unknown-linux-musl/sd
           mv sd.tar.gz sd-v1.0.0-x86_64-unknown-linux-musl/sd ~/.cargo/bin
           rm -rf sd-v1.0.0-x86_64-unknown-linux-musl
@@ -58,7 +58,7 @@ jobs:
           #          cargo install --path .
           #          cd ..
 
-          wget https://github.com/qarmin/Automated-Fuzzer/releases/download/Nightly/red_knot.7z -O red_knot.7z
+          wget -q https://github.com/qarmin/Automated-Fuzzer/releases/download/Nightly/red_knot.7z -O red_knot.7z
           7z x red_knot.7z
           mkdir -p ~/.cargo/bin
           mv red_knot ~/.cargo/bin
@@ -76,7 +76,6 @@ jobs:
           mkdir -p test2
           
           cd input
-          wget 
           python3 "../download_helper.py" "FILES_999.zip"
           cd ..
 
