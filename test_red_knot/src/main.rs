@@ -170,6 +170,7 @@ fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
         .parse()
         .expect("Invalid max time");
     MAX_TIME.set(max_time).unwrap();
+    println!("Max time set to {}", MAX_TIME.get().unwrap());
 
     // minimizer --input-file /home/rafal/Desktop/RunEveryCommand/C/PY_FILE_TEST_25518.py --output-file a.py --command "red_knot" --attempts 1000 --broken-info "RUST_BACKTRACE" -z "not yet implemented" -z "failed to parse" -z "SyntaxError" -z "Sorry:" -z "IndentationError" -k "python3 -m compileall {}" -r -v
     let child = Command::new("minimizer")
