@@ -65,7 +65,7 @@ jobs:
           rm red_knot.7z
           
           ls -al
-          cd test_red_knot
+          
           cargo install --path test_red_knot
 
       - name: Prepare files
