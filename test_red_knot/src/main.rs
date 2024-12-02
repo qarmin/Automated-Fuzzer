@@ -104,8 +104,8 @@ fn test_with_red_knot(files_to_test: &[String]) {
                 let _ = fs::copy(file, &new_file_name);
             }
             let all = run_red_knot(&temp_folder);
-            let elapsed = time.elapsed();
-            println!("========================================\n{elapsed:?}\n=================================");
+            let _elapsed = time.elapsed();
+            // println!("========================================\n{elapsed:?}\n=================================");
             all.contains("RUST_BACKTRACE")
         })
         .flatten()
@@ -202,7 +202,7 @@ fn main() {
     // First argument is max time in seconds
     let max_time = args()
         .nth(1)
-        .expect("Missing max time")
+        .unwrap_or("600".to_string())
         .parse()
         .expect("Invalid max time");
     MAX_TIME.set(max_time).unwrap();
@@ -215,38 +215,46 @@ fn main() {
     //     .unwrap();
     let threads = std::thread::available_parallelism().map(|e| e.get()).unwrap_or(8);
 
-    let _ = fs::remove_dir_all(FILES_TO_TEST_DIR);
-    let _ = fs::remove_dir_all(TEMP_TEST_DIR);
-    fs::create_dir_all(FILES_TO_TEST_DIR).unwrap();
-    fs::create_dir_all(TEMP_TEST_DIR).unwrap();
-    fs::create_dir_all(BROKEN_FILES_DIR).unwrap();
+    loop {
+        if check_if_time_exceeded() {
+            println!("Exceeded time");
+            return;
+        }
 
-    assert!(Path::new(INPUT_FILES_DIR).exists());
-    assert!(Path::new(FILES_TO_TEST_DIR).exists());
-    assert!(Path::new(TEMP_TEST_DIR).exists());
-    assert!(Path::new(BROKEN_FILES_DIR).exists());
-    create_broken_files();
+        let _ = fs::remove_dir_all(FILES_TO_TEST_DIR);
+        let _ = fs::remove_dir_all(TEMP_TEST_DIR);
+        fs::create_dir_all(FILES_TO_TEST_DIR).unwrap();
+        fs::create_dir_all(TEMP_TEST_DIR).unwrap();
+        fs::create_dir_all(BROKEN_FILES_DIR).unwrap();
 
-    let broken_files = WalkDir::new(FILES_TO_TEST_DIR)
-        .into_iter()
-        .flatten()
-        .filter(|e| e.file_type().is_file())
-        .map(|e| e.path().to_string_lossy().to_string())
-        .take(MAX_FILES)
-        .collect::<Vec<String>>();
+        assert!(Path::new(INPUT_FILES_DIR).exists());
+        assert!(Path::new(FILES_TO_TEST_DIR).exists());
+        assert!(Path::new(TEMP_TEST_DIR).exists());
+        assert!(Path::new(BROKEN_FILES_DIR).exists());
 
-    if broken_files.is_empty() {
-        eprintln!("No files to test");
-        return;
+        create_broken_files();
+
+        let broken_files = WalkDir::new(FILES_TO_TEST_DIR)
+            .into_iter()
+            .flatten()
+            .filter(|e| e.file_type().is_file())
+            .map(|e| e.path().to_string_lossy().to_string())
+            .take(MAX_FILES)
+            .collect::<Vec<String>>();
+
+        if broken_files.is_empty() {
+            eprintln!("No files to test");
+            return;
+        }
+
+        let chunks = broken_files
+            .chunks(broken_files.len() / threads)
+            .map(|x| x.to_vec())
+            .collect::<Vec<Vec<String>>>();
+        chunks.into_par_iter().enumerate().for_each(|(idx, chunk)| {
+            println!("Starting chunk {idx} with {} files", chunk.len());
+            test_with_red_knot(&chunk);
+            println!("Ended chunk {idx}")
+        });
     }
-
-    let chunks = broken_files
-        .chunks(broken_files.len() / threads)
-        .map(|x| x.to_vec())
-        .collect::<Vec<Vec<String>>>();
-    chunks.into_par_iter().enumerate().for_each(|(idx, chunk)| {
-        println!("Starting chunk {idx} with {} files", chunk.len());
-        test_with_red_knot(&chunk);
-        println!("Ended chunk {idx}")
-    });
 }
