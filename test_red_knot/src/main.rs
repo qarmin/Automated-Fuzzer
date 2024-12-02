@@ -218,7 +218,7 @@ fn main() {
     loop {
         if check_if_time_exceeded() {
             println!("Exceeded time");
-            return;
+            break;
         }
 
         let _ = fs::remove_dir_all(FILES_TO_TEST_DIR);
@@ -257,4 +257,7 @@ fn main() {
             println!("Ended chunk {idx}")
         });
     }
+
+    let broken_files = WalkDir::new(BROKEN_FILES_DIR).into_iter().flatten().count() / 2;
+    println!("Broken files: {broken_files}");
 }
