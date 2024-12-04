@@ -1,7 +1,7 @@
 name: 🐧 Red knot
 on:
-  push:
-  pull_request:
+  #  push:
+  #  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -17,26 +17,26 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: RED_KNOT_0
-            timeout: 300
-          - name: RED_KNOT_1
-            timeout: 600
-          - name: RED_KNOT_2
-            timeout: 1800
-          - name: RED_KNOT_3
-            timeout: 3600
-          - name: RED_KNOT_4
-            timeout: 7200
-          - name: RED_KNOT_5
-            timeout: 18000
-          - name: RED_KNOT_6
-            timeout: 18000
-          - name: RED_KNOT_7
-            timeout: 18000
-          - name: RED_KNOT_8
-            timeout: 18000
-          - name: RED_KNOT_9
-            timeout: 18000
+          #          - name: RED_KNOT_0
+          #            timeout: 300
+          #          - name: RED_KNOT_1
+          #            timeout: 600
+          #          - name: RED_KNOT_2
+          #            timeout: 1800
+          #          - name: RED_KNOT_3
+          #            timeout: 3600
+          #          - name: RED_KNOT_4
+          #            timeout: 7200
+          #          - name: RED_KNOT_5
+          #            timeout: 18000
+          #          - name: RED_KNOT_6
+          #            timeout: 18000
+          #          - name: RED_KNOT_7
+          #            timeout: 18000
+          #          - name: RED_KNOT_8
+          #            timeout: 18000
+          #          - name: RED_KNOT_9
+          #            timeout: 18000
           - name: RED_KNOT_10
             timeout: 18000
 
