@@ -147,6 +147,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
 
             if output_result.is_broken() {
                 info!("Group {} is broken", number);
+                info!("Output: {}", output_result.get_output()); // TODO handle this via setting
                 output_result.debug_print();
                 Some(Some(group))
             } else {
