@@ -53,6 +53,27 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: oxlint
+          - name: OXC2
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 1000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: oxlint
+          - name: OXC3
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 2000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: oxlint
+          - name: OXC4
+            config-file: fuzz_oxc_settings_ci.toml
+            timeout: 4000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: oxlint
           - name: BIOME
             config-file: fuzz_biome_settings_ci.toml
             timeout: 16000
