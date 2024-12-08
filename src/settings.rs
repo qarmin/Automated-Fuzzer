@@ -41,6 +41,7 @@ pub struct Setting {
     pub stability_runs: u32,
     pub custom_items: Option<CustomItems>,
     pub non_custom_items: Option<NonCustomItems>,
+    pub custom_folder_path: String,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -249,6 +250,7 @@ pub fn load_settings() -> Setting {
         non_custom_items,
         check_for_stability: general["check_for_stability"].parse().unwrap(),
         stability_runs: general["stability_runs"].parse().unwrap(),
+        custom_folder_path: general["custom_folder_path"].clone(),
     }
 }
 

@@ -151,6 +151,17 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
                 info!("Group {} is broken", number);
                 info!("Output: {}", output_result.get_output()); // TODO handle this via setting
                 output_result.debug_print();
+
+                // Save files to custom folder
+                let folder_idx: u64 = random();
+                let new_folder_name = format!("{}/{folder_idx}", settings.custom_folder_path);
+
+                for (idx, file_name) in group.iter().enumerate() {
+                    let extension = Path::new(file_name).extension().unwrap().to_str().unwrap();
+                    let temp_name = format!("{new_folder_name}/{idx}.{extension}");
+                    fs::copy(file_name, &temp_name).expect("Failed to copy file");
+                }
+
                 Some(Some(group))
             } else {
                 Some(None)

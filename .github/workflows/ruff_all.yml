@@ -243,7 +243,15 @@ jobs:
           rm -rf /opt/VALID_FILES_DIR || true
           rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
 
+      - name: Store custom
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: CUSTOM___${{ matrix.name }}
+          path: /opt/CUSTOM
+
       - name: Exit when found broken files
         run: |
           [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
+          [ "$(ls -A /opt/CUSTOM)" ] && exit 1 || true
 

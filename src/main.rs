@@ -48,6 +48,7 @@ fn main() {
 
     let _ = fs::create_dir_all(&settings.temp_folder);
     let _ = fs::create_dir_all(&settings.broken_files_dir);
+    let _ = fs::create_dir_all(&settings.custom_folder_path);
 
     if settings.remove_non_crashing_items_from_broken_files {
         info!("RUNNING REMOVE NON CRASHING FILES");
