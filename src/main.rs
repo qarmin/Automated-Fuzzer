@@ -1,14 +1,15 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
 
+use log::info;
 use std::fs;
 use std::path::Path;
-
-use log::info;
+use std::sync::RwLock;
 
 use crate::common::{calculate_number_of_files, check_files_number, TIMEOUT_SECS};
 use crate::finding_different_output::find_broken_files_by_different_output;
 use crate::finding_text_status::find_broken_files_by_text_status;
+use crate::obj::USE_ASAN_ENVS;
 use crate::settings::{get_object, load_settings, StabilityMode};
 
 pub mod apps;
@@ -22,6 +23,8 @@ mod remove_non_crashing_files;
 mod settings;
 
 fn main() {
+    USE_ASAN_ENVS.set(RwLock::new(false));
+
     handsome_logger::init().unwrap();
 
     let first_arg: u64 = std::env::args()

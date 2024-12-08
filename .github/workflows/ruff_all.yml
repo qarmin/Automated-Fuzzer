@@ -1,7 +1,7 @@
 name: 🐧 Ruff Check
 on:
-  #  push: # Once daily
-  #  pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 21 * * *'
 
@@ -134,7 +134,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8
+          sudo apt install -y wget earlyoom libasan8 llvm
 
       - name: Install create_broken_files and sd
         run: cargo install create_broken_files sd minimizer

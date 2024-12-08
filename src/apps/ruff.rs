@@ -12,7 +12,7 @@ use crate::common::{
     collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
     CheckGroupFileMode,
 };
-use crate::obj::ProgramConfig;
+use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
 use crate::settings::{NonCustomItems, Setting, StabilityMode};
 pub struct RuffStruct {
     pub settings: Setting,
@@ -164,6 +164,13 @@ impl ProgramConfig for RuffStruct {
             }
         }
 
+        if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
+            command.envs([
+                ("RUST_BACKTRACE", "1"),
+                ("ASAN_SYMBOLIZER_PATH", "llvm-symbolizer"),
+                ("ASAN_OPTIONS", "symbolize=1"),
+            ]);
+        }
         if self.settings.debug_executed_commands {
             info!("Executing command: {:?}", command);
         }

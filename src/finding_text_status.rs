@@ -14,7 +14,7 @@ use crate::common::{
     execute_command_on_pack_of_files, generate_files, minimize_new, remove_and_create_entire_folder,
     CheckGroupFileMode,
 };
-use crate::obj::ProgramConfig;
+use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
 use crate::settings::Setting;
 
 pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
@@ -61,7 +61,9 @@ pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn Progra
 
         if settings.grouping > 1 && obj.get_files_group_mode() != CheckGroupFileMode::None {
             info!("Started to check files in groups of {} elements", settings.grouping);
+            *USE_ASAN_ENVS.get().write().expect("Failed to write") = true;
             files = test_files_in_group(files, settings, obj);
+            *USE_ASAN_ENVS.get().write().expect("Failed to write") = false;
             info!(
                 "After grouping left {} files to check out of all {start_file_size}",
                 files.len()

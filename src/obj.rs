@@ -1,11 +1,14 @@
-use std::process::{Child, Command};
-
 use log::error;
+use std::process::{Child, Command};
+use std::sync::RwLock;
 
 use crate::common::{
     create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode,
 };
 use crate::settings::{Setting, StabilityMode};
+
+pub static USE_ASAN_ENVS: state::InitCell<RwLock<bool>> = state::InitCell::new();
+
 pub trait ProgramConfig: Sync {
     fn get_broken_items_list(&self) -> &[String];
     fn get_ignored_items_list(&self) -> &[String];
@@ -53,6 +56,13 @@ pub trait ProgramConfig: Sync {
     fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self._get_basic_run_command();
         command.arg(full_name);
+        if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
+            command.envs([
+                ("RUST_BACKTRACE", "1"),
+                ("ASAN_SYMBOLIZER_PATH", "llvm-symbolizer"),
+                ("ASAN_OPTIONS", "symbolize=1"),
+            ]);
+        }
         command
     }
     fn get_group_command(&self, files: &[String]) -> Command {

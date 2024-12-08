@@ -108,7 +108,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8
+          sudo apt install -y wget earlyoom libasan8 llvm
           sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
       - name: Install cargo fuzz and minimizer
