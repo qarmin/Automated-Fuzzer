@@ -167,7 +167,7 @@ pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustom
     NonCustomItems {
         app_binary: tool_hashmap["app_binary"].clone(),
         app_config: tool_hashmap["app_config"].clone(),
-        additional_minimization_command: tool_hashmap["additional_minimization_command"].clone(),
+        additional_minimization_command: tool_hashmap["additional_minimization_command"].trim().to_string(),
         tool_type: tool_hashmap["tool_type"].clone(),
         search_items: BROKEN_ITEMS_TO_FIND.iter().map(ToString::to_string).collect(),
         ignored_items: BROKEN_ITEMS_TO_IGNORE.iter().map(ToString::to_string).collect(),

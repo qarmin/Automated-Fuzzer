@@ -32,6 +32,6 @@ extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 tool_type = "lint_check_fix"
-#additional_minimization_command = "python3 -m compileall {}"
+additional_minimization_command = "" #""python3 -m compileall {}" # enable when enabling checking for parasble files
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

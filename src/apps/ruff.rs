@@ -53,6 +53,9 @@ pub fn calculate_ignored_rules() -> String {
 
 impl ProgramConfig for RuffStruct {
     fn get_minimize_additional_command(&self) -> Option<String> {
+        if self.non_custom_items.additional_minimization_command.is_empty() {
+            return None;
+        }
         Some(self.non_custom_items.additional_minimization_command.clone())
     }
     fn get_broken_items_list(&self) -> &[String] {
