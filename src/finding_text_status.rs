@@ -156,7 +156,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
                 // Save files to custom folder
                 let folder_idx: u64 = random();
                 let new_folder_name = format!("{}/{folder_idx}", settings.custom_folder_path);
-                fs::create_dir_all("{new_folder_name}").expect("Failed to create new folder");
+                fs::create_dir_all(&new_folder_name).expect("Failed to create new folder");
 
                 for (idx, file_name) in group.iter().enumerate() {
                     let extension = Path::new(file_name).extension().unwrap().to_str().unwrap();
