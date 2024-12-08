@@ -43,7 +43,7 @@ impl ProgramConfig for CustomStruct {
         if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
             command.envs([
                 ("RUST_BACKTRACE", "1"),
-                ("ASAN_SYMBOLIZER_PATH", "llvm-symbolizer"),
+                ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
                 ("ASAN_OPTIONS", "symbolize=1"),
             ]);
         }
