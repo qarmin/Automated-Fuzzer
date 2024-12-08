@@ -99,11 +99,7 @@ pub fn try_to_save_file(full_name: &str, new_name: &str) {
 
 pub fn minimize_new(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let mut minimization_command = obj.get_minimize_command(full_name);
-    let minimization_command_str = format!(
-        "{:?} {:?}",
-        minimization_command.get_program(),
-        minimization_command.get_args()
-    );
+    let minimization_command_str = collect_command_to_string(&minimization_command);
     let output = minimization_command.spawn().unwrap().wait_with_output().unwrap();
     let str_out = collect_output(&output);
 
@@ -118,12 +114,12 @@ pub fn execute_command_on_pack_of_files(
     folder_name: &str,
     files: &[String],
 ) -> OutputResult {
-    let command = match obj.get_files_group_mode() {
-        CheckGroupFileMode::ByFolder => obj.run_command(folder_name),
-        CheckGroupFileMode::ByFilesGroup => obj.run_group_command(files),
+    let (child, command) = match obj.get_files_group_mode() {
+        CheckGroupFileMode::ByFolder => (obj.run_command(folder_name), obj.get_full_command(folder_name)),
+        CheckGroupFileMode::ByFilesGroup => (obj.run_group_command(files), obj.get_group_command(files)),
         CheckGroupFileMode::None => panic!("Invalid mode"),
     };
-    let output = command.wait_with_output().unwrap();
+    let output = child.wait_with_output().unwrap();
     let mut str_out = collect_output(&output);
 
     let is_signal_broken = obj.get_settings().error_when_found_signal
@@ -157,6 +153,7 @@ pub fn execute_command_on_pack_of_files(
         obj.is_broken(&str_out),
         timeouted,
         str_out,
+        collect_command_to_string(&command),
     )
 }
 
@@ -164,6 +161,7 @@ pub fn execute_command_on_pack_of_files(
 #[derive(Debug)]
 pub(crate) struct OutputResult {
     output: String,
+    command_str: String,
     code: Option<i32>,
     signal: Option<i32>,
     is_signal_broken: bool,
@@ -183,6 +181,7 @@ impl OutputResult {
         have_invalid_output: bool,
         timeouted: bool,
         output: String,
+        command_str: String,
     ) -> Self {
         Self {
             output,
@@ -192,6 +191,7 @@ impl OutputResult {
             is_code_broken,
             have_invalid_output,
             timeouted,
+            command_str,
         }
     }
     pub fn is_broken(&self) -> bool {
@@ -203,6 +203,9 @@ impl OutputResult {
     pub fn get_output(&self) -> &str {
         &self.output
     }
+    pub fn get_command_str(&self) -> &str {
+        &self.command_str
+    }
     pub fn debug_print(&self) {
         info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_code_broken, self.timeouted, self.code, self.signal);
     }
@@ -212,8 +215,10 @@ impl OutputResult {
 pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> OutputResult {
     let content_before = fs::read(full_name).unwrap(); // In each iteration be sure that before and after, file is the same
 
-    let command = obj.run_command(full_name);
-    let output = command.wait_with_output().unwrap();
+    let command = obj.get_full_command(full_name);
+
+    let child = obj.run_command(full_name);
+    let output = child.wait_with_output().unwrap();
 
     let mut str_out = collect_output(&output);
 
@@ -255,6 +260,7 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
         obj.is_broken(&str_out),
         timeouted,
         str_out,
+        collect_command_to_string(&command),
     )
 }
 
@@ -406,4 +412,65 @@ pub fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
     }
 
     (files, size_all)
+}
+
+pub(crate) fn collect_command_to_string(command: &Command) -> String {
+    let args = command
+        .get_args()
+        .map(|e| {
+            let tmp_string = e.to_string_lossy();
+            if [" ", "\"", "\\", "/"].iter().any(|e| tmp_string.contains(e)) {
+                format!("\"{}\"", tmp_string.replace("\"", "\\\""))
+            } else {
+                tmp_string.to_string()
+            }
+        })
+        .collect::<Vec<_>>();
+    format!("{} {}", command.get_program().to_string_lossy(), args.join(" "))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::ffi::OsStr;
+
+    #[test]
+    fn test_collect_command_to_string_simple() {
+        let mut command = Command::new("echo");
+        command.arg("Hello");
+        let result = collect_command_to_string(&command);
+        assert_eq!(result, "echo Hello");
+    }
+
+    #[test]
+    fn test_collect_command_to_string_with_spaces() {
+        let mut command = Command::new("echo");
+        command.arg("Hello World");
+        let result = collect_command_to_string(&command);
+        assert_eq!(result, "echo \"Hello World\"");
+    }
+
+    #[test]
+    fn test_collect_command_to_string_with_special_chars() {
+        let mut command = Command::new("echo");
+        command.arg("Hello \"World\"");
+        let result = collect_command_to_string(&command);
+        assert_eq!(result, "echo \"Hello \\\"World\\\"\"");
+    }
+
+    #[test]
+    fn test_collect_command_to_string_with_multiple_args() {
+        let mut command = Command::new("echo");
+        command.args(&["Hello", "World"]);
+        let result = collect_command_to_string(&command);
+        assert_eq!(result, "echo Hello World");
+    }
+
+    #[test]
+    fn test_collect_command_to_string_with_os_str() {
+        let mut command = Command::new("echo");
+        command.arg(OsStr::new("Hello"));
+        let result = collect_command_to_string(&command);
+        assert_eq!(result, "echo Hello");
+    }
 }

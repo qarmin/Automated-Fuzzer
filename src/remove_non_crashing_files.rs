@@ -8,8 +8,8 @@ use rand::random;
 use rayon::prelude::*;
 
 use crate::common::{
-    execute_command_and_connect_output, execute_command_on_pack_of_files, remove_and_create_entire_folder,
-    CheckGroupFileMode,
+    collect_command_to_string, execute_command_and_connect_output, execute_command_on_pack_of_files,
+    remove_and_create_entire_folder, CheckGroupFileMode,
 };
 use crate::minimal_rules::zip_file;
 use crate::obj::ProgramConfig;
@@ -141,18 +141,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
 pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
     info!("Saving results to file");
     let command = obj.get_full_command("TEST___FILE");
-    let args = command
-        .get_args()
-        .map(|e| {
-            let tmp_string = e.to_string_lossy();
-            if [" ", "\"", "\\", "/"].iter().any(|e| tmp_string.contains(e)) {
-                format!("\"{tmp_string}\"")
-            } else {
-                tmp_string.to_string()
-            }
-        })
-        .collect::<Vec<_>>();
-    let command_str = format!("{} {}", command.get_program().to_string_lossy(), args.join(" "));
+    let command_str = collect_command_to_string(&command);
 
     for (file_name, result) in content {
         let content = fs::read(&file_name).unwrap();

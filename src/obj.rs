@@ -3,7 +3,8 @@ use std::process::{Child, Command};
 use std::sync::RwLock;
 
 use crate::common::{
-    create_new_file_name, create_new_file_name_for_minimization, try_to_save_file, CheckGroupFileMode,
+    collect_command_to_string, create_new_file_name, create_new_file_name_for_minimization, try_to_save_file,
+    CheckGroupFileMode,
 };
 use crate::settings::{Setting, StabilityMode};
 
@@ -82,23 +83,7 @@ pub trait ProgramConfig: Sync {
         let temp_file_name = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
         let run_command = self.get_full_command(temp_file_name);
 
-        let run_command_as_string = format!(
-            "{} {}",
-            run_command.get_program().to_string_lossy(),
-            run_command
-                .get_args()
-                .map(|e| e.to_string_lossy().replace(temp_file_name, "{}"))
-                .map(|e| {
-                    if e.contains(' ') {
-                        format!("\"{e}\"")
-                    } else {
-                        e
-                    }
-                })
-                .collect::<Vec<_>>()
-                .join(" ")
-        );
-        let run_command_as_string = run_command_as_string.replace("\'{}\'", "{}");
+        let run_command_as_string = collect_command_to_string(&run_command);
 
         // minimizer --input-file input.txt --output-file output.txt --command "echo {}" --attempts 300 --broken-info "BROKEN"
         let mut minimize_command = Command::new("minimizer");

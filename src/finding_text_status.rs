@@ -149,12 +149,14 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
 
             if output_result.is_broken() {
                 info!("Group {} is broken", number);
+                info!("Command - {}", output_result.get_command_str());
                 info!("Output: {}", output_result.get_output()); // TODO handle this via setting
                 output_result.debug_print();
 
                 // Save files to custom folder
                 let folder_idx: u64 = random();
                 let new_folder_name = format!("{}/{folder_idx}", settings.custom_folder_path);
+                fs::create_dir_all("{new_folder_name}").expect("Failed to create new folder");
 
                 for (idx, file_name) in group.iter().enumerate() {
                     let extension = Path::new(file_name).extension().unwrap().to_str().unwrap();
