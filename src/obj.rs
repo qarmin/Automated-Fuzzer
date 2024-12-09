@@ -83,7 +83,8 @@ pub trait ProgramConfig: Sync {
         let temp_file_name = "ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ";
         let run_command = self.get_full_command(temp_file_name);
 
-        let run_command_as_string = collect_command_to_string(&run_command);
+        let mut run_command_as_string = collect_command_to_string(&run_command);
+        run_command_as_string = run_command_as_string.replace(temp_file_name, "{}");
 
         // minimizer --input-file input.txt --output-file output.txt --command "echo {}" --attempts 300 --broken-info "BROKEN"
         let mut minimize_command = Command::new("minimizer");
