@@ -1,7 +1,7 @@
 name: 🐧 Ruff build
 on:
-  #push:
-  #pull_request:
+  push:
+  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -34,21 +34,23 @@ jobs:
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
           cargo build --release
+          mv target/release/ruff target/release/ruff_normal
+          mv target/release/red_knot target/release/red_knot_normal
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --release --target x86_64-unknown-linux-gnu
           cd ..
           ls -al ruff/target/release
-      #      - name: Create test file
-      #        run: |
-      #          mkdir -p ruff/target/release
-      #          echo "Hello, world!" > ruff/target/release/ruff
-      #          echo "Hello, world2!" > ruff/target/release/red_knot
 
       - name: Pack files
         run: |
           cd ruff/target/release
           time 7z a "ruff.7z" "ruff"
           time 7z a "red_knot.7z" "red_knot"
+          time 7z a "ruff_normal.7z" "ruff_normal"
+          time 7z a "red_knot_normal.7z" "red_knot_normal"
           cp "ruff.7z" "../../../"
           cp "red_knot.7z" "../../../"
+          cp "ruff_normal.7z" "../../../"
+          cp "red_knot_normal.7z" "../../../"
           cd ../../..
 
       - name: ls files
@@ -62,5 +64,7 @@ jobs:
           files: |
             ruff.7z
             red_knot.7z
+            ruff_normal.7z
+            red_knot_normal.7z
           token: ${{ secrets.PAT_REPOSITORY }}
 
