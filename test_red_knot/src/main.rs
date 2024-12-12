@@ -22,6 +22,7 @@ const BROKEN_FILES_DIR: &str = "broken";
 const RUN_MINIMIZER: bool = true;
 const MAX_FILES: usize = 1000000000;
 // const MAX_FILES: usize = 16;
+const MAX_FILES_IN_GROUP: usize = 1000;
 
 const CREATE_FILES_PER_RUN: usize = 1;
 
@@ -274,10 +275,17 @@ fn main() {
             return;
         }
 
-        let chunks = broken_files
-            .chunks(broken_files.len() / threads + 1)
-            .map(|x| x.to_vec())
-            .collect::<Vec<Vec<String>>>();
+        let chunks = if (broken_files.len() / threads) < MAX_FILES_IN_GROUP {
+            broken_files
+                .chunks(broken_files.len() / threads + 1)
+                .map(|x| x.to_vec())
+                .collect::<Vec<Vec<String>>>()
+        } else {
+            broken_files
+                .chunks(MAX_FILES_IN_GROUP)
+                .map(|x| x.to_vec())
+                .collect::<Vec<Vec<String>>>()
+        };
         chunks.into_par_iter().enumerate().for_each(|(idx, chunk)| {
             println!("Starting chunk {idx} with {} files", chunk.len());
             test_with_red_knot(&chunk);
