@@ -53,6 +53,7 @@ ignored_item_11 = "Rewrite didn't consume all tokens" # https://github.com/biome
 ignored_item_12 = "Called `unwrap` on an `Absent` syntax" # https://github.com/biomejs/biome/issues/4617
 ignored_item_13 = "Bad offset: range" # https://github.com/biomejs/biome/issues/4623
 ignored_item_14 = "The parser is no longer progressing" # https://github.com/biomejs/biome/issues/4622
+ignored_item_15 = "index out of bounds" # https://github.com/biomejs/biome/issues/4723
 file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

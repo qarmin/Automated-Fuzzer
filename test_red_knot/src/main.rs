@@ -19,11 +19,16 @@ const FILES_TO_TEST_DIR: &str = "temp1";
 const TEMP_TEST_DIR: &str = "temp2";
 const BROKEN_FILES_DIR: &str = "broken";
 
-const RUN_MINIMIZER: bool = false;
+const RUN_MINIMIZER: bool = true;
 const MAX_FILES: usize = 1000000000;
 // const MAX_FILES: usize = 16;
 
 const CREATE_FILES_PER_RUN: usize = 1;
+
+const INVALID_DATA: &[&str] = &["RUST_BACKTRACE"];
+const IGNORED_DATA: &[&str] = &[
+    "Box<dyn Any>", // https://github.com/astral-sh/ruff/issues/14740
+];
 
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static MAX_TIME: OnceCell<u64> = OnceCell::new();
@@ -83,6 +88,13 @@ fn run_red_knot(folder: &str) -> String {
     collect_output(&command)
 }
 
+fn contains_data(data: &str, items: &[&str]) -> bool {
+    items.iter().any(|e| data.contains(e))
+}
+fn contains_broken_data(data: &str) -> bool {
+    contains_data(data, INVALID_DATA) && !contains_data(data, IGNORED_DATA)
+}
+
 fn test_with_red_knot(files_to_test: &[String]) {
     let temp_folder = format!("{}/{}", TEMP_TEST_DIR, random::<u64>());
     fs::create_dir_all(&temp_folder).unwrap();
@@ -106,7 +118,7 @@ fn test_with_red_knot(files_to_test: &[String]) {
             let all = run_red_knot(&temp_folder);
             let _elapsed = time.elapsed();
             // println!("========================================\n{elapsed:?}\n=================================");
-            all.contains("RUST_BACKTRACE")
+            contains_broken_data(&all)
         })
         .flatten()
         .collect::<Vec<_>>();
@@ -131,12 +143,13 @@ fn test_with_red_knot(files_to_test: &[String]) {
         let _ = fs::copy(file, &new_file_name);
         let mut all = run_red_knot(&temp_folder);
 
-        if all.contains("RUST_BACKTRACE") {
+        if contains_broken_data(&all) {
             if RUN_MINIMIZER {
                 run_minimizer(&file, &new_file_name, &temp_folder);
                 all = run_red_knot(&temp_folder);
-                if !all.contains("RUST_BACKTRACE") {
-                    panic!("Failed to minimize file");
+                if !contains_broken_data(&all) {
+                    eprintln!("Failed to minimize file, output: {all}");
+                    // panic!("Failed to minimize file");
                 }
             }
             let start = if all.contains("is always 'load' but got: 'Invalid'") {
@@ -168,6 +181,15 @@ fn test_with_red_knot(files_to_test: &[String]) {
 
 fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
     // minimizer --input-file /home/rafal/Desktop/RunEveryCommand/C/PY_FILE_TEST_25518.py --output-file a.py --command "red_knot" --attempts 1000 --broken-info "RUST_BACKTRACE" -z "not yet implemented" -z "failed to parse" -z "SyntaxError" -z "Sorry:" -z "IndentationError" -k "python3 -m compileall {}" -r -v
+    let broken_info = INVALID_DATA
+        .iter()
+        .flat_map(|e| vec!["--broken-info".to_string(), e.to_string()])
+        .collect::<Vec<_>>();
+    let ignored_info = IGNORED_DATA
+        .iter()
+        .flat_map(|e| vec!["--ignored-info".to_string(), e.to_string()])
+        .collect::<Vec<_>>();
+
     let child = Command::new("minimizer")
         .arg("--input-file")
         .arg(input_file)
@@ -176,9 +198,10 @@ fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
         .arg("--command")
         .arg(format!("red_knot --current-directory {}", output_folder))
         .arg("--attempts")
-        .arg("20")
-        .arg("--broken-info")
-        .arg("RUST_BACKTRACE")
+        .arg("100")
+        .arg("-r")
+        .args(&broken_info)
+        .args(&ignored_info)
         // .arg("-z")
         // .arg("not yet implemented")
         // .arg("-z")
@@ -252,7 +275,7 @@ fn main() {
         }
 
         let chunks = broken_files
-            .chunks(broken_files.len() / threads)
+            .chunks(broken_files.len() / threads + 1)
             .map(|x| x.to_vec())
             .collect::<Vec<Vec<String>>>();
         chunks.into_par_iter().enumerate().for_each(|(idx, chunk)| {
