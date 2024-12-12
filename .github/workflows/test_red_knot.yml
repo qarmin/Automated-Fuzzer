@@ -48,7 +48,7 @@ jobs:
           sudo apt update
           sudo apt install -y wget
 
-      - name: Install sd
+      - name: Install sd and others
         run: |
           mkdir -p ~/.cargo/bin
           
@@ -58,7 +58,7 @@ jobs:
           rm -rf sd-v1.0.0-x86_64-unknown-linux-musl
           rm -f sd.tar.gz
           
-          cargo install create_broken_files
+          cargo install create_broken_files minimizer
 
       - name: Install ruff and red knot
         run: |
