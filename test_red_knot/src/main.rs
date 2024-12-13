@@ -145,12 +145,16 @@ fn test_with_red_knot(files_to_test: &[String]) {
         let mut all = run_red_knot(&temp_folder);
 
         if contains_broken_data(&all) {
+            let mut minimized_exists = false;
             if RUN_MINIMIZER {
                 run_minimizer(&file, &new_file_name, &temp_folder);
                 all = run_red_knot(&temp_folder);
                 if !contains_broken_data(&all) {
                     eprintln!("Failed to minimize file, output: {all}");
                     // panic!("Failed to minimize file");
+                }
+                if Path::new(&new_file_name).exists() {
+                    minimized_exists = true;
                 }
             }
             let start = if all.contains("is always 'load' but got: 'Invalid'") {
@@ -170,7 +174,11 @@ fn test_with_red_knot(files_to_test: &[String]) {
 
             let random_number = random::<u64>();
             let f_n = format!("{start}_{random_number}.{extension}");
-            fs::copy(&new_file_name, format!("{}/{f_n}", BROKEN_FILES_DIR)).unwrap();
+            if minimized_exists {
+                fs::copy(&new_file_name, format!("{}/{f_n}", BROKEN_FILES_DIR)).unwrap();
+            } else {
+                fs::copy(&file, format!("{}/{f_n}", BROKEN_FILES_DIR)).unwrap();
+            }
             fs::write(format!("{}/{start}_{random_number}.log", BROKEN_FILES_DIR), all).unwrap();
         }
 
