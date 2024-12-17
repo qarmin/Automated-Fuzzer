@@ -24,7 +24,8 @@ pub struct RuffStruct {
 // With this rule here, results can be invalid
 pub const BROKEN_ITEMS_TO_IGNORE: &[&str] = &[
     r#""stack backtrace:\n""#,
-    // "Failed to create fix" // Do not ignore, because normal reports can be hidden inside
+    "AddressSanitizer: stack-overflow", // https://github.com/astral-sh/ruff/issues/14837
+                                       // "Failed to create fix" // Do not ignore, because normal reports can be hidden inside
 ];
 
 pub const BROKEN_ITEMS_TO_FIND: &[&str] = &[
