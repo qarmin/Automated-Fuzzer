@@ -32,7 +32,7 @@ command = "symphonia|FILE_PATHS_TO_PROVIDE"
 extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-group_mode = "by_group" # available: none, by_files, by_group
+group_mode = "none" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
@@ -47,5 +47,5 @@ search_item_103 = "timeout: sending signal"
 #ignored_item_6 = "src/ebml.rs"
 #ignored_item_7 = "src/wave/chunks.rs"
 #ignored_item_8 = "src/atoms/stsc.rs"
-file_type = "none" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
