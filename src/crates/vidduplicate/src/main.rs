@@ -25,7 +25,7 @@ fn main() {
 }
 fn check_file(file_path: &str) {
     println!("Checking file: {:?}", file_path);
-    assert!(ffmpeg_cmdline_utils::ffmpeg_and_ffprobe_are_callable());
+    // assert!(ffmpeg_cmdline_utils::ffmpeg_and_ffprobe_are_callable());
 
     let _vhash = match ffmpeg_builder::VideoHashBuilder::default().hash(PathBuf::from(file_path)) {
         Ok(t) => t,
