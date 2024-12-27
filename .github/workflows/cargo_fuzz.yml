@@ -1,7 +1,7 @@
 name: 🐧 Cargo Fuzz Check
 on:
-  #  push:
-  #  pull_request:
+  push:
+  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -19,62 +19,82 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: LOFTY
-            fuzz_target: lofty
+          - name: SYMPHONIA1
+            fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY2
-            fuzz_target: lofty
+          - name: SYMPHONIA2
+            fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY3
-            fuzz_target: lofty
+          - name: SYMPHONIA3
+            fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY4
-            fuzz_target: lofty
+          - name: SYMPHONIA4
+            fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY5
-            fuzz_target: lofty
+          - name: SYMPHONIA5
+            fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY6
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: LOFTY7
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: NOM_EXIF
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF2
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF3
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF4
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF5
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF6
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF7
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: LOFTY
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY2
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY3
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY4
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY5
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY6
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY7
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: NOM_EXIF
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF2
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF3
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF4
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF5
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF6
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF7
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
           #            timeout: 18000
@@ -91,10 +111,6 @@ jobs:
           #            fuzz_target: rsbuzz
           #            timeout: 18000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #          - name: SYMPHONIA
-          #            fuzz_target: symphonia
-          #            timeout: 18000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
 
     steps:
       - uses: actions/checkout@v4
@@ -162,7 +178,8 @@ jobs:
           export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
           export RUSTFLAGS="-Zsanitizer=address"
           # Example
-          # cargo fuzz build oxc --release --features "oxc_f"
+          # cargo +nightly fuzz build oxc --release --features "oxc_f"
+          # cargo +nightly fuzz build symphonia --release --features "symphonia_f"
           # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=18000 -rss_limit_mb=20000
           cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 

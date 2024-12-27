@@ -18,34 +18,34 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: NOM_EXIF
-            config-file: fuzz_nom_exif_settings_ci.toml
-            timeout: 16000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-            src_folder: nom_exif
-            stability_check: false
-            binary: nom_exif
-          - name: LOFTY
-            config-file: fuzz_lofty_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: lofty
-            stability_check: false
-            binary: lofty
-          - name: SLINT
-            config-file: fuzz_slint_settings_ci.toml
-            timeout: 16000
-            files: "AA_SLINT_FILES.7z"
-            src_folder: slint
-            stability_check: false
-            binary: slint
-          - name: LOPDF
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES.7z"
-            src_folder: lopdf
-            stability_check: false
-            binary: lopdf
+          #          - name: NOM_EXIF - TODO
+          #            config-file: fuzz_nom_exif_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #            src_folder: nom_exif
+          #            stability_check: false
+          #            binary: nom_exif
+          #          - name: LOFTY - TODO
+          #            config-file: fuzz_lofty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            src_folder: lofty
+          #            stability_check: false
+          #            binary: lofty
+          #          - name: SLINT - TODO
+          #            config-file: fuzz_slint_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_SLINT_FILES.7z"
+          #            src_folder: slint
+          #            stability_check: false
+          #            binary: slint
+          #          - name: LOPDF - TODO
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES.7z"
+          #            src_folder: lopdf
+          #            stability_check: false
+          #            binary: lopdf
           - name: VIDDUPLICATE
             config-file: fuzz_vidduplicate_settings_ci.toml
             timeout: 10
@@ -81,27 +81,27 @@ jobs:
             src_folder: vidduplicate
             stability_check: false
             binary: vidduplicate
-          - name: VIDDUPLICATE4
+          - name: VIDDUPLICATE5
             config-file: fuzz_vidduplicate_settings_ci.toml
             timeout: 16000
             files: "AA_VIDEO_VALID_FILES.7z"
             src_folder: vidduplicate
             stability_check: false
             binary: vidduplicate
-          - name: OXC
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-            binary: oxlint
-          - name: BIOME
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-            binary: biome
+          #          - name: OXC - TODO
+          #            config-file: fuzz_oxc_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: oxlint
+          #          - name: BIOME - TODO
+          #            config-file: fuzz_biome_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: biome
           #          - name: Ffull_moonder: font_kit
           #          - name: FULL_MOON
           #            config-file: fuzz_full_moon_settings_ci.toml
@@ -125,20 +125,48 @@ jobs:
           #            src_folder: rsbuzz
           #            stability_check: false
           #            binary: rsbuzz
-          #          - name: SYMPHONIA
-          #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            src_folder: symphonia
-          #            stability_check: false
-          #            binary: symphonia
-          - name: STYLUA
-            config-file: fuzz_stylua_settings_ci.toml
-            timeout: 16000
-            files: "AA_LUA_VALID_FILES.7z"
-            src_folder: ''
+          - name: SYMPHONIA
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 1000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: symphonia
             stability_check: false
-            binary: stylua
+            binary: symphonia
+          - name: SYMPHONIA2
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 2000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA3
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 4000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA4
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 8000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA5
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            src_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          #          - name: STYLUA # TODO
+          #            config-file: fuzz_stylua_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_LUA_VALID_FILES.7z"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: stylua
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000

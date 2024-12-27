@@ -15,7 +15,8 @@ image = { git = "https://github.com/image-rs/image", default-features = false, f
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git", optional = true }
 rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git", optional = true }
 #pdf = { git = "https://github.com/pdf-rs/pdf/" , optional = true}
-symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], optional = true }
+#symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], optional = true }
+symphonia = { git = "https://github.com/sscobici/Symphonia.git", features = ["all"], branch = "mp4-panic-fixes", optional = true}
 zip = { git = "https://github.com/zip-rs/zip2.git", optional = true }
 full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = ["roblox", "lua54"], optional = true }
 
@@ -130,6 +131,13 @@ bench = false
 [[bin]]
 name = "nom_exif"
 path = "fuzz_targets/nom_exif.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "symphonia"
+path = "fuzz_targets/symphonia.rs"
 test = false
 doc = false
 bench = false
