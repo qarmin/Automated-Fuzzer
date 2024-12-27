@@ -1,0 +1,15 @@
+[package]
+name = "vidduplicate"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+vid_dup_finder_lib = "0.2"
+ffmpeg_cmdline_utils = "0.3"
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

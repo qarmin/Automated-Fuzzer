@@ -46,6 +46,48 @@ jobs:
             src_folder: lopdf
             stability_check: false
             binary: lopdf
+          - name: VIDDUPLICATE
+            config-file: fuzz_vidduplicate_settings_ci.toml
+            timeout: 10
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicate
+            stability_check: false
+            binary: vidduplicate
+          - name: VIDDUPLICATE252525
+            config-file: fuzz_vidduplicate_settings_ci.toml
+            timeout: 1000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicate
+            stability_check: false
+            binary: vidduplicate
+          - name: VIDDUPLICATE2
+            config-file: fuzz_vidduplicate_settings_ci.toml
+            timeout: 2000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicate
+            stability_check: false
+            binary: vidduplicate
+          - name: VIDDUPLICATE3
+            config-file: fuzz_vidduplicate_settings_ci.toml
+            timeout: 4000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicate
+            stability_check: false
+            binary: vidduplicate
+          - name: VIDDUPLICATE4
+            config-file: fuzz_vidduplicate_settings_ci.toml
+            timeout: 8000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicate
+            stability_check: false
+            binary: vidduplicate
+          - name: VIDDUPLICATE4
+            config-file: fuzz_vidduplicate_settings_ci.toml
+            timeout: 16000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicate
+            stability_check: false
+            binary: vidduplicate
           - name: OXC
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 16000
@@ -53,27 +95,6 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: oxlint
-            #          - name: OXC2
-            #            config-file: fuzz_oxc_settings_ci.toml
-            #            timeout: 1000
-            #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            #            src_folder: ''
-            #            stability_check: false
-            #            binary: oxlint
-            #          - name: OXC3
-            #            config-file: fuzz_oxc_settings_ci.toml
-            #            timeout: 2000
-            #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            #            src_folder: ''
-            #            stability_check: false
-            #            binary: oxlint
-            #          - name: OXC4
-            #            config-file: fuzz_oxc_settings_ci.toml
-            #            timeout: 4000
-            #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            #            src_folder: ''
-            #            stability_check: false
-            #            binary: oxlint
           - name: BIOME
             config-file: fuzz_biome_settings_ci.toml
             timeout: 16000
