@@ -39,6 +39,34 @@ jobs:
             fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
+          - name: SYMPHONIA5
+            fuzz_target: symphonia
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
+          - name: VIDDUPLICATE
+            fuzz_target: vidduplicate
+            timeout: 18000
+            files: "AA_VIDEO_VALID_FILES.7z"
+          - name: VIDDUPLICATE
+            fuzz_target: vidduplicate
+            timeout: 18000
+            files: "AA_VIDEO_VALID_FILES.7z"
+          - name: VIDDUPLICATE2
+            fuzz_target: vidduplicate
+            timeout: 18000
+            files: "AA_VIDEO_VALID_FILES.7z"
+          - name: VIDDUPLICATE3
+            fuzz_target: vidduplicate
+            timeout: 18000
+            files: "AA_VIDEO_VALID_FILES.7z"
+          - name: VIDDUPLICATE4
+            fuzz_target: vidduplicate
+            timeout: 18000
+            files: "AA_VIDEO_VALID_FILES.7z"
+          - name: VIDDUPLICATE5
+            fuzz_target: vidduplicate
+            timeout: 18000
+            files: "AA_VIDEO_VALID_FILES.7z"
           #          - name: LOFTY
           #            fuzz_target: lofty
           #            timeout: 18000
@@ -124,7 +152,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8 llvm ffmpeg
+          sudo apt install -y wget earlyoom libasan8 llvm ffmpeg libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
           sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
       - name: Install cargo fuzz and minimizer
@@ -180,6 +208,7 @@ jobs:
           # Example
           # cargo +nightly fuzz build oxc --release --features "oxc_f"
           # cargo +nightly fuzz build symphonia --release --features "symphonia_f"
+          # cargo +nightly fuzz build vidduplicate --release --features "vidduplicate_f"
           # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=18000 -rss_limit_mb=20000
           cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 

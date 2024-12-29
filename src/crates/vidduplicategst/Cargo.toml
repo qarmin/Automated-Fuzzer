@@ -1,10 +1,10 @@
 [package]
-name = "vidduplicate"
+name = "vidduplicategst"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib" }
+vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", features = ["gstreamer_backend"], no-default-features = true }
 ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib" }
 walkdir = "2.5.0"
 

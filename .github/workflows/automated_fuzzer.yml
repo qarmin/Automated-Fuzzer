@@ -88,6 +88,27 @@ jobs:
             src_folder: vidduplicate
             stability_check: false
             binary: vidduplicate
+          - name: VIDDUPLICATEGST
+            config-file: fuzz_vidduplicategst_settings_ci.toml
+            timeout: 16000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicategst
+            stability_check: false
+            binary: vidduplicategst
+          - name: VIDDUPLICATEGST2
+            config-file: fuzz_vidduplicategst_settings_ci.toml
+            timeout: 16000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicategst
+            stability_check: false
+            binary: vidduplicategst
+          - name: VIDDUPLICATEGST3
+            config-file: fuzz_vidduplicategst_settings_ci.toml
+            timeout: 16000
+            files: "AA_VIDEO_VALID_FILES.7z"
+            src_folder: vidduplicategst
+            stability_check: false
+            binary: vidduplicategst
           #          - name: OXC - TODO
           #            config-file: fuzz_oxc_settings_ci.toml
           #            timeout: 16000
@@ -127,34 +148,6 @@ jobs:
           #            binary: rsbuzz
           - name: SYMPHONIA
             config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 1000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: symphonia
-            stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA2
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 2000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: symphonia
-            stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA3
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 4000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: symphonia
-            stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA4
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 8000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: symphonia
-            stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA5
-            config-file: fuzz_symphonia_settings_ci.toml
             timeout: 16000
             files: "AA_MUSIC_VALID_FILES.7z"
             src_folder: symphonia
@@ -187,7 +180,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8 llvm ffmpeg
+          sudo apt install -y wget earlyoom libasan8 llvm ffmpeg libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
           sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
       - name: Install create_broken_files and sd
