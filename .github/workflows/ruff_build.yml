@@ -71,5 +71,5 @@ jobs:
             red_knot.7z
             ruff_normal.7z
             red_knot_normal.7z
-          token: ${{ secrets.PAT_REPOSITORY }}
+          token: ${{ secrets.PAT2 }}
 

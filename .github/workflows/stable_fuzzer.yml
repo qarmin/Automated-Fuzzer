@@ -26,13 +26,6 @@ jobs:
             src_folder: dicom
             stability_check: false
             binary: dicom
-          - name: IMAGE_HASHER
-            config-file: fuzz_image_hasher_settings_ci.toml
-            timeout: 3600
-            files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: image_hasher
-            stability_check: false
-            binary: image_hasher
           - name: PDF_RS
             config-file: fuzz_pdf_rs_settings_ci.toml
             timeout: 3600
@@ -353,7 +346,7 @@ jobs:
           tag_name: "Nightly"
           files: |
             ${{ matrix.binary }}.7z
-          token: ${{ secrets.PAT_REPOSITORY }}
+          token: ${{ secrets.PAT2 }}
 
       - name: Exit when found broken files
         run: |

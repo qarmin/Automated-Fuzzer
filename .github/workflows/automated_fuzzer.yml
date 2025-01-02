@@ -437,7 +437,7 @@ jobs:
           tag_name: "Nightly"
           files: |
             ${{ matrix.binary }}.7z
-          token: ${{ secrets.PAT_REPOSITORY }}
+          token: ${{ secrets.PAT2 }}
 
       - name: Exit when found broken files
         run: |
