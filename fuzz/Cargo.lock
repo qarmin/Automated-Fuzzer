@@ -1082,7 +1082,7 @@ dependencies = [
 [[package]]
 name = "ffmpeg_cmdline_utils"
 version = "0.3.0"
-source = "git+https://github.com/Farmadupe/vid_dup_finder_lib#cab9e1f858dc5862747d86f207cb2dad8fb5bf7b"
+source = "git+https://github.com/Farmadupe/vid_dup_finder_lib?rev=c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b#c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b"
 dependencies = [
  "image 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
@@ -1094,7 +1094,7 @@ dependencies = [
 [[package]]
 name = "ffmpeg_gst_wrapper"
 version = "0.2.0"
-source = "git+https://github.com/Farmadupe/vid_dup_finder_lib#cab9e1f858dc5862747d86f207cb2dad8fb5bf7b"
+source = "git+https://github.com/Farmadupe/vid_dup_finder_lib?rev=c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b#c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b"
 dependencies = [
  "ffmpeg_cmdline_utils",
  "image 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3583,7 +3583,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 [[package]]
 name = "vid_dup_finder_common"
 version = "0.2.0"
-source = "git+https://github.com/Farmadupe/vid_dup_finder_lib#cab9e1f858dc5862747d86f207cb2dad8fb5bf7b"
+source = "git+https://github.com/Farmadupe/vid_dup_finder_lib?rev=c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b#c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b"
 dependencies = [
  "fast_image_resize",
  "image 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -3596,7 +3596,7 @@ dependencies = [
 [[package]]
 name = "vid_dup_finder_lib"
 version = "0.2.0"
-source = "git+https://github.com/Farmadupe/vid_dup_finder_lib#cab9e1f858dc5862747d86f207cb2dad8fb5bf7b"
+source = "git+https://github.com/Farmadupe/vid_dup_finder_lib?rev=c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b#c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b"
 dependencies = [
  "bitvec",
  "enum-utils",

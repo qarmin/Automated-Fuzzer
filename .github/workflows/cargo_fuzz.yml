@@ -23,26 +23,26 @@ jobs:
             fuzz_target: symphonia
             timeout: 18000
             files: "AA_MUSIC_VALID_FILES.7z"
-          - name: SYMPHONIA2
-            fuzz_target: symphonia
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: SYMPHONIA3
-            fuzz_target: symphonia
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: SYMPHONIA4
-            fuzz_target: symphonia
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: SYMPHONIA5
-            fuzz_target: symphonia
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: SYMPHONIA5
-            fuzz_target: symphonia
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
+#          - name: SYMPHONIA2
+#            fuzz_target: symphonia
+#            timeout: 18000
+#            files: "AA_MUSIC_VALID_FILES.7z"
+#          - name: SYMPHONIA3
+#            fuzz_target: symphonia
+#            timeout: 18000
+#            files: "AA_MUSIC_VALID_FILES.7z"
+#          - name: SYMPHONIA4
+#            fuzz_target: symphonia
+#            timeout: 18000
+#            files: "AA_MUSIC_VALID_FILES.7z"
+#          - name: SYMPHONIA5
+#            fuzz_target: symphonia
+#            timeout: 18000
+#            files: "AA_MUSIC_VALID_FILES.7z"
+#          - name: SYMPHONIA6
+#            fuzz_target: symphonia
+#            timeout: 18000
+#            files: "AA_MUSIC_VALID_FILES.7z"
           - name: VIDDUPLICATE
             fuzz_target: vidduplicate
             timeout: 18000

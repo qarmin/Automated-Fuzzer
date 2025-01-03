@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", features = ["gstreamer_backend"], no-default-features = true }
-ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib" }
+vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", features = ["gstreamer_backend"], no-default-features = true, rev = "c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b" }
+ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", rev = "c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b" }
 walkdir = "2.5.0"
 
 [profile.release]
