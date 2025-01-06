@@ -47,10 +47,6 @@ jobs:
             fuzz_target: vidduplicate
             timeout: 18000
             files: "AA_VIDEO_VALID_FILES.7z"
-          - name: VIDDUPLICATE
-            fuzz_target: vidduplicate
-            timeout: 18000
-            files: "AA_VIDEO_VALID_FILES.7z"
           - name: VIDDUPLICATE2
             fuzz_target: vidduplicate
             timeout: 18000

@@ -37,13 +37,15 @@ jobs:
           sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          echo -e "\n[features]\ntest-rules = [\"ruff_linter/test-rules\"]" >> crates/ruff/Cargo.toml
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
-          cargo build --release               
-          # Looks that ruff with address sanitizer takes ~10 GB of space
+          
+          cargo build --release --features test-rules
           mv target/release/ruff ../ruff_normal
           mv target/release/red_knot ../red_knot_normal
-          RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --release --target x86_64-unknown-linux-gnu
+          
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --release --target x86_64-unknown-linux-gnu --features test-rules
           mv target/x86_64-unknown-linux-gnu/release/ruff ../ruff2
           mv target/x86_64-unknown-linux-gnu/release/red_knot ../red_knot
           

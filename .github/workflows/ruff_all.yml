@@ -113,16 +113,17 @@ jobs:
           sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          echo -e "\n[features]\ntest-rules = [\"ruff_linter/test-rules\"]" >> crates/ruff/Cargo.toml
           sd "MAX_ITERATIONS: usize = 100;" "MAX_ITERATIONS: usize = 500;" crates/ruff_linter/src/linter.rs
           rm rust-toolchain.toml
           
           if [ "${{ matrix.asan_build }}" = "true" ]; then
             echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/ruff --locked --target x86_64-unknown-linux-gnu
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/ruff --locked --target x86_64-unknown-linux-gnu --features test-rules
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/red_knot --locked --target x86_64-unknown-linux-gnu
           else
             echo "NORMAL BUILD___"
-            cargo install --path crates/ruff --locked
+            cargo install --path crates/ruff --locked --features test-rules
             cargo install --path crates/red_knot/ --locked
           fi
           
