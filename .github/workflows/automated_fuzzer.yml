@@ -18,6 +18,13 @@ jobs:
       fail-fast: false
       matrix:
         include:
+          - name: FAST_IMAGE_RESIZER
+            config-file: fuzz_fast_image_resizer_settings_ci.toml
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+            src_folder: fast_image_resizer
+            stability_check: false
+            binary: fast_image_resizer
           - name: NOM_EXIF
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 16000
