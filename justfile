@@ -1,8 +1,7 @@
 upgrade:
     cargo +nightly -Z unstable-options update --breaking
     cargo update
-
-update_all:
+    for dir in */; do (cd "$dir" && cargo +nightly -Z unstable-options update --breaking); done
     for dir in */; do (cd "$dir" && cargo update); done
 
 fix:

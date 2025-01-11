@@ -155,7 +155,7 @@ checksum = "0ae92a5119aa49cdbcf6b9f893fe4e1d98b04ccbf82ee0584ad948a44a734dea"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -260,9 +260,9 @@ checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
 
 [[package]]
 name = "bitflags"
-version = "2.6.0"
+version = "2.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b048fb63fd8b5923fc5aa7b340d8e156aec7ec02f0c78fa8a6ddc2613f6f71de"
+checksum = "1be3f42a67d6d345ecd59f675f3f012d6974981560836e938c22b424b85ce1be"
 
 [[package]]
 name = "bitstream-io"
@@ -368,9 +368,9 @@ checksum = "325918d6fe32f23b19878fe4b34794ae41fc19ddbe53b10571a4874d44ffd39b"
 
 [[package]]
 name = "bzip2"
-version = "0.4.4"
+version = "0.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bdb116a6ef3f6c3698828873ad02c3014b3c85cadb88496095628e3ef1e347f8"
+checksum = "bafdbf26611df8c14810e268ddceda071c297570a5fb360ceddf617fe417ef58"
 dependencies = [
  "bzip2-sys",
  "libc",
@@ -398,9 +398,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.5"
+version = "1.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c31a0499c1dc64f458ad13872de75c0eb7e3fdb0e67964610c914b034fc5956e"
+checksum = "ad0cf6e91fde44c773c6ee7ec6bba798504641a8bc2eb7e37a04ffbf4dfaa55a"
 dependencies = [
  "jobserver",
  "libc",
@@ -455,9 +455,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.23"
+version = "4.5.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3135e7ec2ef7b10c6ed8950f0f792ed96ee093fa088608f1c76e569722700c84"
+checksum = "a8eb5e908ef3a6efbe1ed62520fb7287959888c88485abe072543190ecc66783"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -465,9 +465,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.23"
+version = "4.5.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30582fc632330df2bd26877bde0c1f4470d57c582bbc070376afcd04d8cb4838"
+checksum = "96b01801b5fc6a0a232407abc821660c9c6d25a1cafc0d4f85f29fb8d9afc121"
 dependencies = [
  "anstream",
  "anstyle",
@@ -477,14 +477,14 @@ dependencies = [
 
 [[package]]
 name = "clap_derive"
-version = "4.5.18"
+version = "4.5.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4ac6a0c7b1a9e9a5186361f67dfa1b88213572f427fb9ab038efb2bd8c582dab"
+checksum = "54b755194d6389280185988721fffba69495eed5ee9feeee9a599b53db80318c"
 dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -681,7 +681,7 @@ checksum = "30542c1ad912e0e3d22a1935c290e12e8a29d704a420177a31faad4a601a0800"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -701,14 +701,14 @@ checksum = "cb7330aeadfbe296029522e6c40f315320aba36fc43a5b3632f3795348f3bd22"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
  "unicode-xid",
 ]
 
 [[package]]
 name = "dicom-core"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "chrono",
  "itertools 0.13.0",
@@ -721,7 +721,7 @@ dependencies = [
 [[package]]
 name = "dicom-dictionary-std"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "dicom-core",
  "once_cell",
@@ -730,7 +730,7 @@ dependencies = [
 [[package]]
 name = "dicom-dump"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "clap",
  "dicom-core",
@@ -748,7 +748,7 @@ dependencies = [
 [[package]]
 name = "dicom-encoding"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -761,7 +761,7 @@ dependencies = [
 [[package]]
 name = "dicom-json"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "base64",
  "dicom-core",
@@ -776,7 +776,7 @@ dependencies = [
 [[package]]
 name = "dicom-object"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -793,7 +793,7 @@ dependencies = [
 [[package]]
 name = "dicom-parser"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "dicom-core",
  "dicom-dictionary-std",
@@ -806,7 +806,7 @@ dependencies = [
 [[package]]
 name = "dicom-transfer-syntax-registry"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -821,7 +821,7 @@ dependencies = [
 [[package]]
 name = "dicom-ul"
 version = "0.8.0"
-source = "git+https://github.com/Enet4/dicom-rs#4a5cd919c3ddf0f12b7abbf12b9d46149bda91f7"
+source = "git+https://github.com/Enet4/dicom-rs#17e26a0c3af51037ad331b3895062157ee63318f"
 dependencies = [
  "byteordered",
  "bytes",
@@ -871,7 +871,7 @@ checksum = "97369cbbc041bc366949bc74d34658d6cda5621039731c6310521892a3a20ae0"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -1087,7 +1087,7 @@ dependencies = [
  "image 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
  "serde_json",
- "thiserror 2.0.9",
+ "thiserror 2.0.11",
  "winapi",
 ]
 
@@ -1099,7 +1099,7 @@ dependencies = [
  "ffmpeg_cmdline_utils",
  "image 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
  "serde",
- "thiserror 2.0.9",
+ "thiserror 2.0.11",
  "url",
 ]
 
@@ -1124,7 +1124,7 @@ name = "font-kit"
 version = "0.14.2"
 source = "git+https://github.com/servo/font-kit.git#d49041ca57da4e9b412951f96f74cb34e3b6324f"
 dependencies = [
- "bitflags 2.6.0",
+ "bitflags 2.7.0",
  "byteorder",
  "core-foundation",
  "core-graphics",
@@ -1161,7 +1161,7 @@ checksum = "1a5c6c585bc94aaf2c7b51dd4c2ba22680844aba4c687be581871a6f518c5742"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -1192,8 +1192,8 @@ dependencies = [
 
 [[package]]
 name = "full_moon"
-version = "1.1.2"
-source = "git+https://github.com/Kampfkarren/full-moon.git#671a28948be59189c3be4c730d345d67edc2965a"
+version = "1.2.0"
+source = "git+https://github.com/Kampfkarren/full-moon.git#aeb4d4bcf9ed491ed2139dc3cab61f90b77532f1"
 dependencies = [
  "bytecount",
  "cfg-if",
@@ -1207,7 +1207,7 @@ dependencies = [
 [[package]]
 name = "full_moon_derive"
 version = "0.11.0"
-source = "git+https://github.com/Kampfkarren/full-moon.git#671a28948be59189c3be4c730d345d67edc2965a"
+source = "git+https://github.com/Kampfkarren/full-moon.git#aeb4d4bcf9ed491ed2139dc3cab61f90b77532f1"
 dependencies = [
  "indexmap",
  "proc-macro2",
@@ -1316,13 +1316,13 @@ dependencies = [
 
 [[package]]
 name = "i-slint-common"
-version = "1.9.1"
-source = "git+https://github.com/slint-ui/slint.git#266c6039702e82f60c6eb9c4ea7e368372a264b3"
+version = "1.9.2"
+source = "git+https://github.com/slint-ui/slint.git#57f42c087001628ba17fd70008d93fcc439c1dc6"
 
 [[package]]
 name = "i-slint-compiler"
-version = "1.9.1"
-source = "git+https://github.com/slint-ui/slint.git#266c6039702e82f60c6eb9c4ea7e368372a264b3"
+version = "1.9.2"
+source = "git+https://github.com/slint-ui/slint.git#57f42c087001628ba17fd70008d93fcc439c1dc6"
 dependencies = [
  "by_address",
  "derive_more",
@@ -1336,7 +1336,6 @@ dependencies = [
  "rowan",
  "smol_str",
  "strum",
- "thiserror 1.0.69",
  "url",
 ]
 
@@ -1478,7 +1477,7 @@ checksum = "1ec89e9337638ecdc08744df490b221a7399bf8d164eb52a665454e60e075ad6"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -1528,7 +1527,7 @@ dependencies = [
 [[package]]
 name = "image"
 version = "0.25.5"
-source = "git+https://github.com/image-rs/image#2125965fdc23ea0544fd585f6e934cc7762c1f51"
+source = "git+https://github.com/image-rs/image#e0c250fa0a0ff458bef96a795ecf108494a160cf"
 dependencies = [
  "bytemuck",
  "byteorder-lite",
@@ -1554,8 +1553,8 @@ dependencies = [
 
 [[package]]
 name = "image_hasher"
-version = "2.0.0"
-source = "git+https://github.com/qarmin/img_hash.git#6368f0971d94dcad4d2c0f4b7c0d06f0d530c580"
+version = "3.0.0"
+source = "git+https://github.com/qarmin/img_hash.git#c74a34d6ac7cc6e7e9cb775e225bc515446cfcbf"
 dependencies = [
  "base64",
  "image 0.25.5 (registry+https://github.com/rust-lang/crates.io-index)",
@@ -1616,14 +1615,14 @@ checksum = "c34819042dc3d3971c46c2190835914dfbe0c3c13f61449b2997f4e9722dfa60"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
 name = "inventory"
-version = "0.3.16"
+version = "0.3.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e5d80fade88dd420ce0d9ab6f7c58ef2272dde38db874657950f827d4982c817"
+checksum = "3b31349d02fe60f80bbbab1a9402364cad7460626d6030494b08ac4a2075bf81"
 dependencies = [
  "rustversion",
 ]
@@ -1771,9 +1770,9 @@ dependencies = [
 
 [[package]]
 name = "jxl-grid"
-version = "0.5.2"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "80f25f406f215f07f0b994801bc2d6adbfcd5710fcdd8f12d662e80700469e6c"
+checksum = "5739f02add3d5c00320140bec6f5a80fac4baa630f88fe4c6a55a0d719718ce3"
 dependencies = [
  "tracing",
 ]
@@ -1926,7 +1925,7 @@ version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c0ff37bd590ca25063e35af745c343cb7a0271906fb7b37e4813e8f79f00268d"
 dependencies = [
- "bitflags 2.6.0",
+ "bitflags 2.7.0",
  "libc",
 ]
 
@@ -1947,9 +1946,9 @@ dependencies = [
 
 [[package]]
 name = "linux-raw-sys"
-version = "0.4.14"
+version = "0.4.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78b3ae25bc7c8c38cec158d1f2757ee79e9b3740fbc7ccf0e59e4b08d793fa89"
+checksum = "d26c52dbd32dccf2d10cac7725f8eae5296885fb5703b261f7d0a0739ec807ab"
 
 [[package]]
 name = "litemap"
@@ -1965,8 +1964,8 @@ checksum = "9374ef4228402d4b7e403e5838cb880d9ee663314b0a900d5a6aabf0c213552e"
 
 [[package]]
 name = "lofty"
-version = "0.21.1"
-source = "git+https://github.com/Serial-ATA/lofty-rs/#dd4e926db4eaec593b051c34717a7fbae162397f"
+version = "0.22.0"
+source = "git+https://github.com/Serial-ATA/lofty-rs/#909de09bc8755bae76653f6d36d330fecdae88ee"
 dependencies = [
  "byteorder",
  "data-encoding",
@@ -1985,14 +1984,14 @@ checksum = "28bd4b9d8a5af74808932492521cdd272019b056f75fcc70056bd2c09fceb550"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
 name = "log"
-version = "0.4.22"
+version = "0.4.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
+checksum = "3d6ea2a48c204030ee31a7d7fc72c93294c92fe87ecb1789881c9543516e1a0d"
 
 [[package]]
 name = "loop9"
@@ -2006,7 +2005,7 @@ dependencies = [
 [[package]]
 name = "lopdf"
 version = "0.34.0"
-source = "git+https://github.com/J-F-Liu/lopdf.git#34e2d2072069c58a40703666dae1e13086ffd074"
+source = "git+https://github.com/J-F-Liu/lopdf.git#8819727562623750e71f4db5309e46a64189b272"
 dependencies = [
  "aes",
  "cbc",
@@ -2021,7 +2020,7 @@ dependencies = [
  "nom_locate",
  "rangemap",
  "rayon",
- "thiserror 2.0.9",
+ "thiserror 2.0.11",
  "time",
  "weezl",
 ]
@@ -2243,7 +2242,7 @@ checksum = "ed3955f1a9c7c0c15e092f9c887db08b1fc683305fdf6eb6684f22555355e202"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -2305,7 +2304,7 @@ dependencies = [
  "proc-macro-crate",
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -2319,8 +2318,9 @@ dependencies = [
 
 [[package]]
 name = "ogg_pager"
-version = "0.6.1"
-source = "git+https://github.com/Serial-ATA/lofty-rs/#dd4e926db4eaec593b051c34717a7fbae162397f"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e034c10fb5c1c012c1b327b85df89fb0ef98ae66ec28af30f0d1eed804a40c19"
 dependencies = [
  "byteorder",
 ]
@@ -2399,9 +2399,9 @@ checksum = "e3148f5046208a5d56bcfc03053e3ca6334e51da8dfb19b6cdc8b306fae3283e"
 
 [[package]]
 name = "pin-project-lite"
-version = "0.2.15"
+version = "0.2.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "915a1e146535de9163f3987b8944ed8cf49a18bb0056bcebcdcece385cece4ff"
+checksum = "3b3cff922bd51709b605d9ead9aa71031d81447142d828eb4a6eba76fe619f9b"
 
 [[package]]
 name = "pin-utils"
@@ -2478,9 +2478,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.92"
+version = "1.0.93"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "37d3544b3f2748c54e147655edb5025752e2303145b5aefb3c3ea2c78b973bb0"
+checksum = "60946a68e5f9d28b0dc1c21bb8a97ee7d018a8b322fa57838ba31cc878e22d99"
 dependencies = [
  "unicode-ident",
 ]
@@ -2501,7 +2501,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a65f2e60fbf1063868558d69c6beacf412dc755f9fc020f514b7955fc914fe30"
 dependencies = [
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -2691,12 +2691,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "regex-lite"
-version = "0.1.6"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "53a49587ad06b26609c52e423de037e7f57f20d53535d66e08c695f347df952a"
-
-[[package]]
 name = "regex-syntax"
 version = "0.8.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2710,9 +2704,9 @@ checksum = "57397d16646700483b67d2dd6511d79318f9d057fdbd21a4066aeac8b41d310a"
 
 [[package]]
 name = "rowan"
-version = "0.15.16"
+version = "0.16.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0a542b0253fa46e632d27a1dc5cf7b930de4df8659dc6e720b647fc72147ae3d"
+checksum = "417a3a9f582e349834051b8a10c8d71ca88da4211e4093528e36b9845f6b5f21"
 dependencies = [
  "countme",
  "hashbrown 0.14.5",
@@ -2767,11 +2761,11 @@ dependencies = [
 
 [[package]]
 name = "rustix"
-version = "0.38.42"
+version = "0.38.43"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f93dc38ecbab2eb790ff964bb77fa94faf256fd3e73285fd7ba0903b76bedb85"
+checksum = "a78891ee6bf2340288408954ac787aa063d8e8817e9f53abb37c695c6d834ef6"
 dependencies = [
- "bitflags 2.6.0",
+ "bitflags 2.7.0",
  "errno",
  "libc",
  "linux-raw-sys",
@@ -2780,16 +2774,16 @@ dependencies = [
 
 [[package]]
 name = "rustversion"
-version = "1.0.18"
+version = "1.0.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0e819f2bc632f285be6d7cd36e25940d45b2391dd6d9b939e79de557f7014248"
+checksum = "f7c45b9784283f1b2e7fb61b42047c2fd678ef0960d4f6f1eba131594cc369d4"
 
 [[package]]
 name = "rustybuzz"
 version = "0.20.1"
 source = "git+https://github.com/RazrFalcon/rustybuzz.git#9473e49891dbaafe705735e130806e49422adc66"
 dependencies = [
- "bitflags 2.6.0",
+ "bitflags 2.7.0",
  "bytemuck",
  "core_maths",
  "log",
@@ -2839,22 +2833,22 @@ checksum = "3cb6eb87a131f756572d7fb904f6e7b68633f09cca868c5df1c4b8d1a694bbba"
 
 [[package]]
 name = "serde"
-version = "1.0.216"
+version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0b9781016e935a97e8beecf0c933758c97a5520d32930e460142b4cd80c6338e"
+checksum = "02fc4265df13d6fa1d00ecff087228cc0a2b5f3c0e87e258d8b94a156e984c70"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.216"
+version = "1.0.217"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46f859dbbf73865c6627ed570e78961cd3ac92407a2d117204c49232485da55e"
+checksum = "5a9bf7cf98d04a2b28aead066b7496853d4779c9cc183c440dbac457641e19a0"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -2870,9 +2864,9 @@ dependencies = [
 
 [[package]]
 name = "serde_json"
-version = "1.0.134"
+version = "1.0.135"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d00f4175c42ee48b15416f6193a959ba3a0d67fc699a0db9ad12df9f83991c7d"
+checksum = "2b0d7ba2887406110130a978386c4e1befb98c674b4fba677954e4db976630d9"
 dependencies = [
  "indexmap",
  "itoa",
@@ -2969,7 +2963,7 @@ dependencies = [
  "heck",
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3018,7 +3012,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustversion",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3049,7 +3043,7 @@ dependencies = [
 [[package]]
 name = "symphonia"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "lazy_static",
  "symphonia-bundle-flac",
@@ -3071,28 +3065,29 @@ dependencies = [
 [[package]]
 name = "symphonia-bundle-flac"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
- "symphonia-common",
  "symphonia-core",
  "symphonia-metadata",
+ "symphonia-utils-xiph",
 ]
 
 [[package]]
 name = "symphonia-bundle-mp3"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "lazy_static",
  "log",
  "symphonia-core",
+ "symphonia-metadata",
 ]
 
 [[package]]
 name = "symphonia-codec-aac"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "lazy_static",
  "log",
@@ -3102,7 +3097,7 @@ dependencies = [
 [[package]]
 name = "symphonia-codec-adpcm"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
  "symphonia-core",
@@ -3111,7 +3106,7 @@ dependencies = [
 [[package]]
 name = "symphonia-codec-alac"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
  "symphonia-core",
@@ -3120,7 +3115,7 @@ dependencies = [
 [[package]]
 name = "symphonia-codec-pcm"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
  "symphonia-core",
@@ -3129,81 +3124,74 @@ dependencies = [
 [[package]]
 name = "symphonia-codec-vorbis"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
- "symphonia-common",
  "symphonia-core",
-]
-
-[[package]]
-name = "symphonia-common"
-version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
-dependencies = [
- "symphonia-core",
- "symphonia-metadata",
+ "symphonia-utils-xiph",
 ]
 
 [[package]]
 name = "symphonia-core"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
- "bitflags 2.6.0",
+ "arrayvec",
+ "bitflags 1.3.2",
  "bytemuck",
  "lazy_static",
  "log",
- "num-complex",
- "smallvec",
 ]
 
 [[package]]
 name = "symphonia-format-caf"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
  "symphonia-core",
+ "symphonia-metadata",
 ]
 
 [[package]]
 name = "symphonia-format-isomp4"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
+ "encoding_rs",
  "log",
- "symphonia-common",
  "symphonia-core",
  "symphonia-metadata",
+ "symphonia-utils-xiph",
 ]
 
 [[package]]
 name = "symphonia-format-mkv"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "lazy_static",
  "log",
- "symphonia-common",
  "symphonia-core",
+ "symphonia-metadata",
+ "symphonia-utils-xiph",
 ]
 
 [[package]]
 name = "symphonia-format-ogg"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "log",
- "symphonia-common",
  "symphonia-core",
  "symphonia-metadata",
+ "symphonia-utils-xiph",
 ]
 
 [[package]]
 name = "symphonia-format-riff"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
  "extended",
  "log",
@@ -3214,13 +3202,21 @@ dependencies = [
 [[package]]
 name = "symphonia-metadata"
 version = "0.5.4"
-source = "git+https://github.com/sscobici/Symphonia.git?branch=mp4-panic-fixes#a32dcd55595315671b32967e8cf01354a31fd23e"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
 dependencies = [
+ "encoding_rs",
  "lazy_static",
  "log",
- "regex-lite",
- "smallvec",
  "symphonia-core",
+]
+
+[[package]]
+name = "symphonia-utils-xiph"
+version = "0.5.4"
+source = "git+https://github.com/pdeljanov/Symphonia.git#64171c336be5519692c8149968ae2fe1fb7ef8e5"
+dependencies = [
+ "symphonia-core",
+ "symphonia-metadata",
 ]
 
 [[package]]
@@ -3236,9 +3232,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.91"
+version = "2.0.96"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d53cbcb5a243bd33b7858b1d7f4aca2153490815872d86d955d6ea29f743c035"
+checksum = "d5d0adab1ae378d7f53bdebc67a39f1f151407ef230f0ce2883572f5d8985c80"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3253,7 +3249,7 @@ checksum = "c8af7666ab7b6390ab78131fb5b0fce11d6b7a6951602017c35fa82800708971"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3283,12 +3279,13 @@ checksum = "61c41af27dd6d1e27b1b16b489db798443478cef1f06a660c96db617ba5de3b1"
 
 [[package]]
 name = "tempfile"
-version = "3.14.0"
+version = "3.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28cce251fcbc87fac86a866eeb0d6c2d536fc16d06f184bb61aeae11aa4cee0c"
+checksum = "9a8a559c81686f576e8cd0290cd2a24a2a9ad80c98b3478856500fcbd7acd704"
 dependencies = [
  "cfg-if",
  "fastrand",
+ "getrandom",
  "once_cell",
  "rustix",
  "windows-sys 0.59.0",
@@ -3321,11 +3318,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.9"
+version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f072643fd0190df67a8bab670c20ef5d8737177d6ac6b2e9a236cb096206b2cc"
+checksum = "d452f284b73e6d76dd36758a0c8684b1d5be31f92b89d07fd5822175732206fc"
 dependencies = [
- "thiserror-impl 2.0.9",
+ "thiserror-impl 2.0.11",
 ]
 
 [[package]]
@@ -3336,18 +3333,18 @@ checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.9"
+version = "2.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b50fa271071aae2e6ee85f842e2e28ba8cd2c5fb67f11fcb1fd70b276f9e7d4"
+checksum = "26afc1baea8a989337eeb52b6e72a039780ce45c3edfcc9c5b9d112feeb173c2"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3455,7 +3452,7 @@ checksum = "395ae124c09f9e6918a2310af6038fba074bcf474ac352496d5910dd59a2226d"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3607,7 +3604,7 @@ dependencies = [
  "rand",
  "rustdct",
  "serde",
- "thiserror 2.0.9",
+ "thiserror 2.0.11",
  "vid_dup_finder_common",
 ]
 
@@ -3648,7 +3645,7 @@ dependencies = [
  "log",
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
  "wasm-bindgen-shared",
 ]
 
@@ -3670,7 +3667,7 @@ checksum = "30d7a95b763d3c45903ed6c81f156801839e5ee968bb07e534c44df0fcd330c2"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -3689,9 +3686,9 @@ checksum = "53a85b86a771b1c87058196170769dd264f66c0782acf1ae6cc51bfd64b39082"
 
 [[package]]
 name = "wide"
-version = "0.7.30"
+version = "0.7.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "58e6db2670d2be78525979e9a5f9c69d296fd7d670549fe9ebf70f8708cb5019"
+checksum = "41b5576b9a81633f3e8df296ce0063042a73507636cbe956c61133dd7034ab22"
 dependencies = [
  "bytemuck",
  "safe_arch",
@@ -3887,9 +3884,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "0.6.20"
+version = "0.6.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36c1fec1a2bb5866f07c25f68c26e565c4c200aebb96d7e55710c19d3e8ac49b"
+checksum = "c8d71a593cc5c42ad7876e2c1fda56f314f3754c084128833e64f1345ff8a03a"
 dependencies = [
  "memchr",
 ]
@@ -3955,7 +3952,7 @@ checksum = "2380878cad4ac9aac1e2435f3eb4020e8374b5f13c296cb75b4620ff8e229154"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
  "synstructure",
 ]
 
@@ -3977,7 +3974,7 @@ checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -3997,7 +3994,7 @@ checksum = "595eed982f7d355beb85837f651fa22e90b3c044842dc7f2c2842c086f295808"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
  "synstructure",
 ]
 
@@ -4018,7 +4015,7 @@ checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
@@ -4040,13 +4037,13 @@ checksum = "6eafa6dfb17584ea3e2bd6e76e0cc15ad7af12b09abdd1ca55961bed9b1063c6"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.91",
+ "syn 2.0.96",
 ]
 
 [[package]]
 name = "zip"
 version = "2.2.2"
-source = "git+https://github.com/zip-rs/zip2.git#e074e09b83df2406ebc904200c1a4dc94345d7db"
+source = "git+https://github.com/zip-rs/zip2.git#7c20fa30016301909bf2ade203cb4841b7776154"
 dependencies = [
  "aes",
  "arbitrary",
@@ -4064,7 +4061,7 @@ dependencies = [
  "pbkdf2",
  "rand",
  "sha1",
- "thiserror 2.0.9",
+ "thiserror 2.0.11",
  "time",
  "zeroize",
  "zopfli",
