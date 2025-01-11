@@ -6,7 +6,7 @@ use std::{fs, io};
 
 use libfuzzer_sys::{fuzz_target, Corpus};
 use tempfile::tempdir;
-use vid_dup_finder_lib::ffmpeg_builder;
+use vid_dup_finder_lib_gst::ffmpeg_builder;
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     if calculate_hash(data.to_vec()).is_ok() {

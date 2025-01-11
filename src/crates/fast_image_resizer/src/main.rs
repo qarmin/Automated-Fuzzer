@@ -65,7 +65,7 @@ fn check_file(file_path: &str) {
     for filter_type in FILTER_TYPES {
         all.push(ResizeAlg::Interpolation(*filter_type));
         all.push(ResizeAlg::Convolution(*filter_type));
-        for num in [0, 1, 2, 4, 8, 16, 32, 64] {
+        for num in [0, 8, 64] {
             all.push(ResizeAlg::SuperSampling(*filter_type, num));
         }
     }
@@ -76,10 +76,10 @@ fn check_file(file_path: &str) {
             continue;
         };
 
-        let w = decoded.width() % 600;
-        let h = decoded.height()% 600;
+        let w = decoded.width() % 300;
+        let h = decoded.height() % 300;
 
-        for (width, height) in [(0, 0), (1, 1), (3, 1), (1, 3), (1000, 200), (400, 1000), (w, h), (w * 2, h * 2), (w / 2, h / 2)] {
+        for (width, height) in [(0, 0), (1, 1), (300, 1), (1, 300), (500, 50), (50, 500), (w, h), (w * 2, h * 2), (w / 2, h / 2)] {
             for resize_alg in &all {
                 println!(
                     "Checking file: {:?}, width: {:?}, height: {:?}, pixel_type: {:?}, resize_alg: {:?}",

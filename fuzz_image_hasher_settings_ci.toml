@@ -29,7 +29,7 @@ current_mode = "custom"
 name = "image_hasher"
 command = "image_hasher|FILE_PATHS_TO_PROVIDE"
 
-extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi" # TODO Re-add exr, was removed due different color
+extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "none" # available: none, by_files, by_group
