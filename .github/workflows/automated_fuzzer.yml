@@ -20,7 +20,7 @@ jobs:
         include:
           - name: FAST_IMAGE_RESIZER
             config-file: fuzz_fast_image_resizer_settings_ci.toml
-            timeout: 3600
+            timeout: 16000
             files: "AA_IMAGE_VALID_FILES.7z"
             src_folder: fast_image_resizer
             stability_check: false
@@ -55,7 +55,7 @@ jobs:
             binary: lopdf
           - name: VIDDUPLICATE
             config-file: fuzz_vidduplicate_settings_ci.toml
-            timeout: 10
+            timeout: 16000
             files: "AA_VIDEO_VALID_FILES.7z"
             src_folder: vidduplicate
             stability_check: false

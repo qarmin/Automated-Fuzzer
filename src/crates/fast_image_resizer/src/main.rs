@@ -65,17 +65,13 @@ fn check_file(file_path: &str) {
     for filter_type in FILTER_TYPES {
         all.push(ResizeAlg::Interpolation(*filter_type));
         all.push(ResizeAlg::Convolution(*filter_type));
-        for num in [0, 8, 64] {
+        for num in [2,15] {
             all.push(ResizeAlg::SuperSampling(*filter_type, num));
         }
     }
 
 
     for pixel_type in PIXEL_TYPES {
-        let Ok(img) = ImageRef::new(decoded.width(), decoded.height(), decoded.as_bytes(), *pixel_type) else {
-            continue;
-        };
-
         let w = decoded.width() % 300;
         let h = decoded.height() % 300;
 
@@ -88,7 +84,7 @@ fn check_file(file_path: &str) {
                 let mut dst_image = Image::new(width, height, *pixel_type);
                 let resize_options = fast_image_resize::ResizeOptions::new().resize_alg(resize_alg.clone());
                 if let Err(e) =
-                    fast_image_resize::Resizer::new().resize(&img, &mut dst_image, Some(&resize_options))
+                    fast_image_resize::Resizer::new().resize(&decoded, &mut dst_image, Some(&resize_options))
                 {
                     eprintln!("Error while resizing image: {:?}", e);
                 };

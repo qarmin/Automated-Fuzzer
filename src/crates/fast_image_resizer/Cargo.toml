@@ -8,6 +8,9 @@ fast_image_resize = { git = "https://github.com/Cykooz/fast_image_resize", featu
 image = { git = "https://github.com/image-rs/image" }
 walkdir = "2.5.0"
 
+[patch.crates-io]
+image = { git = "https://github.com/image-rs/image" }
+
 [profile.release]
 overflow-checks = true
 panic = "abort"
