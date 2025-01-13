@@ -19,10 +19,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: SYMPHONIA1
-            fuzz_target: symphonia
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: SYMPHONIA1
+          #            fuzz_target: symphonia
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
           #          - name: SYMPHONIA2
           #            fuzz_target: symphonia
           #            timeout: 18000
@@ -43,18 +43,18 @@ jobs:
           #            fuzz_target: symphonia
           #            timeout: 18000
           #            files: "AA_MUSIC_VALID_FILES.7z"
-          - name: VIDDUPLICATE
-            fuzz_target: vidduplicate
-            timeout: 18000
-            files: "AA_VIDEO_VALID_FILES.7z"
-          - name: VIDDUPLICATEGST
-            fuzz_target: vidduplicategst
-            timeout: 18000
-            files: "AA_VIDEO_VALID_FILES.7z"
-          #          - name: LOFTY
-          #            fuzz_target: lofty
+          #          - name: VIDDUPLICATE
+          #            fuzz_target: vidduplicate
           #            timeout: 18000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            files: "AA_VIDEO_VALID_FILES.7z"
+          #          - name: VIDDUPLICATEGST
+          #            fuzz_target: vidduplicategst
+          #            timeout: 18000
+          #            files: "AA_VIDEO_VALID_FILES.7z"
+          - name: LOFTY
+            fuzz_target: lofty
+            timeout: 18000
+            files: "AA_MUSIC_VALID_FILES.7z"
           #          - name: LOFTY2
           #            fuzz_target: lofty
           #            timeout: 18000
