@@ -47,14 +47,14 @@ jobs:
             src_folder: zip_rs
             stability_check: false
             binary: zip_rs
-          - name: GO
-            config-file: fuzz_go_settings_ci.toml
-            timeout: 3600
-            files: "AA_GO_VALID_FILES.7z"
-            go_version: '1.23.0-rc.1'
-            src_folder: ''
-            stability_check: false
-            binary: staticcheck
+          #          - name: GO
+          #            config-file: fuzz_go_settings_ci.toml
+          #            timeout: 3600
+          #            files: "AA_GO_VALID_FILES.7z"
+          #            go_version: '1.23.0-rc.1'
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: staticcheck
           - name: TYPST
             config-file: fuzz_typst_settings_ci.toml
             timeout: 3600

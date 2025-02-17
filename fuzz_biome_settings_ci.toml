@@ -41,19 +41,11 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-ignored_item_1 = "is_at_ts_declare_statement" # https://github.com/biomejs/biome/issues/4562
-ignored_item_2 = "stack-overflow" # https://github.com/biomejs/biome/issues/4563
-ignored_item_5 = "Missing switch clause" # https://github.com/biomejs/biome/issues/4566
-ignored_item_6 = "The declaration should be resolved to its prent declaration" # https://github.com/biomejs/biome/issues/4567
-ignored_item_7 = "use_exhaustive_dependencies.rs" # https://github.com/biomejs/biome/issues/4568
-ignored_item_8 = "is out of bounds of" # https://github.com/biomejs/biome/issues/4583
-ignored_item_9 = "assertion failed: start.raw <= end.raw" # https://github.com/biomejs/biome/issues/4574
+ignored_item_8 = "is out of bounds of" # https://github.com/biomejs/biome/issues/4593
+ignored_item_9 = "assertion failed: start.raw <= end.raw" # https://github.com/biomejs/biome/issues/4593
 ignored_item_10 = "is not a char boundary" # https://github.com/biomejs/biome/issues/4593
 ignored_item_11 = "Rewrite didn't consume all tokens" # https://github.com/biomejs/biome/issues/4592
-ignored_item_12 = "Called `unwrap` on an `Absent` syntax" # https://github.com/biomejs/biome/issues/4617
-ignored_item_13 = "Bad offset: range" # https://github.com/biomejs/biome/issues/4623
 ignored_item_14 = "The parser is no longer progressing" # https://github.com/biomejs/biome/issues/4622
-ignored_item_15 = "index out of bounds" # https://github.com/biomejs/biome/issues/4723
 file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

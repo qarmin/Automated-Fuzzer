@@ -40,7 +40,6 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-ignored_item_1 = "crates/typst-syntax/src/parser.rs" # https://github.com/typst/typst/issues/4573
 file_type = "text" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
