@@ -249,16 +249,16 @@ impl ProgramConfig for RuffStruct {
         let folders: Vec<_> = files_to_check
             .par_chunks(1000)
             .map(|files| {
-                let mut rng = rand::thread_rng();
+                let mut rng = rand::rng();
                 let mut folder_name;
                 loop {
-                    folder_name = format!("{}/FDR_{}", dir_to_check, rng.gen::<u64>());
+                    folder_name = format!("{}/FDR_{}", dir_to_check, rng.random::<u64>());
                     if fs::create_dir_all(&folder_name).is_ok() {
                         break;
                     }
                 }
                 for file in files {
-                    let rand_new_name = format!("{}/F_NAME_{}.py", folder_name, rng.gen::<u64>());
+                    let rand_new_name = format!("{}/F_NAME_{}.py", folder_name, rng.random::<u64>());
                     if let Err(e) = fs::rename(file.path(), &rand_new_name) {
                         info!("Failed to move file: {:?} with error: {}", file.path(), e);
                         fs::remove_file(file.path()).unwrap();

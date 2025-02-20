@@ -1,6 +1,7 @@
-use log::error;
 use std::process::{Child, Command};
 use std::sync::RwLock;
+
+use log::error;
 
 use crate::common::{
     collect_command_to_string, create_new_file_name, create_new_file_name_for_minimization, try_to_save_file,

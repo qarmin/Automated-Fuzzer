@@ -8,6 +8,7 @@ use std::process::{Command, Stdio};
 use jwalk::WalkDir;
 use log::info;
 use rand::prelude::*;
+use rand::{random, rng};
 use rayon::prelude::*;
 use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
@@ -337,7 +338,7 @@ fn check_rules_by_dividing(
         }
 
         let mut rules_to_test = valid_remove_rules.clone();
-        rules_to_test.shuffle(&mut thread_rng());
+        rules_to_test.shuffle(&mut rng());
         rules_to_test.truncate(rules_to_test.len() / 2);
         rules_to_test.sort();
 

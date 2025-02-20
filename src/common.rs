@@ -54,7 +54,7 @@ pub fn remove_and_create_entire_folder(folder_name: &str) {
 }
 
 pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
-    let mut random_number = rand::thread_rng().gen_range(1..100_000);
+    let mut random_number = rand::rng().random_range(1..100_000);
     loop {
         let pat = Path::new(&old_name);
         let extension = pat.extension().unwrap().to_str().unwrap().to_string();
@@ -67,7 +67,7 @@ pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     }
 }
 pub fn create_new_file_name_for_minimization(setting: &Setting, old_name: &str) -> String {
-    let mut random_number = rand::thread_rng().gen_range(1..1000);
+    let mut random_number = rand::rng().random_range(1..1000);
     loop {
         let pat = Path::new(&old_name);
         let extension = pat.extension().unwrap().to_str().unwrap().to_string();
@@ -185,13 +185,13 @@ impl OutputResult {
     ) -> Self {
         Self {
             output,
+            command_str,
             code,
             signal,
             is_signal_broken,
             is_code_broken,
             have_invalid_output,
             timeouted,
-            command_str,
         }
     }
     pub fn is_broken(&self) -> bool {
@@ -420,7 +420,7 @@ pub(crate) fn collect_command_to_string(command: &Command) -> String {
         .map(|e| {
             let tmp_string = e.to_string_lossy();
             if [" ", "\"", "\\", "/"].iter().any(|e| tmp_string.contains(e)) {
-                format!("\"{}\"", tmp_string.replace("\"", "\\\""))
+                format!("\"{}\"", tmp_string.replace('"', "\\\""))
             } else {
                 tmp_string.to_string()
             }
@@ -431,8 +431,9 @@ pub(crate) fn collect_command_to_string(command: &Command) -> String {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::ffi::OsStr;
+
+    use super::*;
 
     #[test]
     fn test_collect_command_to_string_simple() {
@@ -461,7 +462,7 @@ mod tests {
     #[test]
     fn test_collect_command_to_string_with_multiple_args() {
         let mut command = Command::new("echo");
-        command.args(&["Hello", "World"]);
+        command.args(["Hello", "World"]);
         let result = collect_command_to_string(&command);
         assert_eq!(result, "echo Hello World");
     }

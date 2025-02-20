@@ -1,10 +1,11 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
 
-use log::info;
 use std::fs;
 use std::path::Path;
 use std::sync::RwLock;
+
+use log::info;
 
 use crate::common::{calculate_number_of_files, check_files_number, TIMEOUT_SECS};
 use crate::finding_different_output::find_broken_files_by_different_output;
