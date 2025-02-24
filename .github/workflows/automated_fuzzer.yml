@@ -304,6 +304,20 @@ jobs:
       - name: Build
         run: cargo build --release
 
+      - name: Pack files
+        run: |
+          echo "Path to binary: $(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
+          time 7z a "${{ matrix.binary }}.7z" "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
+          ls -al
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "Nightly"
+          files: |
+            ${{ matrix.binary }}.7z
+          token: ${{ secrets.PAT2 }}
+
       - name: Create folders
         run: |
           mkdir /opt/VALID_FILES_DIR
@@ -382,20 +396,6 @@ jobs:
         run: |
           rm -rf /opt/VALID_FILES_DIR || true
           rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
-
-      - name: Pack files
-        run: |
-          echo "Path to binary: $(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
-          time 7z a "${{ matrix.binary }}.7z" "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
-          ls -al
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "Nightly"
-          files: |
-            ${{ matrix.binary }}.7z
-          token: ${{ secrets.PAT2 }}
 
       - name: Exit when found broken files
         run: |
