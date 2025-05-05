@@ -1,15 +1,15 @@
 use std::env::args;
 use std::{fs, io};
 
-use walkdir::WalkDir;
 use std::path::Path;
-use symphonia::core::codecs::{CodecParameters};
-use symphonia::core::codecs::audio::{AudioDecoderOptions};
+use symphonia::core::codecs::audio::AudioDecoderOptions;
+use symphonia::core::codecs::CodecParameters;
 use symphonia::core::errors::Error;
-use symphonia::core::formats::{FormatOptions, FormatReader, TrackType};
 use symphonia::core::formats::probe::Hint;
+use symphonia::core::formats::{FormatOptions, FormatReader, TrackType};
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::meta::MetadataOptions;
+use walkdir::WalkDir;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -35,7 +35,8 @@ fn check_file(path: &str) {
         return;
     };
 
-    if let Err(e) =  parse_audio_file(content) {
+    println!("Checking file: {:?}", path);
+    if let Err(e) = parse_audio_file(content) {
         eprintln!("{e}");
     };
 }
@@ -43,21 +44,25 @@ fn check_file(path: &str) {
 pub fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
     let cursor = io::Cursor::new(content);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());
-    let fmt_opts =        FormatOptions {enable_gapless: true,  ..Default::default()};
+    let fmt_opts = FormatOptions {
+        enable_gapless: true,
+        ..Default::default()
+    };
     let meta_opts: MetadataOptions = Default::default();
-    let  hint = Hint::new();
+    let hint = Hint::new();
 
     let probed = match symphonia::default::get_probe().probe(&hint, mss, fmt_opts, meta_opts) {
-        Ok(format) => {
-            format
-        }
+        Ok(format) => format,
         Err(e) => {
             return Err(e.to_string());
         }
     };
 
     let opts = DecodeOptions {
-        decoder_opts: AudioDecoderOptions { verify: true, ..Default::default() },
+        decoder_opts: AudioDecoderOptions {
+            verify: true,
+            ..Default::default()
+        },
     };
     decode_only(probed, opts)?;
 
@@ -82,14 +87,14 @@ fn decode_only(mut reader: Box<dyn FormatReader>, opts: DecodeOptions) -> Result
         _ => return Ok(()),
     };
 
-    let mut decoder =
-        symphonia::default::get_codecs().make_audio_decoder(codec_params, &opts.decoder_opts).map_err(|e| e.to_string())?;
+    let mut decoder = symphonia::default::get_codecs()
+        .make_audio_decoder(codec_params, &opts.decoder_opts)
+        .map_err(|e| e.to_string())?;
 
     let track_id = track.id;
 
     loop {
-        let Some(packet) = reader.next_packet().map_err(|e|e.to_string())?
-        else {
+        let Some(packet) = reader.next_packet().map_err(|e| e.to_string())? else {
             break;
         };
 

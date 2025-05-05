@@ -160,7 +160,7 @@ impl ProgramConfig for RuffStruct {
             "format" => {
                 command.arg("format").arg(full_name).arg("--check");
             }
-            "red_knot" => {
+            "ty" => {
                 command.arg(full_name);
             }
             _ => {
@@ -310,7 +310,7 @@ impl ProgramConfig for RuffStruct {
         #[allow(clippy::match_same_arms)]
         match self.non_custom_items.tool_type.as_str() {
             "lint_check_fix" | "lint_check" | "format" => CheckGroupFileMode::ByFolder,
-            "red_knot" => CheckGroupFileMode::None,
+            "ty" => CheckGroupFileMode::None,
             _ => CheckGroupFileMode::None,
         }
     }

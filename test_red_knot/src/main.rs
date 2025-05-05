@@ -76,8 +76,8 @@ fn create_broken_files() {
     let _all = collect_output(&output);
 }
 
-fn run_red_knot(folder: &str) -> String {
-    let command = Command::new("red_knot")
+fn run_ty(folder: &str) -> String {
+    let command = Command::new("ty")
         .arg("--current-directory")
         .arg(folder)
         .stdout(Stdio::piped())
@@ -96,7 +96,7 @@ fn contains_broken_data(data: &str) -> bool {
     contains_data(data, INVALID_DATA) && !contains_data(data, IGNORED_DATA)
 }
 
-fn test_with_red_knot(files_to_test: &[String]) {
+fn test_with_ty(files_to_test: &[String]) {
     let temp_folder = format!("{}/{}", TEMP_TEST_DIR, random::<u64>());
     fs::create_dir_all(&temp_folder).unwrap();
 
@@ -116,7 +116,7 @@ fn test_with_red_knot(files_to_test: &[String]) {
                 let new_file_name = format!("{}/{}", temp_folder, only_file_name);
                 let _ = fs::copy(file, &new_file_name);
             }
-            let all = run_red_knot(&temp_folder);
+            let all = run_ty(&temp_folder);
             let _elapsed = time.elapsed();
             // println!("========================================\n{elapsed:?}\n=================================");
             contains_broken_data(&all)
@@ -142,13 +142,13 @@ fn test_with_red_knot(files_to_test: &[String]) {
         let extension = Path::new(file).extension().unwrap().to_string_lossy();
         let new_file_name = format!("{}/{}", temp_folder, only_file_name);
         let _ = fs::copy(file, &new_file_name);
-        let mut all = run_red_knot(&temp_folder);
+        let mut all = run_ty(&temp_folder);
 
         if contains_broken_data(&all) {
             let mut minimized_exists = false;
             if RUN_MINIMIZER {
                 run_minimizer(&file, &new_file_name, &temp_folder);
-                all = run_red_knot(&temp_folder);
+                all = run_ty(&temp_folder);
                 if !contains_broken_data(&all) {
                     eprintln!("Failed to minimize file, output: {all}");
                     // panic!("Failed to minimize file");
@@ -189,7 +189,7 @@ fn test_with_red_knot(files_to_test: &[String]) {
 }
 
 fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
-    // minimizer --input-file /home/rafal/Desktop/RunEveryCommand/C/PY_FILE_TEST_25518.py --output-file a.py --command "red_knot" --attempts 1000 --broken-info "RUST_BACKTRACE" -z "not yet implemented" -z "failed to parse" -z "SyntaxError" -z "Sorry:" -z "IndentationError" -k "python3 -m compileall {}" -r -v
+    // minimizer --input-file /home/rafal/Desktop/RunEveryCommand/C/PY_FILE_TEST_25518.py --output-file a.py --command "ty" --attempts 1000 --broken-info "RUST_BACKTRACE" -z "not yet implemented" -z "failed to parse" -z "SyntaxError" -z "Sorry:" -z "IndentationError" -k "python3 -m compileall {}" -r -v
     let broken_info = INVALID_DATA
         .iter()
         .flat_map(|e| vec!["--broken-info".to_string(), e.to_string()])
@@ -205,7 +205,7 @@ fn run_minimizer(input_file: &str, output_file: &str, output_folder: &str) {
         .arg("--output-file")
         .arg(output_file)
         .arg("--command")
-        .arg(format!("red_knot --current-directory {}", output_folder))
+        .arg(format!("ty --current-directory {}", output_folder))
         .arg("--attempts")
         .arg("200")
         .args(&broken_info)
@@ -295,7 +295,7 @@ fn main() {
         };
         chunks.into_par_iter().enumerate().for_each(|(idx, chunk)| {
             println!("Starting chunk {idx} with {} files", chunk.len());
-            test_with_red_knot(&chunk);
+            test_with_ty(&chunk);
             println!("Ended chunk {idx}")
         });
     }

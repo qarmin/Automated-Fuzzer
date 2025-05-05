@@ -5,4 +5,4 @@ src/crates/*/target
 *.zip
 src/crates/*/Cargo.lock
 *.txt
-test_red_knot/Cargo.lock
+test_ty/Cargo.lock

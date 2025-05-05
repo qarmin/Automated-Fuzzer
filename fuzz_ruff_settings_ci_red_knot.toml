@@ -26,13 +26,13 @@ custom_folder_path = "/opt/CUSTOM" # Folder to which all broken things can be sa
 current_mode = "ruff"
 
 [ruff]
-name = "red_knot"
-app_binary = "red_knot"
+name = "ty"
+app_binary = "ty"
 app_config = ""
 extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-tool_type = "red_knot"
+tool_type = "ty"
 additional_minimization_command = "python3 -m compileall {}"
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

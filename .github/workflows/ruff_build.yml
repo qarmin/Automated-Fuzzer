@@ -43,11 +43,11 @@ jobs:
           
           cargo build --release --features test-rules
           mv target/release/ruff ../ruff_normal
-          mv target/release/red_knot ../red_knot_normal
+          mv target/release/ty ../ty_normal
           
-          RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --release --target x86_64-unknown-linux-gnu --features test-rules
-          mv target/x86_64-unknown-linux-gnu/release/ruff ../ruff2
-          mv target/x86_64-unknown-linux-gnu/release/red_knot ../red_knot
+          # RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --release --target x86_64-unknown-linux-gnu --features test-rules
+          # mv target/x86_64-unknown-linux-gnu/release/ruff ../ruff2
+          # mv target/x86_64-unknown-linux-gnu/release/ty ../ty
           
           cd ..
           rm -rf ruff # Needed to avoid conflicts with binary name
@@ -55,10 +55,10 @@ jobs:
 
       - name: Pack files
         run: |
-          time 7z a "ruff.7z" "ruff"
-          time 7z a "red_knot.7z" "red_knot"
+          #time 7z a "ruff.7z" "ruff"
+          #time 7z a "ty.7z" "ty"
           time 7z a "ruff_normal.7z" "ruff_normal"
-          time 7z a "red_knot_normal.7z" "red_knot_normal"
+          time 7z a "ty_normal.7z" "ty_normal"
 
       - name: ls files
         run: |
@@ -69,9 +69,9 @@ jobs:
         with:
           tag_name: "Nightly"
           files: |
-            ruff.7z
-            red_knot.7z
             ruff_normal.7z
-            red_knot_normal.7z
+            ty_normal.7z
           token: ${{ secrets.PAT2 }}
 
+#            ruff.7z
+#            ty.7z
