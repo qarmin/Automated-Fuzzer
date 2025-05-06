@@ -51,7 +51,7 @@ jobs:
           
           cd ..
           rm -rf ruff # Needed to avoid conflicts with binary name
-          mv ruff2 ruff
+          #mv ruff2 ruff
 
       - name: Pack files
         run: |
