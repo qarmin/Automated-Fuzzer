@@ -118,13 +118,13 @@ jobs:
           #            src_folder: ''
           #            stability_check: false
           #            binary: stylua
-          #          - name: SWC
-          #            config-file: fuzz_swc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: swc
+          - name: SWC
+            config-file: fuzz_swc_settings_ci.toml
+            timeout: 16000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            src_folder: ''
+            stability_check: false
+            binary: swc
 
     steps:
       - uses: actions/checkout@v4

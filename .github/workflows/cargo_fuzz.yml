@@ -83,30 +83,30 @@ jobs:
             fuzz_target: nom_exif
             timeout: 18000
             files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF2
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF3
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF4
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF5
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF6
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
-          - name: NOM_EXIF7
-            fuzz_target: nom_exif
-            timeout: 18000
-            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF2
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF3
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF4
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF5
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF6
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
+          #          - name: NOM_EXIF7
+          #            fuzz_target: nom_exif
+          #            timeout: 18000
+          #            files: "AA_NOM_EXIF_VALID_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
           #            timeout: 18000
