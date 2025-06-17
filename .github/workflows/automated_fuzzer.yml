@@ -27,14 +27,14 @@ jobs:
             binary: oxlint
           - name: TYRUFF
             config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
+            timeout: 500
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: ty
           - name: PYREFLY
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000
+            timeout: 500
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
