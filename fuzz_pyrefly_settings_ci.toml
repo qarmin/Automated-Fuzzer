@@ -26,8 +26,8 @@ custom_folder_path = "/opt/CUSTOM" # Folder to which all broken things can be sa
 current_mode = "custom"
 
 [custom]
-name = "ty"
-command = "ty|check|FILE_PATHS_TO_PROVIDE"
+name = "pyrefly"
+command = "pyrefly|check|FILE_PATHS_TO_PROVIDE"
 
 extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
