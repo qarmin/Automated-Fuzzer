@@ -32,9 +32,37 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: ty
+          - name: TYRUFF2
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 2500
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUFF3
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ty
           - name: PYREFLY
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 500
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY2
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 500
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY3
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
