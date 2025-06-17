@@ -32,7 +32,7 @@ command = "ty|check|FILE_PATHS_TO_PROVIDE"
 extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-group_mode = "by_group" # available: none, by_files, by_group
+group_mode = "none" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
@@ -41,6 +41,9 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+ignored_item_1 = "attempt to subtract with overflow" # https://github.com/astral-sh/ty/issues/670
+ignored_item_2 = "stack overflow" # https://github.com/astral-sh/ty/issues/670
+ignored_item_3 = "stack-overflow" # https://github.com/astral-sh/ty/issues/670
 file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
