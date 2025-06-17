@@ -34,12 +34,26 @@ jobs:
             binary: ty
           - name: TYRUFF2
             config-file: fuzz_ty_settings_ci.toml
-            timeout: 2500
+            timeout: 2000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: ty
           - name: TYRUFF3
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 4000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUFF4
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 8000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUFF5
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
@@ -55,7 +69,21 @@ jobs:
             binary: pyrefly
           - name: PYREFLY2
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 500
+            timeout: 2000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY3
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 4000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY3
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 8000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
@@ -74,14 +102,6 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: biome
-          #          - name: Ffull_moonder: font_kit
-          #          - name: FULL_MOON
-          #            config-file: fuzz_full_moon_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_LUA_VALID_FILES.7z"
-          #            src_folder: full_moon
-          #  stability_check: false
-          # binary: full_moon
           # https://github.com/jrmuizel/pdf-extract/issues/96
           #          - name: PDF_EXTRACT
           #            config-file: fuzz_pdf_extract_settings_ci.toml
@@ -104,13 +124,6 @@ jobs:
             src_folder: symphonia
             stability_check: false
             binary: symphonia
-          #          - name: STYLUA # TODO
-          #            config-file: fuzz_stylua_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_LUA_VALID_FILES.7z"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: stylua
           - name: SWC
             config-file: fuzz_swc_settings_ci.toml
             timeout: 16000
@@ -278,31 +291,6 @@ jobs:
           cd ../
           rm -rf ruff-main
           ldd $(whereis -b ty | awk '{print $2}')
-
-      #### STYLUA
-      - name: Install stylua
-        if: ${{ contains(matrix.name, 'STYLUA') }}
-        run: |
-          wget -q https://github.com/JohnnyMorganz/StyLua/archive/refs/heads/main.zip
-          unzip -q main.zip
-          rm main.zip
-          cd StyLua-main
-          echo "" >> Cargo.toml
-          echo "[profile.release]" >> Cargo.toml
-          echo "overflow-checks = true" >> Cargo.toml
-          echo "debug = true" >> Cargo.toml
-          echo "panic = 'abort'" >> Cargo.toml
-          
-          if [ "${{ matrix.asan_build }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path . --locked
-          fi
-          
-          cd ..
-          ldd $(whereis -b stylua | awk '{print $2}')
 
       #### SWC
       - name: Install swc

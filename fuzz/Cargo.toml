@@ -21,7 +21,6 @@ rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git", optional = tr
 symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], optional = true }
 #symphonia = { git = "https://github.com/sscobici/Symphonia.git", features = ["all"], branch = "mp4-panic-fixes", optional = true}
 zip = { git = "https://github.com/zip-rs/zip2.git", optional = true }
-full_moon = { git = "https://github.com/Kampfkarren/full-moon.git", features = ["roblox", "lua54"], optional = true }
 
 dicom-core = { git = "https://github.com/Enet4/dicom-rs", optional = true }
 dicom-object = { git = "https://github.com/Enet4/dicom-rs", optional = true }
@@ -43,7 +42,7 @@ ffmpeg_cmdline_utils_gst = { git = "https://github.com/Farmadupe/vid_dup_finder_
 
 [features]
 default = []
-all = ["lofty_f", "font_kit_f", "image_f", "lopdf_f", "rsbuzz_f", "symphonia_f", "zip_rs_f", "full_moon_f", "dicom_f"]
+all = ["lofty_f", "font_kit_f", "image_f", "lopdf_f", "rsbuzz_f", "symphonia_f", "zip_rs_f", "dicom_f"]
 lofty_f = ["lofty"]
 font_kit_f = ["font-kit"]
 image_f = ["image"]
@@ -52,7 +51,6 @@ rsbuzz_f = ["rustybuzz"]
 #pdf_rs_f = ["pdf"]
 symphonia_f = ["symphonia"]
 zip_rs_f = ["zip"]
-full_moon_f = ["full_moon"]
 dicom_f = ["dicom-core", "dicom-object", "dicom-ul", "dicom-encoding", "dicom-dictionary-std", "dicom-transfer-syntax-registry", "dicom-dump", "dicom-json"]
 slint_f = ["i-slint-compiler", "spin_on"]
 image_hasher_f = ["image_hasher", "image_crates"]
@@ -84,13 +82,6 @@ bench = false
 [[bin]]
 name = "zip_rs"
 path = "fuzz_targets/zip_rs.rs"
-test = false
-doc = false
-bench = false
-
-[[bin]]
-name = "full_moon"
-path = "fuzz_targets/full_moon.rs"
 test = false
 doc = false
 bench = false

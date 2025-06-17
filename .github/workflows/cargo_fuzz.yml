@@ -111,10 +111,6 @@ jobs:
           #            fuzz_target: font_kit
           #            timeout: 18000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #          - name: FULL_MOON
-          #            fuzz_target: full_moon
-          #            timeout: 18000
-          #            files: "AA_LUA_VALID_FILES.7z"
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
           #            timeout: 18000

@@ -5,13 +5,13 @@ use std::process::{Command, Output, Stdio};
 use std::time::Instant;
 use std::{fs, process};
 
+use crate::obj::ProgramConfig;
+use crate::settings::{Setting, TIMEOUT_MESSAGE};
 use jwalk::WalkDir;
 use log::{error, info};
 use once_cell::sync::{Lazy, OnceCell};
-use rand::Rng;
-
-use crate::obj::ProgramConfig;
-use crate::settings::{Setting, TIMEOUT_MESSAGE};
+use rand::prelude::*;
+use rand::{rng, Rng};
 
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
@@ -203,12 +203,12 @@ impl OutputResult {
     pub fn get_output(&self) -> &str {
         &self.output
     }
-    pub fn get_command_str(&self) -> &str {
-        &self.command_str
-    }
-    pub fn debug_print(&self) {
-        info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_code_broken, self.timeouted, self.code, self.signal);
-    }
+    // pub fn get_command_str(&self) -> &str {
+    //     &self.command_str
+    // }
+    // pub fn debug_print(&self) {
+    //     info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_code_broken, self.timeouted, self.code, self.signal);
+    // }
 }
 
 #[allow(clippy::borrowed_box)]
@@ -402,6 +402,7 @@ pub fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
             size_all += metadata.len();
         }
     }
+    files.shuffle(&mut rng());
     if files.len() > settings.max_collected_files {
         files.truncate(settings.max_collected_files);
     }

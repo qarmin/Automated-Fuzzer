@@ -134,19 +134,6 @@ search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 
-[custom_full_moon]
-name = "name"
-command = "full_moon|FILE_PATHS_TO_PROVIDE"
-
-extensions = "lua"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/full_moon/Broken"
-group_mode = "by_group" # available: none, by_files, by_group
-
-search_item_1 = "RUST_BACKTRACE"
-search_item_2 = "panicked at"
-file_type = "lua" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
-
 [ruff]
 name = "ruff"
 app_binary = "ruff"
