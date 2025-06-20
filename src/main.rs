@@ -7,11 +7,11 @@ use std::sync::RwLock;
 
 use log::info;
 
-use crate::common::{calculate_number_of_files, check_files_number, TIMEOUT_SECS};
+use crate::common::{TIMEOUT_SECS, calculate_number_of_files, check_files_number};
 use crate::finding_different_output::find_broken_files_by_different_output;
 use crate::finding_text_status::find_broken_files_by_text_status;
 use crate::obj::USE_ASAN_ENVS;
-use crate::settings::{get_object, load_settings, StabilityMode};
+use crate::settings::{StabilityMode, get_object, load_settings};
 
 pub mod apps;
 mod broken_files;

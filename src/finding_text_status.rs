@@ -10,9 +10,8 @@ use rayon::iter::{IndexedParallelIterator, IntoParallelIterator};
 use rayon::prelude::*;
 
 use crate::common::{
-    check_if_app_ends, close_app_if_timeouts, collect_files, execute_command_and_connect_output,
+    CheckGroupFileMode, check_if_app_ends, close_app_if_timeouts, collect_files, execute_command_and_connect_output,
     execute_command_on_pack_of_files, generate_files, minimize_new, remove_and_create_entire_folder,
-    CheckGroupFileMode,
 };
 use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
 use crate::settings::Setting;
@@ -29,7 +28,7 @@ pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn Progra
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
 
         info!("Removing old files");
         remove_and_create_entire_folder(&settings.temp_possible_broken_files_dir);
@@ -41,7 +40,7 @@ pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn Progra
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
 
         info!("Removing non parsable files");
         obj.remove_non_parsable_files(&settings.temp_possible_broken_files_dir);
@@ -50,7 +49,7 @@ pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn Progra
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
         info!("Collecting files");
         let (mut files, files_size) = collect_files(settings);
         let start_file_size = files.len();
@@ -76,7 +75,7 @@ pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn Progra
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
         test_files(files, settings, obj, &atomic_broken, &atomic_all_broken);
 
         info!("");
@@ -148,7 +147,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             // info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
 
             if output_result.is_broken() {
-                info!("Group {} is broken", number);
+                info!("Group {number} is broken");
                 // TODO debug print - everything should be handled by setting
                 // info!("Command - {}", output_result.get_command_str());
                 // info!("Output: {}", output_result.get_output()); // TODO handle this via setting
@@ -212,8 +211,8 @@ fn test_files(
                     if settings.minimize_output {
                         minimize_new(obj, &new_file_name);
                     }
-                };
-            };
+                }
+            }
             Some(())
         })
         .while_some()

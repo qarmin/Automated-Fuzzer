@@ -32,23 +32,30 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: ty
+          - name: TYRUFF4
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 200
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ty
           - name: TYRUFF2
             config-file: fuzz_ty_settings_ci.toml
-            timeout: 2000
+            timeout: 16000 #2000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: ty
           - name: TYRUFF3
             config-file: fuzz_ty_settings_ci.toml
-            timeout: 4000
+            timeout: 16000 #4000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: ty
           - name: TYRUFF4
             config-file: fuzz_ty_settings_ci.toml
-            timeout: 8000
+            timeout: 16000 #8000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
@@ -69,28 +76,28 @@ jobs:
             binary: pyrefly
           - name: PYREFLY2
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 2000
+            timeout: 16000 #2000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: pyrefly
           - name: PYREFLY3
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 4000
+            timeout: 16000 #4000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: pyrefly
           - name: PYREFLY4
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 8000
+            timeout: 16000 #8000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: pyrefly
           - name: PYREFLY5
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000
+            timeout: 16000 #
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false

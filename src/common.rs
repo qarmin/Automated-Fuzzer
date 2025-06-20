@@ -5,13 +5,14 @@ use std::process::{Command, Output, Stdio};
 use std::time::Instant;
 use std::{fs, process};
 
-use crate::obj::ProgramConfig;
-use crate::settings::{Setting, TIMEOUT_MESSAGE};
 use jwalk::WalkDir;
 use log::{error, info};
 use once_cell::sync::{Lazy, OnceCell};
 use rand::prelude::*;
-use rand::{rng, Rng};
+use rand::{Rng, rng};
+
+use crate::obj::ProgramConfig;
+use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
 pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
 pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
@@ -94,7 +95,7 @@ pub fn collect_output(output: &Output) -> String {
 pub fn try_to_save_file(full_name: &str, new_name: &str) {
     if let Err(e) = fs::copy(full_name, new_name) {
         error!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
-    };
+    }
 }
 
 pub fn minimize_new(obj: &Box<dyn ProgramConfig>, full_name: &str) {
@@ -127,7 +128,7 @@ pub fn execute_command_on_pack_of_files(
         && !obj.ignored_signal_output(&str_out);
 
     let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
-        && output.status.code().map_or(false, |code| {
+        && output.status.code().is_some_and(|code| {
             if obj.get_settings().ignore_timeout_errors && code == 124 {
                 false
             } else {
@@ -227,7 +228,7 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
         && !obj.ignored_signal_output(&str_out);
 
     let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
-        && output.status.code().map_or(false, |code| {
+        && output.status.code().is_some_and(|code| {
             if obj.get_settings().ignore_timeout_errors && code == 124 {
                 false
             } else {
@@ -374,7 +375,7 @@ pub fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
     }
     if settings.debug_print_broken_files_creator {
         info!("{out}");
-    };
+    }
 }
 
 pub fn collect_files(settings: &Setting) -> (Vec<String>, u64) {

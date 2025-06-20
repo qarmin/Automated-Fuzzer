@@ -10,8 +10,8 @@ use log::info;
 use rand::prelude::*;
 use rand::{random, rng};
 use rayon::prelude::*;
-use zip::write::SimpleFileOptions;
 use zip::ZipWriter;
+use zip::write::SimpleFileOptions;
 
 use crate::apps::ruff::calculate_ignored_rules;
 use crate::common::{check_if_app_ends, collect_output, remove_and_create_entire_folder};
@@ -50,7 +50,7 @@ pub fn report_problem_with_format(settings: &Setting, obj: &Box<dyn ProgramConfi
     let collected_items: Vec<_> = files_to_check
         .into_par_iter()
         .filter_map(|i| {
-            let file_name = i.split('/').last().unwrap();
+            let file_name = i.split('/').next_back().unwrap();
             let new_name = format!("{}/{file_name}", settings.temp_folder);
             let original_content = fs::read_to_string(&i).unwrap();
 
@@ -190,7 +190,7 @@ pub fn find_minimal_rules(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
             if idx % 100 == 0 {
                 info!("_____ Processed already {idx} / {all}");
             }
-            let file_name = i.split('/').last().unwrap();
+            let file_name = i.split('/').next_back().unwrap();
             let new_name = random::<u64>().to_string();
             let new_name = format!("{temp_folder}/{new_name}.py");
             let original_content = fs::read(&i).unwrap();

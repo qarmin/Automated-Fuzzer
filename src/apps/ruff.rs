@@ -7,10 +7,10 @@ use log::{error, info};
 use rand::Rng;
 use rayon::prelude::*;
 
-use crate::broken_files::{create_broken_files, LANGS};
+use crate::broken_files::{LANGS, create_broken_files};
 use crate::common::{
-    collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check, try_to_save_file,
-    CheckGroupFileMode,
+    CheckGroupFileMode, collect_output, create_new_file_name, find_broken_files_by_cpython, run_ruff_format_check,
+    try_to_save_file,
 };
 use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
 use crate::settings::{NonCustomItems, Setting, StabilityMode};
@@ -176,7 +176,7 @@ impl ProgramConfig for RuffStruct {
             ]);
         }
         if self.settings.debug_executed_commands {
-            info!("Executing command: {:?}", command);
+            info!("Executing command: {command:?}");
         }
         command
     }
@@ -302,7 +302,6 @@ impl ProgramConfig for RuffStruct {
         info!(
             "Removed {}/{all_files} non parsable files - first {files_to_remove_ruff} by ruff, later {files_to_remove_cpython} by cpython",
             files_to_remove_ruff + files_to_remove_cpython,
-
         );
     }
 

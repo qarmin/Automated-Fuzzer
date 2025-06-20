@@ -2,7 +2,7 @@
 name = "automated_fuzzer"
 authors = ["Rafał Mikrut <mikrutrafal@protonmail.com>"]
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 license = "MIT"
 
 [dependencies]

@@ -5,7 +5,7 @@ use config::Config;
 use strum_macros::{Display, EnumString};
 
 use crate::apps::custom::CustomStruct;
-use crate::apps::ruff::{RuffStruct, BROKEN_ITEMS_TO_FIND, BROKEN_ITEMS_TO_IGNORE};
+use crate::apps::ruff::{BROKEN_ITEMS_TO_FIND, BROKEN_ITEMS_TO_IGNORE, RuffStruct};
 use crate::broken_files::LANGS;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
@@ -100,11 +100,7 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         .split('|')
         .filter_map(|e| {
             let r = e.trim();
-            if r.is_empty() {
-                None
-            } else {
-                Some(r)
-            }
+            if r.is_empty() { None } else { Some(r) }
         })
         .count()
         == 0

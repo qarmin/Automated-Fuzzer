@@ -8,8 +8,8 @@ use rand::random;
 use rayon::prelude::*;
 
 use crate::common::{
-    collect_command_to_string, execute_command_and_connect_output, execute_command_on_pack_of_files,
-    remove_and_create_entire_folder, CheckGroupFileMode,
+    CheckGroupFileMode, collect_command_to_string, execute_command_and_connect_output,
+    execute_command_on_pack_of_files, remove_and_create_entire_folder,
 };
 use crate::minimal_rules::zip_file;
 use crate::obj::ProgramConfig;
@@ -125,7 +125,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
             if output_result.is_broken() {
                 fs::write(&full_name, start_text).unwrap();
                 return Some((full_name, output_result.get_output().trim().to_string()));
-            };
+            }
             info!("File {full_name} is not broken, and will be removed");
 
             fs::remove_file(&full_name).unwrap();
@@ -158,7 +158,7 @@ pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, co
             cnt_text += "\n```";
         } else {
             cnt_text += "File content is binary, so is available only in zip file";
-        };
+        }
         let error_type = match result {
             _ if result.contains("memory allocation of") => "memory_failure",
             _ if result.contains("stack overflow") => "stack_overflow",

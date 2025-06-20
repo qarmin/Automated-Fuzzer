@@ -24,7 +24,7 @@ pub fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn P
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
 
         info!("Removing old files");
         remove_and_create_entire_folder(&settings.temp_possible_broken_files_dir);
@@ -36,7 +36,7 @@ pub fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn P
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
 
         info!("Removing non parsable files");
         obj.remove_non_parsable_files(&settings.temp_possible_broken_files_dir);
@@ -45,7 +45,7 @@ pub fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn P
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
         info!("Collecting files");
         let (files, files_size) = collect_files(settings);
         let start_file_size = files.len();
@@ -59,7 +59,7 @@ pub fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn P
         if check_if_app_ends() {
             info!("Timeout reached, exiting");
             break;
-        };
+        }
         test_files(files, settings, obj, &atomic_broken, &atomic_all_broken);
 
         info!("");
@@ -124,7 +124,7 @@ fn test_files(
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
                 atomic_all_broken.fetch_add(1, Ordering::Relaxed);
                 // TODO - maybe later add minimization, but I doubt that this will easy and reproducible
-                if obj.validate_txt_and_save_file(full_name, &outputs).is_some() {};
+                obj.validate_txt_and_save_file(full_name, &outputs).is_some();
                 return Some(());
             }
 
