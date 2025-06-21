@@ -56,7 +56,7 @@ pub trait ProgramConfig: Sync {
     }
 
     fn get_full_command(&self, full_name: &str) -> Command {
-        let mut command = self._get_basic_run_command();
+        let mut command = self.get_basic_run_command();
         command.arg(full_name);
         if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
             command.envs([
@@ -68,7 +68,7 @@ pub trait ProgramConfig: Sync {
         command
     }
     fn get_group_command(&self, files: &[String]) -> Command {
-        let mut command = self._get_basic_run_command();
+        let mut command = self.get_basic_run_command();
         command.args(files);
         command
     }
@@ -124,7 +124,7 @@ pub trait ProgramConfig: Sync {
         minimize_command.args(ignored_info);
         minimize_command
     }
-    fn _get_basic_run_command(&self) -> Command;
+    fn get_basic_run_command(&self) -> Command;
     fn broken_file_creator(&self) -> Child;
     fn get_settings(&self) -> &Setting;
     fn init(&mut self) {}
@@ -132,9 +132,6 @@ pub trait ProgramConfig: Sync {
     // fn is_parsable(&self, _file_to_check: &str) -> bool {
     //     true
     // }
-    fn get_version(&self) -> String {
-        panic!()
-    }
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
         CheckGroupFileMode::None
     }

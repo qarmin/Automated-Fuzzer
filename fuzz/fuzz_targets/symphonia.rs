@@ -4,9 +4,9 @@ use std::env::args;
 use std::path::Path;
 use std::{fs, io};
 
-use libfuzzer_sys::{fuzz_target, Corpus};
-use symphonia::core::codecs::audio::AudioDecoderOptions;
+use libfuzzer_sys::{Corpus, fuzz_target};
 use symphonia::core::codecs::CodecParameters;
+use symphonia::core::codecs::audio::AudioDecoderOptions;
 use symphonia::core::errors::Error;
 use symphonia::core::formats::probe::Hint;
 use symphonia::core::formats::{FormatOptions, FormatReader, TrackType};
@@ -21,7 +21,7 @@ fuzz_target!(|data: &[u8]| -> Corpus {
     }
 });
 
-pub fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
+pub(crate) fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
     let cursor = io::Cursor::new(content);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());
     let fmt_opts = FormatOptions {

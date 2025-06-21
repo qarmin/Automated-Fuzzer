@@ -92,7 +92,7 @@ const RUST_ARGS: &[&str] = &[
     "...", "..=", ",", ";", ":", "::", "=>", "$", "?", "~", "{", "}", "[", "]", "(", ")",
 ];
 
-pub fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
+pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
     let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
     let broken_files_for_each_file = &obj.get_settings().broken_files_for_each_file;

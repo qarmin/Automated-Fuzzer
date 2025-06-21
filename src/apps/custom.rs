@@ -32,7 +32,7 @@ impl ProgramConfig for CustomStruct {
             && self.custom_items.ignored_items.iter().any(|x| content.contains(x))
     }
     fn get_full_command(&self, full_name: &str) -> Command {
-        let mut command = self._get_basic_run_command();
+        let mut command = self.get_basic_run_command();
         command.args(
             self.custom_items
                 .command_parts
@@ -50,7 +50,7 @@ impl ProgramConfig for CustomStruct {
         command
     }
     fn get_group_command(&self, full_name: &[String]) -> Command {
-        let mut command = self._get_basic_run_command();
+        let mut command = self.get_basic_run_command();
         command.args(
             self.custom_items
                 .command_parts
@@ -60,7 +60,7 @@ impl ProgramConfig for CustomStruct {
         );
         command
     }
-    fn _get_basic_run_command(&self) -> Command {
+    fn get_basic_run_command(&self) -> Command {
         let mut comm = Command::new(&self.custom_items.command_parts[0]);
         comm.stderr(Stdio::piped()).stdout(Stdio::piped());
         comm

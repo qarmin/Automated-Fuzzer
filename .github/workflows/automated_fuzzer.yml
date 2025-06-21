@@ -25,6 +25,13 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: oxlint
+          - name: RUFF
+            config-file: fuzz_ruff_normal_settings_ci.toml
+            timeout: 500
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ruff
           - name: TYRUFF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 500
@@ -299,6 +306,33 @@ jobs:
           cd ../
           rm -rf ruff-main
           ldd $(whereis -b ty | awk '{print $2}')
+
+      #### TY
+      - name: Install ruff
+        if: ${{ contains(matrix.name, 'RUFF') }}
+        run: |
+          wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          cd ruff-main
+          rm rust-toolchain.toml
+          sd "lto =" "#lto =" Cargo.toml
+          sd "codegen-units = 1" "#codegen-units = 1" Cargo.toml
+          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
+          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          
+          if [ "${{ env.SANITIZER }}" = "true" ]; then
+            echo "ASAN BUILD___"
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/ruff --locked --target x86_64-unknown-linux-gnu
+          else
+            echo "NORMAL BUILD___"
+            cargo install --path crates/ruff --locked
+          fi
+          
+          cd ../
+          rm -rf ruff-main
+          ldd $(whereis -b ruff | awk '{print $2}')
 
       #### SWC
       - name: Install swc

@@ -4,7 +4,7 @@ use std::env::{args, temp_dir};
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
-use libfuzzer_sys::{fuzz_target, Corpus};
+use libfuzzer_sys::{Corpus, fuzz_target};
 use tempfile::tempdir;
 use vid_dup_finder_lib::ffmpeg_builder;
 
@@ -16,7 +16,7 @@ fuzz_target!(|data: &[u8]| -> Corpus {
     }
 });
 
-pub fn calculate_hash(content: Vec<u8>) -> Result<(), String> {
+pub(crate) fn calculate_hash(content: Vec<u8>) -> Result<(), String> {
     let temp_dir = tempdir().map_err(|e| e.to_string())?;
     let temp_file = temp_dir.path().join(format!("fuzz_file_{}", rand::random::<u32>()));
 

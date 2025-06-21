@@ -1,7 +1,7 @@
 use std::os::unix::fs::PermissionsExt;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
-use std::process::{Command, Output, Stdio};
+use std::process::{Command, Output};
 use std::time::Instant;
 use std::{fs, process};
 
@@ -24,20 +24,20 @@ pub enum CheckGroupFileMode {
     ByFilesGroup,
 }
 
-pub fn check_if_app_ends() -> bool {
+pub(crate) fn check_if_app_ends() -> bool {
     let elapsed = START_TIME.elapsed().as_secs();
     let timeout = TIMEOUT_SECS.get().unwrap();
     elapsed > *timeout
 }
 
-pub fn close_app_if_timeouts() {
+pub(crate) fn close_app_if_timeouts() {
     if check_if_app_ends() {
         info!("Timeout reached, closing app");
         std::process::exit(0);
     }
 }
 
-pub fn remove_and_create_entire_folder(folder_name: &str) {
+pub(crate) fn remove_and_create_entire_folder(folder_name: &str) {
     if Path::new(folder_name).exists() {
         info!("Removing folder {folder_name}");
         if let Err(e) = fs::remove_dir_all(folder_name) {
@@ -54,7 +54,7 @@ pub fn remove_and_create_entire_folder(folder_name: &str) {
     info!("Folder {folder_name} created");
 }
 
-pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
+pub(crate) fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
     let mut random_number = rand::rng().random_range(1..100_000);
     loop {
         let pat = Path::new(&old_name);
@@ -67,7 +67,7 @@ pub fn create_new_file_name(setting: &Setting, old_name: &str) -> String {
         random_number += 1;
     }
 }
-pub fn create_new_file_name_for_minimization(setting: &Setting, old_name: &str) -> String {
+pub(crate) fn create_new_file_name_for_minimization(setting: &Setting, old_name: &str) -> String {
     let mut random_number = rand::rng().random_range(1..1000);
     loop {
         let pat = Path::new(&old_name);
@@ -84,7 +84,7 @@ pub fn create_new_file_name_for_minimization(setting: &Setting, old_name: &str) 
     }
 }
 
-pub fn collect_output(output: &Output) -> String {
+pub(crate) fn collect_output(output: &Output) -> String {
     let stdout = &output.stdout;
     let stderr = &output.stderr;
     let stdout_str = String::from_utf8_lossy(stdout);
@@ -92,13 +92,13 @@ pub fn collect_output(output: &Output) -> String {
     format!("{stdout_str}\n{stderr_str}")
 }
 
-pub fn try_to_save_file(full_name: &str, new_name: &str) {
+pub(crate) fn try_to_save_file(full_name: &str, new_name: &str) {
     if let Err(e) = fs::copy(full_name, new_name) {
         error!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
     }
 }
 
-pub fn minimize_new(obj: &Box<dyn ProgramConfig>, full_name: &str) {
+pub(crate) fn minimize_new(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     let mut minimization_command = obj.get_minimize_command(full_name);
     let minimization_command_str = collect_command_to_string(&minimization_command);
     let output = minimization_command.spawn().unwrap().wait_with_output().unwrap();
@@ -110,7 +110,7 @@ pub fn minimize_new(obj: &Box<dyn ProgramConfig>, full_name: &str) {
     }
 }
 
-pub fn execute_command_on_pack_of_files(
+pub(crate) fn execute_command_on_pack_of_files(
     obj: &Box<dyn ProgramConfig>,
     folder_name: &str,
     files: &[String],
@@ -174,7 +174,7 @@ pub(crate) struct OutputResult {
 }
 impl OutputResult {
     #[allow(clippy::fn_params_excessive_bools)]
-    pub fn new(
+    pub(crate) fn new(
         code: Option<i32>,
         signal: Option<i32>,
         is_signal_broken: bool,
@@ -195,25 +195,25 @@ impl OutputResult {
             timeouted,
         }
     }
-    pub fn is_broken(&self) -> bool {
+    pub(crate) fn is_broken(&self) -> bool {
         self.is_signal_broken || self.have_invalid_output || self.is_code_broken || self.timeouted
     }
-    // pub fn is_only_signal_broken(&self) -> bool {
+    // pub(crate) fn is_only_signal_broken(&self) -> bool {
     //     self.is_signal_broken && !self.have_invalid_output && !self.is_code_broken
     // }
-    pub fn get_output(&self) -> &str {
+    pub(crate) fn get_output(&self) -> &str {
         &self.output
     }
-    // pub fn get_command_str(&self) -> &str {
+    // pub(crate) fn get_command_str(&self) -> &str {
     //     &self.command_str
     // }
-    // pub fn debug_print(&self) {
+    // pub(crate) fn debug_print(&self) {
     //     info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_code_broken, self.timeouted, self.code, self.signal);
     // }
 }
 
 #[allow(clippy::borrowed_box)]
-pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> OutputResult {
+pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> OutputResult {
     let content_before = fs::read(full_name).unwrap(); // In each iteration be sure that before and after, file is the same
 
     let command = obj.get_full_command(full_name);
@@ -265,83 +265,7 @@ pub fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_nam
     )
 }
 
-pub fn run_ruff_format_check(item_to_check: &str, print_info: bool) -> Output {
-    if print_info {
-        info!("Ruff checking format on: {item_to_check}");
-    }
-    let output = std::process::Command::new("ruff")
-        .arg("format")
-        .arg(item_to_check)
-        .arg("--check")
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    if print_info {
-        info!("Ruff checked format on: {item_to_check}");
-    }
-    output
-}
-
-#[allow(dead_code)]
-pub fn run_ruff_format(item_to_check: &str, print_info: bool) -> Output {
-    if print_info {
-        info!("Ruff formatted on: {item_to_check}");
-    }
-    let output = Command::new("ruff")
-        .arg("format")
-        .arg(item_to_check)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    if print_info {
-        info!("Ruff formatted on: {item_to_check}");
-    }
-    output
-}
-
-pub fn find_broken_files_by_cpython(dir_to_check: &str) -> Vec<String> {
-    let output = Command::new("python3")
-        .arg("-m")
-        .arg("compileall")
-        .arg(dir_to_check)
-        .stderr(Stdio::piped())
-        .stdout(Stdio::piped())
-        .spawn()
-        .unwrap()
-        .wait_with_output()
-        .unwrap();
-    let all = collect_output(&output);
-    // error!("{all}");
-
-    let mut next_file_is_broken = false;
-    let mut broken_files = vec![];
-    for line in all.lines().rev() {
-        if line.starts_with("Compiling '") {
-            if next_file_is_broken {
-                let file_name = line.strip_prefix("Compiling '").unwrap().strip_suffix("'...").unwrap();
-                next_file_is_broken = false;
-                if !Path::new(&file_name).is_file() {
-                    error!("BUG: Invalid missing file name '{file_name}' in line '{line}'");
-                    continue;
-                }
-                broken_files.push(file_name.to_string());
-            }
-        } else if line.contains("Error:") {
-            next_file_is_broken = true;
-        }
-    }
-
-    let _ = fs::remove_dir_all(format!("{dir_to_check}/__pycache__"));
-    broken_files
-}
-
-pub fn check_files_number(name: &str, dir: &str) {
+pub(crate) fn check_files_number(name: &str, dir: &str) {
     info!(
         "{name} - {} - Files Number {}.",
         dir,
@@ -353,7 +277,7 @@ pub fn check_files_number(name: &str, dir: &str) {
             .count()
     );
 }
-pub fn calculate_number_of_files(dir: &str) -> usize {
+pub(crate) fn calculate_number_of_files(dir: &str) -> usize {
     let mut number_of_files = 0;
     for i in WalkDir::new(dir).max_depth(999).into_iter().flatten() {
         if i.path().is_file() {
@@ -363,7 +287,7 @@ pub fn calculate_number_of_files(dir: &str) -> usize {
     number_of_files
 }
 
-pub fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
+pub(crate) fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
     let command = obj.broken_file_creator();
     let output = command.wait_with_output().unwrap();
     let out = String::from_utf8(output.stdout).unwrap();
@@ -378,7 +302,7 @@ pub fn generate_files(obj: &Box<dyn ProgramConfig>, settings: &Setting) {
     }
 }
 
-pub fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
+pub(crate) fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
     let mut size_all = 0;
     let mut files = Vec::new();
     assert!(Path::new(&settings.temp_possible_broken_files_dir).is_dir());

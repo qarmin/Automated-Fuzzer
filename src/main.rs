@@ -18,7 +18,6 @@ mod broken_files;
 mod common;
 mod finding_different_output;
 mod finding_text_status;
-mod minimal_rules;
 mod obj;
 mod remove_non_crashing_files;
 mod settings;
@@ -54,11 +53,6 @@ fn main() {
     if settings.remove_non_crashing_items_from_broken_files {
         info!("RUNNING REMOVE NON CRASHING FILES");
         remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);
-        return;
-    }
-    if settings.find_minimal_rules {
-        info!("RUNNING MINIMAL RULES");
-        minimal_rules::check_code(&settings, &obj);
         return;
     }
 

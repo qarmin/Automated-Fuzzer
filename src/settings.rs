@@ -1,11 +1,8 @@
 use std::collections::HashMap;
-use std::str::FromStr;
 
 use config::Config;
-use strum_macros::{Display, EnumString};
 
 use crate::apps::custom::CustomStruct;
-use crate::apps::ruff::{BROKEN_ITEMS_TO_FIND, BROKEN_ITEMS_TO_IGNORE, RuffStruct};
 use crate::broken_files::LANGS;
 use crate::common::CheckGroupFileMode;
 use crate::obj::ProgramConfig;
@@ -21,7 +18,6 @@ pub struct Setting {
     pub minimization_attempts_with_signal_timeout: u32,
     pub remove_non_crashing_items_from_broken_files: bool,
     pub temp_folder: String,
-    pub current_mode: MODES,
     pub extensions: Vec<String>,
     pub broken_files_dir: String,
     pub valid_input_files_dir: String,
@@ -32,15 +28,13 @@ pub struct Setting {
     pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
-    pub find_minimal_rules: bool,
     pub check_if_file_is_parsable: bool,
     pub ignore_timeout_errors: bool,
     pub grouping: u32,
     pub debug_executed_commands: bool,
     pub check_for_stability: bool,
     pub stability_runs: u32,
-    pub custom_items: Option<CustomItems>,
-    pub non_custom_items: Option<NonCustomItems>,
+    pub custom_items: CustomItems,
     pub custom_folder_path: String,
 }
 
@@ -51,16 +45,7 @@ pub enum StabilityMode {
     FileContent,
     OutputContent,
 }
-#[derive(Clone, Debug)]
-pub struct NonCustomItems {
-    pub app_binary: String,
-    pub app_config: String,
-    pub additional_minimization_command: String,
-    pub tool_type: String,
-    pub search_items: Vec<String>,
-    pub ignored_items: Vec<String>,
-    pub stability_mode: StabilityMode,
-}
+
 #[derive(Clone, Debug)]
 pub struct CustomItems {
     pub group_mode: CheckGroupFileMode,
@@ -80,7 +65,10 @@ fn get_stability_mode(tool_hashmap: &HashMap<String, String>) -> StabilityMode {
         _ => panic!("Invalid stability mode {}", tool_hashmap["stability_mode"]),
     }
 }
-pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &HashMap<String, String>) -> CustomItems {
+pub(crate) fn process_custom_struct(
+    general: &HashMap<String, String>,
+    tool_hashmap: &HashMap<String, String>,
+) -> CustomItems {
     let stability_mode = get_stability_mode(tool_hashmap);
     let group_mode = match tool_hashmap["group_mode"].as_str() {
         "none" => CheckGroupFileMode::None,
@@ -159,19 +147,7 @@ pub fn process_custom_struct(general: &HashMap<String, String>, tool_hashmap: &H
         stability_mode,
     }
 }
-pub fn get_non_custom_items(tool_hashmap: &HashMap<String, String>) -> NonCustomItems {
-    let stability_mode = get_stability_mode(tool_hashmap);
-    NonCustomItems {
-        app_binary: tool_hashmap["app_binary"].clone(),
-        app_config: tool_hashmap["app_config"].clone(),
-        additional_minimization_command: tool_hashmap["additional_minimization_command"].trim().to_string(),
-        tool_type: tool_hashmap["tool_type"].clone(),
-        search_items: BROKEN_ITEMS_TO_FIND.iter().map(ToString::to_string).collect(),
-        ignored_items: BROKEN_ITEMS_TO_IGNORE.iter().map(ToString::to_string).collect(),
-        stability_mode,
-    }
-}
-pub fn load_settings() -> Setting {
+pub(crate) fn load_settings() -> Setting {
     let settings = Config::builder()
         .add_source(config::File::with_name("fuzz_settings"))
         .build()
@@ -182,12 +158,6 @@ pub fn load_settings() -> Setting {
 
     let general = config["general"].clone();
     let current_mode_string = general["current_mode"].clone();
-
-    let current_mode = if current_mode_string.contains("custom") {
-        MODES::CUSTOM
-    } else {
-        MODES::from_str(&current_mode_string).unwrap_or_else(|_| panic!("Invalid mode {current_mode_string}."))
-    };
     let curr_setting = config[&current_mode_string].clone();
 
     let name = curr_setting["name"].clone();
@@ -196,20 +166,12 @@ pub fn load_settings() -> Setting {
         .map(str::trim)
         .filter_map(|e| if e.is_empty() { None } else { Some(format!(".{e}")) })
         .collect();
-    let find_minimal_rules = general["find_minimal_rules"].parse().unwrap();
     let remove_non_crashing_items_from_broken_files =
         general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
     let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
-    let (custom_items, non_custom_items) = if current_mode == MODES::CUSTOM {
-        let ci = process_custom_struct(&general, &curr_setting);
-        (Some(ci), None)
-    } else {
-        let nci = get_non_custom_items(&curr_setting);
-        // Currently only ruff uses non custom mode, so it always have non binary mode
-        (None, Some(nci))
-    };
+    let custom_items = process_custom_struct(&general, &curr_setting);
 
     Setting {
         name,
@@ -222,7 +184,6 @@ pub fn load_settings() -> Setting {
             .parse()
             .unwrap(),
         remove_non_crashing_items_from_broken_files,
-        current_mode,
         extensions,
         timeout: general["timeout"].parse().unwrap(),
         broken_files_dir: curr_setting["broken_files_dir"].parse().unwrap(),
@@ -237,39 +198,18 @@ pub fn load_settings() -> Setting {
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
-        find_minimal_rules,
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
         ignore_timeout_errors,
         grouping,
         debug_executed_commands,
         custom_items,
-        non_custom_items,
         check_for_stability: general["check_for_stability"].parse().unwrap(),
         stability_runs: general["stability_runs"].parse().unwrap(),
         custom_folder_path: general["custom_folder_path"].clone(),
     }
 }
 
-pub fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
+pub(crate) fn get_object(settings: Setting) -> Box<dyn ProgramConfig> {
     let custom_items = settings.custom_items.clone();
-    let non_custom_items = settings.non_custom_items.clone();
-    match settings.current_mode {
-        MODES::RUFF => Box::new(RuffStruct {
-            settings,
-            ignored_rules: String::new(),
-            non_custom_items: non_custom_items.unwrap(),
-        }),
-        MODES::CUSTOM => Box::new(CustomStruct {
-            custom_items: custom_items.unwrap(),
-            settings,
-        }),
-    }
-}
-
-#[derive(Debug, PartialEq, EnumString, Copy, Clone, Display)]
-pub enum MODES {
-    #[strum(ascii_case_insensitive)]
-    CUSTOM,
-    #[strum(ascii_case_insensitive)]
-    RUFF,
+    Box::new(CustomStruct { settings, custom_items })
 }

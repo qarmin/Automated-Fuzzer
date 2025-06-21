@@ -1,4 +1,6 @@
 use std::fs;
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -6,18 +8,19 @@ use jwalk::WalkDir;
 use log::info;
 use rand::random;
 use rayon::prelude::*;
+use zip::ZipWriter;
+use zip::write::SimpleFileOptions;
 
 use crate::common::{
     CheckGroupFileMode, collect_command_to_string, execute_command_and_connect_output,
     execute_command_on_pack_of_files, remove_and_create_entire_folder,
 };
-use crate::minimal_rules::zip_file;
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
 pub const MAX_FILES: usize = 999_999_999_999;
 
-pub fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+pub(crate) fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     obj.remove_non_parsable_files(&settings.broken_files_dir);
 
     let broken_files: Vec<String> = collect_broken_files(settings).into_iter().take(MAX_FILES).collect();
@@ -138,7 +141,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     save_results_to_file(obj, settings, results);
 }
 
-pub fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
+pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
     info!("Saving results to file");
     let command = obj.get_full_command("TEST___FILE");
     let command_str = collect_command_to_string(&command);
@@ -268,4 +271,16 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
             None
         })
         .collect()
+}
+
+pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &[u8]) {
+    let zip_file = File::create(zip_filename).unwrap();
+    let mut zip_writer = ZipWriter::new(zip_file);
+
+    let options = SimpleFileOptions::default()
+        .compression_method(zip::CompressionMethod::Deflated)
+        .unix_permissions(0o755);
+
+    let _ = zip_writer.start_file(file_name, options);
+    let _ = zip_writer.write_all(file_code);
 }

@@ -12,7 +12,7 @@ use crate::common::{
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, StabilityMode};
 
-pub fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+pub(crate) fn find_broken_files_by_different_output(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     info!("Starting finding broken files by different output");
     let atomic_all_broken = AtomicU32::new(0);
 
@@ -124,7 +124,7 @@ fn test_files(
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
                 atomic_all_broken.fetch_add(1, Ordering::Relaxed);
                 // TODO - maybe later add minimization, but I doubt that this will easy and reproducible
-                obj.validate_txt_and_save_file(full_name, &outputs).is_some();
+                obj.validate_txt_and_save_file(full_name, &outputs);
                 return Some(());
             }
 

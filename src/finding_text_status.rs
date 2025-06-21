@@ -16,7 +16,7 @@ use crate::common::{
 use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
 use crate::settings::Setting;
 
-pub fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
     info!("Starting finding broken files by text status");
     let atomic_all_broken = AtomicU32::new(0);
 

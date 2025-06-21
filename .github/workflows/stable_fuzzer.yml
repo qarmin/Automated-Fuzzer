@@ -125,13 +125,6 @@ jobs:
             src_folder: vidduplicate
             stability_check: false
             binary: vidduplicate
-          - name: VIDDUPLICATEGST
-            config-file: fuzz_vidduplicategst_settings_ci.toml
-            timeout: 3600
-            files: "AA_VIDEO_VALID_FILES.7z"
-            src_folder: vidduplicategst
-            stability_check: false
-            binary: vidduplicategst
 
     steps:
       - uses: actions/checkout@v4
