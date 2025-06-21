@@ -27,7 +27,7 @@ jobs:
             binary: oxlint
           - name: RUFF
             config-file: fuzz_ruff_settings_ci.toml
-            timeout: 500
+            timeout: 16000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
