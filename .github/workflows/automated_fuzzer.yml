@@ -32,16 +32,9 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: ruff
-          - name: TYRUFF
+          - name: TYRUFF1
             config-file: fuzz_ty_settings_ci.toml
-            timeout: 500
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUFF4
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 200
+            timeout: 16000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
