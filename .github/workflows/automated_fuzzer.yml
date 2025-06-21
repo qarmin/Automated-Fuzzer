@@ -286,6 +286,7 @@ jobs:
           sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug = true' Cargo.toml
           sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
+          sd -F "std::mem::forget(db);" "//std::mem::forget(db);" crates/ty/src/lib.rs
           
           if [ "${{ env.SANITIZER }}" = "true" ]; then
             echo "ASAN BUILD___"
@@ -385,7 +386,7 @@ jobs:
           fi
 
           export RUST_BACKTRACE=1
-          export ASAN_OPTIONS="detect_leaks=0" # TODO - ty leaks memory
+          # export ASAN_OPTIONS="detect_leaks=0" # TODO - ty leaks memory
           target/release/automated_fuzzer ${{ matrix.timeout }}
 
       - name: Create broken file to fail ci
@@ -406,7 +407,7 @@ jobs:
 
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS="detect_leaks=0,symbolize=1"
+          export ASAN_OPTIONS="symbolize=1"
           target/release/automated_fuzzer
 
       - name: Create broken file to fail ci
