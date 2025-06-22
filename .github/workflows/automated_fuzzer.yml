@@ -25,7 +25,42 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: oxlint
+          - name: RUFFFORMAT
+            config-file: fuzz_ruff_format_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ruff
+          - name: RUFFFORMAT2
+            config-file: fuzz_ruff_format_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ruff
+          - name: RUFFFORMAT3
+            config-file: fuzz_ruff_format_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ruff
           - name: RUFF
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ruff
+          - name: RUFF2
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: ruff
+          - name: RUFF3
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
@@ -46,48 +81,48 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: ty
-          - name: TYRUFF3
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000 #4000
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUFF4
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000 #8000
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUFF5
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: ty
-          - name: PYREFLY
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 500
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: pyrefly
-          - name: PYREFLY2
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000 #2000
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: pyrefly
-          - name: PYREFLY3
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000 #4000
-            files: "FILES_23.zip"
-            src_folder: ''
-            stability_check: false
-            binary: pyrefly
+          #          - name: TYRUFF3
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000 #4000
+          #            files: "FILES_23.zip"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUFF4
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000 #8000
+          #            files: "FILES_23.zip"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUFF5
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_23.zip"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: PYREFLY
+          #            config-file: fuzz_pyrefly_settings_ci.toml
+          #            timeout: 500
+          #            files: "FILES_23.zip"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: pyrefly
+          #          - name: PYREFLY2
+          #            config-file: fuzz_pyrefly_settings_ci.toml
+          #            timeout: 16000 #2000
+          #            files: "FILES_23.zip"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: pyrefly
+          #          - name: PYREFLY3
+          #            config-file: fuzz_pyrefly_settings_ci.toml
+          #            timeout: 16000 #4000
+          #            files: "FILES_23.zip"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: pyrefly
           - name: PYREFLY4
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 16000 #8000

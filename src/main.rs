@@ -1,5 +1,7 @@
 #![allow(clippy::upper_case_acronyms)]
 #![allow(clippy::borrowed_box)]
+#![allow(clippy::too_many_arguments)]
+#![allow(clippy::format_push_string)]
 
 use std::fs;
 use std::path::Path;
