@@ -67,7 +67,7 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: ruff
-          - name: TYRUFF1
+          - name: TYRUFF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
@@ -102,13 +102,13 @@ jobs:
           #            src_folder: ''
           #            stability_check: false
           #            binary: ty
-          #          - name: PYREFLY
-          #            config-file: fuzz_pyrefly_settings_ci.toml
-          #            timeout: 500
-          #            files: "FILES_23.zip"
-          #            src_folder: ''
-          #            stability_check: false
-          #            binary: pyrefly
+          - name: PYREFLY
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 500
+            files: "FILES_23.zip"
+            src_folder: ''
+            stability_check: false
+            binary: pyrefly
           #          - name: PYREFLY2
           #            config-file: fuzz_pyrefly_settings_ci.toml
           #            timeout: 16000 #2000
@@ -416,6 +416,7 @@ jobs:
           ls -al
 
       - name: Release
+        if: ${{ !endsWith(matrix.name, '1') && !endsWith(matrix.name, '2') && !endsWith(matrix.name, '3') && !endsWith(matrix.name, '4') && !endsWith(matrix.name, '5') && !endsWith(matrix.name, '6') && !endsWith(matrix.name, '7') && !endsWith(matrix.name, '8') && !endsWith(matrix.name, '9') && !endsWith(matrix.name, '0') }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: "Nightly"
