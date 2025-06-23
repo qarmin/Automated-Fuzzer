@@ -43,6 +43,7 @@ search_item_103 = "timeout: sending signal"
 ignored_item_1 = "attempt to subtract with overflow" # https://github.com/astral-sh/ty/issues/670
 ignored_item_2 = "stack overflow" # https://github.com/astral-sh/ty/issues/93
 ignored_item_3 = "stack-overflow" # https://github.com/astral-sh/ty/issues/93
+ignored_item_4 = "timeout" # https://github.com/astral-sh/ty/issues/675
 file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
