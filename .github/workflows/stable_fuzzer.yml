@@ -261,7 +261,7 @@ jobs:
 
       #### TY
       - name: Install TY(ruff) - special name, because ty may conflict with other binaries
-        if: ${{ contains(matrix.name, 'TYRUFF') }}
+        if: ${{ contains(matrix.name, 'TYRUF') }}
         run: |
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip

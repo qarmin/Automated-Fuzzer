@@ -67,35 +67,35 @@ jobs:
             src_folder: ''
             stability_check: false
             binary: ruff
-          - name: TYRUFF
+          - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: ty
-          - name: TYRUFF2
+          - name: TYRUF2
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000 #2000
             files: "FILES_23.zip"
             src_folder: ''
             stability_check: false
             binary: ty
-          #          - name: TYRUFF3
+          #          - name: TYRUF3
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000 #4000
           #            files: "FILES_23.zip"
           #            src_folder: ''
           #            stability_check: false
           #            binary: ty
-          #          - name: TYRUFF4
+          #          - name: TYRUF4
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000 #8000
           #            files: "FILES_23.zip"
           #            src_folder: ''
           #            stability_check: false
           #            binary: ty
-          #          - name: TYRUFF5
+          #          - name: TYRUF5
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000
           #            files: "FILES_23.zip"
@@ -159,20 +159,20 @@ jobs:
           #            src_folder: rsbuzz
           #            stability_check: false
           #            binary: rsbuzz
-          - name: SYMPHONIA
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: symphonia
-            stability_check: false
-            binary: symphonia
-          - name: SWC
-            config-file: fuzz_swc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            src_folder: ''
-            stability_check: false
-            binary: swc
+          #          - name: SYMPHONIA
+          #            config-file: fuzz_symphonia_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            src_folder: symphonia
+          #            stability_check: false
+          #            binary: symphonia
+          #          - name: SWC
+          #            config-file: fuzz_swc_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            src_folder: ''
+          #            stability_check: false
+          #            binary: swc
 
     steps:
       - uses: actions/checkout@v4
@@ -309,7 +309,7 @@ jobs:
 
       #### TY
       - name: Install TY(ruff) - special name, because ty may conflict with other binaries
-        if: ${{ contains(matrix.name, 'TYRUFF') }}
+        if: ${{ contains(matrix.name, 'TYRUF') }}
         run: |
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
