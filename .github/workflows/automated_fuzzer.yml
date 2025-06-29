@@ -116,7 +116,7 @@ jobs:
           cd $PROJECT_INSTALL_DIR
           cargo update
           cd ../../..
-          echo PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR >> $GITHUB_ENV
 
       #################### START OF APPLICATION STEPS ####################
       - name: Download biome # BIOME
@@ -166,7 +166,7 @@ jobs:
           unzip -q main.zip
           rm main.zip
           echo PROJECT_INSTALL_DIR=ruff-main/crates/ruff >> $GITHUB_ENV
-          echo PROJECT_CARGO_TOML_FOLDER=ruff-main/"" >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
 
       #### SWC
       - name: Install swc
