@@ -32,35 +32,7 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ruff
-          - name: RUFFFORMAT2
-            config-file: fuzz_ruff_format_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ruff
-          - name: RUFFFORMAT3
-            config-file: fuzz_ruff_format_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ruff
           - name: RUFF
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ruff
-          - name: RUFF2
-            config-file: fuzz_ruff_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ruff
-          - name: RUFF3
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
@@ -74,65 +46,9 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ty
-          - name: TYRUF2
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000 #2000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          #          - name: TYRUF3
-          #            config-file: fuzz_ty_settings_ci.toml
-          #            timeout: 16000 #4000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: ty
-          #          - name: TYRUF4
-          #            config-file: fuzz_ty_settings_ci.toml
-          #            timeout: 16000 #8000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: ty
-          #          - name: TYRUF5
-          #            config-file: fuzz_ty_settings_ci.toml
-          #            timeout: 16000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: ty
           - name: PYREFLY
             config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 500
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: pyrefly
-          #          - name: PYREFLY2
-          #            config-file: fuzz_pyrefly_settings_ci.toml
-          #            timeout: 16000 #2000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: pyrefly
-          #          - name: PYREFLY3
-          #            config-file: fuzz_pyrefly_settings_ci.toml
-          #            timeout: 16000 #4000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: pyrefly
-          - name: PYREFLY4
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000 #8000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: pyrefly
-          - name: PYREFLY5
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000 #
+            timeout: 16000
             files: "FILES_23.zip"
             library_folder: ''
             stability_check: false
@@ -200,7 +116,7 @@ jobs:
           cd $PROJECT_INSTALL_DIR
           cargo update
           cd ../../..
-          echo "PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR" >> $GITHUB_ENV
 
       #################### START OF APPLICATION STEPS ####################
       - name: Download biome # BIOME
@@ -209,8 +125,8 @@ jobs:
           wget -q https://github.com/biomejs/biome/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"biome-main/crates/biome_cli\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"biome-main\"" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=biome-main/crates/biome_cli >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=biome-main >> $GITHUB_ENV
 
       - name: Download oxlint # OXLINT
         if: ${{ contains(matrix.name, 'OXC') }}
@@ -218,9 +134,8 @@ jobs:
           wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"oxc-main/apps/oxlint\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"oxc-main\"" >> $GITHUB_ENV
-
+          echo PROJECT_INSTALL_DIR=oxc-main/apps/oxlint >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=oxc-main >> $GITHUB_ENV
 
       #### PYREFLY
       - name: Install pyrefly
@@ -229,9 +144,8 @@ jobs:
           wget -q https://github.com/facebook/pyrefly/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"pyrefly-main/pyrefly\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"pyrefly-main\"" >> $GITHUB_ENV
-      
+          echo PROJECT_INSTALL_DIR=pyrefly-main/pyrefly >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=pyrefly-main >> $GITHUB_ENV
 
       #### TY
       - name: Install TY(ruff) - special name, because ty may conflict with other binaries
@@ -240,8 +154,8 @@ jobs:
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"ruff-main/crates/ty\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"ruff-main\"" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=ruff-main/crates/ty >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
       
 
       #### RUFF
@@ -251,8 +165,8 @@ jobs:
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"ruff-main/crates/ruff\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"ruff-main/"" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=ruff-main/crates/ruff >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=ruff-main/"" >> $GITHUB_ENV
 
       #### SWC
       - name: Install swc
@@ -261,8 +175,8 @@ jobs:
           wget -q https://github.com/swc-project/swc/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"swc-main/crates/swc_cli_impl\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"swc-main\"" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=swc-main/crates/swc_cli_impl >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=swc-main >> $GITHUB_ENV
 
       #### TYPST
       - name: Install typst_rs
@@ -271,8 +185,8 @@ jobs:
           wget -q https://github.com/typst/typst/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          echo "PROJECT_INSTALL_DIR=\"typst-main/crates/typst-cli\"" >> $GITHUB_ENV
-          echo "PROJECT_CARGO_TOML_FOLDER=\"typst-main\"" >> $GITHUB_ENV
+          echo PROJECT_INSTALL_DIR=typst-main/crates/typst-cli >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=typst-main >> $GITHUB_ENV
 
       #################### END OF APPLICATION STEPS ####################
 
