@@ -216,7 +216,7 @@ jobs:
           # First compile app in normal mode
           echo "Compiling in normal mode"
           cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
-          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" //${{ matrix.binary }}_normal
+          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
           ldd /etc/${{ matrix.binary }}_normal
           
           # Then compile app in ASAN mode
