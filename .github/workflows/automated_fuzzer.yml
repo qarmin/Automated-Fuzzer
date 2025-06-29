@@ -225,9 +225,6 @@ jobs:
           sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
           ldd /etc/${{ matrix.binary }}
 
-      - name: Install fuzzer
-        run: cargo install --path .
-
       - name: Remove all target/compilation folders and files
         run: |
           git clean -xqdf
@@ -240,6 +237,9 @@ jobs:
           echo "Path to asan binary: /etc/${{ matrix.binary }}"
           time 7z a "${{ matrix.binary }}.7z" "/etc/${{ matrix.binary }}"
           ls -al
+
+      - name: Install fuzzer
+        run: cargo install --path .
 
       - name: Release
         if: ${{ !endsWith(matrix.name, '1') && !endsWith(matrix.name, '2') && !endsWith(matrix.name, '3') && !endsWith(matrix.name, '4') && !endsWith(matrix.name, '5') && !endsWith(matrix.name, '6') && !endsWith(matrix.name, '7') && !endsWith(matrix.name, '8') && !endsWith(matrix.name, '9') && !endsWith(matrix.name, '0') }}
@@ -277,7 +277,7 @@ jobs:
 
           export RUST_BACKTRACE=1
           # export ASAN_OPTIONS="detect_leaks=0" # TODO - ty leaks memory
-          target/release/automated_fuzzer ${{ matrix.timeout }}
+          automated_fuzzer ${{ matrix.timeout }}
 
       - name: Create broken file to fail ci
         run: |
@@ -298,7 +298,7 @@ jobs:
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS="symbolize=1"
-          target/release/automated_fuzzer
+          automated_fuzzer
 
       - name: Create broken file to fail ci
         run: |
