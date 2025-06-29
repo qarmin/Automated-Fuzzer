@@ -199,13 +199,14 @@ jobs:
         run: |
           # If PROJECT_CARGO_TOML_FOLDER exists and is not empty, then use it
           if [ -n "${{ env.PROJECT_CARGO_TOML_FOLDER }}" ]; then
-              sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' Cargo.toml
+              sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+      
               echo "Using PROJECT_CARGO_TOML_FOLDER: ${{ env.PROJECT_CARGO_TOML_FOLDER }}"
               echo "[profile.release]" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
-                echo "overflow-checks = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
-                echo "debug = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
-                # echo "panic = 'abort'" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
-                echo "debug-assertions = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "overflow-checks = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "debug = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              # echo "panic = 'abort'" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "debug-assertions = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
           else
               echo "Using default Cargo.toml"
           fi
@@ -215,13 +216,13 @@ jobs:
           # First compile app in normal mode
           echo "Compiling in normal mode"
           cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
-          cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
+          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" //${{ matrix.binary }}_normal
           ldd /etc/${{ matrix.binary }}_normal
           
           # Then compile app in ASAN mode
           echo "Compiling in ASAN mode"
           RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
-          cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
+          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
           ldd /etc/${{ matrix.binary }}
 
       - name: Install fuzzer
