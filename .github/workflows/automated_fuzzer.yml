@@ -22,126 +22,126 @@ jobs:
             config-file: fuzz_oxc_settings_ci.toml
             timeout: 16000
             files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: oxlint
           - name: RUFFFORMAT
             config-file: fuzz_ruff_format_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ruff
           - name: RUFFFORMAT2
             config-file: fuzz_ruff_format_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ruff
           - name: RUFFFORMAT3
             config-file: fuzz_ruff_format_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ruff
           - name: RUFF
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ruff
           - name: RUFF2
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ruff
           - name: RUFF3
             config-file: fuzz_ruff_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ruff
           - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ty
           - name: TYRUF2
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000 #2000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: ty
           #          - name: TYRUF3
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000 #4000
           #            files: "FILES_23.zip"
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: ty
           #          - name: TYRUF4
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000 #8000
           #            files: "FILES_23.zip"
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: ty
           #          - name: TYRUF5
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000
           #            files: "FILES_23.zip"
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: ty
           - name: PYREFLY
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 500
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: pyrefly
           #          - name: PYREFLY2
           #            config-file: fuzz_pyrefly_settings_ci.toml
           #            timeout: 16000 #2000
           #            files: "FILES_23.zip"
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: pyrefly
           #          - name: PYREFLY3
           #            config-file: fuzz_pyrefly_settings_ci.toml
           #            timeout: 16000 #4000
           #            files: "FILES_23.zip"
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: pyrefly
           - name: PYREFLY4
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 16000 #8000
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: pyrefly
           - name: PYREFLY5
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 16000 #
             files: "FILES_23.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: pyrefly
           - name: BIOME
             config-file: fuzz_biome_settings_ci.toml
             timeout: 16000
             files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: biome
           # https://github.com/jrmuizel/pdf-extract/issues/96
@@ -149,28 +149,28 @@ jobs:
           #            config-file: fuzz_pdf_extract_settings_ci.toml
           #            timeout: 16000
           #            files: "AA_PDF_VALID_FILES.7z"
-          #            src_folder: pdf_extract
+          #            library_folder: pdf_extract
           #            stability_check: false
           #            binary: pdf_extract
           #          - name: RSBUZZ
           #            config-file: fuzz_rsbuzz_settings_ci.toml
           #            timeout: 16000
           #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            src_folder: rsbuzz
+          #            library_folder: rsbuzz
           #            stability_check: false
           #            binary: rsbuzz
           #          - name: SYMPHONIA
           #            config-file: fuzz_symphonia_settings_ci.toml
           #            timeout: 16000
           #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            src_folder: symphonia
+          #            library_folder: symphonia
           #            stability_check: false
           #            binary: symphonia
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000
           #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: swc
 
@@ -193,92 +193,34 @@ jobs:
         run: cargo install create_broken_files sd minimizer
 
       # THERE STARTING CUSTOM STEP
-      - name: Install apps, which are inside this repo(probably only libraries)
-        if: ${{ matrix.src_folder != '' }}
+      - name: Install libraries, which are inside this repo(inside repo are binaries which uses these libraries)
+        if: ${{ matrix.library_folder != '' }}
         run: |
-          cd src/crates/${{ matrix.src_folder }}
+          PROJECT_INSTALL_DIR="src/crates/${{ matrix.library_folder }}"
+          cd $PROJECT_INSTALL_DIR
           cargo update
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path . --locked
-          fi
-          
           cd ../../..
-          ldd $(whereis -b ${{ matrix.src_folder }} | awk '{print $2}')
+          echo "PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR" >> $GITHUB_ENV
 
-      #### GO
-      - uses: actions/setup-go@v5
-        if: ${{ contains(matrix.name, 'GO') }}
-        with:
-          go-version: ${{ matrix.go_version }}
-          check-latest: true
-
-      - name: Install go
-        if: ${{ contains(matrix.name, 'GO') }}
-        run: |
-          git clone https://github.com/dominikh/go-tools.git gotools
-          cd gotools
-          go install cmd/staticcheck/staticcheck.go
-          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
-          ldd /usr/bin/staticcheck
-          cd ..
-
-      #### BIOME
-      - name: Install biome
+      #################### START OF APPLICATION STEPS ####################
+      - name: Download biome # BIOME
         if: ${{ contains(matrix.name, 'BIOME') }}
         run: |
           wget -q https://github.com/biomejs/biome/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd biome-main
-          rm rust-toolchain.toml
-          echo "[profile.release]" >> Cargo.toml
-          echo "overflow-checks = true" >> Cargo.toml
-          echo "debug = true" >> Cargo.toml
-          echo "panic = 'abort'" >> Cargo.toml
-          rm -rf .cargo # Removes lto = true
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/biome_cli --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path crates/biome_cli --locked
-          fi
-          
-          cd ../
-          rm -rf biome-main
-          ldd $(whereis -b biome | awk '{print $2}')
+          echo "PROJECT_INSTALL_DIR=\"biome-main/crates/biome_cli\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"biome-main\"" >> $GITHUB_ENV
 
-      #### OXLINT
-      - name: Install oxlint
+      - name: Download oxlint # OXLINT
         if: ${{ contains(matrix.name, 'OXC') }}
         run: |
           wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd oxc-main
-          rm rust-toolchain.toml
-          sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
-          sd "debug = false" "debug = true" Cargo.toml
-          sd "strip = \"symbols\"" "strip = \"none\"" Cargo.toml
-          sd "lto =" "#lto =" Cargo.toml
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path apps/oxlint --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path apps/oxlint --locked
-          fi
-          
-          cd ../
-          rm -rf oxc-main
-          ldd $(whereis -b oxlint | awk '{print $2}')
+          echo "PROJECT_INSTALL_DIR=\"oxc-main/apps/oxlint\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"oxc-main\"" >> $GITHUB_ENV
+
 
       #### PYREFLY
       - name: Install pyrefly
@@ -287,25 +229,9 @@ jobs:
           wget -q https://github.com/facebook/pyrefly/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd pyrefly-main
-          rm rust-toolchain.toml
-          sd "lto =" "#lto =" Cargo.toml
-          sd "codegen-units = 1" "#codegen-units = 1" Cargo.toml
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path pyrefly --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path pyrefly --locked
-          fi
-          
-          cd ../
-          rm -rf pyrefly-main
-          ldd $(whereis -b pyrefly | awk '{print $2}')
+          echo "PROJECT_INSTALL_DIR=\"pyrefly-main/pyrefly\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"pyrefly-main\"" >> $GITHUB_ENV
+      
 
       #### TY
       - name: Install TY(ruff) - special name, because ty may conflict with other binaries
@@ -314,53 +240,19 @@ jobs:
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd ruff-main
-          rm rust-toolchain.toml
-          sd "lto =" "#lto =" Cargo.toml
-          sd "codegen-units = 1" "#codegen-units = 1" Cargo.toml
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          sd -F "std::mem::forget(db);" "//std::mem::forget(db);" crates/ty/src/lib.rs
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/ty --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path crates/ty --locked
-          fi
-          
-          cd ../
-          rm -rf ruff-main
-          ldd $(whereis -b ty | awk '{print $2}')
+          echo "PROJECT_INSTALL_DIR=\"ruff-main/crates/ty\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"ruff-main\"" >> $GITHUB_ENV
+      
 
-      #### TY
+      #### RUFF
       - name: Install ruff
         if: ${{ contains(matrix.name, 'RUFF') }}
         run: |
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd ruff-main
-          rm rust-toolchain.toml
-          sd "lto =" "#lto =" Cargo.toml
-          sd "codegen-units = 1" "#codegen-units = 1" Cargo.toml
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/ruff --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path crates/ruff --locked
-          fi
-          
-          cd ../
-          rm -rf ruff-main
-          ldd $(whereis -b ruff | awk '{print $2}')
+          echo "PROJECT_INSTALL_DIR=\"ruff-main/crates/ruff\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"ruff-main/"" >> $GITHUB_ENV
 
       #### SWC
       - name: Install swc
@@ -368,17 +260,9 @@ jobs:
         run: |
           wget -q https://github.com/swc-project/swc/archive/refs/heads/main.zip
           unzip -q main.zip
-          
-          if [ "${{ matrix.asan_build }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path swc-main/crates/swc_cli_impl/ --locked  --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path swc-main/crates/swc_cli_impl/ --locked
-          fi
-
-          rm -rf main.zip swc-main
-          ldd $(whereis -b swc | awk '{print $2}')
+          rm main.zip
+          echo "PROJECT_INSTALL_DIR=\"swc-main/crates/swc_cli_impl\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"swc-main\"" >> $GITHUB_ENV
 
       #### TYPST
       - name: Install typst_rs
@@ -387,32 +271,58 @@ jobs:
           wget -q https://github.com/typst/typst/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd typst-main
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          cd crates/typst-cli
-          
-          if [ "${{ matrix.asan_build }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
+          echo "PROJECT_INSTALL_DIR=\"typst-main/crates/typst-cli\"" >> $GITHUB_ENV
+          echo "PROJECT_CARGO_TOML_FOLDER=\"typst-main\"" >> $GITHUB_ENV
+
+      #################### END OF APPLICATION STEPS ####################
+
+      - name: Remove rust_toolchain.toml files and .cargo folders
+        run: |
+          find . -name "rust-toolchain.toml" -exec rm -f {} \;
+          find . -name ".cargo" -exec rm -rf {} \;
+
+      - name: Apply Release patch
+        run: |
+          # If PROJECT_CARGO_TOML_FOLDER exists and is not empty, then use it
+          if [ -n "${{ env.PROJECT_CARGO_TOML_FOLDER }}" ]; then
+              echo "Using PROJECT_CARGO_TOML_FOLDER: ${{ env.PROJECT_CARGO_TOML_FOLDER }}"
+              echo "[profile.release]" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+                echo "overflow-checks = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+                echo "debug = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+                # echo "panic = 'abort'" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+                echo "debug-assertions = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
           else
-            echo "NORMAL BUILD___"
-            cargo install --path . --locked
+              echo "Using default Cargo.toml"
           fi
+
+      - name: Compile apps
+        run: |
+          # First compile app in normal mode
+          echo "Compiling in normal mode"
+          cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
+          cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
+          ldd /etc/${{ matrix.binary }}_normal
           
-          cd ../../..
-          ldd $(whereis -b typst | awk '{print $2}')
+          # Then compile app in ASAN mode
+          echo "Compiling in ASAN mode"
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
+          cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
+          ldd /etc/${{ matrix.binary }}
 
-      # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
+      - name: Install fuzzer
+        run: cargo install --path .
 
-      - name: Build
-        run: cargo build --release
+      - name: Remove all target/compilation folders and files
+        run: |
+          git clean -xqdf
 
       - name: Pack files
         run: |
-          echo "Path to binary: $(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
-          time 7z a "${{ matrix.binary }}.7z" "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
+          echo "Path to normal binary: /etc/${{ matrix.binary }}_normal"
+          time 7z a "${{ matrix.binary }}_normal.7z" "/etc/${{ matrix.binary }}_normal"
+          
+          echo "Path to asan binary: /etc/${{ matrix.binary }}"
+          time 7z a "${{ matrix.binary }}.7z" "/etc/${{ matrix.binary }}"
           ls -al
 
       - name: Release
@@ -422,6 +332,7 @@ jobs:
           tag_name: "Nightly"
           files: |
             ${{ matrix.binary }}.7z
+            ${{ matrix.binary }}_normal.7z
           token: ${{ secrets.PAT2 }}
 
       - name: Create folders
