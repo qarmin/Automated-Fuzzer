@@ -199,6 +199,7 @@ jobs:
         run: |
           # If PROJECT_CARGO_TOML_FOLDER exists and is not empty, then use it
           if [ -n "${{ env.PROJECT_CARGO_TOML_FOLDER }}" ]; then
+              sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' Cargo.toml
               echo "Using PROJECT_CARGO_TOML_FOLDER: ${{ env.PROJECT_CARGO_TOML_FOLDER }}"
               echo "[profile.release]" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
                 echo "overflow-checks = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
