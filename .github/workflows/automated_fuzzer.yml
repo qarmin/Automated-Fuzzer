@@ -154,6 +154,7 @@ jobs:
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
+          sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
           echo PROJECT_INSTALL_DIR=ruff-main/crates/ty >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
       
