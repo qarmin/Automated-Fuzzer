@@ -35,8 +35,10 @@ spin_on = { version = "0.1.1", optional = true }
 image_hasher = { git = "https://github.com/qarmin/img_hash.git", optional = true }
 image_crates = { package = "image", version = "0.25.0", default-features = false, features = ["avif", "bmp", "dds", "ff", "gif", "hdr", "ico", "png", "pnm", "qoi", "tga", "webp"], optional = true }
 nom-exif = { git = "https://github.com/mindeng/nom-exif", optional = true}
-vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true , rev = "c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b"}
-ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true, rev = "c90c5cafb51e2a437032c7c3dc75b19bc5d49f8b" }
+vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true}
+ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true}
+hayro-render = { git = "https://github.com/LaurenzV/hayro.git" , optional = true}
+hayro-syntax = { git = "https://github.com/LaurenzV/hayro.git", optional = true }
 
 [features]
 default = []
@@ -54,6 +56,7 @@ slint_f = ["i-slint-compiler", "spin_on"]
 image_hasher_f = ["image_hasher", "image_crates"]
 nom_exif_f = ["nom-exif"]
 vidduplicate_f = ["vid_dup_finder_lib", "ffmpeg_cmdline_utils"]
+hayro_f = ["hayro-render", "hayro-syntax"]
 
 [[bin]]
 name = "lofty"
@@ -142,6 +145,13 @@ bench = false
 [[bin]]
 name = "vidduplicate"
 path = "fuzz_targets/vidduplicate.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "hayro"
+path = "fuzz_targets/hayro.rs"
 test = false
 doc = false
 bench = false
