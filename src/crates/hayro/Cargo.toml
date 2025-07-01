@@ -1,0 +1,15 @@
+[package]
+name = "hayro"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+hayro-render = { git = "https://github.com/LaurenzV/hayro.git" }
+hayro-syntax = { git = "https://github.com/LaurenzV/hayro.git" }
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true
