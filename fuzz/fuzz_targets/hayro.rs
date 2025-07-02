@@ -8,6 +8,7 @@ use std::sync::Arc;
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     if let Some(pdf) = Pdf::new(Arc::new(data.to_vec())) {
+        let _pages = pdf.pages();
         let _pixmaps = render_png(&pdf, 1.0, None);
     }
     Corpus::Keep

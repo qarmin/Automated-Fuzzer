@@ -32,6 +32,7 @@ fn check_file(file_path: &str) {
 
     let data = Arc::new(content);
     if let Some(pdf) = Pdf::new(data) {
+        let _pages = pdf.pages();
         let _pixmaps = render_png(&pdf, 1.0, None);
     }
 }
