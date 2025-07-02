@@ -1,7 +1,7 @@
 name: 🐧 Cargo Fuzz Check
 on:
-  #  push:
-  #  pull_request:
+  push:
+  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -27,10 +27,10 @@ jobs:
           #            fuzz_target: vidduplicate
           #            timeout: 18000
           #            files: "AA_VIDEO_VALID_FILES.7z"
-          - name: LOFTY
-            fuzz_target: lofty
-            timeout: 18000
-            files: "AA_MUSIC_VALID_FILES.7z"
+          #          - name: LOFTY
+          #            fuzz_target: lofty
+          #            timeout: 18000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
           #          - name: NOM_EXIF
           #            fuzz_target: nom_exif
           #            timeout: 18000
