@@ -3,13 +3,13 @@
 use hayro_render::render_png;
 use hayro_syntax::pdf::Pdf;
 use libfuzzer_sys::{Corpus, fuzz_target};
-use std::io::Read;
 use std::sync::Arc;
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     if let Some(pdf) = Pdf::new(Arc::new(data.to_vec())) {
-        let _pages = pdf.pages();
-        let _pixmaps = render_png(&pdf, 1.0, None);
+        let pages = pdf.pages();
+        let pixmaps = render_png(&pdf, 1.0, None);
+        return Corpus::Keep;
     }
-    Corpus::Keep
+    Corpus::Reject
 });
