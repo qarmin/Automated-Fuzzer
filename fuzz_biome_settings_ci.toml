@@ -46,7 +46,6 @@ ignored_item_10 = "is not a char boundary" # https://github.com/biomejs/biome/is
 ignored_item_11 = "Rewrite didn't consume all tokens" # https://github.com/biomejs/biome/issues/4592
 ignored_item_12 = "timeout" # https://github.com/biomejs/biome/issues/6101
 ignored_item_13 = "stack-overflow" # https://github.com/biomejs/biome/issues/5218
-ignored_item_14 = "assertion `left == right` failed" # https://github.com/biomejs/biome/issues/6639
 ignored_item_15 = "index out of bounds" # https://github.com/biomejs/biome/issues/6640
 
 file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte

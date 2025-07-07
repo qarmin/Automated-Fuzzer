@@ -40,7 +40,6 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-ignored_item_1 = "key lacking binding" # https://github.com/facebook/pyrefly/issues/454
 ignored_item_5 = "stack-overflow on" # https://github.com/facebook/pyrefly/issues/504
 ignored_item_6 = "already exists with value" # https://github.com/facebook/pyrefly/issues/455
 ignored_item_7 = "not found in static scope of module" # https://github.com/facebook/pyrefly/issues/509
