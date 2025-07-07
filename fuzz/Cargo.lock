@@ -415,9 +415,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.27"
+version = "1.2.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d487aa071b5f64da6f19a3e848e3578944b726ee5a4854b82172f02aa876bfdc"
+checksum = "5c1599538de2394445747c8cf7935946e3cc27e9625f889d979bfb2aaf569362"
 dependencies = [
  "jobserver",
  "libc",
@@ -1346,7 +1346,7 @@ checksum = "5971ac85611da7067dbfcabef3c70ebb5606018acd9e2a3903a0da507521e0d5"
 [[package]]
 name = "hayro-font"
 version = "0.1.0"
-source = "git+https://github.com/LaurenzV/hayro.git#8283fac1a4b59797febe00df9405511cc97790a3"
+source = "git+https://github.com/LaurenzV/hayro.git#9ae7842246c05bb79133a6bc8d6818e3547bf9c0"
 dependencies = [
  "log",
  "phf",
@@ -1355,7 +1355,7 @@ dependencies = [
 [[package]]
 name = "hayro-interpret"
 version = "0.1.0"
-source = "git+https://github.com/LaurenzV/hayro.git#8283fac1a4b59797febe00df9405511cc97790a3"
+source = "git+https://github.com/LaurenzV/hayro.git#9ae7842246c05bb79133a6bc8d6818e3547bf9c0"
 dependencies = [
  "bitflags 2.9.1",
  "hayro-font",
@@ -1374,7 +1374,7 @@ dependencies = [
 [[package]]
 name = "hayro-render"
 version = "0.1.0"
-source = "git+https://github.com/LaurenzV/hayro.git#8283fac1a4b59797febe00df9405511cc97790a3"
+source = "git+https://github.com/LaurenzV/hayro.git#9ae7842246c05bb79133a6bc8d6818e3547bf9c0"
 dependencies = [
  "bytemuck",
  "hayro-interpret",
@@ -1390,7 +1390,7 @@ dependencies = [
 [[package]]
 name = "hayro-syntax"
 version = "0.0.1"
-source = "git+https://github.com/LaurenzV/hayro.git#8283fac1a4b59797febe00df9405511cc97790a3"
+source = "git+https://github.com/LaurenzV/hayro.git#9ae7842246c05bb79133a6bc8d6818e3547bf9c0"
 dependencies = [
  "flate2",
  "hex",
@@ -1434,12 +1434,12 @@ dependencies = [
 [[package]]
 name = "i-slint-common"
 version = "1.13.0"
-source = "git+https://github.com/slint-ui/slint.git#cb55d8562e65307bfeec9aea8e9c6d4e9f68faa5"
+source = "git+https://github.com/slint-ui/slint.git#301892d008574e1d696c42c666c78b939482a185"
 
 [[package]]
 name = "i-slint-compiler"
 version = "1.13.0"
-source = "git+https://github.com/slint-ui/slint.git#cb55d8562e65307bfeec9aea8e9c6d4e9f68faa5"
+source = "git+https://github.com/slint-ui/slint.git#301892d008574e1d696c42c666c78b939482a185"
 dependencies = [
  "by_address",
  "derive_more",
@@ -1613,7 +1613,7 @@ dependencies = [
 [[package]]
 name = "image"
 version = "0.25.6"
-source = "git+https://github.com/image-rs/image#3a5fb7b5bb0841eafc2dd55b281339049cc7cac4"
+source = "git+https://github.com/image-rs/image#410e1af8e2a427a390983d342cba0c35f349713d"
 dependencies = [
  "bytemuck",
  "byteorder-lite",
@@ -2736,6 +2736,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "439ee305def115ba05938db6eb1644ff94165c5ab5e9420d1c1bcedbba909391"
 
 [[package]]
+name = "ppmd-rust"
+version = "1.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c834641d8ad1b348c9ee86dec3b9840d805acd5f24daa5f90c788951a52ff59b"
+
+[[package]]
 name = "ppv-lite86"
 version = "0.2.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3034,9 +3040,9 @@ checksum = "2b15c43186be67a4fd63bee50d0303afffcef381492ebe2c5d87f324e1b8815c"
 
 [[package]]
 name = "rgb"
-version = "0.8.50"
+version = "0.8.51"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "57397d16646700483b67d2dd6511d79318f9d057fdbd21a4066aeac8b41d310a"
+checksum = "a457e416a0f90d246a4c3288bd7a25b2304ca727f253f95be383dd17af56be8f"
 
 [[package]]
 name = "rowan"
@@ -4547,7 +4553,7 @@ dependencies = [
 [[package]]
 name = "zip"
 version = "4.2.0"
-source = "git+https://github.com/zip-rs/zip2.git#c8278990c40ddfbeb4a23877c1221792535d21b3"
+source = "git+https://github.com/zip-rs/zip2.git#f5963e3d18efbb07c4bb05f6f31a0c924ba86c44"
 dependencies = [
  "aes",
  "arbitrary",
@@ -4562,6 +4568,7 @@ dependencies = [
  "liblzma",
  "memchr",
  "pbkdf2",
+ "ppmd-rust",
  "sha1",
  "time",
  "zeroize",

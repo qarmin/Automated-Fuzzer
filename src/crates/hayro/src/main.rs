@@ -2,7 +2,7 @@ use std::env::args;
 use std::fs;
 use std::path::Path;
 use std::sync::Arc;
-use hayro_render::render_png;
+use hayro_render::{render_png, InterpreterSettings};
 use walkdir::WalkDir;
 use hayro_syntax::pdf::Pdf;
 
@@ -33,6 +33,6 @@ fn check_file(file_path: &str) {
     let data = Arc::new(content);
     if let Some(pdf) = Pdf::new(data) {
         let _pages = pdf.pages();
-        let _pixmaps = render_png(&pdf, 1.0, None);
+        let _pixmaps = render_png(&pdf, 1.0, InterpreterSettings::default(), None);
     }
 }
