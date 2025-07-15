@@ -8,6 +8,7 @@ use hayro_syntax::pdf::Pdf;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
+    let save_path = args().nth(2);
     if !Path::new(&path).exists() {
         panic!("Missing file, {path:?}");
     }
@@ -18,13 +19,13 @@ fn main() {
                 continue;
             }
             let path = entry.path().to_string_lossy().to_string();
-            check_file(&path);
+            check_file(&path, save_path.as_deref());
         }
     } else {
-        check_file(&path);
+        check_file(&path, save_path.as_deref());
     }
 }
-fn check_file(file_path: &str) {
+fn check_file(file_path: &str, save_path: Option<&str>) {
     let Ok(content) = fs::read(file_path) else {
         return;
     };
@@ -33,6 +34,15 @@ fn check_file(file_path: &str) {
     let data = Arc::new(content);
     if let Some(pdf) = Pdf::new(data) {
         let _pages = pdf.pages();
-        let _pixmaps = render_png(&pdf, 1.0, InterpreterSettings::default(), None);
+        let pixmaps = render_png(&pdf, 1.0, InterpreterSettings::default(), None);
+
+        if let Some(save_path) = save_path {
+            if let Some(pixmaps) = pixmaps {
+                for (idx, i) in pixmaps.into_iter().enumerate() {
+                    fs::write(format!("{save_path}_{}.png", idx + 1), i).unwrap();
+                }
+            }
+        }
+
     }
 }

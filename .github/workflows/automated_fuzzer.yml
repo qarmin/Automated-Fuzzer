@@ -46,6 +46,48 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ty
+          - name: TYRUF11
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF12
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF13
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF2
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF3
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 8000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF4
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 2000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
           - name: PYREFLY
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 16000
@@ -61,55 +103,6 @@ jobs:
             stability_check: false
             binary: biome
           - name: Hayro
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro2
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 500
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro3
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 2000
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro4
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 4000
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro5
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 8000
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro6
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro7
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro8
             config-file: fuzz_hayro_settings_ci.toml
             timeout: 16000
             files: "AA_PDF_VALID_FILES.7z"
