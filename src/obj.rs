@@ -18,7 +18,7 @@ pub trait ProgramConfig: Sync {
         None
     }
 
-    fn is_broken(&self, content: &str) -> bool;
+    fn is_broken(&self, output: &str, file_content: Option<String>) -> bool;
     fn validate_output_and_save_file(&self, full_name: String, output: &str) -> Option<String> {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         error!("File {full_name} saved to {new_name}\n{output}");

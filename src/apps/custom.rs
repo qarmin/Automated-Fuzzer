@@ -1,3 +1,4 @@
+use std::fs;
 use std::process::{Child, Command, Stdio};
 
 use crate::broken_files::create_broken_files;
@@ -19,7 +20,17 @@ impl ProgramConfig for CustomStruct {
         self.custom_items.ignored_items.as_slice()
     }
 
-    fn is_broken(&self, content: &str) -> bool {
+    fn is_broken(&self, content: &str, file_name: Option<String>) -> bool {
+        if self.settings.ignore_file_if_contains_searched_items {
+            if let Some(file_name) = file_name {
+                if let Ok(data_str) = fs::read_to_string(&file_name) {
+                    if self.custom_items.search_items.iter().any(|x| data_str.contains(x)) {
+                        return false; // File contains searched item, so ignore it, because it is possible that it is not broken, but only e.g. in error there is printed searched item
+                    }
+                }
+            }
+        }
+
         self.custom_items.search_items.iter().any(|x| content.contains(x)) && !self.ignored_signal_output(content)
     }
 

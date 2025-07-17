@@ -18,6 +18,7 @@ allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is diff
 ignore_timeout_errors = true
 error_when_found_signal = false # Errors, when app was killed by OS or user # TODO: https://github.com/pdeljanov/Symphonia/issues/297
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
+ignore_file_if_contains_searched_items = true
 check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
 grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
 custom_folder_path = "/opt/CUSTOM" # Folder to which all broken things can be saved - it is ignored from other steps

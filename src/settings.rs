@@ -36,6 +36,7 @@ pub struct Setting {
     pub stability_runs: u32,
     pub custom_items: CustomItems,
     pub custom_folder_path: String,
+    pub ignore_file_if_contains_searched_items: bool,
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
@@ -206,6 +207,7 @@ pub(crate) fn load_settings() -> Setting {
         check_for_stability: general["check_for_stability"].parse().unwrap(),
         stability_runs: general["stability_runs"].parse().unwrap(),
         custom_folder_path: general["custom_folder_path"].clone(),
+        ignore_file_if_contains_searched_items: general["ignore_file_if_contains_searched_items"].parse().unwrap(),
     }
 }
 

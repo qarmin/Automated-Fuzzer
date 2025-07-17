@@ -151,7 +151,7 @@ pub(crate) fn execute_command_on_pack_of_files(
         output.status.signal(),
         is_signal_broken,
         is_code_broken,
-        obj.is_broken(&str_out),
+        obj.is_broken(&str_out, None), // Cannot type only one file, so no content to check
         timeouted,
         str_out,
         collect_command_to_string(&command),
@@ -240,7 +240,7 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
         && str_out.contains(TIMEOUT_MESSAGE)
         && !obj.get_settings().ignore_timeout_errors;
 
-    let res = fs::write(full_name, content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
+    let res = fs::write(full_name, &content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
 
     assert!(
         res.is_ok(),
@@ -258,7 +258,7 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
         output.status.signal(),
         is_signal_broken,
         is_code_broken,
-        obj.is_broken(&str_out),
+        obj.is_broken(&str_out, Some(full_name.to_string())),
         timeouted,
         str_out,
         collect_command_to_string(&command),
