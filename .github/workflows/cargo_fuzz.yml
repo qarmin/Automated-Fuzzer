@@ -39,26 +39,6 @@ jobs:
             fuzz_target: hayro
             timeout: 18000
             files: "AA_PDF_VALID_FILES.7z"
-          - name: HAYRO2
-            fuzz_target: hayro
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
-          - name: HAYRO3
-            fuzz_target: hayro
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
-          - name: HAYRO4
-            fuzz_target: hayro
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
-          - name: HAYRO5
-            fuzz_target: hayro
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
-          - name: HAYRO6
-            fuzz_target: hayro
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
           #            timeout: 18000

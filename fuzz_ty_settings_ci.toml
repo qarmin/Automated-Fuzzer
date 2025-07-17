@@ -41,9 +41,10 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-#ignored_item_2 = "stack overflow" # https://github.com/astral-sh/ty/issues/93
-#ignored_item_3 = "stack-overflow" # https://github.com/astral-sh/ty/issues/93
-#ignored_item_4 = "timeout" # https://github.com/astral-sh/ty/issues/675
+ignored_item_1 = "f-string: unexpected token" # https://github.com/astral-sh/ruff/issues/18860
+ignored_item_3 = "entered unreachable code: t-string" # https://github.com/astral-sh/ruff/issues/18860
+ignored_item_4 = "entered unreachable code: f-string" # https://github.com/astral-sh/ruff/issues/18860
+ignored_item_5 = "attempt to subtract with overflow" # https://github.com/astral-sh/ty/issues/836
 file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
