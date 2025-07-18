@@ -46,48 +46,6 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ty
-          - name: TYRUF11
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF12
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF13
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF2
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF3
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 8000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF4
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 2000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
           - name: PYREFLY
             config-file: fuzz_pyrefly_settings_ci.toml
             timeout: 16000
@@ -109,6 +67,41 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
+          - name: Resvg
+            config-file: fuzz_resvg_settings_ci.toml
+            timeout: 16000
+            files: "AA_SVG_VALID_FILES.7z"
+            library_folder: resvg
+            stability_check: false
+            binary: resvg
+          - name: Resvg2
+            config-file: fuzz_resvg_settings_ci.toml
+            timeout: 16000
+            files: "AA_SVG_VALID_FILES.7z"
+            library_folder: resvg
+            stability_check: false
+            binary: resvg
+          - name: Resvg3
+            config-file: fuzz_resvg_settings_ci.toml
+            timeout: 4000
+            files: "AA_SVG_VALID_FILES.7z"
+            library_folder: resvg
+            stability_check: false
+            binary: resvg
+          - name: Resvg4
+            config-file: fuzz_resvg_settings_ci.toml
+            timeout: 2000
+            files: "AA_SVG_VALID_FILES.7z"
+            library_folder: resvg
+            stability_check: false
+            binary: resvg
+          - name: Resvg5
+            config-file: fuzz_resvg_settings_ci.toml
+            timeout: 1000
+            files: "AA_SVG_VALID_FILES.7z"
+            library_folder: resvg
+            stability_check: false
+            binary: resvg
           # https://github.com/jrmuizel/pdf-extract/issues/96
           #          - name: PDF_EXTRACT
           #            config-file: fuzz_pdf_extract_settings_ci.toml
@@ -206,7 +199,6 @@ jobs:
           sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
           echo PROJECT_INSTALL_DIR=ruff-main/crates/ty >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
-      
 
       #### RUFF
       - name: Install ruff

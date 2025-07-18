@@ -47,7 +47,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"
 
 
@@ -66,7 +66,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"
 
 [custom_lofty]
@@ -84,7 +84,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
 [custom_typst]
@@ -102,7 +102,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-file_type = "text" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "text" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 
 [custom_image]
 name = "image_rs"
@@ -119,7 +119,7 @@ search_item_2 = "panicked at"
 ignored_item_3 = "zune-jpeg-0.4.11/src/mcu.rs:209:9"
 ignored_item_34 = "src/codecs/tiff.rs:247:21"
 ignored_item_35 = "src/compression/piz/huffman.rs"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 
 [custom_zip]
 name = "zip_rs"
@@ -132,7 +132,7 @@ group_mode = "by_group" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 
 [ruff]
 name = "ruff"
@@ -182,7 +182,7 @@ search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
 search_item_200 = "DIFFERENT CONTENT"
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
 [pdfrs]

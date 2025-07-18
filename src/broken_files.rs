@@ -13,6 +13,7 @@ pub enum LANGS {
     TEXT,
     SLINT,
     JSVUESVELTE,
+    SVG,
 }
 
 const SLINT_ARGS: &[&str] = &[
@@ -92,6 +93,21 @@ const RUST_ARGS: &[&str] = &[
     "...", "..=", ",", ";", ":", "::", "=>", "$", "?", "~", "{", "}", "[", "]", "(", ")",
 ];
 
+const SVG_ARGS: &[&str] = &[
+    "<svg>", "</svg>", // podstawowe atrybuty SVG
+    "width", "height", "viewBox", "preserveAspectRatio", "xmlns", "xmlns:xlink", // atrybuty globalne
+    "id", "class", "style", "transform", "visibility", // współrzędne i rozmiary
+    "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", // kolory i style
+    "fill", "fill-opacity", "stroke", "stroke-width", "stroke-linecap", "stroke-dasharray", "opacity",
+    // tekst
+    "font-family", "font-size", "font-style", "font-weight", "text-anchor", "letter-spacing", "word-spacing",
+    // gradienci i filtry
+    "gradientUnits", "gradientTransform", "filter", "flood-color", "flood-opacity", // animacja
+    "from", "to", "dur", "repeatCount", "keyTimes", "keyPoints", // linki i odwołania
+    "href", "xlink:href", // atrybuty dodatkowe
+    "cursor", "clip-path", "clip-rule", "opacity", "viewTarget", "=", "=\"\"", "5", "0.2",
+];
+
 pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
     let temp_possible_broken_files_dir = &obj.get_settings().temp_possible_broken_files_dir;
@@ -114,6 +130,7 @@ pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child
         LANGS::RUST => com = com.args(RUST_ARGS),
         LANGS::SLINT => com = com.args(SLINT_ARGS),
         LANGS::JSVUESVELTE => com = com.args(JS_VUE_SVELTE),
+        LANGS::SVG => com = com.args(SVG_ARGS),
         LANGS::BINARY => {
             com = com.args(
                 format!(
