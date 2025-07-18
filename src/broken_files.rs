@@ -105,7 +105,7 @@ const SVG_ARGS: &[&str] = &[
     "gradientUnits", "gradientTransform", "filter", "flood-color", "flood-opacity", // animacja
     "from", "to", "dur", "repeatCount", "keyTimes", "keyPoints", // linki i odwołania
     "href", "xlink:href", // atrybuty dodatkowe
-    "cursor", "clip-path", "clip-rule", "opacity", "viewTarget", "=", "=\"\"", "5", "0.2",
+    "cursor", "clip-path", "clip-rule", "opacity", "viewTarget", "=", "=\"\"", "5", "0.2", "<", ">",
 ];
 
 pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
