@@ -136,6 +136,7 @@ pub(crate) fn process_custom_struct(
         "python" => LANGS::PYTHON,
         "slint" => LANGS::SLINT,
         "jsvuesvelte" => LANGS::JSVUESVELTE,
+        "svg" => LANGS::SVG,
         _ => panic!("Invalid file type {}", tool_hashmap["file_type"]),
     };
 
