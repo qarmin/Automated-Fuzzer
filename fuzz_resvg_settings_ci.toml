@@ -50,7 +50,6 @@ ignored_item_7 = "attempt to add with overflow" # https://github.com/linebender/
 ignored_item_8 = "attempt to multiply with overflow" # https://github.com/linebender/resvg/issues/937
 ignored_item_9 = "alpha_runs.rs:189:51" # https://github.com/linebender/resvg/issues/940
 ignored_item_10 = "resvg/src/lib.rs:46:6" # https://github.com/linebender/resvg/issues/941
-ignored_item_11 = "" #
 file_type = "svg" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
