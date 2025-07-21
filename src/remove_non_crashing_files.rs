@@ -103,14 +103,19 @@ fn remove_non_crashing_in_group(
     still_broken_files
 }
 fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
-    // Processing in groups
+    // Processing in groups - not needed currently
     // let still_broken_files = broken_files;
-    let still_broken_files = if obj.get_files_group_mode() != CheckGroupFileMode::None {
-        remove_non_crashing_in_group(broken_files, settings, obj)
-    } else {
-        broken_files
-    };
-
+    // let still_broken_files = if obj.get_files_group_mode() != CheckGroupFileMode::None {
+    //     remove_non_crashing_in_group(broken_files, settings, obj)
+    // } else {
+    //     broken_files
+    // };
+    // 
+    let still_broken_files = broken_files.into_iter().filter(|e| {
+        fs::metadata(e).map(|e|e.len()).unwrap_or_default() < settings.max_file_size_limit
+    }).collect::<Vec<_>>();
+    info!("After filtering by size, {} files left", still_broken_files.len());
+    
     let atomic_counter = AtomicUsize::new(0);
     let all = still_broken_files.len();
     let results = still_broken_files

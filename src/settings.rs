@@ -30,6 +30,7 @@ pub struct Setting {
     pub max_collected_files: usize,
     pub check_if_file_is_parsable: bool,
     pub ignore_timeout_errors: bool,
+    pub max_file_size_limit: u64,
     pub grouping: u32,
     pub debug_executed_commands: bool,
     pub check_for_stability: bool,
@@ -209,6 +210,9 @@ pub(crate) fn load_settings() -> Setting {
         stability_runs: general["stability_runs"].parse().unwrap(),
         custom_folder_path: general["custom_folder_path"].clone(),
         ignore_file_if_contains_searched_items: general["ignore_file_if_contains_searched_items"].parse().unwrap(),
+        max_file_size_limit: general["max_file_size_limit"]
+            .parse()
+            .unwrap(),
     }
 }
 

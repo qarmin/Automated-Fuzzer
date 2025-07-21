@@ -16,6 +16,7 @@ temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
 allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 ignore_timeout_errors = true
+max_file_size_limit = 5000000
 error_when_found_signal = false # Errors, when app was killed by OS or user # TODO: https://github.com/pdeljanov/Symphonia/issues/297
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
 ignore_file_if_contains_searched_items = true
