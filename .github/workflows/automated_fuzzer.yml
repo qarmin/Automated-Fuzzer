@@ -67,41 +67,56 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
-          - name: Resvg
-            config-file: fuzz_resvg_settings_ci.toml
+          - name: Rawler
+            config-file: fuzz_rawler_settings_ci.toml
             timeout: 16000
-            files: "AA_SVG_VALID_FILES.7z"
-            library_folder: resvg
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
             stability_check: false
-            binary: resvg
-          - name: Resvg2
-            config-file: fuzz_resvg_settings_ci.toml
-            timeout: 16000
-            files: "AA_SVG_VALID_FILES.7z"
-            library_folder: resvg
-            stability_check: false
-            binary: resvg
-          - name: Resvg3
-            config-file: fuzz_resvg_settings_ci.toml
-            timeout: 4000
-            files: "AA_SVG_VALID_FILES.7z"
-            library_folder: resvg
-            stability_check: false
-            binary: resvg
-          - name: Resvg4
-            config-file: fuzz_resvg_settings_ci.toml
-            timeout: 2000
-            files: "AA_SVG_VALID_FILES.7z"
-            library_folder: resvg
-            stability_check: false
-            binary: resvg
-          - name: Resvg5
-            config-file: fuzz_resvg_settings_ci.toml
+            binary: rawler
+          - name: Rawler2
+            config-file: fuzz_rawler_settings_ci.toml
             timeout: 1000
-            files: "AA_SVG_VALID_FILES.7z"
-            library_folder: resvg
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
             stability_check: false
-            binary: resvg
+            binary: rawler
+          - name: Rawler3
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 2000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler4
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 4000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler5
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 8000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler6
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          # TODO - too many issues
+          #          - name: Resvg
+          #            config-file: fuzz_resvg_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_SVG_VALID_FILES.7z"
+          #            library_folder: resvg
+          #            stability_check: false
+          #            binary: resvg
           # https://github.com/jrmuizel/pdf-extract/issues/96
           #          - name: PDF_EXTRACT
           #            config-file: fuzz_pdf_extract_settings_ci.toml

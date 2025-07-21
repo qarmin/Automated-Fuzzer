@@ -1,11 +1,12 @@
 [package]
-name = "hayro"
+name = "rawler"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-hayro = { git = "https://github.com/LaurenzV/hayro.git" }
+rawler = { git = "https://github.com/dnglab/dnglab.git" }
 walkdir = "2.5.0"
+image = "0.25.6"
 
 [profile.release]
 overflow-checks = true
