@@ -3,13 +3,11 @@
 use rawler::decoders::{ RawDecodeParams, RawMetadata};
 use rawler::imgop::develop::{Intermediate, RawDevelop};
 use rawler::rawsource::RawSource;
-use rawler::{Orientation};
 use libfuzzer_sys::{Corpus, fuzz_target};
-use std::sync::Arc;
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     match get_raw_file(data) {
-        Ok((int, met)) => {
+        Ok((_int, _met)) => {
             Corpus::Keep
         }
         Err(_e) => {
