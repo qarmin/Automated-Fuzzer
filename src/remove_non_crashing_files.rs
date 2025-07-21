@@ -112,7 +112,11 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     // };
     // 
     let still_broken_files = broken_files.into_iter().filter(|e| {
-        fs::metadata(e).map(|e|e.len()).unwrap_or_default() < settings.max_file_size_limit
+        let res = fs::metadata(e).map(|e|e.len()).unwrap_or_default() < settings.max_file_size_limit;
+        if !res {
+            let _ = fs::remove_file(e);
+        }
+        res
     }).collect::<Vec<_>>();
     info!("After filtering by size, {} files left", still_broken_files.len());
     

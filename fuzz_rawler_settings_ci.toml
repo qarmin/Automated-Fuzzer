@@ -46,6 +46,9 @@ ignored_item_2 = "requested allocation size" #  https://github.com/dnglab/dnglab
 ignored_item_3 = "out of memory" # https://github.com/dnglab/dnglab/issues/570
 ignored_item_4 = "rawler/src/formats/tiff/ifd.rs:126:58" # https://github.com/dnglab/dnglab/issues/569
 ignored_item_5 = "src/bits.rs:205" # https://github.com/dnglab/dnglab/issues/571
+ignored_item_6 = "rawler/src/decoders/arw.rs:120:53" # https://github.com/dnglab/dnglab/issues/575
+ignored_item_7 = "rawler/src/decoders/arw.rs:376:27" # https://github.com/dnglab/dnglab/issues/574
+ignored_item_8 = "assertion failed: p1.y <= p2.y" # https://github.com/dnglab/dnglab/issues/573
 
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
