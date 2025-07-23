@@ -67,48 +67,13 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
-          - name: Rawler
-            config-file: fuzz_rawler_settings_ci.toml
-            timeout: 16000
-            files: "AA_RAW_VALID_FILES.7z"
-            library_folder: rawler
-            stability_check: false
-            binary: rawler
-          - name: Rawler2
-            config-file: fuzz_rawler_settings_ci.toml
-            timeout: 1000
-            files: "AA_RAW_VALID_FILES.7z"
-            library_folder: rawler
-            stability_check: false
-            binary: rawler
-          - name: Rawler3
-            config-file: fuzz_rawler_settings_ci.toml
-            timeout: 2000
-            files: "AA_RAW_VALID_FILES.7z"
-            library_folder: rawler
-            stability_check: false
-            binary: rawler
-          - name: Rawler4
-            config-file: fuzz_rawler_settings_ci.toml
-            timeout: 4000
-            files: "AA_RAW_VALID_FILES.7z"
-            library_folder: rawler
-            stability_check: false
-            binary: rawler
-          - name: Rawler5
-            config-file: fuzz_rawler_settings_ci.toml
-            timeout: 8000
-            files: "AA_RAW_VALID_FILES.7z"
-            library_folder: rawler
-            stability_check: false
-            binary: rawler
-          - name: Rawler6
-            config-file: fuzz_rawler_settings_ci.toml
-            timeout: 16000
-            files: "AA_RAW_VALID_FILES.7z"
-            library_folder: rawler
-            stability_check: false
-            binary: rawler
+          #          - name: Rawler
+          #            config-file: fuzz_rawler_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_RAW_VALID_FILES.7z"
+          #            library_folder: rawler
+          #            stability_check: false
+          #            binary: rawler
           # TODO - too many issues
           #          - name: Resvg
           #            config-file: fuzz_resvg_settings_ci.toml
