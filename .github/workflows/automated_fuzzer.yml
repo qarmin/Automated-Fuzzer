@@ -102,13 +102,55 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
-          #          - name: Rawler
-          #            config-file: fuzz_rawler_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_RAW_VALID_FILES.7z"
-          #            library_folder: rawler
-          #            stability_check: false
-          #            binary: rawler
+          - name: Rawler
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler2
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler3
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler4
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler5
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler6
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
+          - name: Rawler7
+            config-file: fuzz_rawler_settings_ci.toml
+            timeout: 16000
+            files: "AA_RAW_VALID_FILES.7z"
+            library_folder: rawler
+            stability_check: false
+            binary: rawler
           # TODO - too many issues
           #          - name: Resvg
           #            config-file: fuzz_resvg_settings_ci.toml
@@ -295,9 +337,6 @@ jobs:
           time 7z a "${{ matrix.binary }}.7z" "/etc/${{ matrix.binary }}"
           ls -al
 
-      - name: Install fuzzer
-        run: cargo install --path .
-
       - name: Release
         if: ${{ !endsWith(matrix.name, '1') && !endsWith(matrix.name, '2') && !endsWith(matrix.name, '3') && !endsWith(matrix.name, '4') && !endsWith(matrix.name, '5') && !endsWith(matrix.name, '6') && !endsWith(matrix.name, '7') && !endsWith(matrix.name, '8') && !endsWith(matrix.name, '9') && !endsWith(matrix.name, '0') }}
         uses: softprops/action-gh-release@v2
@@ -307,6 +346,9 @@ jobs:
             ${{ matrix.binary }}.7z
             ${{ matrix.binary }}_normal.7z
           token: ${{ secrets.PAT2 }}
+
+      - name: Install fuzzer
+        run: cargo install --path .
 
       - name: Create folders
         run: |
