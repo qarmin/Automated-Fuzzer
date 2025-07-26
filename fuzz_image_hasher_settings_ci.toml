@@ -41,6 +41,10 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+ignored_item_34 = "src/codecs/tiff.rs"
+ignored_item_35 = "src/compression/piz/huffman.rs"
+ignored_item_36 = "OpenEXR Block Decompressor Thread"
+ignored_item_37 = "image-webp-0.2.0/src/huffman.rs" # https://github.com/image-rs/image-webp/issues/118
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

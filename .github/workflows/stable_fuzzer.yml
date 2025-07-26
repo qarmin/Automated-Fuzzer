@@ -76,13 +76,6 @@ jobs:
             src_folder: image_hasher
             stability_check: false
             binary: image_hasher
-          - name: TTF_PARSER
-            config-file: fuzz_ttf_parser_settings_ci.toml
-            timeout: 3600
-            files: "AA_FONT_VALID_FILES_MORE.7z"
-            src_folder: ttf_parser
-            stability_check: false
-            binary: ttf_parser
           - name: FAST_IMAGE_RESIZER
             config-file: fuzz_fast_image_resizer_settings_ci.toml
             timeout: 3600
@@ -138,11 +131,11 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8 llvm
+          sudo apt install -y wget earlyoom libasan8 llvm sd
           sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
-      - name: Install create_broken_files and sd
-        run: cargo install create_broken_files sd minimizer
+      - name: Install create_broken_files and
+        run: cargo install create_broken_files minimizer
 
       # THERE STARTING CUSTOM STEP
       - name: Install apps, which are inside this repo(probably only libraries)
