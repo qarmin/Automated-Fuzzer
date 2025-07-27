@@ -112,7 +112,7 @@ pub trait ProgramConfig: Sync {
             // "-e",
             // "-p",
             "-t",
-            "600", // 10 minutes timout should be enough for most cases
+            &self.get_settings().minimization_time.to_string(),
         ]);
         if self.get_settings().minimization_repeat {
             minimize_command.args(["-r"]);

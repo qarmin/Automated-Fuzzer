@@ -14,6 +14,7 @@ pub struct Setting {
     pub broken_files_for_each_file: u32,
     pub minimize_output: bool,
     pub minimization_attempts: u32,
+    pub minimization_time: u32,
     pub minimization_repeat: bool,
     pub minimization_attempts_with_signal_timeout: u32,
     pub remove_non_crashing_items_from_broken_files: bool,
@@ -179,6 +180,7 @@ pub(crate) fn load_settings() -> Setting {
         loop_number: general["loop_number"].parse().unwrap(),
         broken_files_for_each_file: general["broken_files_for_each_file"].parse().unwrap(),
         minimize_output: general["minimize_output"].parse().unwrap(),
+        minimization_time: general["minimization_time"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         minimization_repeat: general["minimization_repeat"].parse().unwrap(),
         minimization_attempts_with_signal_timeout: general["minimization_attempts_with_signal_timeout"]
