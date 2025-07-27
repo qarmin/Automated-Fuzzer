@@ -127,18 +127,13 @@ pub(crate) fn execute_command_on_pack_of_files(
         && output.status.signal().is_some()
         && !obj.ignored_signal_output(&str_out);
 
-    let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
-        && output.status.code().is_some_and(|code| {
-            if obj.get_settings().ignore_timeout_errors && code == 124 {
-                false
-            } else {
-                !obj.get_settings().allowed_error_statuses.contains(&code)
-            }
-        });
+    let is_status_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
+        && output
+            .status
+            .code()
+            .is_some_and(|code| !obj.get_settings().allowed_error_statuses.contains(&code));
 
-    let timeouted = obj.get_settings().timeout > 0
-        && str_out.contains(TIMEOUT_MESSAGE)
-        && !obj.get_settings().ignore_timeout_errors;
+    let timeouted = obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) && is_status_code_broken;
 
     str_out.push_str(&format!(
         "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
@@ -150,7 +145,7 @@ pub(crate) fn execute_command_on_pack_of_files(
         output.status.code(),
         output.status.signal(),
         is_signal_broken,
-        is_code_broken,
+        is_status_code_broken,
         obj.is_broken(&str_out, None), // Cannot type only one file, so no content to check
         timeouted,
         str_out,
@@ -166,7 +161,7 @@ pub(crate) struct OutputResult {
     code: Option<i32>,
     signal: Option<i32>,
     is_signal_broken: bool,
-    is_code_broken: bool,
+    is_status_code_broken: bool,
     // timeouted is only field to check if timeout was reached
     // if timeouted is true, then always is_signal_broken is also true
     have_invalid_output: bool,
@@ -178,7 +173,7 @@ impl OutputResult {
         code: Option<i32>,
         signal: Option<i32>,
         is_signal_broken: bool,
-        is_code_broken: bool,
+        is_status_code_broken: bool,
         have_invalid_output: bool,
         timeouted: bool,
         output: String,
@@ -190,16 +185,16 @@ impl OutputResult {
             code,
             signal,
             is_signal_broken,
-            is_code_broken,
+            is_status_code_broken,
             have_invalid_output,
             timeouted,
         }
     }
     pub(crate) fn is_broken(&self) -> bool {
-        self.is_signal_broken || self.have_invalid_output || self.is_code_broken || self.timeouted
+        self.is_signal_broken || self.have_invalid_output || self.is_status_code_broken || self.timeouted
     }
     // pub(crate) fn is_only_signal_broken(&self) -> bool {
-    //     self.is_signal_broken && !self.have_invalid_output && !self.is_code_broken
+    //     self.is_signal_broken && !self.have_invalid_output && !self.is_status_code_broken
     // }
     pub(crate) fn get_output(&self) -> &str {
         &self.output
@@ -208,7 +203,7 @@ impl OutputResult {
     //     &self.command_str
     // }
     // pub(crate) fn debug_print(&self) {
-    //     info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_code_broken, self.timeouted, self.code, self.signal);
+    //     info!("Is broken: {}, is_signal_broken - {}, have_invalid_output - {}, is_status_code_broken - {}, timeouted - {}, code - {:?}, signal - {:?}", self.is_broken(), self.is_signal_broken, self.have_invalid_output, self.is_status_code_broken, self.timeouted, self.code, self.signal);
     // }
 }
 
@@ -227,18 +222,13 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
         && output.status.signal().is_some()
         && !obj.ignored_signal_output(&str_out);
 
-    let is_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
-        && output.status.code().is_some_and(|code| {
-            if obj.get_settings().ignore_timeout_errors && code == 124 {
-                false
-            } else {
-                !obj.get_settings().allowed_error_statuses.contains(&code)
-            }
-        });
+    let is_status_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
+        && output
+            .status
+            .code()
+            .is_some_and(|code| !obj.get_settings().allowed_error_statuses.contains(&code));
 
-    let timeouted = obj.get_settings().timeout > 0
-        && str_out.contains(TIMEOUT_MESSAGE)
-        && !obj.get_settings().ignore_timeout_errors;
+    let timeouted = obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE) && is_status_code_broken;
 
     let res = fs::write(full_name, &content_before); // TODO read and save only in unsafe mode, most of tools not works unsafe - not try to fix things, but only reads content of file, so the no need to save previous content of file
 
@@ -257,7 +247,7 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
         output.status.code(),
         output.status.signal(),
         is_signal_broken,
-        is_code_broken,
+        is_status_code_broken,
         obj.is_broken(&str_out, Some(full_name.to_string())),
         timeouted,
         str_out,

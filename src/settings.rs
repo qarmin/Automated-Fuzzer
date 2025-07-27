@@ -29,7 +29,6 @@ pub struct Setting {
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
     pub check_if_file_is_parsable: bool,
-    pub ignore_timeout_errors: bool,
     pub max_file_size_limit: u64,
     pub grouping: u32,
     pub debug_executed_commands: bool,
@@ -171,7 +170,6 @@ pub(crate) fn load_settings() -> Setting {
         .collect();
     let remove_non_crashing_items_from_broken_files =
         general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
-    let ignore_timeout_errors = general["ignore_timeout_errors"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
     let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
     let custom_items = process_custom_struct(&general, &curr_setting);
@@ -202,7 +200,6 @@ pub(crate) fn load_settings() -> Setting {
         max_collected_files: general["max_collected_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
         check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
-        ignore_timeout_errors,
         grouping,
         debug_executed_commands,
         custom_items,
@@ -210,9 +207,7 @@ pub(crate) fn load_settings() -> Setting {
         stability_runs: general["stability_runs"].parse().unwrap(),
         custom_folder_path: general["custom_folder_path"].clone(),
         ignore_file_if_contains_searched_items: general["ignore_file_if_contains_searched_items"].parse().unwrap(),
-        max_file_size_limit: general["max_file_size_limit"]
-            .parse()
-            .unwrap(),
+        max_file_size_limit: general["max_file_size_limit"].parse().unwrap(),
     }
 }
 

@@ -110,16 +110,19 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     // } else {
     //     broken_files
     // };
-    // 
-    let still_broken_files = broken_files.into_iter().filter(|e| {
-        let res = fs::metadata(e).map(|e|e.len()).unwrap_or_default() < settings.max_file_size_limit;
-        if !res {
-            let _ = fs::remove_file(e);
-        }
-        res
-    }).collect::<Vec<_>>();
+    //
+    let still_broken_files = broken_files
+        .into_iter()
+        .filter(|e| {
+            let res = fs::metadata(e).map(|e| e.len()).unwrap_or_default() < settings.max_file_size_limit;
+            if !res {
+                let _ = fs::remove_file(e);
+            }
+            res
+        })
+        .collect::<Vec<_>>();
     info!("After filtering by size, {} files left", still_broken_files.len());
-    
+
     let atomic_counter = AtomicUsize::new(0);
     let all = still_broken_files.len();
     let results = still_broken_files

@@ -15,7 +15,6 @@ stability_runs = 3 # How many times output will be checked for stability
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
 allowed_error_statuses = "0,1,2,101,15" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes ) // TODO 15 should be removed
-ignore_timeout_errors = true
 max_file_size_limit = 5000000
 error_when_found_signal = true # Errors, when app was killed by OS or user
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir

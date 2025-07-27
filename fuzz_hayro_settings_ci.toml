@@ -15,7 +15,6 @@ stability_runs = 3 # How many times output will be checked for stability
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 100 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
 allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
-ignore_timeout_errors = true
 max_file_size_limit = 5000000
 error_when_found_signal = true # Errors, when app was killed by OS or user
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
@@ -49,6 +48,8 @@ ignored_item_7 = "attempt to multiply with overflow" # https://github.com/Lauren
 ignored_item_8 = "lzw_flate" # https://github.com/LaurenzV/hayro/issues/152
 ignored_item_9 = "some layers haven't been popped yet" # https://github.com/LaurenzV/hayro/issues/153
 ignored_item_10 = "self.bits_left >= n" # https://github.com/LaurenzV/hayro/issues/154
+ignored_item_11 = "ccitt.rs" # https://github.com/LaurenzV/hayro/issues/156
+ignored_item_12 = "text.rs" # https://github.com/LaurenzV/hayro/issues/157
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

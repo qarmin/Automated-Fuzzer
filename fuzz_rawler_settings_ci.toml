@@ -14,8 +14,7 @@ check_for_stability = false # Check if output is stable - only able to set if st
 stability_runs = 3 # How many times output will be checked for stability
 temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
 timeout = 300 # timeout time, if equal zero, then timeout is disabled - CAUTION - it is also used with grouping, which can a lot of easily exceed this time
-allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
-ignore_timeout_errors = true
+allowed_error_statuses = "0,1,2,101,124" # TODO timeout # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
 max_file_size_limit = 5000000
 error_when_found_signal = true # Errors, when app was killed by OS or user
 max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
@@ -44,11 +43,17 @@ search_item_103 = "timeout: sending signal"
 ignored_item_1 = "memory allocation of" # https://github.com/dnglab/dnglab/issues/570
 ignored_item_2 = "requested allocation size" #  https://github.com/dnglab/dnglab/issues/570
 ignored_item_3 = "out of memory" # https://github.com/dnglab/dnglab/issues/570
-ignored_item_4 = "rawler/src/formats/tiff/ifd.rs:126:58" # https://github.com/dnglab/dnglab/issues/569
-ignored_item_5 = "src/bits.rs:205" # https://github.com/dnglab/dnglab/issues/571
-ignored_item_6 = "rawler/src/decoders/arw.rs:120:53" # https://github.com/dnglab/dnglab/issues/575
-ignored_item_7 = "rawler/src/decoders/arw.rs:376:27" # https://github.com/dnglab/dnglab/issues/574
+ignored_item_4 = "rawler/src/formats/tiff/ifd.rs" # https://github.com/dnglab/dnglab/issues/569
+ignored_item_5 = "src/bits.rs" # https://github.com/dnglab/dnglab/issues/571
+ignored_item_6 = "rawler/src/decoders/arw.rs" # https://github.com/dnglab/dnglab/issues/575
+ignored_item_7 = "rawler/src/decoders/arw.rs" # https://github.com/dnglab/dnglab/issues/574
 ignored_item_8 = "assertion failed: p1.y <= p2.y" # https://github.com/dnglab/dnglab/issues/573
+ignored_item_9 = "p1.x <= p2.x" # https://github.com/dnglab/dnglab/issues/573
+ignored_item_11 = "v4decompressor.rs" # https://github.com/dnglab/dnglab/issues/571
+ignored_item_23 = "src/imgop/mod.rs" # https://github.com/dnglab/dnglab/issues/582
+ignored_item_24 = "Lensdata version" # https://github.com/dnglab/dnglab/issues/583
+
+
 
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
