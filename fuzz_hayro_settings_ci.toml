@@ -43,6 +43,7 @@ search_item_102 = "ThreadSanitizer"
 #search_item_103 = "timeout: sending signal"
 ignored_item_2 = "stack-overflow" # https://github.com/LaurenzV/hayro/issues/50
 ignored_item_22 = "stack overflow" # https://github.com/LaurenzV/hayro/issues/50
+ignored_item_13 = "out-of-memory" # https://github.com/LaurenzV/hayro/issues/50
 ignored_item_3 = "attempt to subtract with overflow" # https://github.com/LaurenzV/hayro/issues/52
 ignored_item_4 = "uninitialized subpath" # https://github.com/LaurenzV/hayro/issues/53
 ignored_item_7 = "attempt to multiply with overflow" # https://github.com/LaurenzV/hayro/issues/63
