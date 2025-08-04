@@ -45,13 +45,9 @@ ignored_item_2 = "stack-overflow" # https://github.com/LaurenzV/hayro/issues/50
 ignored_item_22 = "stack overflow" # https://github.com/LaurenzV/hayro/issues/50
 ignored_item_13 = "out-of-memory" # https://github.com/LaurenzV/hayro/issues/50
 ignored_item_3 = "attempt to subtract with overflow" # https://github.com/LaurenzV/hayro/issues/52
-ignored_item_4 = "uninitialized subpath" # https://github.com/LaurenzV/hayro/issues/53
 ignored_item_7 = "attempt to multiply with overflow" # https://github.com/LaurenzV/hayro/issues/63
-ignored_item_8 = "lzw_flate" # https://github.com/LaurenzV/hayro/issues/152
-ignored_item_9 = "some layers haven't been popped yet" # https://github.com/LaurenzV/hayro/issues/153
 ignored_item_10 = "self.bits_left >= n" # https://github.com/LaurenzV/hayro/issues/154
 ignored_item_11 = "ccitt.rs" # https://github.com/LaurenzV/hayro/issues/156
-ignored_item_12 = "text.rs" # https://github.com/LaurenzV/hayro/issues/157
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
