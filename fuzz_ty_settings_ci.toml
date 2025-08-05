@@ -45,6 +45,8 @@ search_item_103 = "timeout: sending signal"
 ignored_item_5 = "attempt to subtract with overflow" # https://github.com/astral-sh/ty/issues/836
 ignored_item_6 = "The node has dangling comments that need to be formatted manually" # https://github.com/astral-sh/ruff/issues/19138
 ignored_item_7 = "binary_like.rs" # https://github.com/astral-sh/ruff/issues/19226file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+
+file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
 

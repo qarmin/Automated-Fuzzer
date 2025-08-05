@@ -50,6 +50,7 @@ ignored_item_10 = "self.bits_left >= n" # https://github.com/LaurenzV/hayro/issu
 ignored_item_11 = "ccitt.rs" # https://github.com/LaurenzV/hayro/issues/156
 ignored_item_12 = "filter/lzw_flate.rs" # https://github.com/LaurenzV/hayro/issues/178
 ignored_item_14 = "bezpath.rs" # https://github.com/LaurenzV/hayro/issues/179
+ignored_item_15 = "PosOverflow" # https://github.com/LaurenzV/hayro/issues/182
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
