@@ -53,6 +53,62 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: pyrefly
+          - name: PYREFLY2
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY3
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY4
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY5
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY6
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY7
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY8
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: PYREFLY9
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
           - name: BIOME
             config-file: fuzz_biome_settings_ci.toml
             timeout: 16000

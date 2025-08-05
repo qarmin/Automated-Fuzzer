@@ -44,14 +44,11 @@ search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
 ignored_item_5 = "stack-overflow on" # https://github.com/facebook/pyrefly/issues/504
 ignored_item_7 = "not found in static scope of module" # https://github.com/facebook/pyrefly/issues/509
-ignored_item_8 = "timeout" # https://github.com/facebook/pyrefly/issues/541
 ignored_item_9 = "attempt to subtract with overflow" # https://github.com/astral-sh/ty/issues/836
 #ignored_item_10 = "stack-use-after-return" # https://github.com/facebook/pyrefly/issues/516
 ignored_item_11 = "module `__unknown__`" # https://github.com/facebook/pyrefly/issues/509
 ignored_item_12 = "AddressSanitizer:" # https://github.com/facebook/pyrefly/issues/504
 ignored_item_13 = "memory allocation of:" # https://github.com/facebook/pyrefly/issues/504
-ignored_item_15 = "key lacking binding" # https://github.com/facebook/pyrefly/issues/766
-ignored_item_16 = "Yield" # https://github.com/facebook/pyrefly/issues/777
 file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
