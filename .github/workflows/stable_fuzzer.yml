@@ -4,7 +4,7 @@ on:
   #  push: # Once daily
   #  pull_request: # Once daily
   schedule:
-    - cron: '0 20 * * *'
+    - cron: '0 21 * * 1'
 
 env:
   CARGO_TERM_COLOR: always

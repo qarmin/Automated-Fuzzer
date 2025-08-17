@@ -44,6 +44,5 @@ search_item_103 = "timeout: sending signal"
 ignored_item_1 = "LeakSanitizer: detected memory leaks" # NON-FIXABLE https://github.com/oxc-project/oxc/issues/7725
 ignored_item_2 = "stack-overflow" # https://github.com/oxc-project/oxc/issues/11250
 ignored_item_7 = "new_cap.rs" # https://github.com/oxc-project/oxc/issues/12816
-ignored_item_8 = "explicit_module_boundary_types.rs" # https://github.com/oxc-project/oxc/issues/12817
 file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"
