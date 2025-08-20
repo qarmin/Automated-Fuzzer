@@ -63,7 +63,7 @@ jobs:
           - name: Hayro
             config-file: fuzz_hayro_settings_ci.toml
             timeout: 16000
-            files: "AA_PDF_VALID_FILES.7z"
+            files: "AA_PDF_VALID_FILES2.7z"
             library_folder: hayro
             stability_check: false
             binary: hayro
@@ -79,7 +79,7 @@ jobs:
           #          - name: PDF_EXTRACT
           #            config-file: fuzz_pdf_extract_settings_ci.toml
           #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES.7z"
+          #            files: "AA_PDF_VALID_FILES2.7z"
           #            library_folder: pdf_extract
           #            stability_check: false
           #            binary: pdf_extract

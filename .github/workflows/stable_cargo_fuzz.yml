@@ -39,7 +39,7 @@ jobs:
           - name: LOPDF
             fuzz_target: lopdf
             timeout: 3600
-            files: "AA_PDF_VALID_FILES.7z"
+            files: "AA_PDF_VALID_FILES2.7z"
           - name: ZIP_RS
             fuzz_target: zip_rs
             timeout: 3600

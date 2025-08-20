@@ -1,6 +1,6 @@
 [general]
 loop_number = 100 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 2000# Number of broken files that will be created for each 1 valid file # Copy broken files to broken dir, disable if testing new settings
+broken_files_for_each_file = 10# Number of broken files that will be created for each 1 valid file # Copy broken files to broken dir, disable if testing new settings
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_BROKEN_INPUT_FILES" # Place where possibly broken files are saved
 minimization_attempts = 200 # Attemps to minimize code, counter reset when found minimized test case
@@ -34,6 +34,45 @@ current_mode = "custom" # custom or ruff
 # broken_files_dir - place where to save broken files
 
 [custom]
+name = "rawler"
+command = "rawler|FILE_PATHS_TO_PROVIDE"
+
+extensions = "dng,orf,nrw,rw2,raf,arw,cr2,cr3,crw,nef,pef,kdc,sr2,srf,x3f,erf,orf,raw,dcr,dng,tiff"
+valid_input_files_dir = "/home/rafal/Downloads/GG"
+broken_files_dir = "/opt/BROKEN_FILES_DIR"
+group_mode = "none" # available: none, by_files, by_group
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
+ignored_item_1 = "memory allocation of" # https://github.com/dnglab/dnglab/issues/570
+ignored_item_2 = "requested allocation size" #  https://github.com/dnglab/dnglab/issues/570
+ignored_item_3 = "out of memory" # https://github.com/dnglab/dnglab/issues/570
+ignored_item_4 = "rawler/src/formats/tiff/ifd.rs" # https://github.com/dnglab/dnglab/issues/569
+ignored_item_5 = "src/bits.rs" # https://github.com/dnglab/dnglab/issues/571
+ignored_item_7 = "rawler/src/decoders/arw.rs" # https://github.com/dnglab/dnglab/issues/574
+ignored_item_8 = "assertion failed: p1.y <= p2.y" # https://github.com/dnglab/dnglab/issues/573
+ignored_item_9 = "p1.x <= p2.x" # https://github.com/dnglab/dnglab/issues/573
+ignored_item_11 = "v4decompressor.rs" # https://github.com/dnglab/dnglab/issues/571
+ignored_item_23 = "src/imgop/mod.rs" # https://github.com/dnglab/dnglab/issues/582
+ignored_item_24 = "Lensdata version" # https://github.com/dnglab/dnglab/issues/583
+ignored_item_25 = "Unknown CFA size" # https://github.com/dnglab/dnglab/issues/586
+ignored_item_29 = "src/pumps.rs" # https://github.com/dnglab/dnglab/issues/587
+ignored_item_26 = "attempt to multiply with overflow" # TODO
+ignored_item_27 = "fuji_decompressor.rs" # TODO - generated files are too big, and cannot be really minimized
+ignored_item_30 = "decompressors/crx/mod.rs" # TODO - generated files are too big, and cannot be really minimized
+ignored_item_31 = "decompressors/ljpeg/mod.rs" # TODO - generated files are too big, and cannot be really minimized
+ignored_item_32 = "decompressors/ljpeg/huffman.rs" # TODO - generated files are too big, and cannot be really minimized
+
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
+
+
+
+[custom2]
 name = "symphonia"
 command = "symphonia|FILE_PATHS_TO_PROVIDE"
 

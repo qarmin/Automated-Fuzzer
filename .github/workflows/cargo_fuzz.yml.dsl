@@ -38,7 +38,7 @@ jobs:
           #          - name: HAYRO
           #            fuzz_target: hayro
           #            timeout: 18000
-          #            files: "AA_PDF_VALID_FILES.7z"
+          #            files: "AA_PDF_VALID_FILES2.7z"
           - name: RAWLER
             fuzz_target: rawler
             timeout: 18000
@@ -50,7 +50,7 @@ jobs:
           #          - name: PDF_RS # TODO - not implemented - not know how to load from memory
           #            fuzz_target: pdf_rs
           #            timeout: 18000
-          #            files: "AA_PDF_VALID_FILES.7z"
+          #            files: "AA_PDF_VALID_FILES2.7z"
           #          - name: RSBUZZ
           #            fuzz_target: rsbuzz
           #            timeout: 18000

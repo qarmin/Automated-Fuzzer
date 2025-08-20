@@ -29,7 +29,7 @@ jobs:
           - name: PDF_RS
             config-file: fuzz_pdf_rs_settings_ci.toml
             timeout: 3600
-            files: "AA_PDF_VALID_FILES.7z"
+            files: "AA_PDF_VALID_FILES2.7z"
             src_folder: pdf_rs
             stability_check: false
             binary: pdf_rs
@@ -107,7 +107,7 @@ jobs:
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 3600
-            files: "AA_PDF_VALID_FILES.7z"
+            files: "AA_PDF_VALID_FILES2.7z"
             src_folder: lopdf
             stability_check: false
             binary: lopdf

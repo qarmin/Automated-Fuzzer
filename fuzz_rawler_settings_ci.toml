@@ -30,7 +30,7 @@ current_mode = "custom"
 name = "rawler"
 command = "rawler|FILE_PATHS_TO_PROVIDE"
 
-extensions = "dng,orf,nrw,rw2,raf,arw,cr2,cr3,crw,nef,pef,kdc,sr2,srf,x3f,erf,orf,raw,dcr,dng"
+extensions = "dng,orf,nrw,rw2,raf,arw,cr2,cr3,crw,nef,pef,kdc,sr2,srf,x3f,erf,orf,raw,dcr,dng,tiff"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "none" # available: none, by_files, by_group
