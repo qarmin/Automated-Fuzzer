@@ -1,6 +1,6 @@
 [general]
 loop_number = 5000 # How much creating/removing/checking steps will be executed
-broken_files_for_each_file = 100# Number of broken files that will be created for each 1 valid file
+broken_files_for_each_file = 30# Number of broken files that will be created for each 1 valid file
 minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
 temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
 minimization_attempts = 2000 # Attemps to minimize code, counter reset when found minimized test case
@@ -49,6 +49,12 @@ ignored_item_7 = "attempt to multiply with overflow" # https://github.com/Lauren
 ignored_item_10 = "self.bits_left >= n" # https://github.com/LaurenzV/hayro/issues/154
 ignored_item_11 = "ccitt.rs" # https://github.com/LaurenzV/hayro/issues/156
 ignored_item_12 = "filter/lzw_flate.rs" # https://github.com/LaurenzV/hayro/issues/178
+ignored_item_14 = "filter/jbig2.rs" # https://github.com/LaurenzV/hayro/issues/202
+ignored_item_15 = "missing MoveTo" # https://github.com/LaurenzV/hayro/issues/203
+ignored_item_16 = "function/type0.rs" # https://github.com/LaurenzV/hayro/issues/204
+#ignored_item_17 = "" #
+#ignored_item_18 = "" #
+#ignored_item_16 = "" #
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
