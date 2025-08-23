@@ -25,8 +25,8 @@ pub struct Setting {
     pub temp_possible_broken_files_dir: String,
     pub debug_print_results: bool,
     pub timeout: usize,
+    pub allowed_signal_statuses: Vec<i32>,
     pub allowed_error_statuses: Vec<i32>,
-    pub error_when_found_signal: bool,
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
     pub check_if_file_is_parsable: bool,
@@ -197,7 +197,6 @@ pub(crate) fn load_settings() -> Setting {
             .split(',')
             .map(|e| e.parse().unwrap())
             .collect(),
-        error_when_found_signal: general["error_when_found_signal"].parse().unwrap(),
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
@@ -210,6 +209,11 @@ pub(crate) fn load_settings() -> Setting {
         custom_folder_path: general["custom_folder_path"].clone(),
         ignore_file_if_contains_searched_items: general["ignore_file_if_contains_searched_items"].parse().unwrap(),
         max_file_size_limit: general["max_file_size_limit"].parse().unwrap(),
+        allowed_signal_statuses: general["allowed_signal_statuses"]
+            .split(',')
+            .filter(|e| !e.trim().is_empty())
+            .map(|e| e.trim().parse().unwrap())
+            .collect(),
     }
 }
 

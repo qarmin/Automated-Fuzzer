@@ -123,9 +123,11 @@ pub(crate) fn execute_command_on_pack_of_files(
     let output = child.wait_with_output().unwrap();
     let mut str_out = collect_output(&output);
 
-    let is_signal_broken = obj.get_settings().error_when_found_signal
-        && output.status.signal().is_some()
-        && !obj.ignored_signal_output(&str_out);
+    let is_signal_broken = !obj.get_settings().allowed_signal_statuses.is_empty()
+        && output
+            .status
+            .signal()
+            .is_some_and(|code| !obj.get_settings().allowed_signal_statuses.contains(&code));
 
     let is_status_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
         && output
@@ -229,9 +231,11 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
 
     let mut str_out = collect_output(&output);
 
-    let is_signal_broken = obj.get_settings().error_when_found_signal
-        && output.status.signal().is_some()
-        && !obj.ignored_signal_output(&str_out);
+    let is_signal_broken = !obj.get_settings().allowed_signal_statuses.is_empty()
+        && output
+            .status
+            .signal()
+            .is_some_and(|code| !obj.get_settings().allowed_signal_statuses.contains(&code));
 
     let is_status_code_broken = !obj.get_settings().allowed_error_statuses.is_empty()
         && output
