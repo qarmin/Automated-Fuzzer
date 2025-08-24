@@ -23,28 +23,28 @@ jobs:
             config-file: fuzz_dicom_rs_settings_ci.toml
             timeout: 3600
             files: "AA_DCM_VALID_FILES.7z"
-            src_folder: dicom
+            library_folder: dicom
             stability_check: false
             binary: dicom
           - name: PDF_RS
             config-file: fuzz_pdf_rs_settings_ci.toml
             timeout: 3600
             files: "AA_PDF_VALID_FILES2.7z"
-            src_folder: pdf_rs
+            library_folder: pdf_rs
             stability_check: false
             binary: pdf_rs
           - name: TTF_PARSER
             config-file: fuzz_ttf_parser_settings_ci.toml
             timeout: 3600
             files: "AA_FONT_VALID_FILES_MORE.7z"
-            src_folder: ttf_parser
+            library_folder: ttf_parser
             stability_check: false
             binary: ttf_parser
           - name: ZIP_RS
             config-file: fuzz_zip_rs_settings_ci.toml
             timeout: 3600
             files: "AA_ZIP_VALID_FILES.7z"
-            src_folder: zip_rs
+            library_folder: zip_rs
             stability_check: false
             binary: zip_rs
           #          - name: GO
@@ -52,70 +52,70 @@ jobs:
           #            timeout: 3600
           #            files: "AA_GO_VALID_FILES.7z"
           #            go_version: '1.23.0-rc.1'
-          #            src_folder: ''
+          #            library_folder: ''
           #            stability_check: false
           #            binary: staticcheck
           - name: TYPST
             config-file: fuzz_typst_settings_ci.toml
             timeout: 3600
             files: "AA_TYPST_VALID_FILES.zip"
-            src_folder: ''
+            library_folder: ''
             stability_check: false
             binary: typst
           - name: IMAGE
             config-file: fuzz_image_settings_ci.toml
             timeout: 3600
             files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: image
+            library_folder: image
             stability_check: false
             binary: image
           - name: IMAGE_HASHER
             config-file: fuzz_image_hasher_settings_ci.toml
             timeout: 3600
             files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: image_hasher
+            library_folder: image_hasher
             stability_check: false
             binary: image_hasher
           - name: FAST_IMAGE_RESIZER
             config-file: fuzz_fast_image_resizer_settings_ci.toml
             timeout: 3600
             files: "AA_IMAGE_VALID_FILES.7z"
-            src_folder: fast_image_resizer
+            library_folder: fast_image_resizer
             stability_check: false
             binary: fast_image_resizer
           - name: NOM_EXIF
             config-file: fuzz_nom_exif_settings_ci.toml
             timeout: 3600
             files: "AA_NOM_EXIF_VALID_FILES.7z"
-            src_folder: nom_exif
+            library_folder: nom_exif
             stability_check: false
             binary: nom_exif
           - name: LOFTY
             config-file: fuzz_lofty_settings_ci.toml
             timeout: 3600
             files: "AA_MUSIC_VALID_FILES.7z"
-            src_folder: lofty
+            library_folder: lofty
             stability_check: false
             binary: lofty
           - name: SLINT
             config-file: fuzz_slint_settings_ci.toml
             timeout: 3600
             files: "AA_SLINT_FILES.7z"
-            src_folder: slint
+            library_folder: slint
             stability_check: false
             binary: slint
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 3600
             files: "AA_PDF_VALID_FILES2.7z"
-            src_folder: lopdf
+            library_folder: lopdf
             stability_check: false
             binary: lopdf
           - name: VIDDUPLICATE
             config-file: fuzz_vidduplicate_settings_ci.toml
             timeout: 3600
             files: "AA_VIDEO_VALID_FILES.7z"
-            src_folder: vidduplicate
+            library_folder: vidduplicate
             stability_check: false
             binary: vidduplicate
 
@@ -139,9 +139,9 @@ jobs:
 
       # THERE STARTING CUSTOM STEP
       - name: Install apps, which are inside this repo(probably only libraries)
-        if: ${{ matrix.src_folder != '' }}
+        if: ${{ matrix.library_folder != '' }}
         run: |
-          cd src/crates/${{ matrix.src_folder }}
+          cd src/crates/${{ matrix.library_folder }}
           cargo update
           
           if [ "${{ env.SANITIZER }}" = "true" ]; then
@@ -153,7 +153,7 @@ jobs:
           fi
           
           cd ../../..
-          ldd $(whereis -b ${{ matrix.src_folder }} | awk '{print $2}')
+          ldd $(whereis -b ${{ matrix.library_folder }} | awk '{print $2}')
 
       #### GO
       - uses: actions/setup-go@v5

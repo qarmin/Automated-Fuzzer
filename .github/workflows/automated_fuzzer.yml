@@ -127,21 +127,21 @@ jobs:
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 16000
             files: "AA_PDF_VALID_FILES2.7z"
-            src_folder: lopdf
+            library_folder: lopdf
             stability_check: false
             binary: lopdf
           - name: LOPDF2
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 16000
             files: "AA_PDF_VALID_FILES2.7z"
-            src_folder: lopdf
+            library_folder: lopdf
             stability_check: false
             binary: lopdf
           - name: LOPDF3
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 16000
             files: "AA_PDF_VALID_FILES2.7z"
-            src_folder: lopdf
+            library_folder: lopdf
             stability_check: false
             binary: lopdf
           # TODO - too many issues
