@@ -42,6 +42,16 @@ search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
 ignored_item_1 = "AddressSanitizer" # https://github.com/J-F-Liu/lopdf/issues/433
+ignored_item_2 = "DictKey(\"ColorSpace\")" # https://github.com/J-F-Liu/lopdf/issues/440
+ignored_item_3 = "self.table.is_full()" # https://github.com/J-F-Liu/lopdf/issues/441
+ignored_item_4 = "attempt to add with overflow" # https://github.com/J-F-Liu/lopdf/issues/442
+#ignored_item_2 = "" #
+#ignored_item_2 = "" #
+#ignored_item_2 = "" #
+#ignored_item_2 = "" #
+#ignored_item_2 = "" #
+#ignored_item_2 = "" #
+#ignored_item_2 = "" #
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
