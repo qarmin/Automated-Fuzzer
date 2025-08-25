@@ -25,6 +25,7 @@ pub struct Setting {
     pub temp_possible_broken_files_dir: String,
     pub debug_print_results: bool,
     pub timeout: usize,
+    pub timeout_group: usize,
     pub allowed_signal_statuses: Vec<i32>,
     pub allowed_error_statuses: Vec<i32>,
     pub debug_print_broken_files_creator: bool,
@@ -52,6 +53,7 @@ pub enum StabilityMode {
 pub struct CustomItems {
     pub group_mode: CheckGroupFileMode,
     pub command_parts: Vec<String>,
+    pub group_command_parts: Vec<String>,
     pub search_items: Vec<String>,
     pub ignored_items: Vec<String>,
     pub file_type: LANGS,
@@ -79,13 +81,22 @@ pub(crate) fn process_custom_struct(
         _ => panic!("Invalid group mode {}", tool_hashmap["group_mode"]),
     };
 
-    let timeout_time: u32 = general["timeout"].parse().unwrap();
     let mut command_parts = Vec::new();
+    let timeout_time: u32 = general["timeout"].parse().unwrap();
     if timeout_time != 0 {
         command_parts.push("timeout".to_string());
         command_parts.push("-v".to_string());
         command_parts.push(timeout_time.to_string());
     }
+
+    let mut group_command_parts = Vec::new();
+    let timeout_time_group: u32 = general["timeout_group"].parse().unwrap();
+    if timeout_time_group != 0 {
+        group_command_parts.push("timeout".to_string());
+        group_command_parts.push("-v".to_string());
+        group_command_parts.push(timeout_time_group.to_string());
+    }
+
     if tool_hashmap["command"]
         .split('|')
         .filter_map(|e| {
@@ -99,6 +110,7 @@ pub(crate) fn process_custom_struct(
         panic!("No command found in the custom tool or FILE_PATHS_TO_PROVIDE is not found in the command");
     }
     command_parts.extend(tool_hashmap["command"].split('|').map(str::to_string));
+    group_command_parts.extend(tool_hashmap["command"].split('|').map(str::to_string));
 
     let search_item_keys: Vec<_> = tool_hashmap
         .iter()
@@ -144,6 +156,7 @@ pub(crate) fn process_custom_struct(
     CustomItems {
         group_mode,
         command_parts,
+        group_command_parts,
         search_items,
         ignored_items,
         file_type,
@@ -189,6 +202,7 @@ pub(crate) fn load_settings() -> Setting {
         remove_non_crashing_items_from_broken_files,
         extensions,
         timeout: general["timeout"].parse().unwrap(),
+        timeout_group: general["timeout_group"].parse().unwrap(),
         broken_files_dir: curr_setting["broken_files_dir"].parse().unwrap(),
         valid_input_files_dir: curr_setting["valid_input_files_dir"].parse().unwrap(),
         temp_possible_broken_files_dir: general["temp_possible_broken_files_dir"].parse().unwrap(),

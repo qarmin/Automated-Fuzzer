@@ -64,7 +64,7 @@ impl ProgramConfig for CustomStruct {
         let mut command = self.get_basic_run_command();
         command.args(
             self.custom_items
-                .command_parts
+                .group_command_parts
                 .iter()
                 .skip(1)
                 .map(|e| e.replace("FILE_PATHS_TO_PROVIDE", &full_name.join(" "))),

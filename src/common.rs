@@ -136,7 +136,7 @@ pub(crate) fn execute_command_on_pack_of_files(
             .is_some_and(|code| !obj.get_settings().allowed_error_statuses.contains(&code));
 
     // Additionally status code is 124, but we skip here checking it, because at least for now it works fine
-    let timeouted = obj.get_settings().timeout > 0 && str_out.contains(TIMEOUT_MESSAGE);
+    let timeouted = obj.get_settings().timeout_group > 0 && str_out.contains(TIMEOUT_MESSAGE);
 
     let ignore_timeout = obj.get_settings().allowed_error_statuses.contains(&124);
 
