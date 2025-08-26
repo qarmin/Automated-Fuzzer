@@ -26,13 +26,6 @@ jobs:
             library_folder: dicom
             stability_check: false
             binary: dicom
-          - name: PDF_RS
-            config-file: fuzz_pdf_rs_settings_ci.toml
-            timeout: 3600
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: pdf_rs
-            stability_check: false
-            binary: pdf_rs
           - name: TTF_PARSER
             config-file: fuzz_ttf_parser_settings_ci.toml
             timeout: 3600

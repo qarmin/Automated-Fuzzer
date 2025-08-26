@@ -2,7 +2,6 @@ import os
 import sys
 import subprocess
 
-# Pobierz listę elementów oddzielonych przecinkami jako argument wejściowy
 file_names = sys.argv[1].split(",")
 
 for file_name in file_names:
