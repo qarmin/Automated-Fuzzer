@@ -25,7 +25,7 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: oxlint
-          - name: RUFFFORMAT
+          - name: RUFFFORMAT1
             config-file: fuzz_ruff_format_settings_ci.toml
             timeout: 16000
             files: "FILES_23.zip"
@@ -77,6 +77,48 @@ jobs:
           - name: BOA
             config-file: fuzz_boa_settings_ci.toml
             timeout: 16000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
+          - name: BOA2
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 16000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
+          - name: BOA3
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 16000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
+          - name: BOA4
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 8000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
+          - name: BOA5
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 4000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
+          - name: BOA6
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 2000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
+          - name: BOA7
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 1000
             files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
             library_folder: boa
             stability_check: false

@@ -42,6 +42,10 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+ignored_item_1 = "stack-overflow" # https://github.com/boa-dev/boa/issues/1402
+ignored_item_2 = "stack overflow" # https://github.com/boa-dev/boa/issues/1402
+ignored_item_3 = "is_strictly_before" # TODO
+ignored_item_4 = "ca span cannot start after its end" # TODO
 
 file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
