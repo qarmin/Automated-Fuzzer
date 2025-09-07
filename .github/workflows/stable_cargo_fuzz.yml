@@ -123,7 +123,7 @@ jobs:
           # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
           # cargo +nightly fuzz run hayro /home/rafal/Desktop/ASS --release --features "hayro_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
           # cargo +nightly fuzz run rawler /home/rafal/Desktop/ASS --release --features "rawler_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
-          cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
+          cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -j4 --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
       - name: Remove slow files
         run: |

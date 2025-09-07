@@ -18,7 +18,7 @@ image = { git = "https://github.com/image-rs/image", default-features = false, f
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git", optional = true }
 rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git", optional = true }
 #pdf = { git = "https://github.com/pdf-rs/pdf/" , optional = true}
-symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], optional = true }
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], branch = "dev-0.6", optional = true }
 #symphonia = { git = "https://github.com/sscobici/Symphonia.git", features = ["all"], branch = "mp4-panic-fixes", optional = true}
 zip = { git = "https://github.com/zip-rs/zip2.git", optional = true }
 
@@ -39,6 +39,7 @@ vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", 
 ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true}
 hayro = { git = "https://github.com/LaurenzV/hayro.git" , optional = true}
 rawler = { git = "https://github.com/dnglab/dnglab.git" , optional = true}
+rusty-chromaprint = { git = "https://github.com/darksv/rusty-chromaprint.git", optional = true}
 
 [features]
 default = []
@@ -58,6 +59,7 @@ nom_exif_f = ["nom-exif"]
 vidduplicate_f = ["vid_dup_finder_lib", "ffmpeg_cmdline_utils"]
 hayro_f = ["hayro"]
 rawler_f = ["rawler"]
+chromaprint_f = ["rusty-chromaprint", "symphonia"]
 
 [[bin]]
 name = "lofty"
@@ -139,6 +141,13 @@ bench = false
 [[bin]]
 name = "symphonia"
 path = "fuzz_targets/symphonia.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "chromaprint"
+path = "fuzz_targets/chromaprint.rs"
 test = false
 doc = false
 bench = false

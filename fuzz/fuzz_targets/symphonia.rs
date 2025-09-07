@@ -21,6 +21,11 @@ fuzz_target!(|data: &[u8]| -> Corpus {
     }
 });
 
+#[derive(Copy, Clone)]
+struct DecodeOptions {
+    decoder_opts: AudioDecoderOptions,
+}
+
 pub(crate) fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
     let cursor = io::Cursor::new(content);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());
@@ -49,10 +54,6 @@ pub(crate) fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
-#[derive(Copy, Clone)]
-struct DecodeOptions {
-    decoder_opts: AudioDecoderOptions,
-}
 
 fn decode_only(mut reader: Box<dyn FormatReader>, opts: DecodeOptions) -> Result<(), String> {
     let track = reader.default_track(TrackType::Audio);

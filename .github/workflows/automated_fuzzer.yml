@@ -81,48 +81,62 @@ jobs:
             library_folder: boa
             stability_check: false
             binary: boa
-          - name: BOA2
-            config-file: fuzz_boa_settings_ci.toml
+          - name: CHROMAPRINT
+            config-file: fuzz_chromaprint_settings_ci.toml
             timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
             stability_check: false
-            binary: boa
-          - name: BOA3
-            config-file: fuzz_boa_settings_ci.toml
-            timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
-            stability_check: false
-            binary: boa
-          - name: BOA4
-            config-file: fuzz_boa_settings_ci.toml
-            timeout: 8000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
-            stability_check: false
-            binary: boa
-          - name: BOA5
-            config-file: fuzz_boa_settings_ci.toml
-            timeout: 4000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
-            stability_check: false
-            binary: boa
-          - name: BOA6
-            config-file: fuzz_boa_settings_ci.toml
-            timeout: 2000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
-            stability_check: false
-            binary: boa
-          - name: BOA7
-            config-file: fuzz_boa_settings_ci.toml
+            binary: chromaprint
+          - name: CHROMAPRINT2
+            config-file: fuzz_chromaprint_settings_ci.toml
             timeout: 1000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
             stability_check: false
-            binary: boa
+            binary: chromaprint
+          - name: CHROMAPRINT3
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 2000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
+          - name: CHROMAPRINT4
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 4000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
+          - name: CHROMAPRINT5
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 8000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
+          - name: CHROMAPRINT6
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
+          - name: CHROMAPRINT7
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
+          - name: CHROMAPRINT8
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
           # TODO - too many issues
           #          - name: Resvg
           #            config-file: fuzz_resvg_settings_ci.toml
