@@ -39,6 +39,55 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ruff
+          - name: RUSTPYTHON
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 1000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
+          - name: RUSTPYTHON2
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 2000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
+          - name: RUSTPYTHON3
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 4000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
+          - name: RUSTPYTHON4
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 8000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
+          - name: RUSTPYTHON5
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
+          - name: RUSTPYTHON6
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
+          - name: RUSTPYTHON7
+            config-file: fuzz_rustpython_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: rustpython
           - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
@@ -82,55 +131,6 @@ jobs:
             stability_check: false
             binary: boa
           - name: CHROMAPRINT
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT2
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 1000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT3
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 2000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT4
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 4000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT5
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 8000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT6
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT7
-            config-file: fuzz_chromaprint_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
-            stability_check: false
-            binary: chromaprint
-          - name: CHROMAPRINT8
             config-file: fuzz_chromaprint_settings_ci.toml
             timeout: 16000
             files: "AA_MUSIC_VALID_FILES.7z"
@@ -272,6 +272,16 @@ jobs:
           rm main.zip
           echo PROJECT_INSTALL_DIR=typst-main/crates/typst-cli >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=typst-main >> $GITHUB_ENV
+
+      #### RUSTPYTHON
+      - name: Install rust_python
+        if: ${{ contains(matrix.name, 'RUSTPYTHON') }}
+        run: |
+          wget -q https://github.com/RustPython/RustPython/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          echo PROJECT_INSTALL_DIR=RustPython-main >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=RustPython-main >> $GITHUB_ENV
 
       #################### END OF APPLICATION STEPS ####################
 
