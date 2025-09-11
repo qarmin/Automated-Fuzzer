@@ -43,6 +43,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+ignored_item_1 = "exceptiongroup initialization failed" # TODO
 
 
 file_type = "python" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
