@@ -46,48 +46,6 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: rustpython
-          - name: RUSTPYTHON2
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 2000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
-          - name: RUSTPYTHON3
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 4000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
-          - name: RUSTPYTHON4
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 8000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
-          - name: RUSTPYTHON5
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
-          - name: RUSTPYTHON6
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
-          - name: RUSTPYTHON7
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
           - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
@@ -130,13 +88,20 @@ jobs:
             library_folder: boa
             stability_check: false
             binary: boa
-          - name: CHROMAPRINT
-            config-file: fuzz_chromaprint_settings_ci.toml
+          - name: SYMPHONIA
+            config-file: fuzz_symphonia_settings_ci.toml
             timeout: 16000
             files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: chromaprint
+            library_folder: symphonia
             stability_check: false
-            binary: chromaprint
+            binary: symphonia
+          - name: SWC
+            config-file: fuzz_swc_settings_ci.toml
+            timeout: 16000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: swc
           # TODO - too many issues
           #          - name: Resvg
           #            config-file: fuzz_resvg_settings_ci.toml
@@ -160,20 +125,6 @@ jobs:
           #            library_folder: rsbuzz
           #            stability_check: false
           #            binary: rsbuzz
-          #          - name: SYMPHONIA
-          #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            library_folder: symphonia
-          #            stability_check: false
-          #            binary: symphonia
-          #          - name: SWC
-          #            config-file: fuzz_swc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: swc
 
     steps:
       - uses: actions/checkout@v4
@@ -204,7 +155,8 @@ jobs:
           echo PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR >> $GITHUB_ENV
 
       #################### START OF APPLICATION STEPS ####################
-      - name: Download biome # BIOME
+      # BIOME
+      - name: Download biome
         if: ${{ contains(matrix.name, 'BIOME') }}
         run: |
           wget -q https://github.com/biomejs/biome/archive/refs/heads/main.zip
@@ -213,7 +165,8 @@ jobs:
           echo PROJECT_INSTALL_DIR=biome-main/crates/biome_cli >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=biome-main >> $GITHUB_ENV
 
-      - name: Download oxlint # OXLINT
+      # OXLINT
+      - name: Download oxlint
         if: ${{ contains(matrix.name, 'OXC') }}
         run: |
           wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip

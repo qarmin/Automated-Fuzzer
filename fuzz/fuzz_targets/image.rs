@@ -12,7 +12,7 @@ const IMAGE_FORMATS_READ: &[ImageFormat] = &[
     ImageFormat::WebP,
     ImageFormat::Pnm,
     ImageFormat::Tiff,
-    ImageFormat::Tga,
+    // ImageFormat::Tga, // TODO - https://github.com/image-rs/image/issues/2602
     ImageFormat::Dds,
     ImageFormat::Bmp,
     ImageFormat::Ico,
@@ -29,9 +29,9 @@ const IMAGE_FORMATS_WRITE: &[ImageFormat] = &[
     ImageFormat::WebP,
     ImageFormat::Pnm,
     ImageFormat::Tiff,
-    ImageFormat::Tga,
+    // ImageFormat::Tga, // TODO - https://github.com/image-rs/image/issues/2602
     ImageFormat::Dds,
-    ImageFormat::Bmp,
+    // ImageFormat::Bmp,
     ImageFormat::Ico,
     ImageFormat::Hdr,
     ImageFormat::OpenExr,

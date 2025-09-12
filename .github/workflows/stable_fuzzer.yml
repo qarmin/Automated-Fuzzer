@@ -111,6 +111,13 @@ jobs:
             library_folder: vidduplicate
             stability_check: false
             binary: vidduplicate
+          - name: CHROMAPRINT
+            config-file: fuzz_chromaprint_settings_ci.toml
+            timeout: 3600
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: chromaprint
+            stability_check: false
+            binary: chromaprint
 
     steps:
       - uses: actions/checkout@v4
@@ -124,99 +131,42 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8 llvm sd
-          sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
+          sudo apt install -y wget earlyoom libasan8 llvm sd python3
+          # sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
-      - name: Install create_broken_files and
+      - name: Install create_broken_files
         run: cargo install create_broken_files minimizer
 
       # THERE STARTING CUSTOM STEP
-      - name: Install apps, which are inside this repo(probably only libraries)
+      - name: Install libraries, which are inside this repo(inside repo are binaries which uses these libraries)
         if: ${{ matrix.library_folder != '' }}
         run: |
-          cd src/crates/${{ matrix.library_folder }}
+          PROJECT_INSTALL_DIR="src/crates/${{ matrix.library_folder }}"
+          cd $PROJECT_INSTALL_DIR
           cargo update
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path . --locked
-          fi
-          
           cd ../../..
-          ldd $(whereis -b ${{ matrix.library_folder }} | awk '{print $2}')
+          echo PROJECT_INSTALL_DIR=$PROJECT_INSTALL_DIR >> $GITHUB_ENV
 
-      #### GO
-      - uses: actions/setup-go@v5
-        if: ${{ contains(matrix.name, 'GO') }}
-        with:
-          go-version: ${{ matrix.go_version }}
-          check-latest: true
-
-      - name: Install go
-        if: ${{ contains(matrix.name, 'GO') }}
-        run: |
-          git clone https://github.com/dominikh/go-tools.git gotools
-          cd gotools
-          go install cmd/staticcheck/staticcheck.go
-          sudo cp ~/go/bin/staticcheck /usr/bin/staticcheck
-          ldd /usr/bin/staticcheck
-          cd ..
-
-      #### BIOME
-      - name: Install biome
+      #################### START OF APPLICATION STEPS ####################
+      # BIOME
+      - name: Download biome
         if: ${{ contains(matrix.name, 'BIOME') }}
         run: |
           wget -q https://github.com/biomejs/biome/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd biome-main
-          rm rust-toolchain.toml
-          echo "[profile.release]" >> Cargo.toml
-          echo "overflow-checks = true" >> Cargo.toml
-          echo "debug = true" >> Cargo.toml
-          echo "panic = 'abort'" >> Cargo.toml
-          rm -rf .cargo # Removes lto = true
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/biome_cli --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path crates/biome_cli --locked
-          fi
-          
-          cd ../
-          rm -rf biome-main
-          ldd $(whereis -b biome | awk '{print $2}')
+          echo PROJECT_INSTALL_DIR=biome-main/crates/biome_cli >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=biome-main >> $GITHUB_ENV
 
-      #### OXLINT
-      - name: Install oxlint
+      # OXLINT
+      - name: Download oxlint
         if: ${{ contains(matrix.name, 'OXC') }}
         run: |
           wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd oxc-main
-          rm rust-toolchain.toml
-          sd "codegen-units = 1" "overflow-checks = true" Cargo.toml
-          sd "debug = false" "debug = true" Cargo.toml
-          sd "strip = \"symbols\"" "strip = \"none\"" Cargo.toml
-          sd "lto =" "#lto =" Cargo.toml
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path apps/oxlint --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path apps/oxlint --locked
-          fi
-          
-          cd ../
-          rm -rf oxc-main
-          ldd $(whereis -b oxlint | awk '{print $2}')
+          echo PROJECT_INSTALL_DIR=oxc-main/apps/oxlint >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=oxc-main >> $GITHUB_ENV
 
       #### PYREFLY
       - name: Install pyrefly
@@ -225,25 +175,8 @@ jobs:
           wget -q https://github.com/facebook/pyrefly/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd pyrefly-main
-          rm rust-toolchain.toml
-          sd "lto =" "#lto =" Cargo.toml
-          sd "codegen-units = 1" "#codegen-units = 1" Cargo.toml
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path pyrefly --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path pyrefly --locked
-          fi
-          
-          cd ../
-          rm -rf pyrefly-main
-          ldd $(whereis -b pyrefly | awk '{print $2}')
+          echo PROJECT_INSTALL_DIR=pyrefly-main/pyrefly >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=pyrefly-main >> $GITHUB_ENV
 
       #### TY
       - name: Install TY(ruff) - special name, because ty may conflict with other binaries
@@ -252,25 +185,19 @@ jobs:
           wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd ruff-main
-          rm rust-toolchain.toml
-          sd "lto =" "#lto =" Cargo.toml
-          sd "codegen-units = 1" "#codegen-units = 1" Cargo.toml
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          
-          if [ "${{ env.SANITIZER }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path crates/ty --locked --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path crates/ty --locked
-          fi
-          
-          cd ../
-          rm -rf ruff-main
-          ldd $(whereis -b ty | awk '{print $2}')
+          sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
+          echo PROJECT_INSTALL_DIR=ruff-main/crates/ty >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
+
+      #### RUFF
+      - name: Install ruff
+        if: ${{ contains(matrix.name, 'RUFF') }}
+        run: |
+          wget -q https://github.com/astral-sh/ruff/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          echo PROJECT_INSTALL_DIR=ruff-main/crates/ruff >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
 
       #### SWC
       - name: Install swc
@@ -278,17 +205,9 @@ jobs:
         run: |
           wget -q https://github.com/swc-project/swc/archive/refs/heads/main.zip
           unzip -q main.zip
-          
-          if [ "${{ matrix.asan_build }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path swc-main/crates/swc_cli_impl/ --locked  --target x86_64-unknown-linux-gnu
-          else
-            echo "NORMAL BUILD___"
-            cargo install --path swc-main/crates/swc_cli_impl/ --locked
-          fi
-
-          rm -rf main.zip swc-main
-          ldd $(whereis -b swc | awk '{print $2}')
+          rm main.zip
+          echo PROJECT_INSTALL_DIR=swc-main/crates/swc_cli_impl >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=swc-main >> $GITHUB_ENV
 
       #### TYPST
       - name: Install typst_rs
@@ -297,27 +216,82 @@ jobs:
           wget -q https://github.com/typst/typst/archive/refs/heads/main.zip
           unzip -q main.zip
           rm main.zip
-          cd typst-main
-          sed -i '/\[profile.release\]/a overflow-checks = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug-assertions = true' Cargo.toml
-          sed -i '/\[profile.release\]/a debug = true' Cargo.toml
-          cd crates/typst-cli
+          echo PROJECT_INSTALL_DIR=typst-main/crates/typst-cli >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=typst-main >> $GITHUB_ENV
+
+      #### RUSTPYTHON
+      - name: Install rust_python
+        if: ${{ contains(matrix.name, 'RUSTPYTHON') }}
+        run: |
+          wget -q https://github.com/RustPython/RustPython/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          echo PROJECT_INSTALL_DIR=RustPython-main >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=RustPython-main >> $GITHUB_ENV
+          echo FEATURES="--features encodings" >> $GITHUB_ENV
+
+      #################### END OF APPLICATION STEPS ####################
+
+      - name: Remove rust_toolchain.toml files and .cargo folders
+        run: |
+          find . -name "rust-toolchain.toml" -exec rm -f {} \; || true
+          find . -name ".cargo" -exec rm -rf {} \; || true
+
+      - name: Apply Release patch
+        run: |
+          # If PROJECT_CARGO_TOML_FOLDER exists and is not empty, then use it
+          if [ -n "${{ env.PROJECT_CARGO_TOML_FOLDER }}" ]; then
+              sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
           
-          if [ "${{ matrix.asan_build }}" = "true" ]; then
-            echo "ASAN BUILD___"
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu
+              echo "Using PROJECT_CARGO_TOML_FOLDER: ${{ env.PROJECT_CARGO_TOML_FOLDER }}"
+              echo "[profile.release]" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "overflow-checks = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "debug = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              # echo "panic = 'abort'" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "debug-assertions = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
           else
-            echo "NORMAL BUILD___"
-            cargo install --path . --locked
+              echo "Using default Cargo.toml"
           fi
+
+      - name: Compile apps
+        run: |
+          # First compile app in normal mode
+          echo "Compiling in normal mode"
+          cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked "${{ env.FEATURES }}" --target x86_64-unknown-linux-gnu
+          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
+          ldd /etc/${{ matrix.binary }}_normal
           
-          cd ../../..
-          ldd $(whereis -b typst | awk '{print $2}')
+          # Then compile app in ASAN mode
+          echo "Compiling in ASAN mode"
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked  "${{ env.FEATURES }}" --target x86_64-unknown-linux-gnu
+          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
+          ldd /etc/${{ matrix.binary }}
 
-      # THIS SHOULD BE COMMON FOR ALL MODES ############################################################
+      - name: Remove all target/compilation folders and files
+        run: |
+          git clean -xqdf
 
-      - name: Build
-        run: cargo build --release
+      - name: Pack files
+        run: |
+          echo "Path to normal binary: /etc/${{ matrix.binary }}_normal"
+          time 7z a "${{ matrix.binary }}_normal.7z" "/etc/${{ matrix.binary }}_normal"
+          
+          echo "Path to asan binary: /etc/${{ matrix.binary }}"
+          time 7z a "${{ matrix.binary }}.7z" "/etc/${{ matrix.binary }}"
+          ls -al
+
+      - name: Release
+        if: ${{ !endsWith(matrix.name, '1') && !endsWith(matrix.name, '2') && !endsWith(matrix.name, '3') && !endsWith(matrix.name, '4') && !endsWith(matrix.name, '5') && !endsWith(matrix.name, '6') && !endsWith(matrix.name, '7') && !endsWith(matrix.name, '8') && !endsWith(matrix.name, '9') && !endsWith(matrix.name, '0') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "Nightly"
+          files: |
+            ${{ matrix.binary }}.7z
+            ${{ matrix.binary }}_normal.7z
+          token: ${{ secrets.PAT2 }}
+
+      - name: Install fuzzer
+        run: cargo install --path .
 
       - name: Create folders
         run: |
@@ -344,7 +318,8 @@ jobs:
           fi
 
           export RUST_BACKTRACE=1
-          target/release/automated_fuzzer ${{ matrix.timeout }}
+          # export ASAN_OPTIONS="detect_leaks=0" # TODO - ty leaks memory
+          automated_fuzzer ${{ matrix.timeout }}
 
       - name: Create broken file to fail ci
         run: |
@@ -364,8 +339,8 @@ jobs:
 
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS=symbolize=1
-          target/release/automated_fuzzer
+          export ASAN_OPTIONS="symbolize=1"
+          automated_fuzzer
 
       - name: Create broken file to fail ci
         run: |
@@ -386,26 +361,20 @@ jobs:
           name: FILES___${{ matrix.name }}___after
           path: /opt/BROKEN_FILES_DIR
 
+      - name: Store custom
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: CUSTOM___${{ matrix.name }}
+          path: /opt/CUSTOM
+
       - name: Remove all folders
         run: |
           rm -rf /opt/VALID_FILES_DIR || true
           rm -rf /opt/POSSIBLY_BROKEN_FILES_DIR || true
 
-      - name: Pack files
-        run: |
-          echo "Path to binary: $(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
-          time 7z a "${{ matrix.binary }}.7z" "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')"
-          ls -al
-
-      - name: Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "Nightly"
-          files: |
-            ${{ matrix.binary }}.7z
-          token: ${{ secrets.PAT2 }}
-
       - name: Exit when found broken files
         run: |
           [ "$(ls -A /opt/BROKEN_FILES_DIR)" ] && exit 1 || true
           [ -f CI_NEEDS_TO_FAIL.txt ] && exit 1 || true
+          [ "$(ls -A /opt/CUSTOM)" ] && exit 1 || true

@@ -50,17 +50,10 @@ ignored_item_153 = "capacity overflow" # https://github.com/LaurenzV/hayro/issue
 ignored_item_1563 = "requested allocation size" # https://github.com/LaurenzV/hayro/issues/50
 ignored_item_3 = "attempt to subtract with overflow" # https://github.com/LaurenzV/hayro/issues/52
 ignored_item_7 = "attempt to multiply with overflow" # https://github.com/LaurenzV/hayro/issues/63
-ignored_item_10 = "self.bits_left >= n" # https://github.com/LaurenzV/hayro/issues/154
 ignored_item_11 = "ccitt.rs" # https://github.com/LaurenzV/hayro/issues/156
 ignored_item_12 = "filter/lzw_flate.rs" # https://github.com/LaurenzV/hayro/issues/178
 ignored_item_14 = "filter/jbig2.rs" # https://github.com/LaurenzV/hayro/issues/202
-ignored_item_17 = "transform.transform_fn.is_some()" # https://github.com/LaurenzV/hayro/issues/205
-ignored_item_168 = "chunk size must be non-zero" # https://github.com/LaurenzV/hayro/issues/222
 ignored_item_169 = "some layers haven't been popped yet" # https://github.com/LaurenzV/hayro/issues/224
-ignored_item_167 = "bezpath.rs" # https://github.com/LaurenzV/hayro/issues/223
-ignored_item_161 = "unexpected colorspace" # https://github.com/LaurenzV/hayro/issues/235
-ignored_item_162 = "k <= self.len()" # https://github.com/LaurenzV/hayro/issues/234
-ignored_item_164 = "from_ascii_radix: radix must lie in the range" # https://github.com/LaurenzV/hayro/issues/236
 #ignored_item_16 = "" #
 #ignored_item_16 = "" #
 #ignored_item_16 = "" #

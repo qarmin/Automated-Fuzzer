@@ -78,13 +78,6 @@ jobs:
           cargo install --path .
           cd ../../..
 
-      #      - name: Restore cached data
-      #        uses: actions/cache/restore@v4
-      #        with:
-      #          path: |
-      #            /opt/INPUT_FILES_DIR
-      #          key: ${{ matrix.name }}-cache
-
       - name: Download and prepare data files
         run: |
           CURR_DIR=$(pwd)
@@ -112,17 +105,19 @@ jobs:
           cargo fuzz build ${{ matrix.fuzz_target }} --release --features "${{ matrix.fuzz_target }}_f"
           cd ../
 
+      # Examples
+      # cargo fuzz build oxc --release --features "oxc_f"
+      # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
+      # cargo +nightly fuzz run hayro /home/rafal/Desktop/ASS --release --features "hayro_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
+      # cargo +nightly fuzz run rawler /home/rafal/Desktop/ASS --release --features "rawler_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
+
       - name: Run Fuzzer
         run: |
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
           export RUSTFLAGS="-Zsanitizer=address"
-          # Example
-          # cargo fuzz build oxc --release --features "oxc_f"
-          # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
-          # cargo +nightly fuzz run hayro /home/rafal/Desktop/ASS --release --features "hayro_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
-          # cargo +nightly fuzz run rawler /home/rafal/Desktop/ASS --release --features "rawler_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
+          
           cargo fuzz run ${{ matrix.fuzz_target }} /opt/INPUT_FILES_DIR/ -j4 --release --features "${{ matrix.fuzz_target }}_f" -- -max_len=99999 -max_total_time=${{ matrix.timeout }} -rss_limit_mb=20000 || true
 
       - name: Remove slow files
@@ -155,7 +150,7 @@ jobs:
           
           if [ -d "fuzz/artifacts/${{ matrix.fuzz_target }}" ] && [ "$(ls -A fuzz/artifacts/${{ matrix.fuzz_target }})" ]; then
             for file in fuzz/artifacts/${{ matrix.fuzz_target }}/*; do
-              minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "timeout -v 100 ${{ matrix.fuzz_target }} {}" --attempts 10000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -b "timeout: sending signal" -b "timeout: the monitored command dumped core" -b "memory allocation of" -v -t 1200
+              minimizer --input-file "$file" --output-file "fuzz/artifacts/${{ matrix.fuzz_target }}/$(basename "$file")_minimized" --command "timeout -v 100 ${{ matrix.fuzz_target }} {}" --attempts 10000 -r -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" -b "LeakSanitizer" -b "ThreadSanitizer" -b "timeout: sending signal" -b "timeout: the monitored command dumped core" -b "memory allocation of" -v -t 1200 -s general_multi
             done
           fi
 
@@ -165,24 +160,6 @@ jobs:
           if-no-files-found: ignore
           name: minimized___CARGO_FUZZ___${{ matrix.name }}
           path: fuzz/artifacts
-
-      # TODO this not works due out-of-memory crash - strange that this not happens in command from above
-      #      - name: Minimalize fuzz results
-      #        run: |
-      #          export RUST_BACKTRACE=1
-      #          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-      #          export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
-      #          export RUSTFLAGS="-Zsanitizer=address"
-      #
-      #          for file in fuzz/artifacts/*; do cargo fuzz tmin "${{ matrix.fuzz_target }}" "$file" --release --features "${{ matrix.fuzz_target }}_f" -- -rss_limit_mb=20000 || true; done
-
-
-      #      - name: Save cache
-      #        uses: actions/cache/save@v4
-      #        with:
-      #          path: |
-      #            /opt/INPUT_FILES_DIR
-      #          key: ${{ matrix.name }}-cache
 
       - name: Exit when found broken files
         run: |
