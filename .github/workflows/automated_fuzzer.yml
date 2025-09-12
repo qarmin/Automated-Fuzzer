@@ -187,7 +187,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y wget earlyoom libasan8 llvm sd
+          sudo apt install -y wget earlyoom libasan8 llvm sd python3
           # sudo apt install -y pkg-config libfreetype6-dev libfontconfig1-dev # For font_kit
 
       - name: Install create_broken_files
@@ -282,6 +282,7 @@ jobs:
           rm main.zip
           echo PROJECT_INSTALL_DIR=RustPython-main >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=RustPython-main >> $GITHUB_ENV
+          echo FEATURES="--features encodings" >> $GITHUB_ENV
 
       #################### END OF APPLICATION STEPS ####################
 
@@ -310,13 +311,13 @@ jobs:
         run: |
           # First compile app in normal mode
           echo "Compiling in normal mode"
-          cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
+          cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked "${{ env.FEATURES }}" --target x86_64-unknown-linux-gnu
           sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
           ldd /etc/${{ matrix.binary }}_normal
           
           # Then compile app in ASAN mode
           echo "Compiling in ASAN mode"
-          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked  "${{ env.FEATURES }}" --target x86_64-unknown-linux-gnu
           sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
           ldd /etc/${{ matrix.binary }}
 
