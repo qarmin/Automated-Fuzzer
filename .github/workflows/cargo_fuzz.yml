@@ -23,29 +23,6 @@ jobs:
             fuzz_target: image
             timeout: 18000
             files: "AA_IMAGE_VALID_FILES.7z"
-          - name: IMAGE2
-            fuzz_target: image
-            timeout: 18000
-            files: "AA_IMAGE_VALID_FILES.7z"
-          - name: IMAGE3
-            fuzz_target: image
-            timeout: 18000
-            files: "AA_IMAGE_VALID_FILES.7z"
-          - name: IMAGE4
-            fuzz_target: image
-            timeout: 18000
-            files: "AA_IMAGE_VALID_FILES.7z"
-          - name: IMAGE5
-            fuzz_target: image
-            timeout: 18000
-            files: "AA_IMAGE_VALID_FILES.7z"
-          - name: IMAGE6
-            fuzz_target: image
-            timeout: 18000
-            files: "AA_IMAGE_VALID_FILES.7z"
-          - name: IMAGE7
-            fuzz_target: image
-            timeout: 18000
             files: "AA_IMAGE_VALID_FILES.7z"
           - name: HAYRO
             fuzz_target: hayro
@@ -71,10 +48,10 @@ jobs:
           #            fuzz_target: hayro
           #            timeout: 18000
           #            files: "AA_PDF_VALID_FILES2.7z"
-          - name: RAWLER
-            fuzz_target: rawler
-            timeout: 18000
-            files: "AA_RAW_VALID_FILES.7z"
+          #          - name: RAWLER
+          #            fuzz_target: rawler
+          #            timeout: 18000
+          #            files: "AA_RAW_VALID_FILES.7z"
           #          - name: FONT_KIT # https://github.com/servo/font-kit/issues/250
           #            fuzz_target: font_kit
           #            timeout: 18000

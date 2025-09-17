@@ -39,17 +39,52 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ruff
-          - name: RUSTPYTHON
-            config-file: fuzz_rustpython_settings_ci.toml
-            timeout: 1000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: rustpython
+          #          - name: RUSTPYTHON
+          #            config-file: fuzz_rustpython_settings_ci.toml
+          #            timeout: 1000
+          #            files: "FILES_23.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: rustpython
           - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
             files: "FILES_21.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF2
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_22.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF3
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF4
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_24.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF5
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_25.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF6
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_26.zip"
             library_folder: ''
             stability_check: false
             binary: ty
@@ -81,27 +116,27 @@ jobs:
             library_folder: lopdf
             stability_check: false
             binary: lopdf
-          - name: BOA
-            config-file: fuzz_boa_settings_ci.toml
-            timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
-            stability_check: false
-            binary: boa
-          - name: SYMPHONIA
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
-            stability_check: false
-            binary: symphonia
-          - name: SWC
-            config-file: fuzz_swc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: swc
+          #          - name: BOA
+          #            config-file: fuzz_boa_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            library_folder: boa
+          #            stability_check: false
+          #            binary: boa
+          #          - name: SYMPHONIA
+          #            config-file: fuzz_symphonia_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            library_folder: symphonia
+          #            stability_check: false
+          #            binary: symphonia
+          #          - name: SWC
+          #            config-file: fuzz_swc_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: swc
           # TODO - too many issues
           #          - name: Resvg
           #            config-file: fuzz_resvg_settings_ci.toml
