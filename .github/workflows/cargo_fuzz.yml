@@ -118,7 +118,6 @@ jobs:
           cd ../
 
       # Examples
-      # cargo fuzz build oxc --release --features "oxc_f"
       # cargo +nightly fuzz run slint /home/rafal/Downloads/slint --release --features "slint_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
       # cargo +nightly fuzz run hayro /home/rafal/Desktop/ASS --release --features "hayro_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000
       # cargo +nightly fuzz run rawler /home/rafal/Desktop/ASS --release --features "rawler_f" -- -max_len=99999 -max_total_time=3600 -rss_limit_mb=20000

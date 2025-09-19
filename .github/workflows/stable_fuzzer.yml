@@ -158,16 +158,6 @@ jobs:
           echo PROJECT_INSTALL_DIR=biome-main/crates/biome_cli >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=biome-main >> $GITHUB_ENV
 
-      # OXLINT
-      - name: Download oxlint
-        if: ${{ contains(matrix.name, 'OXC') }}
-        run: |
-          wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
-          unzip -q main.zip
-          rm main.zip
-          echo PROJECT_INSTALL_DIR=oxc-main/apps/oxlint >> $GITHUB_ENV
-          echo PROJECT_CARGO_TOML_FOLDER=oxc-main >> $GITHUB_ENV
-
       #### PYREFLY
       - name: Install pyrefly
         if: ${{ contains(matrix.name, 'PYREFLY') }}

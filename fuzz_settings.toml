@@ -17,7 +17,7 @@ temp_folder = "/home/rafal/test/tmp_folder" # Temp file used to store random dat
 timeout_group = 400
 timeout = 100 # timeout time, if equal zero, then timeout is disabled
 allowed_signal_statuses = ""
-allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1 (this is sometimes )
+allowed_error_statuses = "0,1,2,101" # Treat file as broken if exit code is different than 0 or 1
 max_file_size_limit = 5000000
 max_collected_files = 999999999999999 # Max number of files that will be collected from valid_input_files_dir
 ignore_file_if_contains_searched_items = true
@@ -91,24 +91,6 @@ search_item_103 = "timeout: sending signal"
 file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
 stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"
 
-
-[custom_oxc]
-name = "oxc_linter"
-command = "oxlint|-D|all|-D|nursery|--import-plugin|--jsdoc-plugin|--jest-plugin|--vitest-plugin|--jsx-a11y-plugin|--nextjs-plugin|--react-perf-plugin|FILE_PATHS_TO_PROVIDE|--fix"
-
-extensions = "ts,js,mjs,mts"
-valid_input_files_dir = "/home/rafal/Downloads"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/oxc_linter/Broken"
-group_mode = "by_group" # available: none, by_files, by_group
-
-search_item_1 = "RUST_BACKTRACE"
-search_item_2 = "panicked at"
-search_item_100 = "AddressSanitizer"
-search_item_101 = "LeakSanitizer"
-search_item_102 = "ThreadSanitizer"
-search_item_103 = "timeout: sending signal"
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
-stability_mode = "file_content" # Available "none", "console_output", "file_content", "output_content"
 
 [custom_lofty]
 name = "lofty"
@@ -257,14 +239,6 @@ extensions = "lua"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_LUA_VALID_FILES"
 broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/selene/Broken"
 tool_type = ""
-
-[oxc]
-app_binary = "oxlint"
-app_config = ""
-extensions = "ts,js,mjs,mts"
-valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_JAVASCRIPT_VALID_FILES"
-broken_files_dir = "/home/rafal/Desktop/RunEveryCommand/oxc/Broken"
-tool_type = "lint" # Available "lint", "check" # TODO
 
 [mypy]
 app_binary = "mypy"

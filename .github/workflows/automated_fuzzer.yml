@@ -18,13 +18,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: OXC
-            config-file: fuzz_oxc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: oxlint
           - name: RUFFFORMAT1
             config-file: fuzz_ruff_format_settings_ci.toml
             timeout: 16000
@@ -103,6 +96,41 @@ jobs:
             stability_check: false
             binary: biome
           - name: Hayro
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro2
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro3
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro4
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro5
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro6
             config-file: fuzz_hayro_settings_ci.toml
             timeout: 16000
             files: "AA_PDF_VALID_FILES2.7z"
@@ -199,16 +227,6 @@ jobs:
           rm main.zip
           echo PROJECT_INSTALL_DIR=biome-main/crates/biome_cli >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=biome-main >> $GITHUB_ENV
-
-      # OXLINT
-      - name: Download oxlint
-        if: ${{ contains(matrix.name, 'OXC') }}
-        run: |
-          wget -q https://github.com/oxc-project/oxc/archive/refs/heads/main.zip
-          unzip -q main.zip
-          rm main.zip
-          echo PROJECT_INSTALL_DIR=oxc-main/apps/oxlint >> $GITHUB_ENV
-          echo PROJECT_CARGO_TOML_FOLDER=oxc-main >> $GITHUB_ENV
 
       #### PYREFLY
       - name: Install pyrefly

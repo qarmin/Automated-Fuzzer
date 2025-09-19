@@ -110,7 +110,7 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
         .chunks(settings.grouping as usize)
         .map(|group| {
             let number = atomic.fetch_add(1, Ordering::Release);
-            if number % 10 == 0 {
+            if number.is_multiple_of(10) {
                 info!("+++++ {number} / {all_chunks_number}");
             }
 
@@ -194,7 +194,7 @@ fn test_files(
         .into_par_iter()
         .map(|full_name| {
             let number = atomic.fetch_add(1, Ordering::Release);
-            if number % 1000 == 0 {
+            if number.is_multiple_of(1000) {
                 info!("_____ {number} / {all}");
             }
             if check_if_app_ends() {

@@ -130,7 +130,7 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
         .filter_map(|full_name| {
             let start_text = fs::read(&full_name).unwrap();
             let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
-            if idx % 100 == 0 {
+            if idx.is_multiple_of(100) {
                 info!("_____ Processed already {idx} / {all} (step {step})");
             }
             let output_result = execute_command_and_connect_output(obj, &full_name);

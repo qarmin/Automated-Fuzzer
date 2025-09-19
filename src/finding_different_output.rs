@@ -93,7 +93,7 @@ fn test_files(
         .into_par_iter()
         .map(|full_name| {
             let number = atomic.fetch_add(1, Ordering::Release);
-            if number % 100 == 0 {
+            if number.is_multiple_of(100) {
                 info!("_____ {number} / {all}");
             }
             if check_if_app_ends() {
