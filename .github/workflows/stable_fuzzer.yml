@@ -1,8 +1,8 @@
 # This job contains fuzzers, that won't found any bugs recently, so they don't need to be checked so often
 name: 🐧 Stable Fuzzer Check
 on:
-  #  push: # Once daily
-  #  pull_request: # Once daily
+  push: # Once daily
+  pull_request: # Once daily
   schedule:
     - cron: '0 21 * * 1'
 
