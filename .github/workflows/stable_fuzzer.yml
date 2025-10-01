@@ -247,13 +247,21 @@ jobs:
         run: |
           # First compile app in normal mode
           echo "Compiling in normal mode"
-          cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked "${{ env.FEATURES }}" --target x86_64-unknown-linux-gnu
+          if [ -n "${{ env.FEATURES }}" ]; then
+            cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked ${{ env.FEATURES }} --target x86_64-unknown-linux-gnu
+          else
+            cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
+          fi
           sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
           ldd /etc/${{ matrix.binary }}_normal
           
           # Then compile app in ASAN mode
           echo "Compiling in ASAN mode"
-          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked  "${{ env.FEATURES }}" --target x86_64-unknown-linux-gnu
+          if [ -n "${{ env.FEATURES }}" ]; then
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked ${{ env.FEATURES }} --target x86_64-unknown-linux-gnu
+          else
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
+          fi
           sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}
           ldd /etc/${{ matrix.binary }}
 

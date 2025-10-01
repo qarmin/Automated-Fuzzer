@@ -103,40 +103,6 @@ jobs:
             stability_check: false
             binary: hayro
           - name: Hayro2
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro3
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro4
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro5
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro6
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 16000
@@ -144,6 +110,83 @@ jobs:
             library_folder: lopdf
             stability_check: false
             binary: lopdf
+          - name: SYMPHONIA
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA2
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA3
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA4
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA5
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA6
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA7
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA8
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA9
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA10
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA11
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
           #          - name: BOA
           #            config-file: fuzz_boa_settings_ci.toml
           #            timeout: 16000
@@ -151,13 +194,6 @@ jobs:
           #            library_folder: boa
           #            stability_check: false
           #            binary: boa
-          #          - name: SYMPHONIA
-          #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            library_folder: symphonia
-          #            stability_check: false
-          #            binary: symphonia
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000
