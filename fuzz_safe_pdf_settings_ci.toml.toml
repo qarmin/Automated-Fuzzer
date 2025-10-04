@@ -1,0 +1,57 @@
+[general]
+loop_number = 5000 # How much creating/removing/checking steps will be executed
+broken_files_for_each_file = 30# Number of broken files that will be created for each 1 valid file
+minimize_output = true # Tries to remove some lines from output file, remember, that not always minimized file will produce same error - usually minimize output 2-100 times
+temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR" # Place where possibly broken files are saved
+minimization_attempts = 2000 # Attemps to minimize code, counter reset when found minimized test case
+minimization_repeat = true # Repeat minimization process if smaller file was found
+minimization_time = 1800
+minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
+debug_print_results = false # Debug prints output of commands
+debug_executed_commands = false # Debug prints executed commands
+debug_print_broken_files_creator = false # Debug prints results of command that created broken files
+remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
+check_for_stability = false # Check if output is stable - only able to set if stability_mode is not none
+stability_runs = 3 # How many times output will be checked for stability
+temp_folder = "TMP_FOLDER_TO_REPLACE" # Temp file used to store random data
+timeout_group = 100
+timeout = 40 # timeout time, if equal zero, then timeout is disabled
+allowed_signal_statuses = "6,15" # TODO - add 15 as sometimes OS kills app with this signal
+allowed_error_statuses = "0,1,2,15,101,124" # TODO # Treat file as broken if exit code is different than 0 or 1
+max_file_size_limit = 5000000
+max_collected_files = 1000000000 # Max number of files that will be collected from valid_input_files_dir
+ignore_file_if_contains_searched_items = true
+check_if_file_is_parsable = false #true # If true, will check if file is parsable, if not, then will be removed
+grouping = 100 # How many files will be grouped in one command - using bigger number than 1 will add additional step, with checking multiple files in one command
+custom_folder_path = "/opt/CUSTOM" # Folder to which all broken things can be saved - it is ignored from other steps
+
+current_mode = "custom"
+
+[custom]
+name = "safe_pdf"
+command = "safe_pdf|FILE_PATHS_TO_PROVIDE"
+
+extensions = "pdf"
+valid_input_files_dir = "/opt/VALID_FILES_DIR"
+broken_files_dir = "/opt/BROKEN_FILES_DIR"
+group_mode = "none" # available: none, by_files, by_group # TODO - re-enable when will be less bugs
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
+#search_item_103 = "timeout: sending signal"
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+#ignored_item_16 = "" #
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
+

@@ -1,0 +1,14 @@
+[package]
+name = "safe_pdf"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+walkdir = "2.5.0"
+pdf-document = {git ="https://github.com/Velli20/safe-pdf.git"}
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

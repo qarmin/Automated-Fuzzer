@@ -23,7 +23,6 @@ jobs:
             fuzz_target: image
             timeout: 18000
             files: "AA_IMAGE_VALID_FILES.7z"
-            files: "AA_IMAGE_VALID_FILES.7z"
           - name: HAYRO
             fuzz_target: hayro
             timeout: 18000
