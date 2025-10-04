@@ -35,7 +35,8 @@ fn check_file(file_path: &str, save_path: Option<&str>) {
         for (idx, page) in pdf.pages().iter().enumerate() {
             let pixmap = render(page, &InterpreterSettings::default(), &RenderSettings::default());
             if let Some(save_path) = save_path {
-                fs::write(format!("{save_path}_{}.png", idx + 1), pixmap.take_png()).unwrap();
+                let png = pixmap.into_png().unwrap();
+                fs::write(format!("{save_path}_{}.png", idx + 1), png).unwrap();
             }
         }
     }

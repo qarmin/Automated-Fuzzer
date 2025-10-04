@@ -112,9 +112,9 @@ dependencies = [
 
 [[package]]
 name = "anstream"
-version = "0.6.20"
+version = "0.6.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3ae563653d1938f79b1ab1b5e668c87c76a9930414574a6583a7b7e11a8e6192"
+checksum = "43d5b281e737544384e969a5ccad3f1cdd24b48086a0fc1b2a5262a26b8f4f4a"
 dependencies = [
  "anstyle",
  "anstyle-parse",
@@ -403,18 +403,18 @@ checksum = "175812e0be2bccb6abe50bb8d566126198344f707e304f45c648fd8f2cc0365e"
 
 [[package]]
 name = "bytemuck"
-version = "1.23.2"
+version = "1.24.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3995eaeebcdf32f91f980d360f78732ddc061097ab4e39991ae7a6ace9194677"
+checksum = "1fbdf580320f38b612e485521afda1ee26d10cc9884efaaa750d383e13e3c5f4"
 dependencies = [
  "bytemuck_derive",
 ]
 
 [[package]]
 name = "bytemuck_derive"
-version = "1.10.1"
+version = "1.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f154e572231cb6ba2bd1176980827e3d5dc04cc183a75dea38109fbdd672d29"
+checksum = "f9abbd1bc6865053c427f7198e6af43bfdedc55ab791faed4fbd361d789575ff"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -468,9 +468,9 @@ dependencies = [
 
 [[package]]
 name = "cc"
-version = "1.2.39"
+version = "1.2.40"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e1354349954c6fc9cb0deab020f27f783cf0b604e8bb754dc4658ecf0d29c35f"
+checksum = "e1d05d92f4b1fd76aad469d46cdd858ca761576082cd37df81416691e50199fb"
 dependencies = [
  "find-msvc-tools",
  "jobserver",
@@ -562,6 +562,15 @@ name = "clap_lex"
 version = "0.7.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b94f61472cee1439c0b966b47e3aca9ae07e45d070759512cd390ea2bebc6675"
+
+[[package]]
+name = "color"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a18ef4657441fb193b65f34dc39b3781f0dfec23d3bd94d0eeb4e88cde421edb"
+dependencies = [
+ "bytemuck",
+]
 
 [[package]]
 name = "color_quant"
@@ -792,10 +801,11 @@ dependencies = [
 
 [[package]]
 name = "dicom-core"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "chrono",
+ "either",
  "itertools 0.14.0",
  "num-traits",
  "safe-transmute",
@@ -805,8 +815,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-dictionary-std"
-version = "0.8.1"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "dicom-core",
  "once_cell",
@@ -814,8 +824,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-dump"
-version = "0.8.1"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "clap",
  "dicom-core",
@@ -832,8 +842,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-encoding"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -845,8 +855,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-json"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "base64",
  "dicom-core",
@@ -860,8 +870,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-object"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -877,8 +887,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-parser"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "dicom-core",
  "dicom-dictionary-std",
@@ -890,8 +900,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-transfer-syntax-registry"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "byteordered",
  "dicom-core",
@@ -905,8 +915,8 @@ dependencies = [
 
 [[package]]
 name = "dicom-ul"
-version = "0.8.2"
-source = "git+https://github.com/Enet4/dicom-rs#7269f3ed0a25036092c47d1de14d7184c4ba3e03"
+version = "0.9.0"
+source = "git+https://github.com/Enet4/dicom-rs#70fcdeec14b55a5954510d3364868ab93fea1ef4"
 dependencies = [
  "byteordered",
  "bytes",
@@ -979,9 +989,9 @@ dependencies = [
 
 [[package]]
 name = "dwrote"
-version = "0.11.4"
+version = "0.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20c93d234bac0cdd0e2ac08bc8a5133f8df2169e95b262dfcea5e5cb7855672f"
+checksum = "9e1b35532432acc8b19ceed096e35dfa088d3ea037fe4f3c085f1f97f33b4d02"
 dependencies = [
  "lazy_static",
  "libc",
@@ -1237,6 +1247,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "fearless_simd"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eb8f822f06d1b452a9207f11ce3292f7ee6c23d5d2e7ddfd07990a9107804850"
+dependencies = [
+ "bytemuck",
+]
+
+[[package]]
 name = "ffmpeg_cmdline_utils"
 version = "0.4.0"
 source = "git+https://github.com/Farmadupe/vid_dup_finder_lib#abf91fe3608f92f2faf71fe02634357b4203f215"
@@ -1263,9 +1282,9 @@ dependencies = [
 
 [[package]]
 name = "find-msvc-tools"
-version = "0.1.2"
+version = "0.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1ced73b1dacfc750a6db6c0a0c3a3853c8b41997e2e2c563dc90804ae6867959"
+checksum = "0399f9d26e5191ce32c498bebd31e7a3ceabc2745f0ac54af3f335126c3f24b3"
 
 [[package]]
 name = "flate2"
@@ -1465,19 +1484,20 @@ checksum = "5419bdc4f6a9207fbeba6d11b604d481addf78ecd10c11ad51e76c2f6482748d"
 
 [[package]]
 name = "hayro"
-version = "0.3.0"
-source = "git+https://github.com/LaurenzV/hayro.git#d2e79ebe8b646bf921de173d9cafa26c11a23778"
+version = "0.4.0"
+source = "git+https://github.com/LaurenzV/hayro.git#7ce964d014f41b8f093a2565da05efc9c1f3f3dc"
 dependencies = [
  "bytemuck",
  "hayro-interpret",
  "image 0.25.8 (registry+https://github.com/rust-lang/crates.io-index)",
  "kurbo",
+ "vello_cpu",
 ]
 
 [[package]]
 name = "hayro-font"
-version = "0.2.0"
-source = "git+https://github.com/LaurenzV/hayro.git#d2e79ebe8b646bf921de173d9cafa26c11a23778"
+version = "0.3.0"
+source = "git+https://github.com/LaurenzV/hayro.git#7ce964d014f41b8f093a2565da05efc9c1f3f3dc"
 dependencies = [
  "log",
  "phf",
@@ -1485,8 +1505,8 @@ dependencies = [
 
 [[package]]
 name = "hayro-interpret"
-version = "0.3.0"
-source = "git+https://github.com/LaurenzV/hayro.git#d2e79ebe8b646bf921de173d9cafa26c11a23778"
+version = "0.4.0"
+source = "git+https://github.com/LaurenzV/hayro.git#7ce964d014f41b8f093a2565da05efc9c1f3f3dc"
 dependencies = [
  "bitflags 2.9.4",
  "hayro-font",
@@ -1504,8 +1524,8 @@ dependencies = [
 
 [[package]]
 name = "hayro-syntax"
-version = "0.3.0"
-source = "git+https://github.com/LaurenzV/hayro.git#d2e79ebe8b646bf921de173d9cafa26c11a23778"
+version = "0.4.0"
+source = "git+https://github.com/LaurenzV/hayro.git#7ce964d014f41b8f093a2565da05efc9c1f3f3dc"
 dependencies = [
  "flate2",
  "kurbo",
@@ -1545,12 +1565,12 @@ dependencies = [
 [[package]]
 name = "i-slint-common"
 version = "1.14.0"
-source = "git+https://github.com/slint-ui/slint.git#0a48f177e24144d03bb8f6cd4bcca1c699a4cf48"
+source = "git+https://github.com/slint-ui/slint.git#a11a60741d39f8383a38d093bedd6f0ddb686a9a"
 
 [[package]]
 name = "i-slint-compiler"
 version = "1.14.0"
-source = "git+https://github.com/slint-ui/slint.git#0a48f177e24144d03bb8f6cd4bcca1c699a4cf48"
+source = "git+https://github.com/slint-ui/slint.git#a11a60741d39f8383a38d093bedd6f0ddb686a9a"
 dependencies = [
  "by_address",
  "derive_more",
@@ -1712,7 +1732,7 @@ dependencies = [
  "image-webp",
  "moxcms",
  "num-traits",
- "png",
+ "png 0.18.0",
  "qoi",
  "ravif",
  "rayon",
@@ -1734,7 +1754,7 @@ dependencies = [
  "image-webp",
  "moxcms",
  "num-traits",
- "png",
+ "png 0.18.0",
  "qoi",
  "ravif",
  "rgb",
@@ -2411,6 +2431,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "linebender_resource_handle"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d4a5ff6bcca6c4867b1c4fd4ef63e4db7436ef363e0ad7531d1558856bae64f4"
+
+[[package]]
 name = "linked-hash-map"
 version = "0.5.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2943,6 +2969,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "peniko"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b3c76095c9a636173600478e0373218c7b955335048c2bcd12dc6a79657649d8"
+dependencies = [
+ "bytemuck",
+ "color",
+ "kurbo",
+ "linebender_resource_handle",
+ "smallvec",
+]
+
+[[package]]
 name = "percent-encoding"
 version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3008,6 +3047,19 @@ name = "pkg-config"
 version = "0.3.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7edddbd0b52d732b21ad9a5fab5c704c14cd949e5e9a1ec5929a24fded1b904c"
+
+[[package]]
+name = "png"
+version = "0.17.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82151a2fc869e011c153adc57cf2789ccb8d9906ce52c0b39a6b5697749d7526"
+dependencies = [
+ "bitflags 1.3.2",
+ "crc32fast",
+ "fdeflate",
+ "flate2",
+ "miniz_oxide",
+]
 
 [[package]]
 name = "png"
@@ -3285,8 +3337,8 @@ dependencies = [
 
 [[package]]
 name = "rawler"
-version = "0.7.0"
-source = "git+https://github.com/dnglab/dnglab.git#6096efd781cfc7b65d5939daad72912c23501069"
+version = "0.7.1"
+source = "git+https://github.com/dnglab/dnglab.git#2878c582de51c8f4cdf5dbb4ce7ae47a1de853ea"
 dependencies = [
  "backtrace",
  "bitstream-io 4.9.0",
@@ -4344,9 +4396,9 @@ dependencies = [
 
 [[package]]
 name = "typenum"
-version = "1.18.0"
+version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1dccffe3ce07af9386bfd29e80c0ab1a8205a2fc34e4bcd40364df902cfa8f3f"
+checksum = "562d481066bde0658276a35467c4af00bdc6ee726305698a55b86e61d7ad82bb"
 
 [[package]]
 name = "unicode-bidi"
@@ -4457,6 +4509,29 @@ name = "vcpkg"
 version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "accd4ea62f7bb7a82fe23066fb0957d48ef677f6eeb8215f372f52e48bb32426"
+
+[[package]]
+name = "vello_common"
+version = "0.0.1"
+source = "git+https://github.com/linebender/vello?rev=c7bbc094#c7bbc094ad31d301aeab9f29a4b985d089e06fe3"
+dependencies = [
+ "bytemuck",
+ "fearless_simd",
+ "log",
+ "peniko",
+ "png 0.17.16",
+ "skrifa",
+ "smallvec",
+]
+
+[[package]]
+name = "vello_cpu"
+version = "0.0.1"
+source = "git+https://github.com/linebender/vello?rev=c7bbc094#c7bbc094ad31d301aeab9f29a4b985d089e06fe3"
+dependencies = [
+ "bytemuck",
+ "vello_common",
+]
 
 [[package]]
 name = "version-compare"
