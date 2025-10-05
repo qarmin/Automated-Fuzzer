@@ -74,6 +74,27 @@ jobs:
             library_folder: safe_pdf
             stability_check: false
             binary: safe_pdf
+          - name: SafePdf2
+            config-file: fuzz_safe_pdf_settings_ci.toml
+            timeout: 1000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: safe_pdf
+            stability_check: false
+            binary: safe_pdf
+          - name: SafePdf3
+            config-file: fuzz_safe_pdf_settings_ci.toml
+            timeout: 2000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: safe_pdf
+            stability_check: false
+            binary: safe_pdf
+          - name: SafePdf3
+            config-file: fuzz_safe_pdf_settings_ci.toml
+            timeout: 4000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: safe_pdf
+            stability_check: false
+            binary: safe_pdf
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 16000
