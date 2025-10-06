@@ -23,10 +23,10 @@ jobs:
             fuzz_target: image
             timeout: 18000
             files: "AA_IMAGE_VALID_FILES.7z"
-          - name: HAYRO
-            fuzz_target: hayro
-            timeout: 18000
-            files: "AA_PDF_VALID_FILES2.7z"
+          #          - name: HAYRO
+          #            fuzz_target: hayro
+          #            timeout: 18000
+          #            files: "AA_PDF_VALID_FILES2.7z"
           #          - name: SYMPHONIA1
           #            fuzz_target: symphonia
           #            timeout: 18000
@@ -35,10 +35,6 @@ jobs:
           #            fuzz_target: vidduplicate
           #            timeout: 18000
           #            files: "AA_VIDEO_VALID_FILES.7z"
-          #          - name: LOFTY
-          #            fuzz_target: lofty
-          #            timeout: 18000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
           #          - name: NOM_EXIF
           #            fuzz_target: nom_exif
           #            timeout: 18000
