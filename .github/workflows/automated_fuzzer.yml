@@ -67,6 +67,41 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
+          - name: Hayro2
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro3
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro4
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro5
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro6
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
           - name: SafePdf
             config-file: fuzz_safe_pdf_settings_ci.toml
             timeout: 16000
