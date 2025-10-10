@@ -214,9 +214,13 @@ jobs:
       - name: Install gdscript-formatter
         if: ${{ contains(matrix.name, 'GDSCRIPT') }}
         run: |
-          wget -q https://github.com/GDQuest/GDScript-formatter/archive/refs/heads/main.zip
-          unzip -q main.zip
-          rm main.zip
+          # TODO why this not works?
+          #          wget -q https://github.com/GDQuest/GDScript-formatter/archive/refs/heads/main.zip
+          #          unzip -q main.zip
+          #          rm main.zip
+          sudo apt update && sudo apt install -y git
+          git clone https://github.com/GDQuest/GDScript-formatter.git GDScript-formatter-main
+          
           echo PROJECT_INSTALL_DIR=GDScript-formatter-main >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=GDScript-formatter-main >> $GITHUB_ENV
 
@@ -260,6 +264,8 @@ jobs:
 
       - name: Apply Release patch
         run: |
+          ls -alh
+          
           # If PROJECT_CARGO_TOML_FOLDER exists and is not empty, then use it
           if [ -n "${{ env.PROJECT_CARGO_TOML_FOLDER }}" ]; then
               sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
