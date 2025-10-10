@@ -7,7 +7,7 @@ minimization_attempts = 200 # Attemps to minimize code, counter reset when found
 minimization_repeat = true # Repeat minimization process if smaller file was found
 minimization_time = 1800
 minimization_attempts_with_signal_timeout = 10 # Usually signal is sended by OOM killer or timeout which is slow to reproduce and minimize, so use it less amount than normal
-debug_print_results = false # Debug prints output of commands
+debug_print_results = true # Debug prints output of commands
 debug_executed_commands = false # Debug prints executed commands
 debug_print_broken_files_creator = false # Debug prints results of command that created broken files
 remove_non_crashing_items_from_broken_files = false # Special mode to remove non crashing files from broken files - useful if some of files were fixed in new version of app
@@ -41,7 +41,7 @@ command = "gdscript-formatter|lint|FILE_PATHS_TO_PROVIDE"
 extensions = "gd"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
-group_mode = "by_files" # available: none, by_files, by_group
+group_mode = "none" # available: none, by_files, by_group
 
 search_item_1 = "RUST_BACKTRACE"
 search_item_2 = "panicked at"
