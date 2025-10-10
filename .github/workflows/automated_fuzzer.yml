@@ -18,20 +18,76 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: RUFFFORMAT1
-            config-file: fuzz_ruff_format_settings_ci.toml
+          - name: GDSCRIPT
+            config-file: fuzz_gdscript_formatter_settings_ci.toml
             timeout: 16000
-            files: "FILES_23.zip"
+            files: "AA_GDSCRIPT_VALID_FILES.zip"
             library_folder: ''
             stability_check: false
-            binary: ruff
-          - name: RUFF
-            config-file: fuzz_ruff_settings_ci.toml
+            binary: gdscript-formatter
+          - name: GDSCRIPT_LINTER1
+            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
             timeout: 16000
-            files: "FILES_23.zip"
+            files: "AA_GDSCRIPT_VALID_FILES.zip"
             library_folder: ''
             stability_check: false
-            binary: ruff
+            binary: gdscript-formatter
+          #          - name: RUFFFORMAT1
+          #            config-file: fuzz_ruff_format_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_23.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ruff
+          #          - name: RUFF
+          #            config-file: fuzz_ruff_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_23.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ruff
+          #          - name: TYRUF
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_21.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: PYREFLY
+          #            config-file: fuzz_pyrefly_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_23.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: pyrefly
+          #          - name: BIOME
+          #            config-file: fuzz_biome_settings_ci.toml
+          #            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: biome
+          #          - name: Hayro
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: SafePdf
+          #            config-file: fuzz_safe_pdf_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: safe_pdf
+          #            stability_check: false
+          #            binary: safe_pdf
+          #          - name: LOPDF
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: lopdf
+          #            stability_check: false
+          #            binary: lopdf
           #          - name: RUSTPYTHON
           #            config-file: fuzz_rustpython_settings_ci.toml
           #            timeout: 1000
@@ -39,83 +95,6 @@ jobs:
           #            library_folder: ''
           #            stability_check: false
           #            binary: rustpython
-          - name: TYRUF
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: PYREFLY
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: pyrefly
-          - name: BIOME
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: biome
-          - name: Hayro
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro2
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro3
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro4
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro5
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro6
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: SafePdf
-            config-file: fuzz_safe_pdf_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: safe_pdf
-            stability_check: false
-            binary: safe_pdf
-          - name: LOPDF
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: lopdf
-            stability_check: false
-            binary: lopdf
           #          - name: SYMPHONIA
           #            config-file: fuzz_symphonia_settings_ci.toml
           #            timeout: 16000
@@ -230,6 +209,16 @@ jobs:
           rm main.zip
           echo PROJECT_INSTALL_DIR=ruff-main/crates/ruff >> $GITHUB_ENV
           echo PROJECT_CARGO_TOML_FOLDER=ruff-main >> $GITHUB_ENV
+
+      #### GDSCRIPT
+      - name: Install gdscript-formatter
+        if: ${{ contains(matrix.name, 'GDSCRIPT') }}
+        run: |
+          wget -q https://github.com/GDQuest/GDScript-formatter/archive/refs/heads/main.zip
+          unzip -q main.zip
+          rm main.zip
+          echo PROJECT_INSTALL_DIR=GDScript-formatter-main >> $GITHUB_ENV
+          echo PROJECT_CARGO_TOML_FOLDER=GDScript-formatter-main >> $GITHUB_ENV
 
       #### SWC
       - name: Install swc

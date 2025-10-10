@@ -52,6 +52,6 @@ ignored_item_13 = "stack-overflow" # https://github.com/biomejs/biome/issues/521
 ignored_item_15 = "index out of bounds" # https://github.com/biomejs/biome/issues/6640
 ignored_item_16 = "assertion `left == right` failed" # https://github.com/biomejs/biome/issues/6639
 
-file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+file_type = "jsvuesvelte" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

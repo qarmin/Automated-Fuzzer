@@ -60,6 +60,6 @@ ignored_item_19 = "src/nd_array.rs" # https://github.com/LaurenzV/hayro/issues/3
 #ignored_item_16 = "" #
 #ignored_item_16 = "" #
 #ignored_item_16 = "" #
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

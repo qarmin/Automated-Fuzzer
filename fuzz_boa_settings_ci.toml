@@ -51,6 +51,6 @@ ignored_item_6 = "src/emit.rs" # https://github.com/boa-dev/boa/issues/4402
 ignored_item_7 = "core/engine/src/vm/opcode/get/name.rs" # https://github.com/boa-dev/boa/issues/4401
 ignored_item_8 = "core/engine/src/vm/opcode/define/mod.rs" # https://github.com/boa-dev/boa/issues/4400
 
-file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

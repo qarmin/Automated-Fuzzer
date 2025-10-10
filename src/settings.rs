@@ -150,6 +150,7 @@ pub(crate) fn process_custom_struct(
         "slint" => LANGS::SLINT,
         "jsvuesvelte" => LANGS::JSVUESVELTE,
         "svg" => LANGS::SVG,
+        "gdscript" => LANGS::GDSCRIPT,
         _ => panic!("Invalid file type {}", tool_hashmap["file_type"]),
     };
 

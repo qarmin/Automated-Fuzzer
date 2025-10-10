@@ -61,6 +61,6 @@ ignored_item_30 = "decompressors/crx/mod.rs" # TODO - generated files are too bi
 ignored_item_31 = "decompressors/ljpeg/mod.rs" # TODO - generated files are too big, and cannot be really minimized
 ignored_item_32 = "decompressors/ljpeg/huffman.rs" # TODO - generated files are too big, and cannot be really minimized
 
-file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg
+file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 
