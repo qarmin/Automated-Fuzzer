@@ -21,14 +21,42 @@ jobs:
           - name: GDSCRIPT
             config-file: fuzz_gdscript_formatter_settings_ci.toml
             timeout: 16000
-            files: "AA_GDSCRIPT_VALID_FILES.zip"
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
             library_folder: ''
             stability_check: false
             binary: gdscript-formatter
           - name: GDSCRIPT_LINTER1
             config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
             timeout: 16000
-            files: "AA_GDSCRIPT_VALID_FILES.zip"
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: gdscript-formatter
+          - name: GDSCRIPT2
+            config-file: fuzz_gdscript_formatter_settings_ci.toml
+            timeout: 1000
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: gdscript-formatter
+          - name: GDSCRIPT_LINTER12
+            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
+            timeout: 1000
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: gdscript-formatter
+          - name: GDSCRIPT3
+            config-file: fuzz_gdscript_formatter_settings_ci.toml
+            timeout: 2000
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: gdscript-formatter
+          - name: GDSCRIPT_LINTER13
+            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
+            timeout: 2000
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
             library_folder: ''
             stability_check: false
             binary: gdscript-formatter
