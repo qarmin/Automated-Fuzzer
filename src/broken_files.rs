@@ -14,7 +14,7 @@ pub enum LANGS {
     SLINT,
     JSVUESVELTE,
     SVG,
-    GDSCRIPT
+    GDSCRIPT,
 }
 
 const SLINT_ARGS: &[&str] = &[
@@ -109,50 +109,34 @@ const SVG_ARGS: &[&str] = &[
     "cursor", "clip-path", "clip-rule", "opacity", "viewTarget", "=", "=\"\"", "5", "0.2", "<", ">",
 ];
 
+// "-=",
+// "->"
+//
+//
 const GDSCRIPT_ARGS: &[&str] = &[
     // --- keywords ---
-    "and", "as", "assert", "await", "break", "class", "class_name", "const", "continue",
-    "elif", "else", "enum", "extends", "for", "func", "if", "in", "is", "match",
-    "not", "or", "pass", "return", "signal", "static", "tool", "var", "while", "yield",
-
-    // --- types ---
-    "bool", "int", "float", "String", "StringName", "NodePath", "Vector2", "Vector2i",
-    "Vector3", "Vector3i", "Vector4", "Vector4i", "Color", "Transform2D", "Transform3D",
-    "Quaternion", "Basis", "Rect2", "Rect2i", "RID", "Array", "PackedByteArray",
-    "PackedInt32Array", "PackedInt64Array", "PackedFloat32Array", "PackedFloat64Array",
-    "PackedStringArray", "PackedVector2Array", "PackedVector3Array", "PackedColorArray",
-    "Dictionary", "Variant", "Resource", "Node", "Object",
-
-    // --- logic values ---
-    "true", "false", "null",
-
-    // --- operators ---
-    "+", "-", "*", "/", "%", "**", "//", "=", "+=", "-=", "*=", "/=", "%=", "**=",
-    "==", "!=", "<", ">", "<=", ">=", "and", "or", "not", "is", "in", "!", "??",
-    "&", "|", "^", "~", ">>", "<<", "&=", "|=", "^=", ">>=", "<<=",
-
+    "and", "as", "assert", "await", "break", "class", "class_name", "const", "continue", "elif", "else", "enum",
+    "extends", "for", "func", "if", "in", "is", "match", "not", "or", "pass", "return", "signal", "static", "tool",
+    "var", "while", "yield", // --- types ---
+    "bool", "int", "float", "String", "StringName", "NodePath", "Vector2", "Vector2i", "Vector3", "Vector3i",
+    "Vector4", "Vector4i", "Color", "Transform2D", "Transform3D", "Quaternion", "Basis", "Rect2", "Rect2i", "RID",
+    "Array", "PackedByteArray", "PackedInt32Array", "PackedInt64Array", "PackedFloat32Array", "PackedFloat64Array",
+    "PackedStringArray", "PackedVector2Array", "PackedVector3Array", "PackedColorArray", "Dictionary", "Variant",
+    "Resource", "Node", "Object", // --- logic values ---
+    "true", "false", "null", // --- operators ---
+    "+", "-", "*", "/", "%", "**", "//", "=", "+=", "*=", "/=", "%=", "**=", "==", "!=", "<", ">", "<=", ">=", "and",
+    "or", "not", "is", "in", "!", "??", "&", "|", "^", "~", ">>", "<<", "&=", "|=", "^=", ">>=", "<<=",
     // --- separators ---
-    ".", "..", "...", ",", ";", ":", "::", "(", ")", "[", "]", "{", "}", "@", "_",
-    "->", "=>", "?", ":", "\\", "'", "\"",
-
+    ".", "..", "...", ",", ";", ":", "::", "(", ")", "[", "]", "{", "}", "@", "_", "=>", "?", ":", "\\", "'", "\"",
     // --- comments and whitespace ---
-    "#", "\"\"\"", "\'", "\r", "\n", "\t", " ",
-
-    // --- numeric literals ---
-    "0x", "0b", "0o", "e", "E", "inf", "nan",
-
-    // --- common methods ---
-    "self", "super", "get", "set", "export", "onready", "remote", "master", "puppet",
-    "sync", "static", "const", "enum", "signal", "func", "class_name", "extends",
-    "tool", "var", "setget",
-
-    // --- annotations ---
+    "#", "\"\"\"", "\'", "\r", "\n", "\t", " ", // --- numeric literals ---
+    "0x", "0b", "0o", "e", "E", "inf", "nan", // --- common methods ---
+    "self", "super", "get", "set", "export", "onready", "remote", "master", "puppet", "sync", "static", "const",
+    "enum", "signal", "func", "class_name", "extends", "tool", "var", "setget", // --- annotations ---
     "@export", "@onready", "@rpc", "@master", "@puppet", "@tool", "@icon", "@warning_ignore",
-
     // --- others ---
     "pass", "breakpoint", "match", "case", "default",
 ];
-
 
 pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
     let valid_input_files_dir = &obj.get_settings().valid_input_files_dir;
