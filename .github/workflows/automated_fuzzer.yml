@@ -32,48 +32,48 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: gdscript-formatter
-          - name: GDSCRIPT2
-            config-file: fuzz_gdscript_formatter_settings_ci.toml
-            timeout: 1000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
+          - name: Hayro
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro2
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro3
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro4
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro5
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: SWC
+            config-file: fuzz_swc_settings_ci.toml
+            timeout: 16000
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
             library_folder: ''
             stability_check: false
-            binary: gdscript-formatter
-          - name: GDSCRIPT_LINTER12
-            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
-            timeout: 1000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
-          - name: GDSCRIPT3
-            config-file: fuzz_gdscript_formatter_settings_ci.toml
-            timeout: 2000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
-          - name: GDSCRIPT_LINTER13
-            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
-            timeout: 2000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
-          #          - name: RUFFFORMAT1
-          #            config-file: fuzz_ruff_format_settings_ci.toml
-          #            timeout: 16000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: ruff
-          #          - name: RUFF
-          #            config-file: fuzz_ruff_settings_ci.toml
-          #            timeout: 16000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: ruff
+            binary: swc
           #          - name: TYRUF
           #            config-file: fuzz_ty_settings_ci.toml
           #            timeout: 16000
@@ -95,13 +95,6 @@ jobs:
           #            library_folder: ''
           #            stability_check: false
           #            binary: biome
-          #          - name: Hayro
-          #            config-file: fuzz_hayro_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES2.7z"
-          #            library_folder: hayro
-          #            stability_check: false
-          #            binary: hayro
           #          - name: SafePdf
           #            config-file: fuzz_safe_pdf_settings_ci.toml
           #            timeout: 16000
@@ -137,13 +130,6 @@ jobs:
           #            library_folder: boa
           #            stability_check: false
           #            binary: boa
-          #          - name: SWC
-          #            config-file: fuzz_swc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: swc
           # TODO - too many issues
           #          - name: Resvg
           #            config-file: fuzz_resvg_settings_ci.toml

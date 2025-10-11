@@ -48,6 +48,20 @@ jobs:
           #            library_folder: ''
           #            stability_check: false
           #            binary: staticcheck
+          - name: RUFFFORMAT1
+            config-file: fuzz_ruff_format_settings_ci.toml
+            timeout: 3600
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ruff
+          - name: RUFF
+            config-file: fuzz_ruff_settings_ci.toml
+            timeout: 3600
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ruff
           - name: TYPST
             config-file: fuzz_typst_settings_ci.toml
             timeout: 3600
