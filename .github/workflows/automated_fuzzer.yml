@@ -355,6 +355,7 @@ jobs:
             cargo +nightly install --path "${{ env.PROJECT_INSTALL_DIR }}" --locked --target x86_64-unknown-linux-gnu
           fi
           sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /etc/${{ matrix.binary }}_normal
+          sudo cp "$(whereis -b ${{ matrix.binary }} | awk '{print $2}')" /usr/bin/${{ matrix.binary }}_normal # Additional step, to not shadow it with ASAN version
           ldd /etc/${{ matrix.binary }}_normal
           
           # Then compile app in ASAN mode
