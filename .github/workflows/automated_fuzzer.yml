@@ -339,7 +339,7 @@ jobs:
               echo "debug = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
               # echo "panic = 'abort'" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
               echo "debug-assertions = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
-              echo "lto = \"fat\"" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml" // TODO check, because maybe this will out-of-memory and replace with "thin"
+              echo "lto = \"fat\"" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
               echo "codegen-units = 1" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
           else
               echo "Using default Cargo.toml"
