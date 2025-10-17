@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "ruff"
-command = "ruff|format|FILE_PATHS_TO_PROVIDE"
+command = "ruff_normal|format|FILE_PATHS_TO_PROVIDE"
 extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
