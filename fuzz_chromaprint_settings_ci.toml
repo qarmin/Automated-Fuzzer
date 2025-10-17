@@ -30,7 +30,7 @@ current_mode = "custom"
 
 [custom]
 name = "chromaprint"
-command = "chromaprint|FILE_PATHS_TO_PROVIDE"
+command = "chromaprint_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

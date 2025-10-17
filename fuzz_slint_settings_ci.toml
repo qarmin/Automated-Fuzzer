@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "slint"
-command = "slint|FILE_PATHS_TO_PROVIDE"
+command = "slint_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "slint"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "vidduplicate"
-command = "vidduplicate|FILE_PATHS_TO_PROVIDE"
+command = "vidduplicate_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "3gp,asf,avi,bik,flv,mkv,mov,mp4,mpeg,mpg,ogg,wav,webm,wmv,ogv,ts"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

@@ -130,14 +130,14 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: ty
-          #          - name: PYREFLY
-          #            config-file: fuzz_pyrefly_settings_ci.toml
-          #            timeout: 16000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: pyrefly
-          #          - name: BIOME
+          - name: PYREFLY
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: BIOME
           #            config-file: fuzz_biome_settings_ci.toml
           #            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
           #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"

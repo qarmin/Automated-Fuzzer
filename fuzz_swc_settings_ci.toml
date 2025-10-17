@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "swc"
-command = "swc|compile|FILE_PATHS_TO_PROVIDE"
+command = "swc_normal|compile|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ts,js,mjs,mts"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

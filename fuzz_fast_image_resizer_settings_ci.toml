@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "fast_image_resizer"
-command = "fast_image_resizer|FILE_PATHS_TO_PROVIDE"
+command = "fast_image_resizer_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

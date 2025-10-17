@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "nom_exif"
-command = "nom_exif|FILE_PATHS_TO_PROVIDE"
+command = "nom_exif_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

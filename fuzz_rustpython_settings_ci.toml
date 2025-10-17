@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "rustpython"
-command = "rustpython|FILE_PATHS_TO_PROVIDE"
+command = "rustpython_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "py"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

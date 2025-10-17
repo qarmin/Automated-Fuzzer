@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "image_hasher"
-command = "image_hasher|FILE_PATHS_TO_PROVIDE"
+command = "image_hasher_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "jpg, jpeg, png, bmp, tiff, tif, tga, ff, jif, jfi, webp, gif, ico, exr, qoi"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "typst"
-command = "typst|compile|FILE_PATHS_TO_PROVIDE"
+command = "typst_normal|compile|FILE_PATHS_TO_PROVIDE"
 
 extensions = "typ"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

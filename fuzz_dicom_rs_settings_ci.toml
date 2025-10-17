@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "dicom_rs"
-command = "dicom|FILE_PATHS_TO_PROVIDE"
+command = "dicom_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "dcm"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

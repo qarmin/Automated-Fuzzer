@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "resvg"
-command = "resvg|FILE_PATHS_TO_PROVIDE"
+command = "resvg_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "svg"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

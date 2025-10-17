@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "safe_pdf"
-command = "safe_pdf|FILE_PATHS_TO_PROVIDE"
+command = "safe_pdf_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "pdf"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

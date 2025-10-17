@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "boa"
-command = "boa|FILE_PATHS_TO_PROVIDE"
+command = "boa_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ts,js,mjs,mts" #,vue,svelte" # TODO - re-enable vue and svelte
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

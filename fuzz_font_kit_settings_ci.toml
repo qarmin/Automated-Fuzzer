@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "font_kit"
-command = "font_kit|FILE_PATHS_TO_PROVIDE"
+command = "font_kit_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "ttf,otf,woff,woff2"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "zip_rs"
-command = "zip_rs|FILE_PATHS_TO_PROVIDE"
+command = "zip_rs_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "zip"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"

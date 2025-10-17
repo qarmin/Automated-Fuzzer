@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "gdscript-formatter"
-command = "gdscript-formatter|lint|FILE_PATHS_TO_PROVIDE"
+command = "gdscript-formatter_normal|lint|FILE_PATHS_TO_PROVIDE"
 
 extensions = "gd"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
