@@ -50,28 +50,28 @@ jobs:
             config-file: fuzz_biome_settings_ci.toml
             timeout: 1000
             files: "AA_ICC_VALID_FILES.7z"
-            library_folder: ''
+            library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: MOXCMS2
             config-file: fuzz_biome_settings_ci.toml
             timeout: 1000
             files: "AA_ICC_VALID_FILES.7z"
-            library_folder: ''
+            library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: MOXCMS3
             config-file: fuzz_biome_settings_ci.toml
             timeout: 4000
             files: "AA_ICC_VALID_FILES.7z"
-            library_folder: ''
+            library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: MOXCMS4
             config-file: fuzz_biome_settings_ci.toml
             timeout: 8000
             files: "AA_ICC_VALID_FILES.7z"
-            library_folder: ''
+            library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: ZUNE
