@@ -18,111 +18,104 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Hayro
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro2
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro3
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro4
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro5
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: TYRUF
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: PYREFLY
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: pyrefly
-          - name: BIOME
+          #          - name: Hayro
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: TYRUF
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_21.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: PYREFLY
+          #            config-file: fuzz_pyrefly_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_23.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: pyrefly
+          #          - name: BIOME
+          #            config-file: fuzz_biome_settings_ci.toml
+          #            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: biome
+          - name: MOXCMS
             config-file: fuzz_biome_settings_ci.toml
-            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            timeout: 1000
+            files: "AA_ICC_VALID_FILES.7z"
             library_folder: ''
             stability_check: false
-            binary: biome
-          - name: SYMPHONIA
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            binary: moxcms
+          - name: MOXCMS2
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 1000
+            files: "AA_ICC_VALID_FILES.7z"
+            library_folder: ''
             stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA2
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            binary: moxcms
+          - name: MOXCMS3
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 4000
+            files: "AA_ICC_VALID_FILES.7z"
+            library_folder: ''
             stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA3
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            binary: moxcms
+          - name: MOXCMS4
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 8000
+            files: "AA_ICC_VALID_FILES.7z"
+            library_folder: ''
             stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA4
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            binary: moxcms
+          - name: ZUNE
+            config-file: fuzz_zune_settings_ci.toml
+            timeout: 3600
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
             stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA5
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            binary: zune
+          - name: ZUNE2
+            config-file: fuzz_zune_settings_ci.toml
+            timeout: 7200
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
             stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA6
-            config-file: fuzz_symphonia_settings_ci.toml
+            binary: zune
+          - name: ZUNE3
+            config-file: fuzz_zune_settings_ci.toml
             timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
             stability_check: false
-            binary: symphonia
-          - name: SYMPHONIA7
-            config-file: fuzz_symphonia_settings_ci.toml
+            binary: zune
+          - name: ZUNE4
+            config-file: fuzz_zune_settings_ci.toml
             timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
             stability_check: false
-            binary: symphonia
+            binary: zune
+          - name: ZUNE5
+            config-file: fuzz_zune_settings_ci.toml
+            timeout: 16000
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
+            stability_check: false
+            binary: zune
+          #          - name: SYMPHONIA
+          #            config-file: fuzz_symphonia_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            library_folder: symphonia
+          #            stability_check: false
+          #            binary: symphonia
           #          - name: GDSCRIPT
           #            config-file: fuzz_gdscript_formatter_settings_ci.toml
           #            timeout: 16000

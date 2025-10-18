@@ -1,13 +1,13 @@
 [package]
-name = "moxcms"
+name = "zune"
 version = "0.1.0"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-moxcms = { git = "https://github.com/awxkee/moxcms.git" }
-zune-jpeg = { git = "https://github.com/etemesi254/zune-image.git" }
+zune-image = { git = "https://github.com/etemesi254/zune-image.git" }
+zune-core = { git = "https://github.com/etemesi254/zune-image.git" }
 
 walkdir = "2.5.0"
 

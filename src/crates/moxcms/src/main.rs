@@ -51,6 +51,7 @@ fn check_file(path: &str) {
     let new_profile =
     match ColorProfile::new_from_slice(&file_content) {
         Ok(profile) => {
+            println!("  Found top-level ICC profile, checking...");
             profile
         }
         Err(_) => {
