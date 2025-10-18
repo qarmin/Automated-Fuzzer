@@ -42,6 +42,17 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+ignored_item_969 = "Too Small of an interleaved pixel count" # https://github.com/etemesi254/zune-image/issues/298
+ignored_item_929 = "attempt to divide by zero" # https://github.com/etemesi254/zune-image/issues/297
+ignored_item_994 = "out of range for slice" # https://github.com/etemesi254/zune-image/issues/296
+ignored_item_959 = "self.bits_left" # https://github.com/etemesi254/zune-image/issues/295
+#ignored_item_99 = "" #
+#ignored_item_99 = "" #
+#ignored_item_99 = "" #
+#ignored_item_99 = "" #
+#ignored_item_99 = "" #
+#ignored_item_99 = "" #
+#ignored_item_99 = "" #
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"
 

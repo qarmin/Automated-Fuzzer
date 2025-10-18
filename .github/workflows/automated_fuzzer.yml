@@ -48,42 +48,42 @@ jobs:
           #            binary: biome
           - name: MOXCMS
             config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 1000
+            timeout: 16000
             files: "AA_ICC_VALID_FILES.7z"
             library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: MOXCMS2
             config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 1000
+            timeout: 16000
             files: "AA_ICC_VALID_FILES.7z"
             library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: MOXCMS3
             config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 4000
+            timeout: 16000
             files: "AA_ICC_VALID_FILES.7z"
             library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: MOXCMS4
             config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 8000
+            timeout: 16000
             files: "AA_ICC_VALID_FILES.7z"
             library_folder: moxcms
             stability_check: false
             binary: moxcms
           - name: ZUNE
             config-file: fuzz_zune_settings_ci.toml
-            timeout: 3600
+            timeout: 16000
             files: "AA_IMAGE_VALID_FILES.7z"
             library_folder: zune
             stability_check: false
             binary: zune
           - name: ZUNE2
             config-file: fuzz_zune_settings_ci.toml
-            timeout: 7200
+            timeout: 16000
             files: "AA_IMAGE_VALID_FILES.7z"
             library_folder: zune
             stability_check: false
