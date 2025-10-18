@@ -55,19 +55,20 @@ fn check_file(path: &str) {
             profile
         }
         Err(_) => {
-            let mut decoder = JpegDecoder::new(BufReader::new(Cursor::new(file_content.as_slice())));
-            if  decoder.decode().is_err() {
-                return;
-            }
-            let Some(icc) = decoder.icc_profile() else {
-                return;
-            };
-            println!("  Found embedded ICC profile, checking...");
-            if let Ok(profile) = ColorProfile::new_from_slice(&icc) {
-                profile
-            } else {
-                return;
-            }
+            return;
+            // let mut decoder = JpegDecoder::new(BufReader::new(Cursor::new(file_content.as_slice())));
+            // if  decoder.decode().is_err() {
+            //     return;
+            // }
+            // let Some(icc) = decoder.icc_profile() else {
+            //     return;
+            // };
+            // println!("  Found embedded ICC profile, checking...");
+            // if let Ok(profile) = ColorProfile::new_from_slice(&icc) {
+            //     profile
+            // } else {
+            //     return;
+            // }
         }
     };
 
