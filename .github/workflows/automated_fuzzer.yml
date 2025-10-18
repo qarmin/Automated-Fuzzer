@@ -18,20 +18,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: GDSCRIPT
-            config-file: fuzz_gdscript_formatter_settings_ci.toml
-            timeout: 16000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
-          - name: GDSCRIPT_LINTER1
-            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
-            timeout: 16000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
           - name: Hayro
             config-file: fuzz_hayro_settings_ci.toml
             timeout: 16000
@@ -67,66 +53,10 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
-          - name: SWC
-            config-file: fuzz_swc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: swc
           - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
             files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF2
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_22.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF3
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF4
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_24.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF5
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_25.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF6
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_26.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF7
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF8
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_22.zip"
             library_folder: ''
             stability_check: false
             binary: ty
@@ -138,12 +68,82 @@ jobs:
             stability_check: false
             binary: pyrefly
           - name: BIOME
-          #            config-file: fuzz_biome_settings_ci.toml
-          #            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
-          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: biome
+          - name: SYMPHONIA
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA2
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA3
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA4
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA5
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA6
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          - name: SYMPHONIA7
+            config-file: fuzz_symphonia_settings_ci.toml
+            timeout: 16000
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
+            stability_check: false
+            binary: symphonia
+          #          - name: GDSCRIPT
+          #            config-file: fuzz_gdscript_formatter_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_GDSCRIPT_VALID_FILES.7z"
           #            library_folder: ''
           #            stability_check: false
-          #            binary: biome
+          #            binary: gdscript-formatter
+          #          - name: GDSCRIPT_LINTER1
+          #            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_GDSCRIPT_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: gdscript-formatter
+          #          - name: SWC
+          #            config-file: fuzz_swc_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: swc
           #          - name: SafePdf
           #            config-file: fuzz_safe_pdf_settings_ci.toml
           #            timeout: 16000
@@ -165,13 +165,6 @@ jobs:
           #            library_folder: ''
           #            stability_check: false
           #            binary: rustpython
-          #          - name: SYMPHONIA
-          #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            library_folder: symphonia
-          #            stability_check: false
-          #            binary: symphonia
           #          - name: BOA
           #            config-file: fuzz_boa_settings_ci.toml
           #            timeout: 16000
