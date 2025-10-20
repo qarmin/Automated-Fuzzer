@@ -18,56 +18,49 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #          - name: Hayro
-          #            config-file: fuzz_hayro_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES2.7z"
-          #            library_folder: hayro
-          #            stability_check: false
-          #            binary: hayro
-          #          - name: TYRUF
-          #            config-file: fuzz_ty_settings_ci.toml
-          #            timeout: 16000
-          #            files: "FILES_21.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: ty
-          #          - name: PYREFLY
-          #            config-file: fuzz_pyrefly_settings_ci.toml
-          #            timeout: 16000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: pyrefly
-          #          - name: BIOME
-          #            config-file: fuzz_biome_settings_ci.toml
-          #            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
-          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: biome
+          - name: Hayro
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro2
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: TYRUF
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_21.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF2
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_21.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: PYREFLY
+            config-file: fuzz_pyrefly_settings_ci.toml
+            timeout: 16000
+            files: "FILES_21.zip"
+            library_folder: ''
+            stability_check: false
+            binary: pyrefly
+          - name: BIOME
+            config-file: fuzz_biome_settings_ci.toml
+            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: biome
           - name: MOXCMS
-            config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 16000
-            files: "AA_ICC_VALID_FILES.7z"
-            library_folder: moxcms
-            stability_check: false
-            binary: moxcms
-          - name: MOXCMS2
-            config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 16000
-            files: "AA_ICC_VALID_FILES.7z"
-            library_folder: moxcms
-            stability_check: false
-            binary: moxcms
-          - name: MOXCMS3
-            config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 16000
-            files: "AA_ICC_VALID_FILES.7z"
-            library_folder: moxcms
-            stability_check: false
-            binary: moxcms
-          - name: MOXCMS4
             config-file: fuzz_moxcms_settings_ci.toml
             timeout: 16000
             files: "AA_ICC_VALID_FILES.7z"
@@ -81,113 +74,55 @@ jobs:
             library_folder: zune
             stability_check: false
             binary: zune
-          - name: ZUNE2
-            config-file: fuzz_zune_settings_ci.toml
+          - name: SYMPHONIA
+            config-file: fuzz_symphonia_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
+            files: "AA_MUSIC_VALID_FILES.7z"
+            library_folder: symphonia
             stability_check: false
-            binary: zune
-          - name: ZUNE3
-            config-file: fuzz_zune_settings_ci.toml
+            binary: symphonia
+          - name: GDSCRIPT
+            config-file: fuzz_gdscript_formatter_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
             stability_check: false
-            binary: zune
-          - name: ZUNE4
-            config-file: fuzz_zune_settings_ci.toml
+            binary: gdscript-formatter
+          - name: GDSCRIPT_LINTER1
+            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
             stability_check: false
-            binary: zune
-          - name: ZUNE5
-            config-file: fuzz_zune_settings_ci.toml
+            binary: gdscript-formatter
+          - name: SWC
+            config-file: fuzz_swc_settings_ci.toml
             timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            library_folder: ''
             stability_check: false
-            binary: zune
-          #          - name: SYMPHONIA
-          #            config-file: fuzz_symphonia_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_MUSIC_VALID_FILES.7z"
-          #            library_folder: symphonia
-          #            stability_check: false
-          #            binary: symphonia
-          #          - name: GDSCRIPT
-          #            config-file: fuzz_gdscript_formatter_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_GDSCRIPT_VALID_FILES.7z"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: gdscript-formatter
-          #          - name: GDSCRIPT_LINTER1
-          #            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_GDSCRIPT_VALID_FILES.7z"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: gdscript-formatter
-          #          - name: SWC
-          #            config-file: fuzz_swc_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: swc
-          #          - name: SafePdf
-          #            config-file: fuzz_safe_pdf_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES2.7z"
-          #            library_folder: safe_pdf
-          #            stability_check: false
-          #            binary: safe_pdf
-          #          - name: LOPDF
-          #            config-file: fuzz_lopdf_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES2.7z"
-          #            library_folder: lopdf
-          #            stability_check: false
-          #            binary: lopdf
-          #          - name: RUSTPYTHON
-          #            config-file: fuzz_rustpython_settings_ci.toml
-          #            timeout: 1000
-          #            files: "FILES_23.zip"
-          #            library_folder: ''
-          #            stability_check: false
-          #            binary: rustpython
-          #          - name: BOA
-          #            config-file: fuzz_boa_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-          #            library_folder: boa
-          #            stability_check: false
-          #            binary: boa
-          # TODO - too many issues
-          #          - name: Resvg
-          #            config-file: fuzz_resvg_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_SVG_VALID_FILES.7z"
-          #            library_folder: resvg
-          #            stability_check: false
-          #            binary: resvg
-          # https://github.com/jrmuizel/pdf-extract/issues/96
-          #          - name: PDF_EXTRACT
-          #            config-file: fuzz_pdf_extract_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_PDF_VALID_FILES2.7z"
-          #            library_folder: pdf_extract
-          #            stability_check: false
-          #            binary: pdf_extract
-          #          - name: RSBUZZ
-          #            config-file: fuzz_rsbuzz_settings_ci.toml
-          #            timeout: 16000
-          #            files: "AA_FONT_VALID_FILES_MORE.7z"
-          #            library_folder: rsbuzz
-          #            stability_check: false
-          #            binary: rsbuzz
+            binary: swc
+          - name: SafePdf
+            config-file: fuzz_safe_pdf_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: safe_pdf
+            stability_check: false
+            binary: safe_pdf
+          - name: LOPDF
+            config-file: fuzz_lopdf_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: lopdf
+            stability_check: false
+            binary: lopdf
+          - name: BOA
+            config-file: fuzz_boa_settings_ci.toml
+            timeout: 16000
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            library_folder: boa
+            stability_check: false
+            binary: boa
 
     steps:
       - uses: actions/checkout@v4

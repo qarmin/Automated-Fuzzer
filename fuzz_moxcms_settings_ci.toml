@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "moxcms"
-command = "moxcms|FILE_PATHS_TO_PROVIDE"
+command = "moxcms_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "icc"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
@@ -42,8 +42,7 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-ignored_item_299 = "Gray should not be called on Rgb/Rgba execution path" # A lot of things are unimplemented
-ignored_item_199 = "src/conversions/gray2rgb.rs" # https://github.com/awxkee/moxcms/issues/113
+#ignored_item_299 = "Gray should not be called on Rgb/Rgba execution path" # A lot of things are unimplemented
 #ignored_item_99 = "" #
 #ignored_item_99 = "" #
 #ignored_item_99 = "" #

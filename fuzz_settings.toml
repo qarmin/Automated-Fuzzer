@@ -130,7 +130,7 @@ stability_mode = "output_content" # Available "none", "console_output", "file_co
 
 [custom_typst]
 name = "typst"
-command = "typst|compile|FILE_PATHS_TO_PROVIDE"
+command = "typst_normal|compile|FILE_PATHS_TO_PROVIDE"
 
 extensions = "typ"
 valid_input_files_dir = "/home/rafal/Downloads/B"
@@ -164,7 +164,7 @@ file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint
 
 [custom_zip]
 name = "zip_rs"
-command = "zip_rs|FILE_PATHS_TO_PROVIDE"
+command = "zip_rs_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "zip"
 valid_input_files_dir = "/home/rafal/Desktop/RunEveryCommand/AA_ZIP_VALID_FILES"

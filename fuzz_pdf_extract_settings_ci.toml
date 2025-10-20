@@ -29,7 +29,7 @@ current_mode = "custom"
 
 [custom]
 name = "pdf_extract"
-command = "pdf_extract|FILE_PATHS_TO_PROVIDE"
+command = "pdf_extract_normal|FILE_PATHS_TO_PROVIDE"
 
 extensions = "pdf"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
