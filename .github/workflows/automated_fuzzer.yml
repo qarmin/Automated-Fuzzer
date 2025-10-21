@@ -74,13 +74,6 @@ jobs:
             library_folder: zune
             stability_check: false
             binary: zune
-          - name: SYMPHONIA
-            config-file: fuzz_symphonia_settings_ci.toml
-            timeout: 16000
-            files: "AA_MUSIC_VALID_FILES.7z"
-            library_folder: symphonia
-            stability_check: false
-            binary: symphonia
           - name: GDSCRIPT
             config-file: fuzz_gdscript_formatter_settings_ci.toml
             timeout: 16000
@@ -95,13 +88,20 @@ jobs:
             library_folder: ''
             stability_check: false
             binary: gdscript-formatter
-          - name: SWC
-            config-file: fuzz_swc_settings_ci.toml
-            timeout: 16000
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: swc
+          #          - name: SWC
+          #            config-file: fuzz_swc_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: swc
+          #          - name: SYMPHONIA
+          #            config-file: fuzz_symphonia_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_MUSIC_VALID_FILES.7z"
+          #            library_folder: symphonia
+          #            stability_check: false
+          #            binary: symphonia
           - name: SafePdf
             config-file: fuzz_safe_pdf_settings_ci.toml
             timeout: 16000
@@ -260,7 +260,7 @@ jobs:
               echo "debug = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
               # echo "panic = 'abort'" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
               echo "debug-assertions = true" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
-              echo "lto = \"fat\"" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
+              echo "lto = \"thin\"" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
               echo "codegen-units = 1" >> "${{ env.PROJECT_CARGO_TOML_FOLDER }}/Cargo.toml"
           else
               echo "Using default Cargo.toml"

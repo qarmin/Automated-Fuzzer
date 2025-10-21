@@ -1,9 +1,11 @@
 use std::env::args;
 use std::fs;
 use std::io::Cursor;
+use std::ops::Deref;
 use std::path::Path;
 
-use image::ImageFormat;
+use image::{GenericImageView, ImageBuffer, ImageFormat, Pixel};
+use image::imageops;
 use walkdir::WalkDir;
 const IMAGE_FORMATS_READ: &[ImageFormat] = &[
     ImageFormat::Png,
@@ -76,7 +78,18 @@ fn check_file(file_path: &str) {
         Some(img) => img,
         None => return,
     };
-    println!("Image: {file_path}");
+
+
+    // let _ = img.as_rgb8().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_luma8().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_rgba8().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_luma16().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_rgb16().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_rgba16().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_rgb32f().map(|e|enumerate_pixels(e, |_, _, _|{}));
+    // let _ = img.as_rgba32f().map(|e|enumerate_pixels(e, |_, _, _|{}));
+
+    println!("Image: {file_path}, {:?}", img.dimensions());
     for format in IMAGE_FORMATS_WRITE
         .iter()
     {
@@ -88,3 +101,15 @@ fn check_file(file_path: &str) {
         println!("After write_to {format:?}");
     }
 }
+
+// fn enumerate_pixels<P, Container, F>(img: &ImageBuffer<P, Container>, mut f: F)
+// where
+//     P: Pixel,
+//     Container: Deref<Target = [P::Subpixel]>,
+//     F: FnMut(u32, u32, &P),
+// {
+//     for (x, y, pixel) in img.enumerate_pixels() {
+//         println!("Image pixel");
+//         f(x, y, pixel);
+//     }
+// }
