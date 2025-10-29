@@ -132,6 +132,20 @@ jobs:
             library_folder: chromaprint
             stability_check: false
             binary: chromaprint
+          - name: GDSCRIPT
+            config-file: fuzz_gdscript_formatter_settings_ci.toml
+            timeout: 3600
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: gdscript-formatter
+          - name: GDSCRIPT_LINTER1
+            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
+            timeout: 3600
+            files: "AA_GDSCRIPT_VALID_FILES.7z"
+            library_folder: ''
+            stability_check: false
+            binary: gdscript-formatter
 
     steps:
       - uses: actions/checkout@v4

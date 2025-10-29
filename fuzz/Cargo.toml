@@ -4,6 +4,12 @@ version = "0.0.0"
 publish = false
 edition = "2024"
 
+# Testing
+# cargo +nightly fuzz build slint --features "slint_f"
+# cargo +nightly fuzz build symphonia --features "symphonia_f"
+# cargo +nightly fuzz build zune --features "zune_f"
+
+
 [package.metadata]
 cargo-fuzz = true
 
@@ -40,10 +46,12 @@ ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib"
 hayro = { git = "https://github.com/LaurenzV/hayro.git" , optional = true}
 rawler = { git = "https://github.com/dnglab/dnglab.git" , optional = true}
 rusty-chromaprint = { git = "https://github.com/darksv/rusty-chromaprint.git", optional = true}
+zune-image = { git = "https://github.com/etemesi254/zune-image.git", optional = true }
+zune-core = { git = "https://github.com/etemesi254/zune-image.git" , optional = true}
 
 [features]
 default = []
-all = ["lofty_f", "font_kit_f", "image_f", "lopdf_f", "rsbuzz_f", "symphonia_f", "zip_rs_f", "dicom_f"]
+all = ["lofty_f", "font_kit_f", "image_f", "lopdf_f", "rsbuzz_f", "symphonia_f", "zip_rs_f", "dicom_f", "zune_f"]
 lofty_f = ["lofty"]
 font_kit_f = ["font-kit"]
 image_f = ["image"]
@@ -60,6 +68,7 @@ vidduplicate_f = ["vid_dup_finder_lib", "ffmpeg_cmdline_utils"]
 hayro_f = ["hayro"]
 rawler_f = ["rawler"]
 chromaprint_f = ["rusty-chromaprint", "symphonia"]
+zune_f = ["zune-image", "zune-core"]
 
 [[bin]]
 name = "lofty"
@@ -173,6 +182,12 @@ test = false
 doc = false
 bench = false
 
+[[bin]]
+name = "zune"
+path = "fuzz_targets/zune.rs"
+test = false
+doc = false
+bench = false
 
 [profile.release]
 overflow-checks = true

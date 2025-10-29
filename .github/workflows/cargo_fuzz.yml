@@ -1,7 +1,7 @@
 name: 🐧 Cargo Fuzz Check
 on:
-  #  push:
-  #  pull_request:
+  push:
+  pull_request:
   schedule:
     - cron: '0 21 * * *'
 
@@ -23,10 +23,14 @@ jobs:
             fuzz_target: image
             timeout: 18000
             files: "AA_IMAGE_VALID_FILES.7z"
-          #          - name: HAYRO
-          #            fuzz_target: hayro
-          #            timeout: 18000
-          #            files: "AA_PDF_VALID_FILES2.7z"
+          - name: HAYRO
+            fuzz_target: hayro
+            timeout: 18000
+            files: "AA_PDF_VALID_FILES2.7z"
+          - name: ZUNE
+            fuzz_target: zune
+            timeout: 18000
+            files: "AA_IMAGE_VALID_FILES.7z"
           #          - name: SYMPHONIA1
           #            fuzz_target: symphonia
           #            timeout: 18000

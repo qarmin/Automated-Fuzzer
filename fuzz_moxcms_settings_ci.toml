@@ -42,7 +42,6 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
-#ignored_item_299 = "Gray should not be called on Rgb/Rgba execution path" # A lot of things are unimplemented
 #ignored_item_99 = "" #
 #ignored_item_99 = "" #
 #ignored_item_99 = "" #

@@ -74,20 +74,6 @@ jobs:
             library_folder: zune
             stability_check: false
             binary: zune
-          - name: GDSCRIPT
-            config-file: fuzz_gdscript_formatter_settings_ci.toml
-            timeout: 16000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
-          - name: GDSCRIPT_LINTER1
-            config-file: fuzz_gdscript_formatter_linter_settings_ci.toml
-            timeout: 16000
-            files: "AA_GDSCRIPT_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: gdscript-formatter
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000
