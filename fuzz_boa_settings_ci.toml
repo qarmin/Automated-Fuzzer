@@ -42,14 +42,15 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+search_item_125 = "(core dumped)"
+search_item_126 = "segmentation fault"
 ignored_item_1 = "stack-overflow" # https://github.com/boa-dev/boa/issues/1402, https://github.com/boa-dev/boa/issues/4397
 ignored_item_2 = "stack overflow" # https://github.com/boa-dev/boa/issues/1402, https://github.com/boa-dev/boa/issues/4397
 ignored_item_3 = "is_strictly_before" # https://github.com/boa-dev/boa/issues/4398
 ignored_item_4 = "a span cannot start after its end" # https://github.com/boa-dev/boa/issues/4403
 ignored_item_5 = "core/parser/src/parser/expression/unary.rs" # https://github.com/boa-dev/boa/issues/4403
 ignored_item_6 = "src/emit.rs" # https://github.com/boa-dev/boa/issues/4402
-ignored_item_7 = "core/engine/src/vm/opcode/get/name.rs" # https://github.com/boa-dev/boa/issues/4401
-ignored_item_8 = "core/engine/src/vm/opcode/define/mod.rs" # https://github.com/boa-dev/boa/issues/4400
+ignored_item_9 = "RuntimeLimit" # https://github.com/boa-dev/boa/issues/4515
 
 file_type = "js" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"

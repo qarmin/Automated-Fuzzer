@@ -42,6 +42,8 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+search_item_125 = "(core dumped)"
+search_item_126 = "segmentation fault"
 ignored_item_1 = "assertion `left == right` failed" # https://github.com/servo/font-kit/issues/250
 file_type = "binary" # Available: text, binary, js, go, rust, lua, python, slint, jsvuesvelte, svg, gdscript
 stability_mode = "output_content" # Available "none", "console_output", "file_content", "output_content"

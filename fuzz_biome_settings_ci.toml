@@ -43,6 +43,8 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+search_item_125 = "(core dumped)"
+search_item_126 = "segmentation fault"
 #ignored_item_8 = "is out of bounds of" # https://github.com/biomejs/biome/issues/4593 # Happens with vue and svelte files so that is why I ignored such files for now - TODO after removing, readd vue and svelte to extensions
 ignored_item_9 = "assertion failed: start.raw <= end.raw" # https://github.com/biomejs/biome/issues/4593
 ignored_item_10 = "is not a char boundary" # https://github.com/biomejs/biome/issues/4593

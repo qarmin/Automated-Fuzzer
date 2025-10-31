@@ -50,6 +50,8 @@ search_item_100 = "AddressSanitizer"
 search_item_101 = "LeakSanitizer"
 search_item_102 = "ThreadSanitizer"
 search_item_103 = "timeout: sending signal"
+search_item_125 = "(core dumped)"
+search_item_126 = "segmentation fault"
 # ignored_item_* is list of items to ignore e.g. already reported earlier errors
 ignored_item_1 = "src/hb/buffer.rs"
 # Type of files/broken files to be created, using e.g. rust will use text and add in random places
