@@ -53,7 +53,6 @@ fn main() {
     }
 
     if !crashes.is_empty() {
-        // Keep crash records in memory; no printing as requested
         let _ = crashes.len();
     }
 
