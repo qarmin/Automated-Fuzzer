@@ -1,0 +1,13 @@
+[package]
+name = "krilla"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+krilla = { git = "https://github.com/LaurenzV/krilla.git" }
+
+[profile.release]
+overflow-checks = true
+panic = "unwind"
+debug = true
+debug-assertions = true
