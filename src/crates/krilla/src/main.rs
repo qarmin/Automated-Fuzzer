@@ -1,6 +1,3 @@
-// Krilla PDF Fuzzer - testuje różne kombinacje parametrów API
-// Celem jest znalezienie internal crashes (bez unwrapów)
-
 use krilla::Document;
 use krilla::page::{Page, PageSettings};
 use krilla::surface::Surface;
@@ -20,10 +17,6 @@ use std::time::Instant;
 static ITERATION_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 fn main() {
-    println!("=== Krilla PDF Fuzzer ===");
-    println!("Rozpoczęcie fuzzowania biblioteki Krilla...\n");
-    println!("Cel: znalezienie internal crashes (assertions, panics, itp.)\n");
-
     let start_time = Instant::now();
     let mut crash_count = 0;
     let mut success_count = 0;
@@ -32,19 +25,6 @@ fn main() {
 
     for i in 0..max_iterations {
         ITERATION_COUNTER.store(i, Ordering::SeqCst);
-
-        if i % 100 == 0 {
-            let elapsed = start_time.elapsed();
-            let rate = if elapsed.as_secs() > 0 {
-                i / elapsed.as_secs()
-            } else {
-                i
-            };
-            print!("\rIteracja: {} | Sukces: {} | Crash: {} | Rate: {}/s    ",
-                   i, success_count, crash_count, rate);
-            use std::io::Write;
-            std::io::stdout().flush().ok();
-        }
 
         let seed = i;
         match std::panic::catch_unwind(|| {
@@ -56,7 +36,6 @@ fn main() {
             Ok(Err(e)) => {
                 crash_count += 1;
                 let msg = format!("Error: {:?}", e);
-                println!("\n[CRASH {}] Seed: {}, {}", crash_count, seed, msg);
                 crashes.push((seed, msg));
             }
             Err(panic) => {
@@ -68,37 +47,24 @@ fn main() {
                 } else {
                     format!("{:?}", panic)
                 };
-                println!("\n[PANIC {}] Seed: {}, Panic: {}", crash_count, seed, msg);
                 crashes.push((seed, msg));
             }
         }
     }
 
-    println!("\n\n=== Podsumowanie ===");
-    println!("Całkowity czas: {:?}", start_time.elapsed());
-    println!("Iteracje: {}", max_iterations);
-    println!("Sukces: {}", success_count);
-    println!("Crashe: {}", crash_count);
-    println!("Wskaźnik sukcesu: {:.2}%", (success_count as f64 / max_iterations as f64) * 100.0);
-
     if !crashes.is_empty() {
-        println!("\n=== Znalezione Crashe ===");
-        for (seed, msg) in crashes.iter().take(10) {
-            println!("Seed {}: {}", seed, msg);
-        }
-        if crashes.len() > 10 {
-            println!("... i {} więcej", crashes.len() - 10);
-        }
+        // Keep crash records in memory; no printing as requested
+        let _ = crashes.len();
     }
+
+    let _ = (start_time.elapsed(), max_iterations, success_count, crash_count);
 }
 
 fn run_fuzz_iteration(seed: u64) -> Result<Vec<u8>, KrillaError> {
     let mut rng = SimpleRng::new(seed);
 
-    // Losowa konfiguracja dokumentu
     let mut doc = Document::new();
 
-    // Losowa liczba stron
     let page_count = rng.range(1, 5);
 
     for _ in 0..page_count {
@@ -111,7 +77,6 @@ fn run_fuzz_iteration(seed: u64) -> Result<Vec<u8>, KrillaError> {
             doc.start_page_with(settings)
         };
 
-        // Losowe operacje na stronie
         let operation_count = rng.range(0, 10);
         for _ in 0..operation_count {
             fuzz_page_operations(&mut page, &mut rng);
@@ -120,7 +85,6 @@ fn run_fuzz_iteration(seed: u64) -> Result<Vec<u8>, KrillaError> {
         page.finish();
     }
 
-    // Losowe metadane
     if rng.bool() {
         let mut metadata = Metadata::new();
 
@@ -134,13 +98,12 @@ fn run_fuzz_iteration(seed: u64) -> Result<Vec<u8>, KrillaError> {
             metadata = metadata.creator(generate_random_string(&mut rng, 30));
         }
         if rng.bool() {
-            metadata = metadata.language("pl-PL".to_string());
+            metadata = metadata.language("en-US".to_string());
         }
 
         doc.set_metadata(metadata);
     }
 
-    // Losowy outline
     if rng.bool() {
         let mut outline = Outline::new();
         let node_count = rng.range(0, 3);
@@ -194,13 +157,12 @@ fn fuzz_draw_path(surface: &mut Surface, rng: &mut SimpleRng) {
 }
 
 fn fuzz_draw_image(surface: &mut Surface, rng: &mut SimpleRng) {
-    // Generuj losowy mały obraz RGBA
     let width = rng.range(1, 100) as u32;
     let height = rng.range(1, 100) as u32;
 
     let pixel_count = (width * height * 4) as usize;
     if pixel_count > 1_000_000 {
-        return; // Zbyt duży
+        return;
     }
 
     let mut data = Vec::with_capacity(pixel_count);
@@ -249,7 +211,6 @@ fn fuzz_transforms(surface: &mut Surface, rng: &mut SimpleRng) {
 }
 
 fn fuzz_fill_stroke(surface: &mut Surface, rng: &mut SimpleRng) {
-    // Ustaw fill
     if rng.bool() {
         let color = rgb::Color::new(rng.byte(), rng.byte(), rng.byte());
         let fill = Fill {
@@ -260,7 +221,6 @@ fn fuzz_fill_stroke(surface: &mut Surface, rng: &mut SimpleRng) {
         surface.set_fill(Some(fill));
     }
 
-    // Ustaw stroke
     if rng.bool() {
         let color = rgb::Color::new(rng.byte(), rng.byte(), rng.byte());
         let width = rng.float_range(0.1, 10.0);
@@ -276,7 +236,6 @@ fn fuzz_fill_stroke(surface: &mut Surface, rng: &mut SimpleRng) {
         surface.set_stroke(Some(stroke));
     }
 
-    // Narysuj path
     if let Some(path) = create_random_path(rng) {
         surface.draw_path(&path);
     }
@@ -332,7 +291,6 @@ fn fuzz_blend_mode(surface: &mut Surface, rng: &mut SimpleRng) {
 }
 
 fn fuzz_nested_operations(surface: &mut Surface, rng: &mut SimpleRng) {
-    // Test zagnieżdżonych operacji push/pop
     let depth = rng.range(1, 5);
 
     for _ in 0..depth {
@@ -355,19 +313,16 @@ fn fuzz_nested_operations(surface: &mut Surface, rng: &mut SimpleRng) {
         }
     }
 
-    // Narysuj coś w środku
     if let Some(path) = create_random_path(rng) {
         surface.draw_path(&path);
     }
 
-    // Pop wszystko
     for _ in 0..depth {
         surface.pop();
     }
 }
 
 fn fuzz_edge_case_values(surface: &mut Surface, rng: &mut SimpleRng) {
-    // Testuj ekstremalne wartości
     let extreme_values = [
         0.0, -0.0, 0.00001, -0.00001,
         f32::MIN_POSITIVE, f32::MAX, -f32::MAX,
@@ -388,8 +343,6 @@ fn fuzz_edge_case_values(surface: &mut Surface, rng: &mut SimpleRng) {
 }
 
 fn fuzz_multiple_pops(surface: &mut Surface, rng: &mut SimpleRng) {
-    // Test wielokrotnego pop bez odpowiadających push
-    // (powinno być bezpieczne - biblioteka powinna to obsłużyć)
     let pop_count = rng.range(0, 5);
 
     for _ in 0..pop_count {
@@ -398,20 +351,17 @@ fn fuzz_multiple_pops(surface: &mut Surface, rng: &mut SimpleRng) {
 }
 
 fn fuzz_stream_builder(surface: &mut Surface, rng: &mut SimpleRng) {
-    // Test stream buildera
     let mut builder = surface.stream_builder();
 
     {
         let mut inner_surface = builder.surface();
 
-        // Wykonaj kilka operacji na inner surface
         for _ in 0..rng.range(0, 3) {
             if let Some(path) = create_random_path(rng) {
                 inner_surface.draw_path(&path);
             }
         }
 
-        // Celowo czasami nie wywołuj finish
         if rng.bool() {
             inner_surface.finish();
         }
@@ -425,7 +375,6 @@ fn create_random_path(rng: &mut SimpleRng) -> Option<Path> {
 
     let segment_count = rng.range(1, 10);
 
-    // Zacznij od move_to
     builder.move_to(
         rng.float_range(-500.0, 500.0),
         rng.float_range(-500.0, 500.0)
@@ -477,7 +426,7 @@ fn create_random_rect(rng: &mut SimpleRng) -> Option<Rect> {
 
 fn generate_random_string(rng: &mut SimpleRng, max_len: usize) -> String {
     let len = rng.range(0, max_len as u64) as usize;
-    let chars: Vec<char> = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 ąćęłńóśźż"
+    let chars: Vec<char> = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 "
         .chars()
         .collect();
 
@@ -486,7 +435,6 @@ fn generate_random_string(rng: &mut SimpleRng, max_len: usize) -> String {
         .collect()
 }
 
-// Prosty deterministyczny RNG dla powtarzalnego fuzzingu
 struct SimpleRng {
     state: u64,
 }
@@ -497,7 +445,6 @@ impl SimpleRng {
     }
 
     fn next(&mut self) -> u64 {
-        // Xorshift64
         self.state ^= self.state << 13;
         self.state ^= self.state >> 7;
         self.state ^= self.state << 17;
@@ -524,4 +471,3 @@ impl SimpleRng {
         (self.next() % 256) as u8
     }
 }
-
