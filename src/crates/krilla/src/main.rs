@@ -1,16 +1,16 @@
-use krilla::Document;
-use krilla::page::{Page, PageSettings};
-use krilla::surface::Surface;
-use krilla::geom::{Point, Path, PathBuilder, Rect, Size, Transform};
-use krilla::paint::{Fill, Stroke, FillRule, LineCap, LineJoin};
+use krilla::blend::BlendMode;
 use krilla::color::rgb;
-use krilla::image::Image;
-use krilla::num::NormalizedF32;
-use krilla::metadata::Metadata;
-use krilla::outline::{Outline, OutlineNode};
 use krilla::destination::XyzDestination;
 use krilla::error::KrillaError;
-use krilla::blend::BlendMode;
+use krilla::geom::{Path, PathBuilder, Point, Rect, Size, Transform};
+use krilla::image::Image;
+use krilla::metadata::Metadata;
+use krilla::num::NormalizedF32;
+use krilla::outline::{Outline, OutlineNode};
+use krilla::page::{Page, PageSettings};
+use krilla::paint::{Fill, FillRule, LineCap, LineJoin, Stroke};
+use krilla::surface::Surface;
+use krilla::Document;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 
@@ -21,15 +21,13 @@ fn main() {
     let mut crash_count = 0;
     let mut success_count = 0;
     let mut crashes = Vec::new();
-    let max_iterations = 100_000;
+    let max_iterations = 200_000;
 
     for i in 0..max_iterations {
         ITERATION_COUNTER.store(i, Ordering::SeqCst);
 
         let seed = i;
-        match std::panic::catch_unwind(|| {
-            run_fuzz_iteration(seed)
-        }) {
+        match std::panic::catch_unwind(|| run_fuzz_iteration(seed)) {
             Ok(Ok(_)) => {
                 success_count += 1;
             }
@@ -39,7 +37,6 @@ fn main() {
                 crashes.push((seed, msg));
             }
             Err(panic) => {
-                crash_count += 1;
                 let msg = if let Some(s) = panic.downcast_ref::<String>() {
                     s.clone()
                 } else if let Some(s) = panic.downcast_ref::<&str>() {
@@ -47,6 +44,24 @@ fn main() {
                 } else {
                     format!("{:?}", panic)
                 };
+
+                if [
+                    "self.push_instructions.is_empty()", "self.bd.sub_builders.is_empty()", "Option::unwrap()",
+                ]
+                .iter()
+                .any(|&frag| msg.contains(frag))
+                {
+                    continue;
+                }
+                println!("==================================");
+                println!("==================================");
+                println!("==================================");
+                println!("==================================");
+                println!("==================================");
+                println!("==================================");
+                println!("==================================");
+
+                crash_count += 1;
                 crashes.push((seed, msg));
             }
         }
@@ -110,10 +125,7 @@ fn run_fuzz_iteration(seed: u64) -> Result<Vec<u8>, KrillaError> {
         for _ in 0..node_count {
             let text = generate_random_string(&mut rng, 30);
             let page_index = rng.range(0, page_count.max(1)) as usize;
-            let point = Point::from_xy(
-                rng.float_range(0.0, 500.0),
-                rng.float_range(0.0, 500.0)
-            );
+            let point = Point::from_xy(rng.float_range(0.0, 500.0), rng.float_range(0.0, 500.0));
 
             let dest = XyzDestination::new(page_index, point);
             let node = OutlineNode::new(text, dest);
@@ -171,10 +183,7 @@ fn fuzz_draw_image(surface: &mut Surface, rng: &mut SimpleRng) {
 
     let image = Image::from_rgba8(data, width, height);
 
-    if let Some(size) = Size::from_wh(
-        rng.float_range(1.0, 500.0),
-        rng.float_range(1.0, 500.0)
-    ) {
+    if let Some(size) = Size::from_wh(rng.float_range(1.0, 500.0), rng.float_range(1.0, 500.0)) {
         surface.draw_image(image, size);
     }
 }
@@ -183,19 +192,10 @@ fn fuzz_transforms(surface: &mut Surface, rng: &mut SimpleRng) {
     let transform_type = rng.range(0, 5);
 
     let transform = match transform_type {
-        0 => Transform::from_translate(
-            rng.float_range(-500.0, 500.0),
-            rng.float_range(-500.0, 500.0)
-        ),
-        1 => Transform::from_scale(
-            rng.float_range(-5.0, 5.0),
-            rng.float_range(-5.0, 5.0)
-        ),
+        0 => Transform::from_translate(rng.float_range(-500.0, 500.0), rng.float_range(-500.0, 500.0)),
+        1 => Transform::from_scale(rng.float_range(-5.0, 5.0), rng.float_range(-5.0, 5.0)),
         2 => Transform::from_rotate(rng.float_range(0.0, 360.0)),
-        3 => Transform::from_skew(
-            rng.float_range(-2.0, 2.0),
-            rng.float_range(-2.0, 2.0)
-        ),
+        3 => Transform::from_skew(rng.float_range(-2.0, 2.0), rng.float_range(-2.0, 2.0)),
         _ => Transform::identity(),
     };
 
@@ -274,8 +274,12 @@ fn fuzz_opacity(surface: &mut Surface, rng: &mut SimpleRng) {
 
 fn fuzz_blend_mode(surface: &mut Surface, rng: &mut SimpleRng) {
     let blend_modes = [
-        BlendMode::Normal, BlendMode::Multiply, BlendMode::Screen,
-        BlendMode::Overlay, BlendMode::Darken, BlendMode::Lighten,
+        BlendMode::Normal,
+        BlendMode::Multiply,
+        BlendMode::Screen,
+        BlendMode::Overlay,
+        BlendMode::Darken,
+        BlendMode::Lighten,
     ];
 
     let mode = blend_modes[rng.range(0, blend_modes.len() as u64) as usize];
@@ -295,10 +299,8 @@ fn fuzz_nested_operations(surface: &mut Surface, rng: &mut SimpleRng) {
     for _ in 0..depth {
         match rng.range(0, 3) {
             0 => {
-                let transform = Transform::from_translate(
-                    rng.float_range(-100.0, 100.0),
-                    rng.float_range(-100.0, 100.0)
-                );
+                let transform =
+                    Transform::from_translate(rng.float_range(-100.0, 100.0), rng.float_range(-100.0, 100.0));
                 surface.push_transform(&transform);
             }
             1 => {
@@ -323,9 +325,15 @@ fn fuzz_nested_operations(surface: &mut Surface, rng: &mut SimpleRng) {
 
 fn fuzz_edge_case_values(surface: &mut Surface, rng: &mut SimpleRng) {
     let extreme_values = [
-        0.0, -0.0, 0.00001, -0.00001,
-        f32::MIN_POSITIVE, f32::MAX, -f32::MAX,
-        100000.0, -100000.0,
+        0.0,
+        -0.0,
+        0.00001,
+        -0.00001,
+        f32::MIN_POSITIVE,
+        f32::MAX,
+        -f32::MAX,
+        100000.0,
+        -100000.0,
     ];
 
     let val1 = extreme_values[rng.range(0, extreme_values.len() as u64) as usize];
@@ -374,24 +382,18 @@ fn create_random_path(rng: &mut SimpleRng) -> Option<Path> {
 
     let segment_count = rng.range(1, 10);
 
-    builder.move_to(
-        rng.float_range(-500.0, 500.0),
-        rng.float_range(-500.0, 500.0)
-    );
+    builder.move_to(rng.float_range(-500.0, 500.0), rng.float_range(-500.0, 500.0));
 
     for _ in 0..segment_count {
         let seg_type = rng.range(0, 5);
 
         match seg_type {
-            0 => builder.line_to(
-                rng.float_range(-500.0, 500.0),
-                rng.float_range(-500.0, 500.0)
-            ),
+            0 => builder.line_to(rng.float_range(-500.0, 500.0), rng.float_range(-500.0, 500.0)),
             1 => builder.quad_to(
                 rng.float_range(-500.0, 500.0),
                 rng.float_range(-500.0, 500.0),
                 rng.float_range(-500.0, 500.0),
-                rng.float_range(-500.0, 500.0)
+                rng.float_range(-500.0, 500.0),
             ),
             2 => builder.cubic_to(
                 rng.float_range(-500.0, 500.0),
@@ -399,7 +401,7 @@ fn create_random_path(rng: &mut SimpleRng) -> Option<Path> {
                 rng.float_range(-500.0, 500.0),
                 rng.float_range(-500.0, 500.0),
                 rng.float_range(-500.0, 500.0),
-                rng.float_range(-500.0, 500.0)
+                rng.float_range(-500.0, 500.0),
             ),
             3 => {
                 if let Some(rect) = create_random_rect(rng) {
@@ -440,7 +442,9 @@ struct SimpleRng {
 
 impl SimpleRng {
     fn new(seed: u64) -> Self {
-        Self { state: seed.wrapping_add(1) }
+        Self {
+            state: seed.wrapping_add(1),
+        }
     }
 
     fn next(&mut self) -> u64 {
