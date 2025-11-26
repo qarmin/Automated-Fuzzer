@@ -32,6 +32,48 @@ jobs:
             library_folder: hayro
             stability_check: false
             binary: hayro
+          - name: Hayro2
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro3
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro4
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro5
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro6
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
+          - name: Hayro7
+            config-file: fuzz_hayro_settings_ci.toml
+            timeout: 16000
+            files: "AA_PDF_VALID_FILES2.7z"
+            library_folder: hayro
+            stability_check: false
+            binary: hayro
           - name: TYRUF
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
@@ -42,7 +84,35 @@ jobs:
           - name: TYRUF2
             config-file: fuzz_ty_settings_ci.toml
             timeout: 16000
+            files: "FILES_22.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF3
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_22.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF4
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
             files: "FILES_21.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF5
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_22.zip"
+            library_folder: ''
+            stability_check: false
+            binary: ty
+          - name: TYRUF6
+            config-file: fuzz_ty_settings_ci.toml
+            timeout: 16000
+            files: "FILES_23.zip"
             library_folder: ''
             stability_check: false
             binary: ty

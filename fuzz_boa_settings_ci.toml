@@ -47,8 +47,6 @@ search_item_126 = "segmentation fault"
 ignored_item_1 = "stack-overflow" # https://github.com/boa-dev/boa/issues/1402, https://github.com/boa-dev/boa/issues/4397
 ignored_item_2 = "stack overflow" # https://github.com/boa-dev/boa/issues/1402, https://github.com/boa-dev/boa/issues/4397
 ignored_item_3 = "is_strictly_before" # https://github.com/boa-dev/boa/issues/4398
-ignored_item_4 = "a span cannot start after its end" # https://github.com/boa-dev/boa/issues/4403
-ignored_item_5 = "core/parser/src/parser/expression/unary.rs" # https://github.com/boa-dev/boa/issues/4403
 ignored_item_6 = "src/emit.rs" # https://github.com/boa-dev/boa/issues/4402
 ignored_item_9 = "RuntimeLimit" # https://github.com/boa-dev/boa/issues/4515
 
