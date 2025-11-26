@@ -88,13 +88,13 @@ jobs:
           #            library_folder: symphonia
           #            stability_check: false
           #            binary: symphonia
-          - name: SafePdf
-            config-file: fuzz_safe_pdf_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: safe_pdf
-            stability_check: false
-            binary: safe_pdf
+          #          - name: SafePdf
+          #            config-file: fuzz_safe_pdf_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: safe_pdf
+          #            stability_check: false
+          #            binary: safe_pdf
           - name: LOPDF
             config-file: fuzz_lopdf_settings_ci.toml
             timeout: 16000
