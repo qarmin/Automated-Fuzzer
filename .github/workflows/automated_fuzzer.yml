@@ -144,6 +144,27 @@ jobs:
             library_folder: zune
             stability_check: false
             binary: zune
+          - name: ZUNE2
+            config-file: fuzz_zune_settings_ci.toml
+            timeout: 16000
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
+            stability_check: false
+            binary: zune
+          - name: ZUNE3
+            config-file: fuzz_zune_settings_ci.toml
+            timeout: 16000
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
+            stability_check: false
+            binary: zune
+          - name: ZUNE4
+            config-file: fuzz_zune_settings_ci.toml
+            timeout: 16000
+            files: "AA_IMAGE_VALID_FILES.7z"
+            library_folder: zune
+            stability_check: false
+            binary: zune
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000
