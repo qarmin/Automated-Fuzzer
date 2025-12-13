@@ -51,7 +51,6 @@ ignored_item_9 = "attempt to subtract with overflow" # https://github.com/astral
 ignored_item_12 = "AddressSanitizer:" # https://github.com/facebook/pyrefly/issues/504
 ignored_item_13 = "memory allocation of:" # https://github.com/facebook/pyrefly/issues/504
 ignored_item_1125 = "f-string: unexpected token" # RUFF - TODO
-ignored_item_18 = "lined_buffer.rs" # https://github.com/facebook/pyrefly/issues/1698
 #ignored_item_18 = "" #
 #ignored_item_18 = "" #
 #ignored_item_18 = "" #
