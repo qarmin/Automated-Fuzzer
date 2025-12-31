@@ -19,29 +19,54 @@ jobs:
       matrix:
         include:
           - name: LITTLE_EXIF
-            fuzz_target: little_exif
+            config-file: fuzz_little_exif_settings_ci.toml
             timeout: 100
-            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+            library_folder: little_exif
+            stability_check: false
+            binary: little_exif
           - name: LITTLE_EXIF2
-            fuzz_target: little_exif
+            config-file: fuzz_little_exif_settings_ci.toml
             timeout: 200
-            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+            library_folder: little_exif
+            stability_check: false
+            binary: little_exif
           - name: LITTLE_EXIF3
-            fuzz_target: little_exif
+            config-file: fuzz_little_exif_settings_ci.toml
             timeout: 400
-            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+            library_folder: little_exif
+            stability_check: false
+            binary: little_exif
           - name: LITTLE_EXIF4
-            fuzz_target: little_exif
+            config-file: fuzz_little_exif_settings_ci.toml
             timeout: 800
-            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+            library_folder: little_exif
+            stability_check: false
+            binary: little_exif
           - name: LITTLE_EXIF5
-            fuzz_target: little_exif
+            config-file: fuzz_little_exif_settings_ci.toml
             timeout: 1600
-            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
-          - name: LITTLE_EXIF5
-            fuzz_target: little_exif
-            timeout: 3200
-            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+            library_folder: little_exif
+            stability_check: false
+            binary: little_exif
+          #          - name: LOPDF
+          #            config-file: fuzz_lopdf_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: lopdf
+          #            stability_check: false
+          #            binary: lopdf
+          #          - name: BOA
+          #            config-file: fuzz_boa_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            library_folder: boa
+          #            stability_check: false
+          #            binary: boa
           #          - name: Hayro
           #            config-file: fuzz_hayro_settings_ci.toml
           #            timeout: 16000
@@ -210,20 +235,6 @@ jobs:
           #            library_folder: safe_pdf
           #            stability_check: false
           #            binary: safe_pdf
-          - name: LOPDF
-            config-file: fuzz_lopdf_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: lopdf
-            stability_check: false
-            binary: lopdf
-          - name: BOA
-            config-file: fuzz_boa_settings_ci.toml
-            timeout: 16000
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: boa
-            stability_check: false
-            binary: boa
 
     steps:
       - uses: actions/checkout@v4
