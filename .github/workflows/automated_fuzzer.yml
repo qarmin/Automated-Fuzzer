@@ -165,6 +165,10 @@ jobs:
             library_folder: zune
             stability_check: false
             binary: zune
+          - name: LITTLE_EXIF
+            fuzz_target: little_exif
+            timeout: 3600
+            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000
