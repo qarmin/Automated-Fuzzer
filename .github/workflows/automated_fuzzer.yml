@@ -18,157 +18,177 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Hayro
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro2
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro2
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro3
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro4
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro5
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro6
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: Hayro7
-            config-file: fuzz_hayro_settings_ci.toml
-            timeout: 16000
-            files: "AA_PDF_VALID_FILES2.7z"
-            library_folder: hayro
-            stability_check: false
-            binary: hayro
-          - name: TYRUF
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF2
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_22.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF3
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_22.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF4
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF5
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_22.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: TYRUF6
-            config-file: fuzz_ty_settings_ci.toml
-            timeout: 16000
-            files: "FILES_23.zip"
-            library_folder: ''
-            stability_check: false
-            binary: ty
-          - name: PYREFLY
-            config-file: fuzz_pyrefly_settings_ci.toml
-            timeout: 16000
-            files: "FILES_21.zip"
-            library_folder: ''
-            stability_check: false
-            binary: pyrefly
-          - name: BIOME
-            config-file: fuzz_biome_settings_ci.toml
-            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            library_folder: ''
-            stability_check: false
-            binary: biome
-          - name: MOXCMS
-            config-file: fuzz_moxcms_settings_ci.toml
-            timeout: 16000
-            files: "AA_ICC_VALID_FILES.7z"
-            library_folder: moxcms
-            stability_check: false
-            binary: moxcms
-          - name: ZUNE
-            config-file: fuzz_zune_settings_ci.toml
-            timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
-            stability_check: false
-            binary: zune
-          - name: ZUNE2
-            config-file: fuzz_zune_settings_ci.toml
-            timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
-            stability_check: false
-            binary: zune
-          - name: ZUNE3
-            config-file: fuzz_zune_settings_ci.toml
-            timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
-            stability_check: false
-            binary: zune
-          - name: ZUNE4
-            config-file: fuzz_zune_settings_ci.toml
-            timeout: 16000
-            files: "AA_IMAGE_VALID_FILES.7z"
-            library_folder: zune
-            stability_check: false
-            binary: zune
           - name: LITTLE_EXIF
             fuzz_target: little_exif
-            timeout: 3600
+            timeout: 100
             files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+          - name: LITTLE_EXIF2
+            fuzz_target: little_exif
+            timeout: 200
+            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+          - name: LITTLE_EXIF3
+            fuzz_target: little_exif
+            timeout: 400
+            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+          - name: LITTLE_EXIF4
+            fuzz_target: little_exif
+            timeout: 800
+            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+          - name: LITTLE_EXIF5
+            fuzz_target: little_exif
+            timeout: 1600
+            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+          - name: LITTLE_EXIF5
+            fuzz_target: little_exif
+            timeout: 3200
+            files: "AA_LITTLE_EXIF_VALID_FILES.7z"
+          #          - name: Hayro
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro2
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro2
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro3
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro4
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro5
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro6
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: Hayro7
+          #            config-file: fuzz_hayro_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_PDF_VALID_FILES2.7z"
+          #            library_folder: hayro
+          #            stability_check: false
+          #            binary: hayro
+          #          - name: TYRUF
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_21.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUF2
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_22.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUF3
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_22.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUF4
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_21.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUF5
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_22.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: TYRUF6
+          #            config-file: fuzz_ty_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_23.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: ty
+          #          - name: PYREFLY
+          #            config-file: fuzz_pyrefly_settings_ci.toml
+          #            timeout: 16000
+          #            files: "FILES_21.zip"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: pyrefly
+          #          - name: BIOME
+          #            config-file: fuzz_biome_settings_ci.toml
+          #            timeout: 5000 #16000 # TODO - compilation takes ~2 hours, regression
+          #            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+          #            library_folder: ''
+          #            stability_check: false
+          #            binary: biome
+          #          - name: MOXCMS
+          #            config-file: fuzz_moxcms_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_ICC_VALID_FILES.7z"
+          #            library_folder: moxcms
+          #            stability_check: false
+          #            binary: moxcms
+          #          - name: ZUNE
+          #            config-file: fuzz_zune_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_IMAGE_VALID_FILES.7z"
+          #            library_folder: zune
+          #            stability_check: false
+          #            binary: zune
+          #          - name: ZUNE2
+          #            config-file: fuzz_zune_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_IMAGE_VALID_FILES.7z"
+          #            library_folder: zune
+          #            stability_check: false
+          #            binary: zune
+          #          - name: ZUNE3
+          #            config-file: fuzz_zune_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_IMAGE_VALID_FILES.7z"
+          #            library_folder: zune
+          #            stability_check: false
+          #            binary: zune
+          #          - name: ZUNE4
+          #            config-file: fuzz_zune_settings_ci.toml
+          #            timeout: 16000
+          #            files: "AA_IMAGE_VALID_FILES.7z"
+          #            library_folder: zune
+          #            stability_check: false
+          #            binary: zune
           #          - name: SWC
           #            config-file: fuzz_swc_settings_ci.toml
           #            timeout: 16000

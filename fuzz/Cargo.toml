@@ -41,6 +41,8 @@ spin_on = { version = "0.1.1", optional = true }
 image_hasher = { git = "https://github.com/qarmin/img_hash.git", optional = true }
 image_crates = { package = "image", version = "0.25.0", default-features = false, features = ["avif", "bmp", "dds", "ff", "gif", "hdr", "ico", "png", "pnm", "qoi", "tga", "webp"], optional = true }
 nom-exif = { git = "https://github.com/mindeng/nom-exif", optional = true}
+little_exif = { version = "0.6", optional = true}
+
 vid_dup_finder_lib = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true}
 ffmpeg_cmdline_utils = { git = "https://github.com/Farmadupe/vid_dup_finder_lib", optional = true}
 hayro = { git = "https://github.com/LaurenzV/hayro.git" , optional = true}
@@ -64,6 +66,7 @@ dicom_f = ["dicom-core", "dicom-object", "dicom-ul", "dicom-encoding", "dicom-di
 slint_f = ["i-slint-compiler", "spin_on"]
 image_hasher_f = ["image_hasher", "image_crates"]
 nom_exif_f = ["nom-exif"]
+little_exif_f = ["little_exif"]
 vidduplicate_f = ["vid_dup_finder_lib", "ffmpeg_cmdline_utils"]
 hayro_f = ["hayro"]
 rawler_f = ["rawler"]
@@ -143,6 +146,13 @@ bench = false
 [[bin]]
 name = "nom_exif"
 path = "fuzz_targets/nom_exif.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "little_exif"
+path = "fuzz_targets/little_exif.rs"
 test = false
 doc = false
 bench = false
