@@ -5,7 +5,7 @@ edition = "2021"
 
 
 [dependencies]
-little_exif = "0.6.20"
+little_exif = { git = "https://github.com/TechnikTobi/little_exif.git"}
 walkdir = "2.5.0"
 
 
