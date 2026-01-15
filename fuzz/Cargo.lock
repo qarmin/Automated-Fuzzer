@@ -2669,9 +2669,8 @@ checksum = "11d3d7f243d5c5a8b9bb5d6dd2b1602c0cb0b9db1621bafc7ed66e35ff9fe092"
 
 [[package]]
 name = "little_exif"
-version = "0.6.20"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e932a2a26300dd745c269fb3a1e1af89cdaf6b2a5f66b8fcfd2917254633b1b1"
+version = "0.6.23"
+source = "git+https://github.com/TechnikTobi/little_exif.git#fea58c8f70e8f2f262d28aee55a87075255e3d6a"
 dependencies = [
  "brotli",
  "crc",
