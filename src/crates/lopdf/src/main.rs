@@ -1,8 +1,9 @@
-use lopdf::Document;
 use std::env::args;
 use std::fs;
 use std::io::Cursor;
 use std::path::Path;
+
+use lopdf::Document;
 use walkdir::WalkDir;
 
 fn main() {
@@ -41,7 +42,7 @@ fn check_file(file_path: &str) {
                 let _text = document.extract_text(&[page_number]);
             }
 
-            if let Err(e) =  document.save_to(&mut Cursor::new(Vec::new())) {
+            if let Err(e) = document.save_to(&mut Cursor::new(Vec::new())) {
                 eprintln!("Error: {}", e);
             };
         }

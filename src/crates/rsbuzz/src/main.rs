@@ -1,5 +1,6 @@
 use std::env::args;
 use std::path::Path;
+
 use walkdir::WalkDir;
 
 fn main() {
@@ -25,7 +26,7 @@ fn check_file(path: &str) {
     let _ = process_face(&data);
 }
 fn process_face(data: &[u8]) -> Option<()> {
-    let face =  rustybuzz::Face::from_slice(data, 0)?;
+    let face = rustybuzz::Face::from_slice(data, 0)?;
     let buffer = rustybuzz::UnicodeBuffer::new();
     rustybuzz::shape(&face, &[], buffer);
     let mut buffer = rustybuzz::UnicodeBuffer::new();

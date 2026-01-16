@@ -1,9 +1,10 @@
 use std::env::args;
 use std::fs;
 use std::path::Path;
+
+use boa_engine::{Context, Source};
 // use dicom_core::header::Header;
 use walkdir::WalkDir;
-use boa_engine::Source; use boa_engine::Context;
 fn main() {
     let path = args().nth(1).unwrap().clone();
     if !Path::new(&path).exists() {

@@ -2,7 +2,10 @@ use std::env::args;
 use std::fs;
 use std::path::Path;
 use std::sync::Arc;
-use hayro::{render, InterpreterSettings, Pdf, RenderSettings};
+
+use hayro::hayro_interpret::InterpreterSettings;
+use hayro::hayro_syntax::Pdf;
+use hayro::{render, RenderSettings};
 use walkdir::WalkDir;
 
 fn main() {

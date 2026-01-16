@@ -2,9 +2,9 @@ use std::env::args;
 use std::fs;
 use std::io::Cursor;
 use std::path::Path;
+
 use nom_exif::{ExifIter, MediaParser, MediaSource, TrackInfo};
 use walkdir::WalkDir;
-
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -26,7 +26,7 @@ fn main() {
 }
 
 fn check_file(path: &str) {
-    let content = match fs::read(&path) {
+    let content = match fs::read(path) {
         Ok(content) => content,
         Err(e) => {
             println!("{e}");
@@ -40,7 +40,7 @@ fn check_file(path: &str) {
     // Parse unseekable
     let reader = Cursor::new(&content);
     let Ok(ms) = MediaSource::unseekable(reader) else {
-        return ;
+        return;
     };
     let iter: Result<ExifIter, _> = parser.parse(ms);
     if let Ok(iter) = iter {
@@ -58,14 +58,14 @@ fn check_file(path: &str) {
 
     let reader = Cursor::new(&content);
     let Ok(ms) = MediaSource::unseekable(reader) else {
-        return ;
+        return;
     };
     let _: Result<TrackInfo, _> = parser.parse(ms);
 
     // Parse seekable
     let reader = Cursor::new(&content);
     let Ok(ms) = MediaSource::seekable(reader) else {
-        return ;
+        return;
     };
     let iter: Result<ExifIter, _> = parser.parse(ms);
     if let Ok(iter) = iter {
@@ -83,7 +83,7 @@ fn check_file(path: &str) {
 
     let reader = Cursor::new(&content);
     let Ok(ms) = MediaSource::seekable(reader) else {
-        return ;
+        return;
     };
     let _: Result<TrackInfo, _> = parser.parse(ms);
 }

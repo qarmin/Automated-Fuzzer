@@ -1,7 +1,8 @@
 use std::env::args;
-use std::path::Path;
-use walkdir::WalkDir;
 use std::fs;
+use std::path::Path;
+
+use walkdir::WalkDir;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();

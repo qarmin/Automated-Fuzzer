@@ -1,8 +1,9 @@
+use std::env::args;
+use std::path::Path;
+
 use fast_image_resize::images::{Image, TypedCroppedImage};
 use fast_image_resize::{FilterType, IntoImageView, PixelType, ResizeAlg, ResizeOptions, Resizer};
 use image::*;
-use std::env::{args, split_paths};
-use std::path::Path;
 use walkdir::WalkDir;
 
 fn main() {
@@ -92,12 +93,15 @@ fn check_file(file_path: &str) {
                 );
                 let mut dst_image = Image::new(width, height, *pixel_type);
 
-                let resize_options = ResizeOptions::new().resize_alg(resize_alg.clone());
+                let resize_options = ResizeOptions::new().resize_alg(*resize_alg);
                 if let Err(e) = Resizer::new().resize(&decoded, &mut dst_image, Some(&resize_options)) {
                     eprintln!("Error while resizing image: {:?}", e);
                 };
 
-                let resize_options = ResizeOptions::new().crop(-1.0, -1.0, 1.0, 1.0).fit_into_destination(Some((-15.0, 25.0))).use_alpha(true);
+                let resize_options = ResizeOptions::new()
+                    .crop(-1.0, -1.0, 1.0, 1.0)
+                    .fit_into_destination(Some((-15.0, 25.0)))
+                    .use_alpha(true);
                 if let Err(e) = Resizer::new().resize(&decoded, &mut dst_image, Some(&resize_options)) {
                     eprintln!("Error while resizing image(2): {:?}", e);
                 };

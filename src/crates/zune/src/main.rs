@@ -1,6 +1,7 @@
 use std::env::args;
 use std::fs;
 use std::path::Path;
+
 use walkdir::WalkDir;
 use zune_core::bytestream::ZCursor;
 use zune_core::options::DecoderOptions;
@@ -30,13 +31,14 @@ fn check_file(path: &str) {
         return;
     };
 
-    for options in [DecoderOptions::new_fast(), DecoderOptions::new_cmd(), DecoderOptions::new_safe()] {
+    for options in [
+        DecoderOptions::new_fast(),
+        DecoderOptions::new_cmd(),
+        DecoderOptions::new_safe(),
+    ] {
         let img = Image::read(ZCursor::new(&file_content), options);
-        match img {
-            Ok(_) => {
-                println!("Successfully checked file: {path}");}
-            Err(_) => {            }
+        if let Ok(_) = img {
+            println!("Successfully checked file: {path}");
         }
     }
-
 }

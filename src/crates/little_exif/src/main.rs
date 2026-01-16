@@ -1,10 +1,10 @@
 use std::env::args;
 use std::fs;
 use std::path::Path;
-use little_exif::metadata::Metadata;
-use little_exif::filetype::FileExtension;
-use walkdir::WalkDir;
 
+use little_exif::filetype::FileExtension;
+use little_exif::metadata::Metadata;
+use walkdir::WalkDir;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -26,7 +26,7 @@ fn main() {
 }
 
 fn check_file(path: &str) {
-    let content = match fs::read(&path) {
+    let content = match fs::read(path) {
         Ok(content) => content,
         Err(e) => {
             println!("{e}");
@@ -54,4 +54,3 @@ fn check_file(path: &str) {
         let _ = Metadata::new_from_vec(&content, file_type);
     }
 }
-

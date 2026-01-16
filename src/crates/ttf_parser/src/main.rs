@@ -1,7 +1,7 @@
 use std::env::args;
 use std::fs;
-use std::io::Read;
 use std::path::Path;
+
 use ttf_parser::GlyphId;
 use walkdir::WalkDir;
 

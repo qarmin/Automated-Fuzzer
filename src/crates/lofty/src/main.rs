@@ -2,11 +2,9 @@ use std::env::args;
 use std::fs;
 use std::path::Path;
 
-use lofty::file::{AudioFile, FileType};
-use lofty::file::TaggedFileExt;
+use lofty::file::{AudioFile, FileType, TaggedFileExt};
 use lofty::probe::Probe;
 use walkdir::WalkDir;
-
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -26,10 +24,23 @@ fn main() {
         check_file(&path);
     }
 }
-const ALL_FILE_TYPES: &[FileType] = &[FileType::Aac, FileType::Aiff, FileType::Ape, FileType::Flac, FileType::Mpeg, FileType::Mp4, FileType::Mpc, FileType::Opus, FileType::Vorbis, FileType::Speex, FileType::Wav, FileType::WavPack];
+const ALL_FILE_TYPES: &[FileType] = &[
+    FileType::Aac,
+    FileType::Aiff,
+    FileType::Ape,
+    FileType::Flac,
+    FileType::Mpeg,
+    FileType::Mp4,
+    FileType::Mpc,
+    FileType::Opus,
+    FileType::Vorbis,
+    FileType::Speex,
+    FileType::Wav,
+    FileType::WavPack,
+];
 
 fn check_file(path: &str) {
-    let content = match fs::read(&path) {
+    let content = match fs::read(path) {
         Ok(content) => content,
         Err(e) => {
             println!("{e}");

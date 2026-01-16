@@ -1,7 +1,7 @@
 use std::env::args;
+use std::path::Path;
 use std::{fs, io};
 
-use std::path::Path;
 use symphonia::core::codecs::audio::AudioDecoderOptions;
 use symphonia::core::codecs::CodecParameters;
 use symphonia::core::errors::Error;

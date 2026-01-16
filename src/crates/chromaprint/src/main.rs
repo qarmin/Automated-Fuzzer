@@ -1,16 +1,10 @@
 use std::env::args;
-use std::{fs, io};
-
 use std::path::Path;
-use symphonia::core::codecs::audio::AudioDecoderOptions;
-use symphonia::core::codecs::CodecParameters;
-use symphonia::core::errors::Error;
-use symphonia::core::formats::probe::Hint;
-use symphonia::core::formats::{FormatOptions, FormatReader, TrackType};
-use symphonia::core::io::MediaSourceStream;
-use symphonia::core::meta::MetadataOptions;
-use walkdir::WalkDir;
+use std::fs;
+
 use rusty_chromaprint::Configuration;
+use symphonia::core::formats::FormatReader;
+use walkdir::WalkDir;
 fn main() {
     let path = args().nth(1).unwrap().clone();
     if !Path::new(&path).exists() {
@@ -36,7 +30,13 @@ fn check_file(path: &str) {
     };
 
     println!("Checking file: {:?}", path);
-    for config in &[Configuration::preset_test1(), Configuration::preset_test2(), Configuration::preset_test3(), Configuration::preset_test4(), Configuration::preset_test5()] {
+    for config in &[
+        Configuration::preset_test1(),
+        Configuration::preset_test2(),
+        Configuration::preset_test3(),
+        Configuration::preset_test4(),
+        Configuration::preset_test5(),
+    ] {
         if let Err(e) = calc_fingerprint_helper(content.clone(), config) {
             eprintln!("Error with config for file {path}: {e}");
         }
@@ -44,11 +44,12 @@ fn check_file(path: &str) {
 }
 
 fn calc_fingerprint_helper(data: Vec<u8>, config: &Configuration) -> Result<(), String> {
+    use std::io;
+
     use symphonia::core::formats::probe::Hint;
     use symphonia::core::formats::FormatOptions;
     use symphonia::core::io::MediaSourceStream;
     use symphonia::core::meta::MetadataOptions;
-    use std::io;
 
     let cursor = io::Cursor::new(data);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());
@@ -67,11 +68,14 @@ fn calc_fingerprint_helper(data: Vec<u8>, config: &Configuration) -> Result<(), 
     decode_only(probed, config)
 }
 
-fn decode_only(mut reader: Box<dyn symphonia::core::formats::FormatReader>, _config: &Configuration) -> Result<(), String> {
-    use symphonia::core::formats::TrackType;
-    use symphonia::core::codecs::CodecParameters;
+fn decode_only(
+    mut reader: Box<dyn symphonia::core::formats::FormatReader>,
+    _config: &Configuration,
+) -> Result<(), String> {
     use symphonia::core::codecs::audio::AudioDecoderOptions;
+    use symphonia::core::codecs::CodecParameters;
     use symphonia::core::errors::Error;
+    use symphonia::core::formats::TrackType;
 
     let track = reader.default_track(TrackType::Audio);
     let track = match track {

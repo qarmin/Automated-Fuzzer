@@ -1,10 +1,9 @@
 use std::env::args;
 use std::fs;
-use std::io::{BufReader, Cursor};
 use std::path::Path;
+
 use moxcms::{ColorProfile, Layout, TransformOptions};
 use walkdir::WalkDir;
-use zune_jpeg::JpegDecoder;
 
 fn main() {
     let path = args().nth(1).unwrap().clone();
@@ -48,8 +47,7 @@ fn check_file(path: &str) {
         return;
     };
 
-    let new_profile =
-    match ColorProfile::new_from_slice(&file_content) {
+    let new_profile = match ColorProfile::new_from_slice(&file_content) {
         Ok(profile) => {
             println!("  Found top-level ICC profile, checking...");
             profile
@@ -75,18 +73,8 @@ fn check_file(path: &str) {
     let new_srgb = ColorProfile::new_srgb();
     for &src_layout in ALL_LAYOUTS {
         for &dst_layout in ALL_LAYOUTS {
-            _ = new_profile.create_transform_8bit(
-                src_layout,
-                &new_profile,
-                dst_layout,
-                TransformOptions::default(),
-            );
-            _ = new_srgb.create_transform_8bit(
-                src_layout,
-                &new_profile,
-                dst_layout,
-                TransformOptions::default(),
-            );
+            _ = new_profile.create_transform_8bit(src_layout, &new_profile, dst_layout, TransformOptions::default());
+            _ = new_srgb.create_transform_8bit(src_layout, &new_profile, dst_layout, TransformOptions::default());
         }
     }
     println!("Successfully checked file: {path}");

@@ -1,5 +1,6 @@
 use std::env::args;
 use std::path::Path;
+
 use resvg::{tiny_skia, usvg};
 use walkdir::WalkDir;
 
@@ -26,13 +27,13 @@ fn check_file(file_path: &str) {
     let mut opt = usvg::Options::default();
     opt.fontdb_mut().load_system_fonts();
 
-    let Ok(svg_data) = std::fs::read(&file_path) else {
+    let Ok(svg_data) = std::fs::read(file_path) else {
         println!("Failed to render(std::fs::read): {file_path}");
         return;
     };
     let Ok(tree) = usvg::Tree::from_data(&svg_data, &opt) else {
         println!("Failed to render(usvg::Tree::from_data): {file_path}");
-        return
+        return;
     };
 
     let pixmap_size = tree.size().to_int_size();
@@ -42,5 +43,4 @@ fn check_file(file_path: &str) {
     } else {
         println!("Failed to render(Pixmap::new()): {file_path}");
     };
-
 }

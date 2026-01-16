@@ -1,7 +1,6 @@
 use std::env::args;
-use std::fs;
-use std::io::Read;
 use std::path::{Path, PathBuf};
+
 use vid_dup_finder_lib::{ffmpeg_builder, CreationOptions, Cropdetect};
 use walkdir::WalkDir;
 

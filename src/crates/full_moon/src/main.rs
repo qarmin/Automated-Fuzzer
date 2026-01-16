@@ -1,8 +1,8 @@
-
 use std::env::args;
-use std::path::Path;
-use walkdir::WalkDir;
 use std::fs;
+use std::path::Path;
+
+use walkdir::WalkDir;
 fn main() {
     let path = args().nth(1).unwrap().clone();
     if !Path::new(&path).exists() {
@@ -28,7 +28,7 @@ fn check_file(path: &str) {
     };
 
     let r = full_moon::parse_fallible(&data, full_moon::LuaVersion::new());
-    if r.errors().len() > 0 {
+    if !r.errors().is_empty() {
         println!("Error: {:?}", r.errors());
     }
 }

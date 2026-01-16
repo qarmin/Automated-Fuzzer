@@ -1,6 +1,6 @@
 use std::env::args;
-use std::{fs, panic};
 use std::path::Path;
+use std::{fs, panic};
 
 use walkdir::WalkDir;
 
@@ -29,27 +29,18 @@ fn check_file(file_path: &str) {
     };
 
     // Not interested in panic in image crate
-    let res = panic::catch_unwind(||{
-        match image::load_from_memory(&content) {
-            Ok(res) => Some(res),
-            Err(_e) => {
-                None
-            }
-        }
-    });
+    let res = panic::catch_unwind(|| image::load_from_memory(&content).ok());
     let dynamic_image = match res {
-        Ok(res) => {
-            match res {
-                Some(res) => res,
-                None => return,
-            }
+        Ok(res) => match res {
+            Some(res) => res,
+            None => return,
         },
         Err(_e) => {
             return;
         }
     };
 
-    let hash_size = [(8,8), (16, 16), (32, 32), (64, 64)];
+    let hash_size = [(8, 8), (16, 16), (32, 32), (64, 64)];
     let hash_alg = [
         image_hasher::HashAlg::Mean,
         image_hasher::HashAlg::Median,
@@ -60,7 +51,10 @@ fn check_file(file_path: &str) {
     ];
     for size in hash_size.iter() {
         for alg in hash_alg.iter() {
-            let hasher = image_hasher::HasherConfig::new().hash_size(size.0, size.1).hash_alg(*alg).to_hasher();
+            let hasher = image_hasher::HasherConfig::new()
+                .hash_size(size.0, size.1)
+                .hash_alg(*alg)
+                .to_hasher();
             let _ = hasher.hash_image(&dynamic_image);
         }
     }

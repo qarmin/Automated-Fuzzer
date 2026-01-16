@@ -3,10 +3,10 @@ use std::fs;
 use std::fs::File;
 use std::path::Path;
 
-use rawler::decoders::{ RawDecodeParams, RawMetadata};
+use rawler::decoders::{RawDecodeParams, RawMetadata};
 use rawler::imgop::develop::{Intermediate, RawDevelop};
 use rawler::rawsource::RawSource;
-use rawler::{Orientation};
+use rawler::Orientation;
 use walkdir::WalkDir;
 
 fn main() {
@@ -36,13 +36,21 @@ fn check_file(file_path: &str, save_path: Option<&str>) {
     match get_raw_file(&content) {
         Ok((int, met)) => {
             if let Some(save_path) = save_path {
-                to_image_rs(int, met, &format!("{}/converted_{}.jpg", save_path, Path::new(file_path).file_stem().unwrap().to_string_lossy()));
+                to_image_rs(
+                    int,
+                    met,
+                    &format!(
+                        "{}/converted_{}.jpg",
+                        save_path,
+                        Path::new(file_path).file_stem().unwrap().to_string_lossy()
+                    ),
+                );
             }
             println!("File processed successfully: {}", file_path);
         }
         Err(e) => {
             println!("Error processing file {}: {}", file_path, e)
-        },
+        }
     }
 }
 

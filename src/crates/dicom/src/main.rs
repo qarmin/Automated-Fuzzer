@@ -1,7 +1,8 @@
-use dicom_object::from_reader;
 use std::env::args;
 use std::fs;
 use std::path::Path;
+
+use dicom_object::from_reader;
 // use dicom_core::header::Header;
 use walkdir::WalkDir;
 
@@ -29,14 +30,13 @@ fn check_file(path: &str) {
         return;
     };
     let cursor = std::io::Cursor::new(file_content.clone());
-    let res =
-        match from_reader(cursor) {
-            Ok(res) => res,
-            Err(e) => {
-                eprintln!("Error: {}", e);
-                return;
-            }
-        };
+    let res = match from_reader(cursor) {
+        Ok(res) => res,
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            return;
+        }
+    };
     if let Err(e) = dicom_json::to_string(&res) {
         eprintln!("Error: {}", e);
         return;
@@ -48,8 +48,7 @@ fn check_file(path: &str) {
     let mut item_to_dump = Vec::new();
     if let Err(e) = res.write_all(&mut item_to_dump) {
         eprintln!("Error: {}", e);
-        return;
-    };
+    }
     // let Ok(res2) = from_reader(std::io::Cursor::new(item_to_dump.clone())) else {
     //     panic!("DIFFERENT CONTENT, This was properly loaded and saved before");
     //     return;

@@ -1,5 +1,5 @@
 use dicom::core::value::{DicomDate, DicomTime, PersonName, PrimitiveValue};
-use dicom::core::{Tag, VR, DataElementHeader, Length};
+use dicom::core::{DataElementHeader, Length, Tag, VR};
 use dicom::encoding::text::{SpecificCharacterSet, TextCodec};
 use rand::Rng;
 
@@ -21,7 +21,10 @@ fn main() {
 
     for i in 0..iterations {
         if i % 100 == 0 {
-            print!("\rProgress: {}/{} (Passed: {}, Failed: {})", i, iterations, passed, failed);
+            print!(
+                "\rProgress: {}/{} (Passed: {}, Failed: {})",
+                i, iterations, passed, failed
+            );
             std::io::Write::flush(&mut std::io::stdout()).ok();
         }
 
@@ -76,7 +79,10 @@ fn test_date_parsing(rng: &mut impl Rng, passed: &mut usize, failed: &mut usize)
         Ok(_) => *passed += 1,
         Err(_) => {
             *failed += 1;
-            eprintln!("\n❌ PANIC in DicomDate creation with y={}, m={}, d={}", year, month, day);
+            eprintln!(
+                "\n❌ PANIC in DicomDate creation with y={}, m={}, d={}",
+                year, month, day
+            );
         }
     }
 }
@@ -223,9 +229,7 @@ fn test_primitive_value_creation(rng: &mut impl Rng, passed: &mut usize, failed:
 
 // Test character set encoding/decoding with random data
 fn test_character_set_encoding(rng: &mut impl Rng, passed: &mut usize, failed: &mut usize) {
-    let charsets = vec![
-        SpecificCharacterSet::default(),
-    ];
+    let charsets = vec![SpecificCharacterSet::default()];
 
     let bytes = random_bytes(rng, 100);
     let text = random_string(rng, 100);
@@ -362,4 +366,3 @@ fn test_basic_decoder(rng: &mut impl Rng, passed: &mut usize, failed: &mut usize
         }
     }
 }
-

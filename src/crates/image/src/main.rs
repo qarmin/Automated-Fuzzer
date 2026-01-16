@@ -1,11 +1,9 @@
 use std::env::args;
 use std::fs;
 use std::io::Cursor;
-use std::ops::Deref;
 use std::path::Path;
 
-use image::{GenericImageView, ImageBuffer, ImageFormat, Pixel};
-use image::imageops;
+use image::{GenericImageView, ImageFormat};
 use walkdir::WalkDir;
 const IMAGE_FORMATS_READ: &[ImageFormat] = &[
     ImageFormat::Png,
@@ -79,7 +77,6 @@ fn check_file(file_path: &str) {
         None => return,
     };
 
-
     // let _ = img.as_rgb8().map(|e|enumerate_pixels(e, |_, _, _|{}));
     // let _ = img.as_luma8().map(|e|enumerate_pixels(e, |_, _, _|{}));
     // let _ = img.as_rgba8().map(|e|enumerate_pixels(e, |_, _, _|{}));
@@ -90,9 +87,7 @@ fn check_file(file_path: &str) {
     // let _ = img.as_rgba32f().map(|e|enumerate_pixels(e, |_, _, _|{}));
 
     println!("Image: {file_path}, {:?}", img.dimensions());
-    for format in IMAGE_FORMATS_WRITE
-        .iter()
-    {
+    for format in IMAGE_FORMATS_WRITE.iter() {
         let buffer: Vec<u8> = Vec::new();
         println!("Before write_to {format:?}");
         if let Err(e) = img.write_to(&mut Cursor::new(buffer), *format) {
