@@ -9,7 +9,7 @@ use jwalk::WalkDir;
 use log::{error, info};
 use once_cell::sync::{Lazy, OnceCell};
 use rand::prelude::*;
-use rand::{Rng, rng};
+use rand::rng;
 
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};

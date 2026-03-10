@@ -29,10 +29,7 @@ struct DecodeOptions {
 pub(crate) fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
     let cursor = io::Cursor::new(content);
     let mss = MediaSourceStream::new(Box::new(cursor), Default::default());
-    let fmt_opts = FormatOptions {
-        enable_gapless: true,
-        ..Default::default()
-    };
+    let fmt_opts = FormatOptions::default();
     let meta_opts: MetadataOptions = Default::default();
     let hint = Hint::new();
 
@@ -44,10 +41,7 @@ pub(crate) fn parse_audio_file(content: Vec<u8>) -> Result<(), String> {
     };
 
     let opts = DecodeOptions {
-        decoder_opts: AudioDecoderOptions {
-            verify: true,
-            ..Default::default()
-        },
+        decoder_opts: AudioDecoderOptions::default().verify(true)
     };
     decode_only(probed, opts)?;
 

@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use hayro::hayro_interpret::InterpreterSettings;
 use hayro::hayro_syntax::Pdf;
-use hayro::{render, RenderSettings};
+use hayro::{render, RenderCache, RenderSettings};
 use walkdir::WalkDir;
 
 fn main() {
@@ -76,14 +76,8 @@ fn check_file(file_path: &str, save_path: Option<&str>) {
         let resources = page.resources();
         let _ = resources.parent();
 
-        // Parse all operations (computational)
-        for _op in page.operations() {}
-
-        // Parse typed operations (more computational)
-        for _typed_op in page.typed_operations() {}
-
         // Render the page
-        let pixmap = render(page, &InterpreterSettings::default(), &RenderSettings::default());
+        let pixmap = render(page, &RenderCache::default(), &InterpreterSettings::default(), &RenderSettings::default());
 
         if let Some(save_path) = save_path {
             match pixmap.into_png() {

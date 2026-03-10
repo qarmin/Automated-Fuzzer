@@ -148,7 +148,7 @@ jobs:
             binary: gdscript-formatter
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup rust version
         run: |

@@ -29,10 +29,7 @@ fn calc_fingerprint_helper(data: Vec<u8>, config: &Configuration) -> Result<(), 
 
     let hint = Hint::new();
     let meta_opts: MetadataOptions = Default::default();
-    let fmt_opts = FormatOptions {
-        enable_gapless: true,
-        ..Default::default()
-    };
+    let fmt_opts = FormatOptions::default();
 
     let probed = symphonia::default::get_probe()
         .probe(&hint, mss, fmt_opts, meta_opts)

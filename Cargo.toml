@@ -8,9 +8,9 @@ license = "MIT"
 [dependencies]
 jwalk = "0.8"
 rayon = "1.10"
-rand = "0.9"
+rand = "0.10"
 config = { version = "0.15", default-features = false, features = ["toml"] }
-zip = { version = "7.1.0", default-features = false, features = ["deflate"] }
+zip = { version = "8.2.0", default-features = false, features = ["deflate"] }
 handsome_logger = "0.9"
 log = "0.4"
 state ="0.6.0"

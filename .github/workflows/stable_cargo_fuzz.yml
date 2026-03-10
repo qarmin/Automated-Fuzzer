@@ -54,7 +54,7 @@ jobs:
             files: "AA_NOM_EXIF_VALID_FILES.7z"
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup rust version
         run: |
