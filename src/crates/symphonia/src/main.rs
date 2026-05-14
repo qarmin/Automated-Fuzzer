@@ -92,7 +92,7 @@ fn decode_only(mut reader: Box<dyn FormatReader>, opts: DecodeOptions) -> Result
             break;
         };
 
-        if packet.track_id() != track_id {
+        if packet.track_id != track_id {
             continue;
         }
 
