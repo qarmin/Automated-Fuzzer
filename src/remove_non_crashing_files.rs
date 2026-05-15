@@ -14,7 +14,7 @@ use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
 use crate::common::{collect_command_to_string, execute_command_and_connect_output, remove_and_create_entire_folder};
-use crate::error_signature::{ErrorSignature, get_legacy_error_type, parse_error_signature};
+use crate::error_signature::{ErrorSignature, parse_error_signature};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
 
@@ -63,27 +63,41 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     let results = still_broken_files
         .into_par_iter()
         .filter_map(|full_name| {
-            let start_text = fs::read(&full_name).unwrap();
+            let Ok(start_text) = fs::read(&full_name) else {
+                log::warn!("Cannot read {full_name}; skipping");
+                return None;
+            };
             let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
             if idx.is_multiple_of(100) {
                 info!("_____ Processed already {idx} / {all} (step {step})");
             }
-            let output_result = execute_command_and_connect_output(obj, &full_name);
+            let Some(output_result) = execute_command_and_connect_output(obj, &full_name) else {
+                // Filesystem error during the run — don't classify, don't delete.
+                return None;
+            };
             if settings.debug_print_results {
                 info!("File {full_name}\n{}", output_result.get_output());
             }
             if output_result.is_broken() {
-                fs::write(&full_name, start_text).unwrap();
+                if let Err(e) = fs::write(&full_name, start_text) {
+                    log::warn!("Cannot restore {full_name}: {e}");
+                }
                 return Some((full_name, output_result.get_output().trim().to_string()));
             }
             info!("File {full_name} is not broken, and will be removed");
 
-            fs::remove_file(&full_name).unwrap();
+            if let Err(e) = fs::remove_file(&full_name) {
+                log::warn!("Cannot remove non-broken {full_name}: {e}");
+            }
             None
         })
         .collect::<Vec<_>>();
 
-    remove_and_create_entire_folder(&settings.temp_folder);
+    // Only reset temp_folder when we actually have reports to write —
+    // otherwise we'd destroy reports from a previous run for no reason.
+    if !results.is_empty() {
+        remove_and_create_entire_folder(&settings.temp_folder);
+    }
 
     save_results_to_file(obj, settings, results);
 }
@@ -114,7 +128,6 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
     for (file_name, result) in content {
         let file_size = fs::metadata(&file_name).map(|m| m.len() as usize).unwrap_or(usize::MAX);
         let signature = parse_error_signature(&result);
-        let legacy_error_type = get_legacy_error_type(&result);
 
         let src_part = signature
             .source_file
@@ -122,12 +135,10 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
             .unwrap_or("unknown")
             .replace(['/', '\\'], "_");
         let line_suffix = signature.source_line.map(|l| format!("_{l}")).unwrap_or_default();
-        let error_type_str = if legacy_error_type.is_empty() {
-            &signature.error_type
-        } else {
-            legacy_error_type
-        };
-        let group_key = format!("{}__{}__{}{}", settings.name, error_type_str, src_part, line_suffix);
+        let group_key = format!(
+            "{}__{}__{}{}",
+            settings.name, signature.error_type, src_part, line_suffix
+        );
 
         groups.entry(group_key.clone()).or_default().push(CrashCandidate {
             file_name,
@@ -340,14 +351,12 @@ fn try_read_crate_code(project_name: &str) -> Option<String> {
     simplified.push_str("    check_file(&path);\n");
     simplified.push_str("}\n\n");
 
-    // Add check_file and everything after it
-    let check_fn_start = code.find("fn check_file(");
-    if let Some(idx) = check_fn_start {
-        simplified.push_str(&code[idx..]);
-    } else {
-        // No check_file function found, just include everything after main
-        return Some(code);
-    }
+    // Add check_file and everything after it. If the crate doesn't follow the
+    // `fn check_file(path: &str)` convention, the simplified main() above has no
+    // function to call — skip the reproducer entirely rather than dumping the
+    // raw, un-simplified source.
+    let idx = code.find("fn check_file(")?;
+    simplified.push_str(&code[idx..]);
 
     Some(simplified)
 }

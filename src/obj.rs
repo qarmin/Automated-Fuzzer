@@ -11,6 +11,18 @@ use crate::settings::{Setting, StabilityMode};
 
 pub static USE_ASAN_ENVS: AtomicBool = AtomicBool::new(false);
 
+/// Apply ASAN-related environment variables to `cmd` if the global ASAN flag is set.
+/// Centralises the env triple so every fuzz-target run sees the same configuration.
+pub fn apply_asan_envs(cmd: &mut Command) {
+    if USE_ASAN_ENVS.load(Ordering::Relaxed) {
+        cmd.envs([
+            ("RUST_BACKTRACE", "1"),
+            ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
+            ("ASAN_OPTIONS", "symbolize=1"),
+        ]);
+    }
+}
+
 pub trait ProgramConfig: Sync {
     fn get_broken_items_list(&self) -> &[String];
     fn get_ignored_items_list(&self) -> &[String];
@@ -23,7 +35,11 @@ pub trait ProgramConfig: Sync {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         error!("File {full_name} saved to {new_name}\n{output}");
 
-        try_to_save_file(&full_name, &new_name);
+        // If the copy failed, we must not return a path that doesn't exist on disk —
+        // downstream callers (e.g. minimize_new) would fail mysteriously.
+        if !try_to_save_file(&full_name, &new_name) {
+            return None;
+        }
         Some(new_name)
     }
     fn get_stability_mode(&self) -> StabilityMode;
@@ -45,7 +61,9 @@ pub trait ProgramConfig: Sync {
 
         error!("File {full_name} saved to {new_name}\n{diff}");
 
-        try_to_save_file(&full_name, &new_name);
+        if !try_to_save_file(&full_name, &new_name) {
+            return None;
+        }
         Some(new_name)
     }
 
@@ -56,13 +74,7 @@ pub trait ProgramConfig: Sync {
     fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self.get_basic_run_command();
         command.arg(full_name);
-        if USE_ASAN_ENVS.load(Ordering::Relaxed) {
-            command.envs([
-                ("RUST_BACKTRACE", "1"),
-                ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
-                ("ASAN_OPTIONS", "symbolize=1"),
-            ]);
-        }
+        apply_asan_envs(&mut command);
         command
     }
     fn get_group_command(&self, files: &[String]) -> Command {

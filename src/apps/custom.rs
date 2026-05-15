@@ -3,7 +3,7 @@ use std::process::{Child, Command, Stdio};
 
 use crate::broken_files::create_broken_files;
 use crate::common::CheckGroupFileMode;
-use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
+use crate::obj::{ProgramConfig, apply_asan_envs};
 use crate::settings::{CustomItems, Setting, StabilityMode};
 
 pub struct CustomStruct {
@@ -51,13 +51,7 @@ impl ProgramConfig for CustomStruct {
                 .skip(1)
                 .map(|e| e.replace("FILE_PATHS_TO_PROVIDE", full_name)),
         );
-        if USE_ASAN_ENVS.load(std::sync::atomic::Ordering::Relaxed) {
-            command.envs([
-                ("RUST_BACKTRACE", "1"),
-                ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
-                ("ASAN_OPTIONS", "symbolize=1"),
-            ]);
-        }
+        apply_asan_envs(&mut command);
         command
     }
     fn get_group_command(&self, full_name: &[String]) -> Command {

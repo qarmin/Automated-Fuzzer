@@ -316,14 +316,26 @@ jobs:
       # ══════════════════════════════════════════════════════════
       - name: "Collect all local crashes"
         run: |
-          mkdir -p /opt/ALL_CRASHES
+          mkdir -p /opt/ALL_CRASHES /opt/BROKEN_FILES_DIR
 
-          # Custom mode: crashes are in /opt/BROKEN_FILES_DIR
-          find /opt/BROKEN_FILES_DIR -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
+          # Custom mode: crashes are in /opt/BROKEN_FILES_DIR.
+          # Errors here are NOT silenced — losing crashes is never acceptable.
+          if [ -d /opt/BROKEN_FILES_DIR ]; then
+            BEFORE=$(find /opt/ALL_CRASHES -type f | wc -l)
+            find /opt/BROKEN_FILES_DIR -type f -exec cp {} /opt/ALL_CRASHES/ \;
+            AFTER=$(find /opt/ALL_CRASHES -type f | wc -l)
+            echo "Copied $((AFTER - BEFORE)) custom-mode crashes from BROKEN_FILES_DIR"
+          fi
 
           # Cargo-fuzz mode: crashes are in fuzz/artifacts/<target>/
           if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
-            find "fuzz/artifacts/${{ matrix.fuzz_target }}" -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
+            ARTIFACT_DIR="fuzz/artifacts/${{ matrix.fuzz_target }}"
+            if [ -d "$ARTIFACT_DIR" ]; then
+              BEFORE=$(find /opt/ALL_CRASHES -type f | wc -l)
+              find "$ARTIFACT_DIR" -type f -exec cp {} /opt/ALL_CRASHES/ \;
+              AFTER=$(find /opt/ALL_CRASHES -type f | wc -l)
+              echo "Copied $((AFTER - BEFORE)) cargo-fuzz crashes from $ARTIFACT_DIR"
+            fi
           fi
 
           python3 dedup_files.py /opt/ALL_CRASHES

@@ -97,7 +97,7 @@ impl TestCase {
     }
 }
 
-impl PageCase {
+impl Default for PageCase {
     fn default() -> Self {
         Self {
             width: 595.0,
@@ -108,7 +108,9 @@ impl PageCase {
             ops: Vec::new(),
         }
     }
+}
 
+impl PageCase {
     fn from_cursor(cur: &mut Cursor<'_>) -> Option<Self> {
         let width = cur.f32_range(1.0, 2000.0)?;
         let height = cur.f32_range(1.0, 2000.0)?;

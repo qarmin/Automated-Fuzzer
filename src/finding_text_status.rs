@@ -184,7 +184,10 @@ fn test_files(
             if check_if_app_ends() {
                 return None;
             }
-            let output_result = execute_command_and_connect_output(obj, &full_name);
+            let Some(output_result) = execute_command_and_connect_output(obj, &full_name) else {
+                // Filesystem hiccup — skip this file but don't abort the whole loop.
+                return Some(());
+            };
 
             // Print sample output exactly once across the entire program run
             if !SAMPLE_PRINTED.swap(true, Ordering::Relaxed) {

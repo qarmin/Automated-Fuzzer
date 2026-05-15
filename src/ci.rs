@@ -117,14 +117,19 @@ pub fn verify_regressions(_config: &str, state_dir: &str) {
     let mut still_broken = 0;
     let mut fixed = 0;
 
+    let mut skipped = 0;
     for file in &files {
-        let output_result = execute_command_and_connect_output(&obj, file);
+        let Some(output_result) = execute_command_and_connect_output(&obj, file) else {
+            println!("[SKIPPED] {file} (filesystem error during run)");
+            skipped += 1;
+            continue;
+        };
         if output_result.is_broken() {
             let sig = parse_error_signature(output_result.get_output());
             println!("[STILL BROKEN] {} - {}", file, sig.short_description);
             still_broken += 1;
         } else {
-            println!("[FIXED] {}", file);
+            println!("[FIXED] {file}");
             // Move to archive with unique name to avoid collisions
             let archive_dir = format!("{state_dir}/archived_fixed");
             let _ = fs::create_dir_all(&archive_dir);
@@ -133,9 +138,19 @@ pub fn verify_regressions(_config: &str, state_dir: &str) {
             if Path::new(&dest).exists() {
                 dest = format!("{archive_dir}/{}_{}", rand::random::<u32>(), file_name);
             }
-            let _ = fs::rename(file, dest);
+            // Handle cross-device rename (e.g. /dev/shm -> regular fs).
+            if fs::rename(file, &dest).is_err() {
+                if fs::copy(file, &dest).is_ok() {
+                    let _ = fs::remove_file(file);
+                } else {
+                    log::warn!("Could not archive {file} to {dest}");
+                }
+            }
             fixed += 1;
         }
+    }
+    if skipped > 0 {
+        println!("(skipped {skipped} files due to filesystem errors)");
     }
 
     println!("\nRegression check: {still_broken} still broken, {fixed} fixed");
@@ -147,11 +162,17 @@ fn copy_dir_contents(src: &str, dst: &str) {
         for entry in entries.flatten() {
             let src_path = entry.path();
             let dst_path = Path::new(dst).join(entry.file_name());
-            if src_path.is_dir() {
+            // Use symlink_metadata so we don't follow symlinks — a symlink loop
+            // would otherwise cause infinite recursion → stack overflow.
+            let Ok(ft) = fs::symlink_metadata(&src_path).map(|m| m.file_type()) else {
+                continue;
+            };
+            if ft.is_dir() {
                 copy_dir_contents(&src_path.to_string_lossy(), &dst_path.to_string_lossy());
-            } else {
+            } else if ft.is_file() {
                 let _ = fs::copy(&src_path, &dst_path);
             }
+            // skip symlinks silently — could resolve them, but for state dirs this is safer.
         }
     }
 }

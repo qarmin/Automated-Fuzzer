@@ -99,22 +99,31 @@ fn test_files(
             if check_if_app_ends() {
                 return None;
             }
-            let file_content = fs::read(&full_name).unwrap();
+            let Ok(file_content) = fs::read(&full_name) else {
+                return Some(());
+            };
             let mut outputs = Vec::new();
             let mut file_after_content = Vec::new();
             for _ in 0..settings.stability_runs {
-                let output_result = execute_command_and_connect_output(obj, &full_name);
+                let Some(output_result) = execute_command_and_connect_output(obj, &full_name) else {
+                    return Some(());
+                };
                 if settings.debug_print_results {
                     info!("{}", output_result.get_output());
                 }
 
                 if [StabilityMode::OutputContent, StabilityMode::FileContent].contains(&obj.get_stability_mode()) {
-                    file_after_content.push(fs::read(&full_name).unwrap());
+                    let Ok(after) = fs::read(&full_name) else {
+                        return Some(());
+                    };
+                    file_after_content.push(after);
                 }
                 if [StabilityMode::OutputContent, StabilityMode::ConsoleOutput].contains(&obj.get_stability_mode()) {
                     outputs.push(output_result.get_output().to_string());
                 }
-                fs::write(&full_name, &file_content).unwrap();
+                if fs::write(&full_name, &file_content).is_err() {
+                    return Some(());
+                }
             }
 
             let is_output_different = !outputs.is_empty() && outputs.windows(2).any(|w| w[0] != w[1]);

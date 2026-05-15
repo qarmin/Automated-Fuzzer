@@ -109,9 +109,18 @@ pub(crate) fn collect_output(output: &Output) -> String {
     format!("{stdout_str}\n{stderr_str}")
 }
 
-pub(crate) fn try_to_save_file(full_name: &str, new_name: &str) {
-    if let Err(e) = fs::copy(full_name, new_name) {
-        error!("Failed to copy file {full_name}, reason {e}, (maybe broken files folder not exists?)");
+/// Copy `full_name` to `new_name`. Returns true on success, false on failure (with error logged).
+/// Callers should treat a `false` return as "save did not happen" and avoid downstream operations
+/// that assume the destination file exists.
+pub(crate) fn try_to_save_file(full_name: &str, new_name: &str) -> bool {
+    match fs::copy(full_name, new_name) {
+        Ok(_) => true,
+        Err(e) => {
+            error!(
+                "Failed to copy file {full_name} -> {new_name}, reason {e}, (maybe broken files folder not exists?)"
+            );
+            false
+        }
     }
 }
 
@@ -225,9 +234,23 @@ impl OutputResult {
     }
 }
 
+/// Run the fuzz target on `full_name` and return a structured result.
+///
+/// Returns `None` (with the cause logged) if the input file can't be read or
+/// can't be restored after the run — those are filesystem-level failures, not
+/// crashes of the target itself, and the caller should skip the file.
 #[allow(clippy::borrowed_box)]
-pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, full_name: &str) -> OutputResult {
-    let content_before = fs::read(full_name).unwrap();
+pub(crate) fn execute_command_and_connect_output(
+    obj: &Box<dyn ProgramConfig>,
+    full_name: &str,
+) -> Option<OutputResult> {
+    let content_before = match fs::read(full_name) {
+        Ok(c) => c,
+        Err(e) => {
+            error!("execute_command_and_connect_output: cannot read {full_name}: {e}");
+            return None;
+        }
+    };
 
     let command = obj.get_full_command(full_name);
 
@@ -252,12 +275,13 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
 
     let ignore_timeout = obj.get_settings().allowed_error_statuses.contains(&124);
 
-    let res = fs::write(full_name, &content_before);
-
-    assert!(
-        res.is_ok(),
-        "{res:?} - {full_name} - probably you need to set write permissions to this file"
-    );
+    if let Err(e) = fs::write(full_name, &content_before) {
+        error!(
+            "execute_command_and_connect_output: cannot restore {full_name} after run: {e} \
+             (probably you need to set write permissions to this file). Skipping result."
+        );
+        return None;
+    }
 
     str_out.push_str(&format!(
         "\n##### Automatic Fuzzer note, output status \"{:?}\", output signal \"{:?}\"\n",
@@ -265,7 +289,7 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
         output.status.signal()
     ));
 
-    OutputResult::new(
+    Some(OutputResult::new(
         output.status.code(),
         output.status.signal(),
         is_signal_broken,
@@ -275,7 +299,7 @@ pub(crate) fn execute_command_and_connect_output(obj: &Box<dyn ProgramConfig>, f
         str_out,
         collect_command_to_string(&command),
         ignore_timeout,
-    )
+    ))
 }
 
 pub(crate) fn check_files_number(name: &str, dir: &str) {

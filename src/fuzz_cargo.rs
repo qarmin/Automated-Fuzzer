@@ -1,3 +1,4 @@
+use std::os::unix::process::CommandExt;
 use std::process::{Command, Stdio};
 use std::sync::atomic::Ordering;
 
@@ -27,6 +28,10 @@ pub fn run_cargo_fuzz(target: &str, corpus: &str, timeout: u64, features: Option
         .arg("-rss_limit_mb=20000");
 
     cmd.stdout(Stdio::inherit()).stderr(Stdio::inherit());
+
+    // Put cargo-fuzz in its own process group so that on Ctrl+C we can kill
+    // the entire tree (cargo → cargo-fuzz → libfuzzer workers) with one signal.
+    cmd.process_group(0);
 
     info!("Running: cargo fuzz run {target} ...");
 
@@ -102,11 +107,17 @@ fn collect_cargo_fuzz_results(target: &str) {
     }
 }
 
-/// Send SIGTERM to child process group on Unix
+/// Send SIGTERM to the cargo-fuzz process group on Unix. Logs any failure so
+/// CI debugging doesn't have to guess whether the signal was delivered.
 fn signal_child_group(child: &std::process::Child) {
     let pid = child.id() as i32;
-    // Use negative PID to signal the entire process group
-    unsafe {
-        libc::kill(-pid, libc::SIGTERM);
+    // Use negative PID to signal the entire process group; relies on
+    // `cmd.process_group(0)` having put the child in its own group.
+    let rc = unsafe { libc::kill(-pid, libc::SIGTERM) };
+    if rc < 0 {
+        log::warn!(
+            "kill(-{pid}, SIGTERM) failed: {}",
+            std::io::Error::last_os_error()
+        );
     }
 }

@@ -507,23 +507,26 @@ fn try_parse_not_implemented(output: &str) -> Option<ErrorSignature> {
     })
 }
 
-/// Extract source file path and line number from Rust panic/backtrace output
-fn extract_source_file_and_line(output: &str) -> (Option<String>, Option<u32>) {
-    let regexes: &[&LazyLock<Regex>] = &[&RE_PANIC_OLD, &RE_PANIC_NEW, &RE_SOURCE_LOC, &RE_BT_SRC];
-    for re in regexes {
-        if let Some(cap) = re.captures(output) {
-            let path = normalize_source_path(cap.get(1).unwrap().as_str());
-            let line = cap.get(2).and_then(|m| m.as_str().parse().ok());
-            return (Some(path), line);
-        }
-    }
+/// Returns true if the path points into rustc internals or a cargo registry checkout,
+/// in which case it should be skipped when looking for the crash's true source location.
+fn is_external_source(path: &str) -> bool {
+    path.contains("rustc/") || path.contains(".cargo/registry") || path.contains("library/")
+}
 
-    // Pattern 5: Any .rs file in backtrace
-    if let Some(cap) = RE_BT_ANY.captures(output) {
-        let path = cap.get(1).unwrap().as_str();
-        if !path.contains("rustc/") && !path.contains(".cargo/registry") && !path.contains("library/") {
+/// Extract source file path and line number from Rust panic/backtrace output.
+/// Skips matches inside rustc/std/registry paths so that crashes are attributed
+/// to the actual project source rather than to a transitive dependency.
+fn extract_source_file_and_line(output: &str) -> (Option<String>, Option<u32>) {
+    let regexes: &[&LazyLock<Regex>] =
+        &[&RE_PANIC_OLD, &RE_PANIC_NEW, &RE_SOURCE_LOC, &RE_BT_SRC, &RE_BT_ANY];
+    for re in regexes {
+        for cap in re.captures_iter(output) {
+            let raw = cap.get(1).unwrap().as_str();
+            if is_external_source(raw) {
+                continue;
+            }
             let line = cap.get(2).and_then(|m| m.as_str().parse().ok());
-            return (Some(normalize_source_path(path)), line);
+            return (Some(normalize_source_path(raw)), line);
         }
     }
 
@@ -565,10 +568,10 @@ fn extract_panic_message(output: &str) -> Option<String> {
 
 /// Extract ASAN error type
 fn extract_asan_type(output: &str) -> Option<String> {
-    RE_ASAN_TYPE.captures(output).and_then(|cap| {
-        let t = cap.get(1)?.as_str().to_string();
-        Some(t)
-    })
+    RE_ASAN_TYPE
+        .captures(output)
+        .and_then(|cap| cap.get(1))
+        .map(|m| m.as_str().to_string())
 }
 
 fn truncate_str(s: &str, max_len: usize) -> String {
@@ -584,48 +587,6 @@ fn truncate_str(s: &str, max_len: usize) -> String {
         .last()
         .unwrap_or(0);
     format!("{}...", &s[..boundary])
-}
-
-/// Returns the old-style error_type string for backward compatibility with folder naming
-pub fn get_legacy_error_type(output: &str) -> &'static str {
-    match output {
-        _ if output.contains("memory allocation of") => "memory_failure",
-        _ if output.contains("stack overflow") => "stack_overflow",
-        _ if output.contains("stack-overflow") => "asan_stack_overflow",
-        _ if output.contains("heap-use-after-free") => "asan_heap_use_after_free",
-        _ if output.contains("segmentation fault") => "segmentation_fault",
-        _ if output.contains("Killed") => "killed",
-        _ if output.contains("is not a char boundary") => "char_boundary",
-        _ if output.contains("divide by zero") => "divide_by_zero",
-        _ if output.contains("attempt to subtract with overflow") => "overflow_s",
-        _ if output.contains("attempt to multiply with overflow") => "overflow_m",
-        _ if output.contains("attempt to add with overflow") => "overflow_a",
-        _ if output.contains("attempt to shift right with overflow") => "overflow_sr",
-        _ if output.contains("attempt to shift left with overflow") => "overflow_sl",
-        _ if output.contains("index out of bounds:") => "index_out_of_bounds",
-        _ if output.contains("is out of bounds:") => "out_of_bounds",
-        _ if output.contains("is out of bounds of") => "out_of_bounds_of",
-        _ if output.contains("Option::unwrap()") => "option_unwrap",
-        _ if output.contains("Result::unwrap()") => "result_unwrap",
-        _ if output.contains("when slicing `") => "slicing",
-        _ if output.contains("internal error: entered unreachable code") => "unreachable_code",
-        _ if output.contains("not implemented: ") => "not_implemented",
-        _ if output.contains("Aborted") => "aborted",
-        _ if output.contains("output signal \"Some(15)\"") => "out_of_memory",
-        _ if output.contains("AddressSanitizer: out of memory") => "asan_out_of_memory",
-        _ if output.contains("output signal \"Some(11)\"") => "segmentation_fault2",
-        _ if output.contains("AddressSanitizer") => "address_sanitizer",
-        _ if output.contains("ThreadSanitizer") => "thread_sanitizer",
-        _ if output.contains("LeakSanitizer") => "leak_sanitizer",
-        _ if output.contains("assertion `") => "assertion",
-        _ if output.contains("assertion failed:") => "assertion_failed",
-        _ if output.contains("out of range for") => "out_of_range",
-        _ if output.contains("panicked at ") => "panicked",
-        _ if output.contains("RUST_BACKTRACE") => "panic",
-        _ if output.contains("output status \"Some(124)\"") => "timeout",
-        _ if output.contains("Fix introduced a syntax error") => "syntax_error",
-        _ => "",
-    }
 }
 
 #[cfg(test)]
