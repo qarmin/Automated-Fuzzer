@@ -49,8 +49,15 @@ impl IgnoreList {
 
     pub fn add(&mut self, entry: IgnoreEntry) {
         // Check for duplicate
-        if self.ignore.iter().any(|e| e.project == entry.project && e.pattern == entry.pattern) {
-            println!("Entry already exists for project '{}' with pattern '{}'", entry.project, entry.pattern);
+        if self
+            .ignore
+            .iter()
+            .any(|e| e.project == entry.project && e.pattern == entry.pattern)
+        {
+            println!(
+                "Entry already exists for project '{}' with pattern '{}'",
+                entry.project, entry.pattern
+            );
             return;
         }
         self.ignore.push(entry);
@@ -70,7 +77,12 @@ impl IgnoreList {
             .collect();
 
         if entries.is_empty() {
-            println!("No ignored entries{}.", project_filter.map(|p| format!(" for project '{p}'")).unwrap_or_default());
+            println!(
+                "No ignored entries{}.",
+                project_filter
+                    .map(|p| format!(" for project '{p}'"))
+                    .unwrap_or_default()
+            );
             return;
         }
 
@@ -186,6 +198,9 @@ pub fn print_config_ignored_items(project_filter: Option<&str>) {
     }
 
     if !found_any && project_filter.is_some() {
-        println!("\nNo ignored patterns in fuzz configs for '{}'.", project_filter.unwrap());
+        println!(
+            "\nNo ignored patterns in fuzz configs for '{}'.",
+            project_filter.unwrap()
+        );
     }
 }

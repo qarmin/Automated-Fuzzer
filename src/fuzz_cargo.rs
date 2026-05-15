@@ -9,16 +9,13 @@ pub fn run_cargo_fuzz(target: &str, corpus: &str, timeout: u64, features: Option
     info!("Starting cargo-fuzz mode for target: {target}");
 
     let mut cmd = Command::new("cargo");
-    cmd.arg("fuzz")
-        .arg("run")
-        .arg(target);
+    cmd.arg("fuzz").arg("run").arg(target);
 
     if !corpus.is_empty() {
         cmd.arg(corpus);
     }
 
-    cmd.arg(format!("-j{jobs}"))
-        .arg("--release");
+    cmd.arg(format!("-j{jobs}")).arg("--release");
 
     if let Some(feat) = features {
         cmd.args(["--features", feat]);
@@ -29,8 +26,7 @@ pub fn run_cargo_fuzz(target: &str, corpus: &str, timeout: u64, features: Option
         .arg(format!("-max_total_time={timeout}"))
         .arg("-rss_limit_mb=20000");
 
-    cmd.stdout(Stdio::inherit())
-        .stderr(Stdio::inherit());
+    cmd.stdout(Stdio::inherit()).stderr(Stdio::inherit());
 
     info!("Running: cargo fuzz run {target} ...");
 

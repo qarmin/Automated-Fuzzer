@@ -448,22 +448,41 @@ jobs:
       - name: "Generate reports from crashes"
         if: always()
         run: |
+          set -x
           CRASH_COUNT=$(find /opt/ALL_CRASHES -type f 2>/dev/null | wc -l)
           REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)
+          echo "DIAG: CRASH_COUNT=$CRASH_COUNT REPORT_COUNT=$REPORT_COUNT"
 
           if [ "$CRASH_COUNT" -gt 0 ] && [ "$REPORT_COUNT" -eq 0 ]; then
             echo "ASAN verification produced no reports — generating from raw crashes"
 
-            # Re-run remove_non_crashing with the normal binary (not ASAN)
-            # by copying crashes to BROKEN_FILES_DIR and running without ASAN envs
-            rm -rf /opt/BROKEN_FILES_DIR/*
-            find /opt/ALL_CRASHES -type f -exec cp {} /opt/BROKEN_FILES_DIR/ \; 2>/dev/null || true
+            # Ensure dest exists and is empty
+            mkdir -p /opt/BROKEN_FILES_DIR
+            find /opt/BROKEN_FILES_DIR -mindepth 1 -delete || true
+            echo "DIAG: BROKEN_FILES_DIR after cleanup: $(find /opt/BROKEN_FILES_DIR -type f | wc -l) files"
+            echo "DIAG: ALL_CRASHES sample (first 10):"
+            find /opt/ALL_CRASHES -type f | head -10
+            echo "DIAG: extension breakdown in ALL_CRASHES:"
+            find /opt/ALL_CRASHES -type f | sed -E 's/.*\.([^.]+)$/.\1/' | sort | uniq -c | sort -rn | head -20
+
+            # Copy with verbose output so failures are visible
+            COPY_ERR=$(find /opt/ALL_CRASHES -type f -exec cp {} /opt/BROKEN_FILES_DIR/ \; 2>&1)
+            if [ -n "$COPY_ERR" ]; then
+              echo "DIAG: cp produced output/errors:"
+              echo "$COPY_ERR" | head -20
+            fi
+            COPIED=$(find /opt/BROKEN_FILES_DIR -type f | wc -l)
+            echo "DIAG: BROKEN_FILES_DIR after cp: $COPIED files"
 
             if [ -f "fuzz_settings.toml" ]; then
-              sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml 2>/dev/null || true
-              sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml 2>/dev/null || true
+              sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml || true
+              sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml || true
+              echo "DIAG: fuzz_settings.toml relevant lines:"
+              grep -E "broken_files_dir|extensions|name = |current_mode|temp_folder|max_file_size_limit" fuzz_settings.toml || true
               export RUST_BACKTRACE=1
               auto_fuzzer legacy --remove-non-crashing || true
+            else
+              echo "DIAG: fuzz_settings.toml MISSING in $(pwd)"
             fi
 
             REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)

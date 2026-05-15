@@ -33,10 +33,19 @@ pub fn validate_links(auto_remove: bool) {
                 println!("[OPEN]   {} \"{}\" — {}", entry.project, entry.pattern, url);
             }
             Some(other) => {
-                println!("[{}] {} \"{}\" — {}", other.to_uppercase(), entry.project, entry.pattern, url);
+                println!(
+                    "[{}] {} \"{}\" — {}",
+                    other.to_uppercase(),
+                    entry.project,
+                    entry.pattern,
+                    url
+                );
             }
             None => {
-                println!("[WARN]   {} \"{}\" — {} (could not check)", entry.project, entry.pattern, url);
+                println!(
+                    "[WARN]   {} \"{}\" — {} (could not check)",
+                    entry.project, entry.pattern, url
+                );
             }
         }
     }
@@ -113,7 +122,13 @@ pub fn validate_config_ignored_items(auto_remove: bool) {
                 continue;
             };
             let key = key_part.trim().to_string();
-            let pattern = rest.split('#').next().unwrap_or("").trim().trim_matches('"').to_string();
+            let pattern = rest
+                .split('#')
+                .next()
+                .unwrap_or("")
+                .trim()
+                .trim_matches('"')
+                .to_string();
             items.push((key, pattern, url.to_string()));
         }
 
@@ -156,9 +171,9 @@ pub fn validate_config_ignored_items(auto_remove: bool) {
             let mut new_content = String::new();
             for line in content.lines() {
                 let trimmed = line.trim();
-                let should_remove = lines_to_remove.iter().any(|key| {
-                    trimmed.starts_with(key) && trimmed[key.len()..].trim_start().starts_with('=')
-                });
+                let should_remove = lines_to_remove
+                    .iter()
+                    .any(|key| trimmed.starts_with(key) && trimmed[key.len()..].trim_start().starts_with('='));
                 if should_remove {
                     info!("Removing line from {}: {}", config_path.display(), trimmed);
                     continue;
@@ -167,7 +182,11 @@ pub fn validate_config_ignored_items(auto_remove: bool) {
                 new_content.push('\n');
             }
             fs::write(&config_path, new_content).unwrap();
-            println!("    → Removed {} closed entries from {}", lines_to_remove.len(), config_path.display());
+            println!(
+                "    → Removed {} closed entries from {}",
+                lines_to_remove.len(),
+                config_path.display()
+            );
         }
     }
 }

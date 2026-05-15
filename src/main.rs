@@ -397,7 +397,9 @@ fn main() {
 
             check_files_number("Valid input dir", &settings.valid_input_files_dir);
             check_files_number("Broken files dir", &settings.broken_files_dir);
-            check_files_number("Temp possible broken files dir", &settings.temp_possible_broken_files_dir);
+            check_files_number(
+                "Temp possible broken files dir", &settings.temp_possible_broken_files_dir,
+            );
 
             assert!(Path::new(&settings.valid_input_files_dir).exists());
             assert!(Path::new(&settings.broken_files_dir).exists());

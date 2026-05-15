@@ -2,11 +2,10 @@ use std::os::unix::fs::PermissionsExt;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output};
+use std::sync::LazyLock;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 use std::{fs, process};
-
-use std::sync::LazyLock;
 
 use jwalk::WalkDir;
 use log::{error, info};
@@ -88,10 +87,7 @@ pub(crate) fn create_new_file_name_for_minimization(setting: &Setting, old_name:
         let extension = pat.extension().and_then(|e| e.to_str()).unwrap_or("");
         let file_name = pat.file_stem().and_then(|e| e.to_str()).unwrap_or("file");
         let new_name = if extension.is_empty() {
-            format!(
-                "{}/{file_name}_minimized_{random_number}",
-                setting.broken_files_dir,
-            )
+            format!("{}/{file_name}_minimized_{random_number}", setting.broken_files_dir,)
         } else {
             format!(
                 "{}/{file_name}_minimized_{random_number}.{extension}",

@@ -11,7 +11,8 @@ static RE_BT_ANY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat (\S+?\.rs
 static RE_ASSERT_FAILED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"assertion failed:\s*(.+)").unwrap());
 static RE_ASSERT_BACKTICK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"assertion `([^`]+)` failed").unwrap());
 static RE_PANIC_MSG_OLD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at '([^']+)'").unwrap());
-static RE_PANIC_MSG_NEW: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at \S+\.rs:\d+:\d+:\s*\n\s*(.+)").unwrap());
+static RE_PANIC_MSG_NEW: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"panicked at \S+\.rs:\d+:\d+:\s*\n\s*(.+)").unwrap());
 static RE_ASAN_TYPE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"AddressSanitizer:\s*(\S+)").unwrap());
 static RE_NORMALIZE_NUMS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b\d{2,}\b").unwrap());
 
@@ -508,12 +509,7 @@ fn try_parse_not_implemented(output: &str) -> Option<ErrorSignature> {
 
 /// Extract source file path and line number from Rust panic/backtrace output
 fn extract_source_file_and_line(output: &str) -> (Option<String>, Option<u32>) {
-    let regexes: &[&LazyLock<Regex>] = &[
-        &RE_PANIC_OLD,
-        &RE_PANIC_NEW,
-        &RE_SOURCE_LOC,
-        &RE_BT_SRC,
-    ];
+    let regexes: &[&LazyLock<Regex>] = &[&RE_PANIC_OLD, &RE_PANIC_NEW, &RE_SOURCE_LOC, &RE_BT_SRC];
     for re in regexes {
         if let Some(cap) = re.captures(output) {
             let path = normalize_source_path(cap.get(1).unwrap().as_str());
@@ -642,12 +638,16 @@ mod tests {
         let sig = parse_error_signature(output);
         assert_eq!(sig.error_type, "overflow_subtract");
         assert_eq!(sig.source_file.as_deref(), Some("src/wavpack/properties.rs"));
-        assert_eq!(sig.issue_title(), "Panic `attempt to subtract with overflow` in `src/wavpack/properties.rs`");
+        assert_eq!(
+            sig.issue_title(),
+            "Panic `attempt to subtract with overflow` in `src/wavpack/properties.rs`"
+        );
     }
 
     #[test]
     fn test_assertion_eq() {
-        let output = "thread 'main' panicked at src/state.rs:280:9:\nassertion `left == right` failed\n  left: 2\n right: 1";
+        let output =
+            "thread 'main' panicked at src/state.rs:280:9:\nassertion `left == right` failed\n  left: 2\n right: 1";
         let sig = parse_error_signature(output);
         assert_eq!(sig.error_type, "assertion_eq");
         assert_eq!(sig.source_file.as_deref(), Some("src/state.rs"));
@@ -683,7 +683,8 @@ mod tests {
 
     #[test]
     fn test_timeout() {
-        let output = "timeout: sending signal\n##### Automatic Fuzzer note, output status \"Some(124)\", output signal \"None\"";
+        let output =
+            "timeout: sending signal\n##### Automatic Fuzzer note, output status \"Some(124)\", output signal \"None\"";
         let sig = parse_error_signature(output);
         assert_eq!(sig.error_type, "timeout");
     }
