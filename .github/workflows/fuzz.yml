@@ -7,7 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  DEFAULT_TIMEOUT: 10000
+  DEFAULT_TIMEOUT: 15000
 
 jobs:
   fuzz:
@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          #  Custom fuzzing (local crates) 
+          #  Custom fuzzing (local crates)
           # Set custom_timeout to override DEFAULT_TIMEOUT for specific jobs
           - name: LITTLE_EXIF
             mode: custom
