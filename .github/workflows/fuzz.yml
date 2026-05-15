@@ -425,8 +425,8 @@ jobs:
             SIZE=$(stat -c%s "$file" 2>/dev/null || echo "?")
             FNAME=$(basename "$file")
 
-            timeout -v 120 ${{ matrix.binary }}_normal "$file" > /tmp/crash_out_$IDX.txt 2>&1
-            EXIT=$?
+            EXIT=0
+            timeout -v 120 ${{ matrix.binary }}_normal "$file" > /tmp/crash_out_$IDX.txt 2>&1 || EXIT=$?
 
             echo "──────────────────────────────────────────────────"
             if [ "$EXIT" -eq 124 ]; then
