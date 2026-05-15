@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
 hayro = { git = "https://github.com/LaurenzV/hayro.git" }
-walkdir = "2.5.0"
 
 [profile.release]
 overflow-checks = true

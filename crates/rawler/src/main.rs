@@ -1,4 +1,3 @@
-use std::env::args;
 use std::fs;
 use std::fs::File;
 use std::path::Path;
@@ -7,26 +6,10 @@ use rawler::decoders::{RawDecodeParams, RawMetadata};
 use rawler::imgop::develop::{Intermediate, RawDevelop};
 use rawler::rawsource::RawSource;
 use rawler::Orientation;
-use walkdir::WalkDir;
 
 fn main() {
-    let path = args().nth(1).unwrap().clone();
-    let save_path = args().nth(2);
-    if !Path::new(&path).exists() {
-        panic!("Missing file, {path:?}");
-    }
-
-    if Path::new(&path).is_dir() {
-        for entry in WalkDir::new(&path).into_iter().flatten() {
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let path = entry.path().to_string_lossy().to_string();
-            check_file(&path, save_path.as_deref());
-        }
-    } else {
-        check_file(&path, save_path.as_deref());
-    }
+    let save_path = std::env::args().nth(2);
+    fuzz_utils::run(|path| check_file(path, save_path.as_deref()));
 }
 fn check_file(file_path: &str, save_path: Option<&str>) {
     let Ok(content) = fs::read(file_path) else {

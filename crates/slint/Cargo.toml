@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-walkdir = "2.5.0"
+fuzz_utils = { path = "../fuzz_utils" }
 
 i-slint-compiler = { git = "https://github.com/slint-ui/slint.git" }
 spin_on = { version = "0.1.1" }

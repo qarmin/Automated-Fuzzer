@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
 fast_image_resize = { git = "https://github.com/Cykooz/fast_image_resize", features = ["image"] }
 image = { git = "https://github.com/image-rs/image" }
-walkdir = "2.5.0"
 
 [patch.crates-io]
 image = { git = "https://github.com/image-rs/image" }

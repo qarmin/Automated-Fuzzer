@@ -1,28 +1,10 @@
-use std::env::args;
 use std::fs;
 use std::io::Cursor;
-use std::path::Path;
 
 use nom_exif::{ExifIter, MediaParser, MediaSource};
-use walkdir::WalkDir;
 
 fn main() {
-    let path = args().nth(1).unwrap().clone();
-    if !Path::new(&path).exists() {
-        panic!("Missing file, {path:?}");
-    }
-
-    if Path::new(&path).is_dir() {
-        for entry in WalkDir::new(&path).into_iter().flatten() {
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let path = entry.path().to_string_lossy().to_string();
-            check_file(&path);
-        }
-    } else {
-        check_file(&path);
-    }
+    fuzz_utils::run(check_file);
 }
 
 fn check_file(path: &str) {

@@ -1,16 +1,25 @@
-//! Structured fuzzing utilities.
+//! Fuzzing utilities — common file-processing boilerplate + structured byte input.
 //!
-//! Reads a file of random bytes and uses them as deterministic "randomness"
-//! to drive API calls. Logs every decision for reproducible crash reports.
-//!
-//! # Usage in a crate wrapper:
+//! # File-based fuzzing (most crates):
 //! ```ignore
-//! use fuzz_utils::ByteInput;
+//! fn main() {
+//!     fuzz_utils::run(check_file);
+//! }
 //!
-//! fn check_data(input: &mut ByteInput) {
-//!     let page_count = input.u8_range("page_count", 1, 10);
-//!     let width = input.f32_range("width", 0.0, 1000.0);
-//!     // ... call library APIs with these values
+//! fn check_file(path: &str) {
+//!     let data = std::fs::read(path).unwrap();
+//!     // call library with data
+//! }
+//! ```
+//!
+//! # Structured fuzzing (API generators like pdf-writer):
+//! ```ignore
+//! fn main() {
+//!     fuzz_utils::run(|path| {
+//!         let mut input = fuzz_utils::ByteInput::from_file(path).unwrap();
+//!         let count = input.u8_range("count", 1, 10);
+//!         // ...
+//!     });
 //! }
 //! ```
 //!
@@ -23,6 +32,36 @@
 //! - `.generate_reproducer()` produces standalone Rust code with hardcoded values
 
 use std::fmt::Write as FmtWrite;
+
+/// Run `f` on every file from argv (file or directory, recursive).
+///
+/// Replaces the 15-line boilerplate in every crate's main.rs:
+/// ```ignore
+/// fn main() {
+///     fuzz_utils::run(check_file);
+/// }
+///
+/// fn check_file(path: &str) {
+///     let data = std::fs::read(path).unwrap();
+///     // ...
+/// }
+/// ```
+pub fn run(f: impl Fn(&str)) {
+    let path = std::env::args().nth(1).expect("Usage: <binary> <file_or_dir>");
+    let p = std::path::Path::new(&path);
+    if !p.exists() {
+        panic!("Missing file: {path:?}");
+    }
+    if p.is_dir() {
+        for entry in walkdir::WalkDir::new(&path).into_iter().flatten() {
+            if entry.file_type().is_file() {
+                f(&entry.path().to_string_lossy());
+            }
+        }
+    } else {
+        f(&path);
+    }
+}
 
 /// A deterministic byte-driven input source that logs all consumed values.
 pub struct ByteInput {

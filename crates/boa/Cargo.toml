@@ -6,9 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
 boa_engine = { git = "https://github.com/boa-dev/boa.git" }
-
-walkdir = "2.5.0"
 
 [profile.release]
 overflow-checks = true

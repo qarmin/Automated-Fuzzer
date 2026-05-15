@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
 rawler = { git = "https://github.com/dnglab/dnglab.git" }
-walkdir = "2.5.0"
 image = { version = "0.25.6", features = ["jpeg"], default-features = false }
 
 [profile.release]

@@ -4,8 +4,8 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
 zip = { git = "https://github.com/zip-rs/zip2.git" }
-walkdir = "2.5.0"
 
 [profile.release]
 overflow-checks = true

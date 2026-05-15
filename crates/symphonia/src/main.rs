@@ -1,5 +1,3 @@
-use std::env::args;
-use std::path::Path;
 use std::{fs, io};
 
 use symphonia::core::codecs::audio::AudioDecoderOptions;
@@ -10,25 +8,9 @@ use symphonia::core::formats::{FormatOptions, FormatReader, SeekMode, SeekTo};
 use symphonia::core::io::MediaSourceStream;
 use symphonia::core::meta::MetadataOptions;
 use symphonia::core::units::Time;
-use walkdir::WalkDir;
 
 fn main() {
-    let path = args().nth(1).unwrap().clone();
-    if !Path::new(&path).exists() {
-        panic!("Missing file, {path:?}");
-    }
-
-    if Path::new(&path).is_dir() {
-        for entry in WalkDir::new(&path).into_iter().flatten() {
-            if !entry.file_type().is_file() {
-                continue;
-            }
-            let path = entry.path().to_string_lossy().to_string();
-            check_file(&path);
-        }
-    } else {
-        check_file(&path);
-    }
+    fuzz_utils::run(check_file);
 }
 
 fn check_file(path: &str) {
