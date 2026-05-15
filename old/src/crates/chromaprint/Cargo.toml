@@ -1,0 +1,20 @@
+[package]
+name = "chromaprint"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#symphonia = { git = "https://github.com/a1phyr/Symphonia.git", default-features = false, features = ["opus"], branch = "opus-dev"}
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], branch = "dev-0.6"}
+#symphonia = { git = "https://github.com/sscobici/Symphonia.git", features = ["all"], branch = "mp4-panic-fixes"}
+rusty-chromaprint = { git = "https://github.com/darksv/rusty-chromaprint.git"}
+
+walkdir = "2"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

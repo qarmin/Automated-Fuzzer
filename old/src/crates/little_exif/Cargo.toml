@@ -1,0 +1,17 @@
+[package]
+name = "little_exif"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+little_exif = { git = "https://github.com/TechnikTobi/little_exif.git"}
+walkdir = "2.5.0"
+
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true
+

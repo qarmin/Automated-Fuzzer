@@ -1,0 +1,17 @@
+[package]
+name = "nom_exif"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+nom-exif = { git = "https://github.com/mindeng/nom-exif" }
+walkdir = "2.5.0"
+
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true
