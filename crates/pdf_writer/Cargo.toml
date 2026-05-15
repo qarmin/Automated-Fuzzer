@@ -9,7 +9,6 @@ path = "src/main.rs"
 
 [dependencies]
 pdf-writer = { git = "https://github.com/typst/pdf-writer.git" }
-fuzz_utils = { path = "../fuzz_utils" }
 walkdir = "2"
 
 [profile.release]
