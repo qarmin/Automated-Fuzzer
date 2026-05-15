@@ -45,13 +45,34 @@ impl ErrorSignature {
         sig
     }
 
-    /// Returns issue title in the convention: "Panic {description} in {file}"
+    /// Returns issue title appropriate for the error type
     pub fn issue_title(&self) -> String {
         let desc = &self.short_description;
+        let prefix = match self.error_type.as_str() {
+            "timeout" => "Timeout",
+            "memory_failure" => "Memory allocation failure",
+            "out_of_memory" => "Out of memory",
+            "stack_overflow" => "Stack overflow",
+            "segmentation_fault" => "Segmentation fault",
+            "heap_use_after_free" => "Heap use after free",
+            "address_sanitizer" => "AddressSanitizer",
+            "thread_sanitizer" => "ThreadSanitizer",
+            "leak_sanitizer" => "LeakSanitizer",
+            "aborted" => "Aborted",
+            "syntax_error" => "Syntax error",
+            _ => "Panic",
+        };
         if let Some(ref src) = self.source_file {
-            format!("Panic {desc} in {src}")
+            format!("{prefix} `{desc}` in `{src}`")
         } else {
-            format!("Panic {desc}")
+            match self.error_type.as_str() {
+                // For these, the prefix IS the description — don't repeat
+                "timeout" | "memory_failure" | "out_of_memory" | "stack_overflow"
+                | "segmentation_fault" | "aborted" => {
+                    format!("{prefix} when processing file")
+                }
+                _ => format!("{prefix} `{desc}`"),
+            }
         }
     }
 }
@@ -610,7 +631,7 @@ mod tests {
         let sig = parse_error_signature(output);
         assert_eq!(sig.error_type, "overflow_subtract");
         assert_eq!(sig.source_file.as_deref(), Some("src/wavpack/properties.rs"));
-        assert_eq!(sig.issue_title(), "Panic attempt to subtract with overflow in src/wavpack/properties.rs");
+        assert_eq!(sig.issue_title(), "Panic `attempt to subtract with overflow` in `src/wavpack/properties.rs`");
     }
 
     #[test]

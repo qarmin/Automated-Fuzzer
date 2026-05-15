@@ -125,7 +125,7 @@ jobs:
             timeout: 200
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup rust
         run: |
@@ -143,7 +143,7 @@ jobs:
           cargo install create_broken_files minimizer
           cargo install --path .
           if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
-            cargo install  Doda
+            cargo install cargo-fuzz
           fi
 
       # ══════════════════════════════════════════════════════════
@@ -384,11 +384,51 @@ jobs:
           GH_TOKEN: ${{ secrets.PAT2 }}
 
       # ══════════════════════════════════════════════════════════
-      # PHASE 5: Artifacts + CI result
+      # PHASE 5: Print crash details (visible in CI logs without download)
+      # ══════════════════════════════════════════════════════════
+      - name: "Print crash details"
+        if: always()
+        run: |
+          CRASH_COUNT=$(find /opt/ALL_CRASHES -type f 2>/dev/null | wc -l)
+          if [ "$CRASH_COUNT" -eq 0 ]; then
+            echo "No crashes found."
+            exit 0
+          fi
+
+          echo "═══════════════════════════════════════════════════"
+          echo "  $CRASH_COUNT crash files for ${{ matrix.name }}"
+          echo "═══════════════════════════════════════════════════"
+          echo ""
+
+          IDX=0
+          for file in /opt/ALL_CRASHES/*; do
+            [ -f "$file" ] || continue
+            IDX=$((IDX + 1))
+            SIZE=$(stat -c%s "$file" 2>/dev/null || echo "?")
+            FNAME=$(basename "$file")
+
+            echo "──────────────────────────────────────────────────"
+            echo "[$IDX/$CRASH_COUNT] $FNAME ($SIZE bytes)"
+            echo "──────────────────────────────────────────────────"
+
+            # Run the binary and capture output (with timeout for hangs)
+            OUTPUT=$(timeout -v 120 ${{ matrix.binary }}_normal "$file" 2>&1 || true)
+
+            # Print full output (capped at 80 lines per file)
+            echo "$OUTPUT" | tail -80
+            echo ""
+          done
+
+          echo "═══════════════════════════════════════════════════"
+          echo "  Summary: $CRASH_COUNT unique crashes"
+          echo "═══════════════════════════════════════════════════"
+
+      # ══════════════════════════════════════════════════════════
+      # PHASE 6: Artifacts + CI result
       # ══════════════════════════════════════════════════════════
       - name: Store reports
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           if-no-files-found: ignore
           name: REPORTS___${{ matrix.name }}
@@ -396,7 +436,7 @@ jobs:
 
       - name: Store crash files
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           if-no-files-found: ignore
           name: CRASHES___${{ matrix.name }}
@@ -404,4 +444,4 @@ jobs:
 
       - name: Fail if crashes found
         run: |
-          [ "${CRASH_COUNT:-0}" != "0" ] && exit 1 || true
+          [ "${CRASH_COUNT:-0}" != "0" ] && exit 77 || true

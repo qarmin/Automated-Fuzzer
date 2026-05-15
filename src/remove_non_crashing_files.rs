@@ -133,8 +133,9 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
         );
         let _ = fs::create_dir_all(&group_folder);
 
+        let file_size = content.len();
         let file_idx = random::<u64>();
-        let folder = format!("{group_folder}/{file_idx}");
+        let folder = format!("{group_folder}/{file_size}_bytes_{file_idx}");
         let _ = fs::create_dir_all(&folder);
 
         // ── Build to_report.txt ──
@@ -148,7 +149,10 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
             report += content_string;
             report += "\n```\n\n";
         } else {
-            report += "File content is binary, so is available only in zip file\n\n";
+            report += &format!(
+                "File content is binary ({} bytes), so is available only in zip file at the bottom of page\n\n",
+                humansize::format_size(file_size, humansize::BINARY)
+            );
         }
 
         // If we have crate code, include it as reproducer (library style)
@@ -192,7 +196,7 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
             issue_title: signature.issue_title(),
             project: settings.name.clone(),
             found_date: chrono::Local::now().format("%Y-%m-%d").to_string(),
-            file_size: content.len(),
+            file_size,
         };
         let metadata_str = toml::to_string_pretty(&metadata).unwrap();
         fs::write(format!("{folder}/to_report_metadata.toml"), metadata_str).unwrap();
@@ -252,7 +256,7 @@ echo "Attach this file: $DIR/compressed.zip"
         // Build issue body markdown
         let mut body = String::new();
         body += &report;
-        body += "\n[Compressed archive placeholder (attachment not included) - looks that I forgot to attach the file.]\n";
+        body += "\n[Compressed archive placeholder - looks that I forgot to attach the file.]\n";
         fs::write(format!("{folder}/issue_body.md"), &body).unwrap();
 
         #[cfg(unix)]
@@ -267,9 +271,46 @@ echo "Attach this file: $DIR/compressed.zip"
 }
 
 /// Try to read crate source code from crates/<name>/src/main.rs
+/// Simplifies by replacing the directory-walking main() with a minimal version.
 fn try_read_crate_code(project_name: &str) -> Option<String> {
     let path = format!("crates/{}/src/main.rs", project_name);
-    fs::read_to_string(&path).ok()
+    let code = fs::read_to_string(&path).ok()?;
+
+    // Build a simplified version:
+    // - Replace the boilerplate main() with a simple one-file version
+    // - Remove walkdir import and usage
+    let mut simplified = String::new();
+
+    // Collect use lines (skip walkdir)
+    for line in code.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("use walkdir") {
+            continue;
+        }
+        if trimmed.starts_with("use ") || trimmed.starts_with("//") || trimmed.is_empty() {
+            simplified.push_str(line);
+            simplified.push('\n');
+            continue;
+        }
+        break; // stop at first non-use/non-comment/non-empty line
+    }
+
+    // Add simplified main
+    simplified.push_str("fn main() {\n");
+    simplified.push_str("    let path = std::env::args().nth(1).unwrap();\n");
+    simplified.push_str("    check_file(&path);\n");
+    simplified.push_str("}\n\n");
+
+    // Add check_file and everything after it
+    let check_fn_start = code.find("fn check_file(");
+    if let Some(idx) = check_fn_start {
+        simplified.push_str(&code[idx..]);
+    } else {
+        // No check_file function found, just include everything after main
+        return Some(code);
+    }
+
+    Some(simplified)
 }
 
 /// Detect GitHub repo (owner/name) from crates/<name>/Cargo.toml git dependencies
