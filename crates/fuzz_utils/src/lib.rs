@@ -129,6 +129,160 @@ impl ByteInput {
         code
     }
 
+    /// Generate a reproducer from the actual source file of a structured fuzzer.
+    ///
+    /// Reads `source_path`, finds the target function (e.g. `run_pdf_writer`),
+    /// and replaces all `input.xxx("name", ...)` calls with hardcoded values.
+    /// Also removes the `input: &mut ByteInput` parameter and `?` suffixes.
+    ///
+    /// Returns `None` if the source can't be read.
+    pub fn generate_source_reproducer(&self, source_path: &str) -> Option<String> {
+        let source = std::fs::read_to_string(source_path).ok()?;
+
+        // Build a map: name -> rust_expr
+        let mut replacements: std::collections::HashMap<&str, &str> = std::collections::HashMap::new();
+        for entry in &self.log {
+            replacements.insert(&entry.name, &entry.rust_expr);
+        }
+
+        let mut output = String::new();
+        let mut in_target_fn = false;
+        let mut brace_depth = 0u32;
+        let mut skip_use_fuzz_utils = false;
+
+        for line in source.lines() {
+            let trimmed = line.trim();
+
+            // Skip fuzz_utils and ByteInput imports
+            if trimmed.starts_with("use fuzz_utils") || trimmed.contains("ByteInput") {
+                skip_use_fuzz_utils = true;
+                if trimmed.ends_with(';') {
+                    skip_use_fuzz_utils = false;
+                }
+                continue;
+            }
+            if skip_use_fuzz_utils {
+                if trimmed.ends_with(';') {
+                    skip_use_fuzz_utils = false;
+                }
+                continue;
+            }
+
+            // Skip main(), check_file, and fuzz_utils::run lines
+            if trimmed.starts_with("fn main()") || trimmed.contains("fuzz_utils::run")
+                || trimmed.starts_with("fn check_file(") || trimmed.contains("save_params")
+            {
+                continue;
+            }
+
+            // Detect the target function (any fn with ByteInput param)
+            if trimmed.starts_with("fn ") && trimmed.contains("ByteInput") {
+                in_target_fn = true;
+                // Rewrite signature: remove input param, change return to ()
+                let fn_name = trimmed.split('(').next().unwrap_or("fn run");
+                output.push_str(fn_name);
+                output.push_str("() {\n");
+                brace_depth = 1;
+                continue;
+            }
+
+            if in_target_fn {
+                // Track braces
+                for ch in trimmed.chars() {
+                    if ch == '{' { brace_depth += 1; }
+                    if ch == '}' { brace_depth = brace_depth.saturating_sub(1); }
+                }
+
+                if brace_depth == 0 {
+                    output.push_str("}\n");
+                    in_target_fn = false;
+                    continue;
+                }
+
+                let mut modified = line.to_string();
+
+                // Replace input.xxx("name", ...) with the value
+                // Pattern: input.u8_range("name", min, max)?
+                // → value (e.g. 12u8)
+                for (name, expr) in &replacements {
+                    // Match: input.<method>("<name>"...)  optionally with ?
+                    let patterns = [
+                        format!("input.u8_range(\"{name}\""),
+                        format!("input.u8(\"{name}\""),
+                        format!("input.u16(\"{name}\""),
+                        format!("input.u32(\"{name}\""),
+                        format!("input.u64(\"{name}\""),
+                        format!("input.i32(\"{name}\""),
+                        format!("input.f32_range(\"{name}\""),
+                        format!("input.f64_range(\"{name}\""),
+                        format!("input.bool(\"{name}\""),
+                        format!("input.index(\"{name}\""),
+                        format!("input.bytes(\"{name}\""),
+                        format!("input.string(\"{name}\""),
+                        format!("input.pick(\"{name}\""),
+                    ];
+
+                    for pat in &patterns {
+                        if let Some(start) = modified.find(pat.as_str()) {
+                            // Find the closing )? or )
+                            if let Some(close_paren) = modified[start..].find(')') {
+                                let end = start + close_paren + 1;
+                                // Check for trailing ?
+                                let end_with_q = if modified.get(end..end+1) == Some("?") {
+                                    end + 1
+                                } else {
+                                    end
+                                };
+                                modified = format!(
+                                    "{}{}{}",
+                                    &modified[..start],
+                                    expr,
+                                    &modified[end_with_q..]
+                                );
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                // Replace `input.is_empty()` with `false`
+                modified = modified.replace("input.is_empty()", "false");
+
+                // Remove lines that only reference `input` (like let mut input = ...)
+                let mod_trimmed = modified.trim();
+                if mod_trimmed.starts_with("let mut input") || mod_trimmed.starts_with("let input") {
+                    continue;
+                }
+                // Remove `let _ = input.save_params(...)` lines
+                if mod_trimmed.contains("input.save_params") {
+                    continue;
+                }
+
+                // Replace `Some(())` at end with nothing (or keep as is)
+                output.push_str(&modified);
+                output.push('\n');
+            } else {
+                // Outside target fn — keep use statements etc.
+                output.push_str(line);
+                output.push('\n');
+            }
+        }
+
+        // Add a simple main
+        output.push_str("\nfn main() {\n");
+        // Find the target function name
+        for line in source.lines() {
+            if line.trim().starts_with("fn ") && line.contains("ByteInput") {
+                let fn_name = line.trim().split('(').next().unwrap_or("fn run").trim_start_matches("fn ").trim();
+                output.push_str(&format!("    {fn_name}();\n"));
+                break;
+            }
+        }
+        output.push_str("}\n");
+
+        Some(output)
+    }
+
     // ── Raw byte consumers ──
 
     fn consume_byte(&mut self) -> Option<u8> {

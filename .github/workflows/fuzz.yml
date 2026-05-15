@@ -54,6 +54,16 @@ jobs:
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
 
+          # ── Structured fuzzing (random byte input, no file corpus) ──
+          - name: PDF_WRITER
+            mode: custom
+            crate: pdf_writer
+            binary: pdf_writer
+            generate_corpus: true
+            corpus_ext: bin
+            corpus_count: 500
+            corpus_max_size: 2048
+
           # ── Cargo-fuzz (local crates) ──
           - name: IMAGE
             mode: cargo-fuzz
@@ -202,19 +212,39 @@ jobs:
       - name: Create directories
         run: mkdir -p /opt/VALID_FILES_DIR /opt/BROKEN_FILES_DIR /opt/POSSIBLY_BROKEN_FILES_DIR /tmp/tmp_folder/data /opt/CUSTOM /opt/INPUT_FILES_DIR
 
-      - name: Download test files
+      - name: Download or generate test files
         run: |
           CURR_DIR=$(pwd)
           TARGET_DIR="/opt/VALID_FILES_DIR"
           if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
             TARGET_DIR="/opt/INPUT_FILES_DIR"
           fi
-          cd "$TARGET_DIR"
-          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
-          cd "$CURR_DIR"
-          # cargo-fuzz also needs corpus in INPUT_FILES_DIR
+
+          if [ "${{ matrix.generate_corpus }}" = "true" ]; then
+            # Generate random seed files for structured fuzzing
+            EXT="${{ matrix.corpus_ext || 'bin' }}"
+            COUNT="${{ matrix.corpus_count || '500' }}"
+            MAX_SIZE="${{ matrix.corpus_max_size || '2048' }}"
+            echo "Generating $COUNT random seed files (max ${MAX_SIZE} bytes, .$EXT)"
+            python3 -c "
+          import os, random
+          d = '$TARGET_DIR'
+          for i in range($COUNT):
+              size = random.randint(8, $MAX_SIZE)
+              data = random.randbytes(size)
+              with open(os.path.join(d, f'seed_{i}.{\"$EXT\"}'), 'wb') as f:
+                  f.write(data)
+          "
+            echo "Generated $(ls $TARGET_DIR | wc -l) files"
+          else
+            # Download corpus archive
+            cd "$TARGET_DIR"
+            python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+            cd "$CURR_DIR"
+          fi
+
+          # cargo-fuzz: also download previous corpus if exists
           if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
-            # Download previous corpus if exists
             gh release download Nightly \
               --pattern "corpus_${{ matrix.name }}.7z" \
               --dir /tmp --clobber 2>/dev/null || true
@@ -410,6 +440,35 @@ jobs:
           echo "═══════════════════════════════════════════════════"
           echo "  Summary: $CRASH_COUNT unique crashes"
           echo "═══════════════════════════════════════════════════"
+
+      # Generate reports from ALL_CRASHES if the ASAN verification step
+      # didn't produce any (e.g. OOM crashes that ASAN binary can't reproduce)
+      - name: "Generate reports from crashes"
+        if: always()
+        run: |
+          CRASH_COUNT=$(find /opt/ALL_CRASHES -type f 2>/dev/null | wc -l)
+          REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)
+
+          if [ "$CRASH_COUNT" -gt 0 ] && [ "$REPORT_COUNT" -eq 0 ]; then
+            echo "ASAN verification produced no reports — generating from raw crashes"
+
+            # Re-run remove_non_crashing with the normal binary (not ASAN)
+            # by copying crashes to BROKEN_FILES_DIR and running without ASAN envs
+            rm -rf /opt/BROKEN_FILES_DIR/*
+            find /opt/ALL_CRASHES -type f -exec cp {} /opt/BROKEN_FILES_DIR/ \; 2>/dev/null || true
+
+            if [ -f "fuzz_settings.toml" ]; then
+              sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml 2>/dev/null || true
+              sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml 2>/dev/null || true
+              export RUST_BACKTRACE=1
+              auto_fuzzer legacy --remove-non-crashing || true
+            fi
+
+            REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)
+            echo "Generated $REPORT_COUNT report files"
+          else
+            echo "Reports: $REPORT_COUNT files (from ASAN verification)"
+          fi
 
       # ══════════════════════════════════════════════════════════
       # PHASE 6: Artifacts + CI result

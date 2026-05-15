@@ -29,10 +29,16 @@ fn check_file(path: &str) {
     let Ok(data) = fs::read(path) else { return };
     let mut input = ByteInput::new(data);
 
-    // Save params before running (so crash = params preserved)
-    let params_path = format!("{path}.params");
     let _ = run_pdf_writer(&mut input);
-    let _ = input.save_params(&params_path);
+
+    // Save params (human-readable key=value)
+    let _ = input.save_params(&format!("{path}.params"));
+
+    // Save standalone reproducer (Rust code with hardcoded values)
+    let source_path = concat!(env!("CARGO_MANIFEST_DIR"), "/src/main.rs");
+    if let Some(reproducer) = input.generate_source_reproducer(source_path) {
+        let _ = fs::write(format!("{path}.reproducer.rs"), reproducer);
+    }
 }
 
 fn run_pdf_writer(input: &mut ByteInput) -> Option<()> {

@@ -155,8 +155,14 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
             );
         }
 
-        // If we have crate code, include it as reproducer (library style)
-        if let Some(ref code) = crate_code {
+        // Include reproducer code:
+        // 1. Check for per-crash .reproducer.rs (structured fuzzing with hardcoded values)
+        // 2. Fall back to generic crate code (simplified main.rs)
+        let reproducer_path = format!("{file_name}.reproducer.rs");
+        let reproducer_code = fs::read_to_string(&reproducer_path).ok();
+        let code_to_include = reproducer_code.as_deref().or(crate_code.as_deref());
+
+        if let Some(code) = code_to_include {
             report += "### Reproducer\n\n";
             report += "I tried this code:\n\n";
             report += "```rust\n";

@@ -150,20 +150,37 @@ download files:
     cd "$CURR_DIR"
 
 # Prepare a project for local fuzzing: just prepare symphonia "AA_MUSIC_VALID_FILES.7z"
-prepare name files:
+# For structured fuzzing (no corpus): just prepare pdf_writer --generate
+prepare name files="":
     #!/usr/bin/env bash
     set -e
     echo "=== Setting up {{name}} ==="
     mkdir -p /opt/VALID_FILES_DIR /opt/BROKEN_FILES_DIR /opt/POSSIBLY_BROKEN_FILES_DIR /tmp/tmp_folder/data /opt/CUSTOM
 
     if [ -z "$(ls -A /opt/VALID_FILES_DIR 2>/dev/null)" ]; then
-        echo "Downloading test files..."
-        CURR_DIR=$(pwd)
-        cd /opt/VALID_FILES_DIR
-        python3 "$CURR_DIR/download_helper.py" "{{files}}"
-        cd "$CURR_DIR"
+        if [ "{{files}}" = "--generate" ]; then
+            echo "Generating 500 random seed files..."
+            python3 -c "
+    import os, random
+    for i in range(500):
+        size = random.randint(8, 2048)
+        with open(f'/opt/VALID_FILES_DIR/seed_{i}.bin', 'wb') as f:
+            f.write(random.randbytes(size))
+    "
+        elif [ -n "{{files}}" ]; then
+            echo "Downloading test files..."
+            CURR_DIR=$(pwd)
+            cd /opt/VALID_FILES_DIR
+            python3 "$CURR_DIR/download_helper.py" "{{files}}"
+            cd "$CURR_DIR"
+        else
+            echo "ERROR: Specify corpus files or --generate"
+            echo "  just prepare symphonia \"AA_MUSIC_VALID_FILES.7z\""
+            echo "  just prepare pdf_writer --generate"
+            exit 1
+        fi
     else
-        echo "Valid files already exist, skipping download"
+        echo "Valid files already exist, skipping"
     fi
 
     echo "Building {{name}} crate..."
@@ -181,7 +198,7 @@ prepare name files:
 
 # Full pipeline: prepare + fuzz + verify + report
 pipeline name files timeout="3600":
-    just prepare {{name}} {{files}}
+    just prepare {{name}} "{{files}}"
     just fuzz {{name}} {{timeout}}
     just verify {{name}}
     just reports
