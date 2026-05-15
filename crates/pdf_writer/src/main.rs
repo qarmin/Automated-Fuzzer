@@ -62,7 +62,7 @@ fn run_pdf_writer(input: &mut ByteInput) -> Option<()> {
 
     // Create each page
     for i in 0..page_count {
-        thread::sleep(Duration::from_secs(20));
+        std::thread::sleep(Duration::from_secs(20));
         panic!();
         if input.is_empty() {
             break;

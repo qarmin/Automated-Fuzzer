@@ -1,230 +1,194 @@
 # auto_fuzzer
 
-Automated fuzzing tool for finding crashes in CLI tools and Rust libraries. Supports two fuzzing modes (custom mutation-based and cargo-fuzz/libfuzzer), crash grouping by error signature, minimization, ignore lists with GitHub issue tracking, and CI integration with state persistence.
+Automated fuzzing tool for Rust libraries and CLI tools. Finds panics, overflows, OOM, timeouts, ASAN errors, and other crashes.
+
+Two fuzzing modes:
+- **Custom** — mutates valid files with `create_broken_files`, runs a wrapper binary, detects crashes from output patterns
+- **Cargo-fuzz** — uses libfuzzer via `cargo fuzz run`, restarts in a loop until timeout
+
+Both modes share crash archives, reports, and ignore lists. Results are grouped by error signature (type + source file + line).
+
+## Project structure
+
+```
+src/                     auto_fuzzer binary (CLI orchestrator)
+crates/<name>/           wrapper binaries that exercise a library's API
+  src/main.rs            uses fuzz_utils::run(check_file)
+  fuzz_settings_ci.toml  fuzzing config (search/ignore patterns, extensions, etc.)
+crates/fuzz_utils/       shared lib: file walking boilerplate + structured ByteInput
+fuzz/fuzz_targets/       cargo-fuzz (libfuzzer) targets
+fuzz/Cargo.toml          cargo-fuzz workspace with optional features per target
+configs/external/        fuzz configs for tools without a local crate (biome, ruff, swc...)
+.github/workflows/       CI (single fuzz.yml with mode: custom or cargo-fuzz in matrix)
+```
 
 ## Installation
 
 ```bash
 cargo install --path .
+cargo install create_broken_files minimizer  # external tools
 ```
 
-External tools (installed separately):
+## Quick start with justfile
+
 ```bash
-cargo install create_broken_files minimizer
+just list-crates                              # show all 27 crates
+just check-crates                             # verify all compile (crates + fuzz targets)
+just upgrade-check                            # update deps + verify
+
+# Prepare + fuzz a project
+just prepare symphonia "AA_MUSIC_VALID_FILES.7z"
+just fuzz symphonia 3600
+
+# Structured fuzzing (no file corpus needed)
+just prepare pdf_writer --generate
+just fuzz pdf_writer 3600
+
+# Full pipeline: prepare → fuzz → verify (ASAN) → reports
+just pipeline zune "AA_IMAGE_VALID_FILES.7z" 3600
+
+# Verify results, list reports
+just verify symphonia
+just reports
 ```
 
-## Quick start
+## Fuzzing modes
 
-### 1. Custom fuzzing mode
-
-Requires a `fuzz_settings.toml` config file (see `old/fuzz_settings.toml` for examples).
+### Custom mode
 
 ```bash
-# Fuzz for 1 hour
 auto_fuzzer fuzz --mode custom --timeout 3600
-
-# Fuzz with a specific config
-auto_fuzzer fuzz --mode custom --config fuzz_lofty_settings.toml --timeout 7200
-
-# Fuzz indefinitely (Ctrl+C to stop gracefully, second Ctrl+C to force quit)
-auto_fuzzer fuzz --mode custom
+auto_fuzzer fuzz --mode custom --config crates/symphonia/fuzz_settings_ci.toml --timeout 7200
 ```
 
-### 2. Cargo-fuzz mode
-
-Wrapper around `cargo fuzz run` with result collection and graceful shutdown.
+### Cargo-fuzz mode
 
 ```bash
-# Fuzz the "image" target for 5 hours
-auto_fuzzer fuzz --mode cargo-fuzz --target image --corpus /opt/INPUT_FILES --timeout 18000
-
-# With features and 8 parallel jobs
-auto_fuzzer fuzz --mode cargo-fuzz --target symphonia --corpus /opt/MUSIC \
-    --features "symphonia_f" --jobs 8 --timeout 3600
+auto_fuzzer fuzz --mode cargo-fuzz --target image --corpus /opt/INPUT_FILES \
+    --features "image_f" --timeout 3600
 ```
 
-### 3. Minimize crashes
+## Minimize crashes
 
-Runs the external `minimizer` on all crash files, keeping originals untouched.
+Runs the external `minimizer` on crash files, keeping originals.
 
 ```bash
-# Minimize all files in the configured broken_files_dir
 auto_fuzzer minimize
-
-# Minimize files from a specific directory
 auto_fuzzer minimize --dir /opt/BROKEN_FILES_DIR
 ```
 
-### 4. View and create reports
+## Reports
+
+Each crash generates a folder like `zune__assertion_eq__src_image.rs_482/397_bytes_12345/` containing:
+- `to_report.txt` — full crash report with reproducer code
+- `to_report_metadata.toml` — structured metadata (type, signature, source file, line)
+- `crash_output.txt` — raw stdout+stderr
+- `compressed.zip` — crash file
+- `issue_title.txt` — ready-made title with backticks
+- `issue_body.md` — ready-made body
+- `create_issue.sh` — one-click: creates GitHub issue, opens browser to attach zip
 
 ```bash
-# List all unique crashes grouped by error signature
 auto_fuzzer report list --dir /tmp/tmp_folder/data
-
-# Generate a GitHub issue draft for a specific crash
-auto_fuzzer report create --dir /tmp/tmp_folder/data/lofty_overflow_s__42_bytes_-_123456 \
-    --repo "Serial-ATA/lofty-rs" \
-    --version "abc1234" \
-    --variant cli
-
-# Generate issue drafts for all crashes
-auto_fuzzer report create-all --dir /tmp/tmp_folder/data --project lofty
+bash /tmp/tmp_folder/data/zune__assertion_eq__src_image.rs_482/397_bytes_12345/create_issue.sh
 ```
 
-This creates `issue_title.txt`, `issue_body.md`, and `create_issue.sh` in each crash directory. Review and run:
+The repo is auto-detected from `crates/<name>/Cargo.toml` git dependency. For library crates, the report includes a simplified reproducer with `check_file` code. For structured fuzzing crates (pdf_writer), the reproducer has all `input.xxx()` calls replaced with hardcoded values.
 
-```bash
-bash /tmp/tmp_folder/data/lofty_overflow_s__.../create_issue.sh
-# Then manually attach compressed.zip through the GitHub web UI
+## Ignore list
+
+Two mechanisms work together:
+
+### Config-level (`ignored_item_N` in fuzz_settings_ci.toml)
+
+Filters crashes **during fuzzing** — matched patterns are never saved. Always add a comment with the issue URL:
+
+```toml
+ignored_item_1 = "stack-overflow"          # https://github.com/boa-dev/boa/issues/1402
+ignored_item_2 = "memory allocation of"    # https://github.com/boa-dev/boa/issues/5367
+ignored_item_3 = "src/bits.rs"             # https://github.com/dnglab/dnglab/issues/571
 ```
 
-### 5. Manage ignore list
+### Global (`ignore_list.toml`)
 
-Track known bugs so they don't clutter results.
+Managed via CLI, independent of fuzzing:
 
 ```bash
-# Add a known issue
-auto_fuzzer ignore add lofty "src/wavpack/properties.rs" \
-    "https://github.com/Serial-ATA/lofty-rs/issues/620"
-
-auto_fuzzer ignore add rawler "src/bits.rs" \
-    "https://github.com/dnglab/dnglab/issues/571"
-
-# List all ignored patterns
-auto_fuzzer ignore list
-auto_fuzzer ignore list --project lofty
-
-# Remove an entry
+auto_fuzzer ignore add lofty "src/wavpack/properties.rs" "https://github.com/Serial-ATA/lofty-rs/issues/620"
 auto_fuzzer ignore remove lofty "src/wavpack/properties.rs"
 ```
 
-### 6. Validate issue links
-
-Check if ignored issues have been closed upstream (requires `gh` CLI authenticated).
+### List, verify, clean
 
 ```bash
-# Check all links
-auto_fuzzer validate links
+# Show all ignored patterns (both ignore_list.toml and all fuzz configs)
+auto_fuzzer ignore list
+auto_fuzzer ignore list --project hayro
 
-# Automatically remove entries for closed issues
-auto_fuzzer validate links --auto-remove
+# Check if issues have been closed (read-only)
+auto_fuzzer ignore verify
+
+# Check and remove entries for closed issues
+auto_fuzzer ignore clean
 ```
 
-Example output:
-```
-[FIXED] lofty "src/wavpack/properties.rs" - https://github.com/.../issues/620 is CLOSED
-[OPEN]  rawler "src/bits.rs" - https://github.com/.../issues/571 still open
-```
-
-### 7. CI mode
-
-Run in GitHub Actions with persistent state between runs (corpus, known crashes, history).
-
-```bash
-# Run fuzzer with state persistence
-auto_fuzzer ci run \
-    --config fuzz_lofty_settings.toml \
-    --timeout 16000 \
-    --state-dir /opt/fuzzer_state \
-    --output-dir /opt/results
-
-# Check if previously found crashes are still reproducible
-auto_fuzzer ci verify-regressions \
-    --config fuzz_lofty_settings.toml \
-    --state-dir /opt/fuzzer_state
-```
-
-Example output of `verify-regressions`:
-```
-[STILL BROKEN] /opt/fuzzer_state/known_crashes/file1.mp3 - attempt to subtract with overflow
-[FIXED] /opt/fuzzer_state/known_crashes/file2.mp3
-
-Regression check: 1 still broken, 1 fixed
-```
-
-### 8. Legacy mode
-
-Backward-compatible with the old `automated_fuzzer` CLI.
-
-```bash
-# Same as old: automated_fuzzer 3600
-auto_fuzzer legacy 3600
-
-# Remove non-crashing files (verification pass)
-auto_fuzzer legacy --remove-non-crashing
-```
-
-## Configuration
-
-The tool reads `fuzz_settings.toml` (or a custom path via `--config`). Minimal example:
-
-```toml
-[general]
-loop_number = 100
-broken_files_for_each_file = 10
-minimize_output = true
-temp_possible_broken_files_dir = "/tmp/AA_BROKEN_INPUT_FILES"
-minimization_attempts = 200
-minimization_repeat = true
-minimization_time = 1800
-debug_print_results = false
-debug_executed_commands = false
-debug_print_broken_files_creator = false
-remove_non_crashing_items_from_broken_files = false
-check_for_stability = false
-stability_runs = 3
-temp_folder = "/tmp/tmp_folder/data"
-timeout_group = 400
-timeout = 100
-allowed_signal_statuses = ""
-allowed_error_statuses = "0,1,2,101"
-max_file_size_limit = 5000000
-max_collected_files = 999999999999999
-ignore_file_if_contains_searched_items = true
-check_if_file_is_parsable = false
-grouping = 100
-custom_folder_path = "/opt/CUSTOM"
-minimization_attempts_with_signal_timeout = 10
-current_mode = "custom"
-
-[custom]
-name = "my_tool"
-command = "my_tool|lint|FILE_PATHS_TO_PROVIDE"
-extensions = "rs"
-valid_input_files_dir = "/opt/VALID_FILES_DIR"
-broken_files_dir = "/opt/BROKEN_FILES_DIR"
-group_mode = "none"
-search_item_1 = "RUST_BACKTRACE"
-search_item_2 = "panicked at"
-search_item_100 = "AddressSanitizer"
-file_type = "rust"
-stability_mode = "none"
-```
-
-Key fields:
-- `command` - pipe-separated binary and args, with `FILE_PATHS_TO_PROVIDE` as the placeholder
-- `search_item_N` - patterns that indicate a crash (matched against stdout+stderr)
-- `ignored_item_N` - patterns to skip (known issues, too-big-to-minimize, etc.)
-- `file_type` - mutation strategy: `text`, `binary`, `rust`, `python`, `js`, `go`, `lua`, `slint`, `jsvuesvelte`, `svg`, `gdscript`
+`verify` and `clean` check both `ignore_list.toml` and every `crates/*/fuzz_settings_ci.toml`. Entries without a GitHub URL are left untouched.
 
 ## Error grouping
 
-Crashes are grouped by a two-level signature: `{error_type}::{source_file}`. Examples:
+Crashes are grouped by signature: `{error_type}::{source_file}`. Folders include the line number for disambiguation.
 
-| Crash output | Signature | Issue title |
+| Crash | Folder | Issue title |
 |---|---|---|
-| `attempt to subtract with overflow` in `src/wavpack/properties.rs` | `overflow_subtract::src/wavpack/properties.rs` | Panic attempt to subtract with overflow in src/wavpack/properties.rs |
-| `assertion failed: a > 25` in `src/foo.rs` | `assertion::src/foo.rs::a > N` | Panic assertion failed: a > N in src/foo.rs |
-| `assertion failed: b > 25` in `src/foo.rs` | `assertion::src/foo.rs::b > N` | Panic assertion failed: b > N in src/foo.rs |
-| `index out of bounds` in `src/wavpack/properties.rs` | `index_out_of_bounds::src/wavpack/properties.rs` | Panic index out of bounds in src/wavpack/properties.rs |
-| `entered unreachable code: Bad BOM` | `unreachable_code::src/id3/v2/read.rs::Bad BOM [0, 0]` | Panic internal error: entered unreachable code: Bad BOM in src/id3/v2/read.rs |
-| timeout | `timeout` | Panic timeout when processing file |
+| overflow in `src/wavpack/properties.rs:123` | `symphonia__overflow_s__src_wavpack_properties.rs_123/` | Panic `attempt to subtract with overflow` in `src/wavpack/properties.rs` |
+| assertion_eq in `src/image.rs:482` | `zune__assertion_eq__src_image.rs_482/` | Panic `assertion \`left == right\` failed` in `src/image.rs` |
+| timeout (no source) | `boa__timeout__unknown/` | Timeout when processing file |
+| OOM (no source) | `boa__memory_failure__unknown/` | Memory allocation failure when processing file |
+| ASAN heap-use-after-free | `foo__heap_use_after_free__src_buf.rs_10/` | Heap use after free `heap-use-after-free` in `src/buf.rs` |
 
-Line numbers are stripped (they change between versions). Numeric values >= 10 in assertions are replaced with `N`.
+## Structured fuzzing (fuzz_utils)
+
+For libraries that **generate** output (not parse input), like `pdf-writer`:
+
+```rust
+use fuzz_utils::ByteInput;
+
+fn main() {
+    fuzz_utils::run(|path| {
+        let mut input = ByteInput::from_file(path).unwrap();
+        let count = input.u8_range("page_count", 1, 10).unwrap();
+        let width = input.f32_range("width", 0.0, 1000.0).unwrap();
+        // ... call library API with these values
+    });
+}
+```
+
+- Input file = random bytes, consumed sequentially
+- Each call logs the decision: `page_count=3`, `width=595.2`
+- Same file = same decisions = deterministic
+- Minimizer shrinks the file = fewer API calls
+- On crash: `.params` file + `.reproducer.rs` with hardcoded values
+
+## CI
+
+Single workflow `.github/workflows/fuzz.yml` with matrix entries for both modes. Default timeout is `DEFAULT_TIMEOUT` (env), overridable per-job with `custom_timeout`.
+
+Flow:
+1. Build binary (normal + ASAN), upload to Nightly release
+2. Download/generate test corpus
+3. Fuzz for N seconds
+4. Verify new crashes (ASAN for custom, minimizer for cargo-fuzz)
+5. Download previous crashes (post-fuzz = small race window)
+6. Regression check (re-run old crashes, remove fixed ones)
+7. Merge + dedup (MD5), upload with retry (race condition safe)
+8. Print crash details in logs (exit code per file)
+9. Generate reports, upload artifacts
+
+Crashes persist across runs in `crashes_<NAME>.7z` on the Nightly release. Both `custom` and `cargo-fuzz` modes write to the same archive (suffix `_CF` is stripped).
 
 ## Graceful shutdown
 
-Press `Ctrl+C` once to finish the current iteration and save all results found so far. Press again to force quit. Works in both custom and cargo-fuzz modes.
+`Ctrl+C` once = finish current iteration, save results. Again = force quit. Works in both modes.
 
 ## License
 
