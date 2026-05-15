@@ -161,6 +161,9 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
     res
 }
 
+/// Print sample output exactly once across the entire program lifetime.
+static SAMPLE_PRINTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
 fn test_files(
     files: Vec<String>,
     settings: &Setting,
@@ -169,8 +172,6 @@ fn test_files(
     atomic_all_broken: &AtomicU32,
 ) {
     let atomic = AtomicU32::new(0);
-    // Print full output of the first file always, so CI logs show what the tool produces
-    let debug_printed = AtomicU32::new(0);
     let all = files.len();
 
     files
@@ -185,8 +186,8 @@ fn test_files(
             }
             let output_result = execute_command_and_connect_output(obj, &full_name);
 
-            // Always print first file's output for visibility
-            if debug_printed.fetch_add(1, Ordering::Relaxed) == 0 {
+            // Print sample output exactly once across the entire program run
+            if !SAMPLE_PRINTED.swap(true, Ordering::Relaxed) {
                 info!("── Sample output (first file: {full_name}) ──\n{}\n── End sample ──", output_result.get_output());
             }
 

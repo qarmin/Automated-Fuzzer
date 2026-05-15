@@ -211,8 +211,5 @@ fn run_pdf_writer(input: &mut ByteInput) -> Option<()> {
     let output = pdf.finish();
     assert!(!output.is_empty(), "PDF output should not be empty");
 
-    // Optionally write to temp file (verifies the full pipeline)
-    let _ = fs::write("/tmp/fuzz_pdf_output.pdf", &output);
-
     Some(())
 }
