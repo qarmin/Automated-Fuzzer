@@ -1,0 +1,335 @@
+name: "\U0001F41B Fuzz"
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 21 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  fuzz:
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # ── Library crates (built from crates/) ──
+          - name: LITTLE_EXIF
+            crate: little_exif
+            binary: little_exif
+            files: "AA_NOM_EXIF_VALID_FILES.7z"
+            timeout: 16000
+          - name: LOPDF
+            crate: lopdf
+            binary: lopdf
+            files: "AA_PDF_VALID_FILES2.7z"
+            timeout: 16000
+          - name: BOA
+            crate: boa
+            binary: boa
+            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
+            timeout: 16000
+          - name: HAYRO
+            crate: hayro
+            binary: hayro
+            files: "AA_PDF_VALID_FILES2.7z"
+            timeout: 16000
+          - name: MOXCMS
+            crate: moxcms
+            binary: moxcms
+            files: "AA_ICC_VALID_FILES.7z"
+            timeout: 16000
+          - name: ZUNE
+            crate: zune
+            binary: zune
+            files: "AA_IMAGE_VALID_FILES.7z"
+            timeout: 16000
+          - name: SYMPHONIA
+            crate: symphonia
+            binary: symphonia
+            files: "AA_MUSIC_VALID_FILES.7z"
+            timeout: 16000
+
+          # ── External projects (cloned from GitHub, no local crate) ──
+          - name: TYRUF
+            external: true
+            clone_url: "https://github.com/astral-sh/ruff/archive/refs/heads/main.zip"
+            clone_dir: "ruff-main"
+            install_path: "ruff-main/crates/ty"
+            cargo_toml_dir: "ruff-main"
+            binary: ty
+            files: "FILES_21.zip"
+            timeout: 16000
+            post_clone: |
+              sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
+          - name: PYREFLY
+            external: true
+            clone_url: "https://github.com/facebook/pyrefly/archive/refs/heads/main.zip"
+            clone_dir: "pyrefly-main"
+            install_path: "pyrefly-main/pyrefly"
+            cargo_toml_dir: "pyrefly-main"
+            binary: pyrefly
+            files: "FILES_21.zip"
+            timeout: 16000
+          - name: SWC
+            external: true
+            clone_url: "https://github.com/swc-project/swc/archive/refs/heads/main.zip"
+            clone_dir: "swc-main"
+            install_path: "swc-main/crates/swc_cli_impl"
+            cargo_toml_dir: "swc-main"
+            binary: swc
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+            timeout: 16000
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup rust
+        run: |
+          rustup default nightly
+          rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
+          rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
+
+      - name: Install system deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget earlyoom libasan8 llvm sd python3 p7zip-full
+
+      - name: Install fuzzer tools
+        run: |
+          cargo install create_broken_files minimizer
+          cargo install --path .
+
+      # ── Download previous crashes from Nightly release ──
+      - name: Download previous crashes
+        run: |
+          mkdir -p /opt/PREVIOUS_CRASHES
+          # Try to download previous crash archive for this project
+          gh release download Nightly \
+            --pattern "crashes_${{ matrix.name }}.7z" \
+            --dir /opt/PREVIOUS_CRASHES \
+            --clobber 2>/dev/null || echo "No previous crashes found for ${{ matrix.name }}"
+          if [ -f "/opt/PREVIOUS_CRASHES/crashes_${{ matrix.name }}.7z" ]; then
+            cd /opt/PREVIOUS_CRASHES
+            7z x "crashes_${{ matrix.name }}.7z" -ocrashes || true
+            rm -f "crashes_${{ matrix.name }}.7z"
+            echo "Loaded $(find crashes -type f 2>/dev/null | wc -l) previous crash files"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.PAT2 }}
+
+      # ── Build the target binary ──
+
+      # Local crate
+      - name: Build local crate
+        if: ${{ matrix.external != true }}
+        run: |
+          cd crates/${{ matrix.crate }}
+          cargo update
+          # Normal build
+          cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
+            cargo +nightly install --path . --target x86_64-unknown-linux-gnu
+          sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}_normal
+
+          # ASAN build
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --target x86_64-unknown-linux-gnu
+          sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}
+
+      # External project
+      - name: Clone external project
+        if: ${{ matrix.external == true }}
+        run: |
+          wget -q "${{ matrix.clone_url }}"
+          unzip -q *.zip
+          rm -f *.zip
+          ${{ matrix.post_clone }}
+
+      - name: Patch release profile
+        if: ${{ matrix.external == true }}
+        run: |
+          TOML="${{ matrix.cargo_toml_dir }}/Cargo.toml"
+          sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' "$TOML"
+          cat >> "$TOML" << 'EOF'
+          [profile.release]
+          overflow-checks = true
+          debug = true
+          debug-assertions = true
+          lto = "thin"
+          codegen-units = 1
+          EOF
+
+      - name: Remove rust-toolchain files
+        if: ${{ matrix.external == true }}
+        run: |
+          find . -name "rust-toolchain.toml" -exec rm -f {} \; || true
+          find . -name ".cargo" -exec rm -rf {} \; || true
+
+      - name: Build external project
+        if: ${{ matrix.external == true }}
+        run: |
+          # Normal
+          cargo +nightly install --path "${{ matrix.install_path }}" --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
+            cargo +nightly install --path "${{ matrix.install_path }}" --target x86_64-unknown-linux-gnu
+          sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}_normal
+
+          # ASAN
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" --target x86_64-unknown-linux-gnu
+          sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}
+
+      - name: Clean build artifacts
+        run: git clean -xqdf || true
+
+      # ── Pack binaries for Nightly release ──
+      - name: Pack binaries
+        run: |
+          7z a "${{ matrix.binary }}_normal.7z" "/usr/local/bin/${{ matrix.binary }}_normal"
+          7z a "${{ matrix.binary }}.7z" "/usr/local/bin/${{ matrix.binary }}"
+
+      - name: Upload binaries to Nightly
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "Nightly"
+          files: |
+            ${{ matrix.binary }}.7z
+            ${{ matrix.binary }}_normal.7z
+          token: ${{ secrets.PAT2 }}
+
+      # ── Prepare dirs and files ──
+      - name: Create directories
+        run: |
+          mkdir -p /opt/VALID_FILES_DIR /opt/BROKEN_FILES_DIR /opt/POSSIBLY_BROKEN_FILES_DIR /tmp/tmp_folder/data /opt/CUSTOM
+
+      - name: Download test files
+        run: |
+          CURR_DIR=$(pwd)
+          cd /opt/VALID_FILES_DIR
+          python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
+          cd "$CURR_DIR"
+
+      # ── Verify previous crashes (regression check) ──
+      - name: Verify previous crashes
+        run: |
+          if [ -d "/opt/PREVIOUS_CRASHES/crashes" ] && [ "$(ls -A /opt/PREVIOUS_CRASHES/crashes 2>/dev/null)" ]; then
+            echo "=== Verifying $(find /opt/PREVIOUS_CRASHES/crashes -type f | wc -l) previous crash files ==="
+
+            # Copy previous crashes to broken_files_dir for verification
+            cp /opt/PREVIOUS_CRASHES/crashes/* /opt/BROKEN_FILES_DIR/ 2>/dev/null || true
+
+            # Determine config path
+            if [ -f "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" ]; then
+              cp "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" fuzz_settings.toml
+            elif [ -f "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" ]; then
+              cp "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" fuzz_settings.toml
+            fi
+            sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data_regression" fuzz_settings.toml
+            sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
+
+            export RUST_BACKTRACE=1
+            export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+            export ASAN_OPTIONS="symbolize=1"
+            auto_fuzzer legacy --remove-non-crashing || true
+
+            # Files remaining in BROKEN_FILES_DIR are still broken
+            STILL_BROKEN=$(find /opt/BROKEN_FILES_DIR -type f | wc -l)
+            echo "Regression check: $STILL_BROKEN files still crash"
+
+            # Clean for fresh fuzzing
+            rm -rf /opt/BROKEN_FILES_DIR/*
+            # Keep the still-broken files aside
+            if [ -d "/tmp/tmp_folder/data_regression" ] && [ "$(ls -A /tmp/tmp_folder/data_regression 2>/dev/null)" ]; then
+              mkdir -p /opt/STILL_BROKEN
+              cp -r /tmp/tmp_folder/data_regression/* /opt/STILL_BROKEN/ 2>/dev/null || true
+            fi
+          else
+            echo "No previous crashes to verify"
+          fi
+
+      # ── Run fuzzer ──
+      - name: Prepare config for fuzzing
+        run: |
+          if [ -f "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" ]; then
+            cp "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" fuzz_settings.toml
+          elif [ -f "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" ]; then
+            cp "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" fuzz_settings.toml
+          fi
+          sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
+
+      - name: Run fuzzer
+        run: |
+          export RUST_BACKTRACE=1
+          auto_fuzzer fuzz --mode custom --timeout ${{ matrix.timeout }}
+
+      # ── Verify results ──
+      - name: Verify and generate reports
+        run: |
+          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
+
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS="symbolize=1"
+          auto_fuzzer legacy --remove-non-crashing || true
+
+      # ── Dedup and pack crashes ──
+      - name: Collect and dedup all crashes
+        run: |
+          mkdir -p /opt/ALL_CRASHES
+
+          # Gather crashes from broken_files_dir
+          find /opt/BROKEN_FILES_DIR -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
+
+          # Add still-broken files from regression check
+          find /opt/STILL_BROKEN -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
+
+          # Dedup by MD5
+          python3 dedup_files.py /opt/ALL_CRASHES
+
+          CRASH_COUNT=$(find /opt/ALL_CRASHES -type f | wc -l)
+          echo "Total unique crash files: $CRASH_COUNT"
+          echo "CRASH_COUNT=$CRASH_COUNT" >> $GITHUB_ENV
+
+      - name: Pack crashes for Nightly
+        if: ${{ env.CRASH_COUNT != '0' }}
+        run: |
+          cd /opt/ALL_CRASHES
+          7z a "${{ github.workspace }}/crashes_${{ matrix.name }}.7z" .
+          cd "${{ github.workspace }}"
+
+      - name: Upload crashes to Nightly release
+        if: ${{ env.CRASH_COUNT != '0' }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: "Nightly"
+          files: crashes_${{ matrix.name }}.7z
+          token: ${{ secrets.PAT2 }}
+
+      # ── Store artifacts ──
+      - name: Store reports
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: REPORTS___${{ matrix.name }}
+          path: /tmp/tmp_folder/data
+
+      - name: Store crash files
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: CRASHES___${{ matrix.name }}
+          path: /opt/ALL_CRASHES
+
+      - name: Store regression results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          if-no-files-found: ignore
+          name: REGRESSION___${{ matrix.name }}
+          path: /opt/STILL_BROKEN
+
+      # ── Fail if crashes found ──
+      - name: Fail if crashes found
+        run: |
+          [ "$CRASH_COUNT" != "0" ] && exit 1 || true
