@@ -51,7 +51,7 @@ impl ProgramConfig for CustomStruct {
                 .skip(1)
                 .map(|e| e.replace("FILE_PATHS_TO_PROVIDE", full_name)),
         );
-        if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
+        if USE_ASAN_ENVS.load(std::sync::atomic::Ordering::Relaxed) {
             command.envs([
                 ("RUST_BACKTRACE", "1"),
                 ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),

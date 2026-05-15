@@ -2,13 +2,14 @@ use std::os::unix::fs::PermissionsExt;
 use std::os::unix::prelude::ExitStatusExt;
 use std::path::Path;
 use std::process::{Command, Output};
-use std::sync::atomic::Ordering;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::Instant;
 use std::{fs, process};
 
+use std::sync::LazyLock;
+
 use jwalk::WalkDir;
 use log::{error, info};
-use once_cell::sync::{Lazy, OnceCell};
 use rand::prelude::*;
 use rand::rng;
 
@@ -16,8 +17,8 @@ use crate::SHOULD_STOP;
 use crate::obj::ProgramConfig;
 use crate::settings::{Setting, TIMEOUT_MESSAGE};
 
-pub static START_TIME: Lazy<Instant> = Lazy::new(Instant::now);
-pub static TIMEOUT_SECS: OnceCell<u64> = OnceCell::new();
+pub static START_TIME: LazyLock<Instant> = LazyLock::new(Instant::now);
+pub static TIMEOUT_SECS: AtomicU64 = AtomicU64::new(999_999_999_999);
 
 #[derive(PartialOrd, PartialEq, Eq, Clone, Copy, Debug)]
 pub enum CheckGroupFileMode {
@@ -31,14 +32,18 @@ pub(crate) fn check_if_app_ends() -> bool {
         return true;
     }
     let elapsed = START_TIME.elapsed().as_secs();
-    let timeout = TIMEOUT_SECS.get().unwrap();
-    elapsed > *timeout
+    let timeout = TIMEOUT_SECS.load(Ordering::Relaxed);
+    elapsed > timeout
+}
+
+pub fn set_timeout(secs: u64) {
+    TIMEOUT_SECS.store(secs, Ordering::Relaxed);
 }
 
 pub(crate) fn close_app_if_timeouts() {
     if check_if_app_ends() {
-        info!("Timeout reached, closing app");
-        std::process::exit(0);
+        info!("Timeout reached, setting stop flag");
+        SHOULD_STOP.store(true, Ordering::Relaxed);
     }
 }
 
@@ -63,9 +68,13 @@ pub(crate) fn create_new_file_name(setting: &Setting, old_name: &str) -> String 
     let mut random_number = rand::rng().random_range(1..100_000);
     loop {
         let pat = Path::new(&old_name);
-        let extension = pat.extension().unwrap().to_str().unwrap().to_string();
-        let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
-        let new_name = format!("{}/{file_name}{}.{extension}", setting.broken_files_dir, random_number);
+        let extension = pat.extension().and_then(|e| e.to_str()).unwrap_or("");
+        let file_name = pat.file_stem().and_then(|e| e.to_str()).unwrap_or("file");
+        let new_name = if extension.is_empty() {
+            format!("{}/{file_name}{}", setting.broken_files_dir, random_number)
+        } else {
+            format!("{}/{file_name}{}.{extension}", setting.broken_files_dir, random_number)
+        };
         if !Path::new(&new_name).exists() {
             return new_name;
         }
@@ -76,12 +85,19 @@ pub(crate) fn create_new_file_name_for_minimization(setting: &Setting, old_name:
     let mut random_number = rand::rng().random_range(1..1000);
     loop {
         let pat = Path::new(&old_name);
-        let extension = pat.extension().unwrap().to_str().unwrap().to_string();
-        let file_name = pat.file_stem().unwrap().to_str().unwrap().to_string();
-        let new_name = format!(
-            "{}/{file_name}_minimized_{random_number}.{extension}",
-            setting.broken_files_dir,
-        );
+        let extension = pat.extension().and_then(|e| e.to_str()).unwrap_or("");
+        let file_name = pat.file_stem().and_then(|e| e.to_str()).unwrap_or("file");
+        let new_name = if extension.is_empty() {
+            format!(
+                "{}/{file_name}_minimized_{random_number}",
+                setting.broken_files_dir,
+            )
+        } else {
+            format!(
+                "{}/{file_name}_minimized_{random_number}.{extension}",
+                setting.broken_files_dir,
+            )
+        };
         if !Path::new(&new_name).exists() {
             return new_name;
         }
@@ -319,7 +335,9 @@ pub(crate) fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
         let Ok(metadata) = i.metadata() else {
             continue;
         };
-        metadata.permissions().set_mode(0o777);
+        let mut perms = metadata.permissions();
+        perms.set_mode(0o777);
+        let _ = fs::set_permissions(&path, perms);
         let Some(s) = path.to_str() else {
             continue;
         };
@@ -334,8 +352,10 @@ pub(crate) fn collect_files(settings: &Setting) -> (Vec<String>, u64) {
     }
 
     if files.is_empty() {
-        dbg!(&settings);
-        assert!(!files.is_empty());
+        panic!(
+            "No valid files found in '{}' with extensions {:?}",
+            settings.temp_possible_broken_files_dir, settings.extensions
+        );
     }
 
     (files, size_all)
@@ -346,7 +366,7 @@ pub(crate) fn collect_command_to_string(command: &Command) -> String {
         .get_args()
         .map(|e| {
             let tmp_string = e.to_string_lossy();
-            if [" ", "\"", "\\", "/"].iter().any(|e| tmp_string.contains(e)) {
+            if [" ", "\"", "\\"].iter().any(|e| tmp_string.contains(e)) {
                 format!("\"{}\"", tmp_string.replace('"', "\\\""))
             } else {
                 tmp_string.to_string()

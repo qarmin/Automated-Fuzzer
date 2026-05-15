@@ -1,4 +1,19 @@
+use std::sync::LazyLock;
+
 use regex::Regex;
+
+// Pre-compiled regexes for hot-path performance
+static RE_PANIC_OLD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at '.*?',\s*(\S+?\.rs):\d+").unwrap());
+static RE_PANIC_NEW: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at (\S+?\.rs):\d+").unwrap());
+static RE_SOURCE_LOC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"Source Location:\s*(\S+?\.rs):\d+").unwrap());
+static RE_BT_SRC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat ((?:\S*?/)?src/\S+?\.rs):\d+").unwrap());
+static RE_BT_ANY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat (\S+?\.rs):\d+").unwrap());
+static RE_ASSERT_FAILED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"assertion failed:\s*(.+)").unwrap());
+static RE_ASSERT_BACKTICK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"assertion `([^`]+)` failed").unwrap());
+static RE_PANIC_MSG_OLD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at '([^']+)'").unwrap());
+static RE_PANIC_MSG_NEW: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at \S+\.rs:\d+:\d+:\s*\n\s*(.+)").unwrap());
+static RE_ASAN_TYPE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"AddressSanitizer:\s*(\S+)").unwrap());
+static RE_NORMALIZE_NUMS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\b\d{2,}\b").unwrap());
 
 /// Represents a parsed error signature for grouping crashes
 #[derive(Debug, Clone)]
@@ -308,13 +323,10 @@ fn try_parse_assertion_eq(output: &str) -> Option<ErrorSignature> {
 
 fn try_parse_assertion_custom(output: &str) -> Option<ErrorSignature> {
     // Pattern: "assertion failed: CONDITION" or "assertion `CONDITION` failed"
-    let re_failed = Regex::new(r"assertion failed:\s*(.+)").ok()?;
-    let re_backtick = Regex::new(r"assertion `([^`]+)` failed").ok()?;
-
-    let condition = if let Some(cap) = re_failed.captures(output) {
+    let condition = if let Some(cap) = RE_ASSERT_FAILED.captures(output) {
         Some(normalize_assertion_condition(cap.get(1)?.as_str()))
     } else {
-        re_backtick
+        RE_ASSERT_BACKTICK
             .captures(output)
             .and_then(|cap| cap.get(1))
             .map(|m| normalize_assertion_condition(m.as_str()))
@@ -437,32 +449,27 @@ fn try_parse_not_implemented(output: &str) -> Option<ErrorSignature> {
 /// Extract source file path from Rust panic/backtrace output (without line number)
 fn extract_source_file(output: &str) -> Option<String> {
     // Pattern 1: "panicked at 'msg', src/file.rs:123:45" (old format)
-    let re1 = Regex::new(r"panicked at '.*?',\s*(\S+?\.rs):\d+").ok()?;
-    if let Some(cap) = re1.captures(output) {
+    if let Some(cap) = RE_PANIC_OLD.captures(output) {
         return Some(normalize_source_path(cap.get(1)?.as_str()));
     }
 
     // Pattern 2: "panicked at src/file.rs:123:45:" (new format)
-    let re2 = Regex::new(r"panicked at (\S+?\.rs):\d+").ok()?;
-    if let Some(cap) = re2.captures(output) {
+    if let Some(cap) = RE_PANIC_NEW.captures(output) {
         return Some(normalize_source_path(cap.get(1)?.as_str()));
     }
 
     // Pattern 3: "Source Location: crates/foo/src/bar.rs:123:45"
-    let re3 = Regex::new(r"Source Location:\s*(\S+?\.rs):\d+").ok()?;
-    if let Some(cap) = re3.captures(output) {
+    if let Some(cap) = RE_SOURCE_LOC.captures(output) {
         return Some(normalize_source_path(cap.get(1)?.as_str()));
     }
 
     // Pattern 4: Find "src/" paths in backtrace lines like "at src/foo/bar.rs:123"
-    let re4 = Regex::new(r"\bat ((?:\S*?/)?src/\S+?\.rs):\d+").ok()?;
-    if let Some(cap) = re4.captures(output) {
+    if let Some(cap) = RE_BT_SRC.captures(output) {
         return Some(normalize_source_path(cap.get(1)?.as_str()));
     }
 
     // Pattern 5: Any .rs file in backtrace
-    let re5 = Regex::new(r"\bat (\S+?\.rs):\d+").ok()?;
-    if let Some(cap) = re5.captures(output) {
+    if let Some(cap) = RE_BT_ANY.captures(output) {
         let path = cap.get(1)?.as_str();
         // Skip standard library/rustc paths
         if !path.contains("rustc/") && !path.contains(".cargo/registry") && !path.contains("library/") {
@@ -488,21 +495,18 @@ fn normalize_source_path(path: &str) -> String {
 fn normalize_assertion_condition(condition: &str) -> String {
     let trimmed = condition.trim().to_string();
     // Replace concrete numbers with N for dedup (but keep variable names)
-    let re = Regex::new(r"\b\d{2,}\b").unwrap();
-    re.replace_all(&trimmed, "N").to_string()
+    RE_NORMALIZE_NUMS.replace_all(&trimmed, "N").to_string()
 }
 
 /// Extract panic message from output
 fn extract_panic_message(output: &str) -> Option<String> {
     // "panicked at 'MESSAGE'"
-    let re1 = Regex::new(r"panicked at '([^']+)'").ok()?;
-    if let Some(cap) = re1.captures(output) {
+    if let Some(cap) = RE_PANIC_MSG_OLD.captures(output) {
         return Some(cap.get(1)?.as_str().to_string());
     }
 
     // "panicked at src/file.rs:123:\nMESSAGE"
-    let re2 = Regex::new(r"panicked at \S+\.rs:\d+:\d+:\s*\n\s*(.+)").ok()?;
-    if let Some(cap) = re2.captures(output) {
+    if let Some(cap) = RE_PANIC_MSG_NEW.captures(output) {
         return Some(cap.get(1)?.as_str().trim().to_string());
     }
 
@@ -511,8 +515,7 @@ fn extract_panic_message(output: &str) -> Option<String> {
 
 /// Extract ASAN error type
 fn extract_asan_type(output: &str) -> Option<String> {
-    let re = Regex::new(r"AddressSanitizer:\s*(\S+)").ok()?;
-    re.captures(output).and_then(|cap| {
+    RE_ASAN_TYPE.captures(output).and_then(|cap| {
         let t = cap.get(1)?.as_str().to_string();
         Some(t)
     })
@@ -520,10 +523,17 @@ fn extract_asan_type(output: &str) -> Option<String> {
 
 fn truncate_str(s: &str, max_len: usize) -> String {
     if s.len() <= max_len {
-        s.to_string()
-    } else {
-        format!("{}...", &s[..max_len - 3])
+        return s.to_string();
     }
+    // Find the last valid char boundary at or before max_len - 3
+    let target = max_len.saturating_sub(3);
+    let boundary = s
+        .char_indices()
+        .map(|(i, _)| i)
+        .take_while(|&i| i <= target)
+        .last()
+        .unwrap_or(0);
+    format!("{}...", &s[..boundary])
 }
 
 /// Returns the old-style error_type string for backward compatibility with folder naming

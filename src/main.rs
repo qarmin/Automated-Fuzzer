@@ -4,19 +4,17 @@
 
 use std::fs;
 use std::path::Path;
-use std::sync::RwLock;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 use clap::{Parser, Subcommand};
 use log::info;
 
-use crate::common::{TIMEOUT_SECS, calculate_number_of_files, check_files_number};
+use crate::common::{calculate_number_of_files, check_files_number, set_timeout};
 use crate::finding_different_output::find_broken_files_by_different_output;
 use crate::finding_text_status::find_broken_files_by_text_status;
 use crate::fuzz_cargo::run_cargo_fuzz;
 use crate::ignore_list::{IgnoreEntry, IgnoreList};
-use crate::obj::USE_ASAN_ENVS;
-use crate::settings::{StabilityMode, get_object, load_settings};
+use crate::settings::{StabilityMode, get_object, load_settings, load_settings_from_path};
 use crate::validate::validate_links;
 
 mod apps;
@@ -229,6 +227,10 @@ enum CiAction {
         /// Fuzzing mode: "custom" or "cargo-fuzz"
         #[arg(long, default_value = "custom")]
         mode: String,
+
+        /// Cargo-fuzz target name (required for cargo-fuzz mode)
+        #[arg(long)]
+        target: Option<String>,
     },
     /// Verify if previously found crashes are still reproducible
     VerifyRegressions {
@@ -257,8 +259,6 @@ fn main() {
     })
     .expect("Failed to set Ctrl+C handler");
 
-    USE_ASAN_ENVS.set(RwLock::new(false));
-
     let cli = Cli::parse();
 
     match cli.command {
@@ -272,7 +272,7 @@ fn main() {
             jobs,
         } => {
             let effective_timeout = if timeout == 0 { 999_999_999_999 } else { timeout };
-            TIMEOUT_SECS.set(effective_timeout).unwrap();
+            set_timeout(effective_timeout);
 
             match mode.as_str() {
                 "custom" => {
@@ -311,7 +311,7 @@ fn main() {
         }
 
         Commands::Minimize { config, dir, command } => {
-            TIMEOUT_SECS.set(999_999_999_999).unwrap();
+            set_timeout(999_999_999_999);
             minimize_cmd::run_minimize(&config, dir.as_deref(), command.as_deref());
         }
 
@@ -377,8 +377,9 @@ fn main() {
                 state_dir,
                 output_dir,
                 mode,
+                target,
             } => {
-                ci::run_ci(&config, timeout, &state_dir, &output_dir, &mode);
+                ci::run_ci(&config, timeout, &state_dir, &output_dir, &mode, target.as_deref());
             }
             CiAction::VerifyRegressions { config, state_dir } => {
                 ci::verify_regressions(&config, &state_dir);
@@ -389,7 +390,7 @@ fn main() {
             timeout,
             remove_non_crashing,
         } => {
-            TIMEOUT_SECS.set(timeout).unwrap();
+            set_timeout(timeout);
             let settings = load_settings();
             let mut obj = get_object(settings.clone());
             obj.init();
@@ -426,12 +427,7 @@ fn main() {
 }
 
 fn load_settings_from(config_path: &str) -> settings::Setting {
-    // If the config file name is different, temporarily copy/symlink it
-    if config_path != "fuzz_settings.toml" && Path::new(config_path).exists() {
-        // The config crate looks for "fuzz_settings" by default
-        // We need to set it up properly
-        let content = fs::read_to_string(config_path).expect("Failed to read config file");
-        fs::write("fuzz_settings.toml", &content).expect("Failed to write temp config");
-    }
-    load_settings()
+    // Strip .toml extension if present — the config crate adds it automatically
+    let path = config_path.strip_suffix(".toml").unwrap_or(config_path);
+    load_settings_from_path(path)
 }

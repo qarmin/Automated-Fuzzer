@@ -221,12 +221,6 @@ pub fn create_all_reports(results_dir: &str, project_filter: Option<&str>) {
 }
 
 fn extract_toml_value(content: &str, key: &str) -> Option<String> {
-    for line in content.lines() {
-        if line.starts_with(key) {
-            if let Some(val) = line.split('=').nth(1) {
-                return Some(val.trim().trim_matches('"').to_string());
-            }
-        }
-    }
-    None
+    let table: toml::Table = toml::from_str(content).ok()?;
+    table.get(key)?.as_str().map(|s| s.to_string())
 }

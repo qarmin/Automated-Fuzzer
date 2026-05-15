@@ -60,9 +60,9 @@ pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn
 
         if settings.grouping > 1 && obj.get_files_group_mode() != CheckGroupFileMode::None {
             info!("Started to check files in groups of {} elements", settings.grouping);
-            *USE_ASAN_ENVS.get().write().expect("Failed to write") = true;
+            USE_ASAN_ENVS.store(true, std::sync::atomic::Ordering::Relaxed);
             files = test_files_in_group(files, settings, obj);
-            *USE_ASAN_ENVS.get().write().expect("Failed to write") = false;
+            USE_ASAN_ENVS.store(false, std::sync::atomic::Ordering::Relaxed);
             info!(
                 "After grouping left {} files to check out of all {start_file_size}",
                 files.len()

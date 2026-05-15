@@ -25,7 +25,7 @@ pub fn run_cargo_fuzz(target: &str, corpus: &str, timeout: u64, features: Option
     }
 
     cmd.arg("--")
-        .arg(format!("-max_len=99999"))
+        .arg("-max_len=99999")
         .arg(format!("-max_total_time={timeout}"))
         .arg("-rss_limit_mb=20000");
 
@@ -49,10 +49,8 @@ pub fn run_cargo_fuzz(target: &str, corpus: &str, timeout: u64, features: Option
             }
             Ok(None) => {
                 if SHOULD_STOP.load(Ordering::Relaxed) {
-                    info!("Stop requested, sending SIGTERM to cargo-fuzz...");
-                    unsafe {
-                        libc_signal_child(&child);
-                    }
+                    info!("Stop requested, sending SIGTERM to cargo-fuzz process group...");
+                    signal_child_group(&child);
                     let _ = child.wait();
                     info!("cargo-fuzz stopped.");
                     break;
@@ -108,10 +106,11 @@ fn collect_cargo_fuzz_results(target: &str) {
     }
 }
 
-/// Send SIGTERM to child process on Unix
-unsafe fn libc_signal_child(child: &std::process::Child) {
+/// Send SIGTERM to child process group on Unix
+fn signal_child_group(child: &std::process::Child) {
     let pid = child.id() as i32;
+    // Use negative PID to signal the entire process group
     unsafe {
-        libc::kill(pid, libc::SIGTERM);
+        libc::kill(-pid, libc::SIGTERM);
     }
 }

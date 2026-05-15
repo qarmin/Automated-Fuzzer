@@ -3,14 +3,14 @@ use std::path::Path;
 
 use log::info;
 
-use crate::common::{TIMEOUT_SECS, execute_command_and_connect_output};
+use crate::common::{execute_command_and_connect_output, set_timeout};
 use crate::error_signature::parse_error_signature;
 use crate::fuzz_cargo::run_cargo_fuzz;
 use crate::settings::{StabilityMode, get_object, load_settings};
 
 /// Run fuzzer in CI mode with state persistence
-pub fn run_ci(config: &str, timeout: u64, state_dir: &str, output_dir: &str, mode: &str) {
-    TIMEOUT_SECS.set(timeout).unwrap();
+pub fn run_ci(config: &str, timeout: u64, state_dir: &str, output_dir: &str, mode: &str, target: Option<&str>) {
+    set_timeout(timeout);
 
     // Ensure directories exist
     fs::create_dir_all(state_dir).unwrap();
@@ -18,7 +18,6 @@ pub fn run_ci(config: &str, timeout: u64, state_dir: &str, output_dir: &str, mod
 
     let corpus_dir = format!("{state_dir}/corpus");
     let known_crashes_dir = format!("{state_dir}/known_crashes");
-    let _signatures_path = format!("{state_dir}/signatures.toml");
     let history_path = format!("{state_dir}/history.toml");
     fs::create_dir_all(&corpus_dir).unwrap();
     fs::create_dir_all(&known_crashes_dir).unwrap();
@@ -28,9 +27,8 @@ pub fn run_ci(config: &str, timeout: u64, state_dir: &str, output_dir: &str, mod
             run_ci_custom(config, timeout, state_dir, output_dir);
         }
         "cargo-fuzz" => {
-            info!("CI cargo-fuzz mode not yet fully implemented - running basic cargo-fuzz");
-            // For cargo-fuzz, use the corpus from state
-            run_cargo_fuzz("default", &corpus_dir, timeout, None, 4);
+            let target = target.expect("--target is required for CI cargo-fuzz mode");
+            run_cargo_fuzz(target, &corpus_dir, timeout, None, 4);
         }
         other => {
             eprintln!("Unknown CI mode: {other}");
@@ -81,7 +79,7 @@ fn run_ci_custom(_config: &str, _timeout: u64, state_dir: &str, output_dir: &str
 
 /// Verify if previously found crashes are still reproducible
 pub fn verify_regressions(_config: &str, state_dir: &str) {
-    TIMEOUT_SECS.set(999_999_999_999).unwrap();
+    set_timeout(999_999_999_999);
 
     let settings = load_settings();
     let obj = get_object(settings.clone());
@@ -127,11 +125,15 @@ pub fn verify_regressions(_config: &str, state_dir: &str) {
             still_broken += 1;
         } else {
             println!("[FIXED] {}", file);
-            // Move to archive
+            // Move to archive with unique name to avoid collisions
             let archive_dir = format!("{state_dir}/archived_fixed");
             let _ = fs::create_dir_all(&archive_dir);
             let file_name = Path::new(file).file_name().unwrap().to_string_lossy().to_string();
-            let _ = fs::rename(file, format!("{archive_dir}/{file_name}"));
+            let mut dest = format!("{archive_dir}/{file_name}");
+            if Path::new(&dest).exists() {
+                dest = format!("{archive_dir}/{}_{}", rand::random::<u32>(), file_name);
+            }
+            let _ = fs::rename(file, dest);
             fixed += 1;
         }
     }

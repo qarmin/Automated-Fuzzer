@@ -165,8 +165,12 @@ pub(crate) fn process_custom_struct(
     }
 }
 pub(crate) fn load_settings() -> Setting {
+    load_settings_from_path("fuzz_settings")
+}
+
+pub(crate) fn load_settings_from_path(config_path: &str) -> Setting {
     let settings = Config::builder()
-        .add_source(config::File::with_name("fuzz_settings"))
+        .add_source(config::File::with_name(config_path))
         .build()
         .unwrap();
     let config = settings

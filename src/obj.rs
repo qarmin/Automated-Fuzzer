@@ -1,5 +1,5 @@
 use std::process::{Child, Command};
-use std::sync::RwLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use log::error;
 
@@ -9,7 +9,7 @@ use crate::common::{
 };
 use crate::settings::{Setting, StabilityMode};
 
-pub static USE_ASAN_ENVS: state::InitCell<RwLock<bool>> = state::InitCell::new();
+pub static USE_ASAN_ENVS: AtomicBool = AtomicBool::new(false);
 
 pub trait ProgramConfig: Sync {
     fn get_broken_items_list(&self) -> &[String];
@@ -56,7 +56,7 @@ pub trait ProgramConfig: Sync {
     fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self.get_basic_run_command();
         command.arg(full_name);
-        if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
+        if USE_ASAN_ENVS.load(Ordering::Relaxed) {
             command.envs([
                 ("RUST_BACKTRACE", "1"),
                 ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),

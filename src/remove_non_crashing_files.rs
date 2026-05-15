@@ -8,6 +8,7 @@ use jwalk::WalkDir;
 use log::info;
 use rand::random;
 use rayon::prelude::*;
+use serde::Serialize;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
@@ -18,6 +19,18 @@ use crate::common::{
 use crate::error_signature::{parse_error_signature, get_legacy_error_type};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
+
+#[derive(Serialize)]
+struct ReportMetadata {
+    error_type: String,
+    error_signature: String,
+    short_description: String,
+    source_file: String,
+    issue_title: String,
+    project: String,
+    found_date: String,
+    file_size: usize,
+}
 
 pub const MAX_FILES: usize = 999_999_999_999;
 
@@ -116,60 +129,39 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
         );
         let _ = fs::create_dir_all(&folder);
 
-        file_content += &r#"$CNT_TEXT
-
-command
-```
-$COMMAND
-```
-
-App was compiled with nightly rust compiler to be able to use address sanitizer
-(You can ignore this part if there is no address sanitizer error)
-On Ubuntu 24.04, the commands to compile were:
-```
-rustup default nightly
-rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
-rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
-
-export RUST_BACKTRACE=1 # or full depending on project
-export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-export ASAN_OPTIONS=symbolize=1
-RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --target x86_64-unknown-linux-gnu
-```
-
-cause this
-```
-$ERROR
-```
-"#
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
+        file_content += &cnt_text;
+        file_content += "\n\ncommand\n```\n";
+        file_content += &command_str_with_extension;
+        file_content += "\n```\n\n";
+        file_content += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
+        file_content += "(You can ignore this part if there is no address sanitizer error)\n";
+        file_content += "On Ubuntu 24.04, the commands to compile were:\n```\n";
+        file_content += "rustup default nightly\n";
+        file_content += "rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu\n";
+        file_content += "rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu\n\n";
+        file_content += "export RUST_BACKTRACE=1 # or full depending on project\n";
+        file_content += "export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)\n";
+        file_content += "export ASAN_OPTIONS=symbolize=1\n";
+        file_content += "RUSTFLAGS=\"-Zsanitizer=address\" cargo +nightly build --target x86_64-unknown-linux-gnu\n";
+        file_content += "```\n\ncause this\n```\n";
+        file_content += &result;
+        file_content += "\n```\n";
 
         fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
 
         // Write metadata file with signature info
-        let metadata = format!(
-            r#"error_type = "{}"
-error_signature = "{}"
-short_description = "{}"
-source_file = "{}"
-issue_title = "{}"
-project = "{}"
-found_date = "{}"
-file_size = {}
-"#,
-            signature.error_type,
-            signature.signature(),
-            signature.short_description,
-            signature.source_file.as_deref().unwrap_or(""),
-            signature.issue_title(),
-            settings.name,
-            chrono::Local::now().format("%Y-%m-%d"),
-            content.len(),
-        );
-        fs::write(format!("{folder}/to_report_metadata.toml"), metadata).unwrap();
+        let metadata = ReportMetadata {
+            error_type: signature.error_type.clone(),
+            error_signature: signature.signature(),
+            short_description: signature.short_description.clone(),
+            source_file: signature.source_file.as_deref().unwrap_or("").to_string(),
+            issue_title: signature.issue_title(),
+            project: settings.name.clone(),
+            found_date: chrono::Local::now().format("%Y-%m-%d").to_string(),
+            file_size: content.len(),
+        };
+        let metadata_str = toml::to_string_pretty(&metadata).unwrap();
+        fs::write(format!("{folder}/to_report_metadata.toml"), metadata_str).unwrap();
 
         fs::write(format!("{folder}/crash_output.txt"), &result).unwrap();
 
@@ -207,13 +199,28 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
 }
 
 pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &[u8]) {
-    let zip_file = File::create(zip_filename).unwrap();
+    let zip_file = match File::create(zip_filename) {
+        Ok(f) => f,
+        Err(e) => {
+            log::error!("Failed to create zip file {zip_filename}: {e}");
+            return;
+        }
+    };
     let mut zip_writer = ZipWriter::new(zip_file);
 
     let options = SimpleFileOptions::default()
         .compression_method(zip::CompressionMethod::Deflated)
         .unix_permissions(0o755);
 
-    let _ = zip_writer.start_file(file_name, options);
-    let _ = zip_writer.write_all(file_code);
+    if let Err(e) = zip_writer.start_file(file_name, options) {
+        log::error!("Failed to start zip entry {file_name}: {e}");
+        return;
+    }
+    if let Err(e) = zip_writer.write_all(file_code) {
+        log::error!("Failed to write zip content for {file_name}: {e}");
+        return;
+    }
+    if let Err(e) = zip_writer.finish() {
+        log::error!("Failed to finalize zip {zip_filename}: {e}");
+    }
 }
