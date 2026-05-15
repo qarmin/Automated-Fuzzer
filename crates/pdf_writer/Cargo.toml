@@ -1,0 +1,18 @@
+[package]
+name = "pdf_writer_fuzz"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "pdf_writer"
+path = "src/main.rs"
+
+[dependencies]
+pdf-writer = { git = "https://github.com/typst/pdf-writer.git" }
+walkdir = "2"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

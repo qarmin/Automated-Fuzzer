@@ -26,7 +26,7 @@ pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn
         info!("Starting loop {i} out of all {loop_number}");
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
 
@@ -38,7 +38,7 @@ pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn
         info!("generated files");
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
 
@@ -47,7 +47,7 @@ pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn
         info!("Removed non parsable files");
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
         info!("Collecting files");
@@ -60,9 +60,9 @@ pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn
 
         if settings.grouping > 1 && obj.get_files_group_mode() != CheckGroupFileMode::None {
             info!("Started to check files in groups of {} elements", settings.grouping);
-            *USE_ASAN_ENVS.get().write().expect("Failed to write") = true;
+            USE_ASAN_ENVS.store(true, std::sync::atomic::Ordering::Relaxed);
             files = test_files_in_group(files, settings, obj);
-            *USE_ASAN_ENVS.get().write().expect("Failed to write") = false;
+            USE_ASAN_ENVS.store(false, std::sync::atomic::Ordering::Relaxed);
             info!(
                 "After grouping left {} files to check out of all {start_file_size}",
                 files.len()
@@ -73,7 +73,7 @@ pub(crate) fn find_broken_files_by_text_status(settings: &Setting, obj: &Box<dyn
         let atomic_broken = AtomicU32::new(0);
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
         test_files(files, settings, obj, &atomic_broken, &atomic_all_broken);
@@ -134,8 +134,6 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             if obj.get_files_group_mode() == CheckGroupFileMode::ByFilesGroup {
                 all_temp_files = map.values().map(ToString::to_string).collect();
             }
-            // let count = WalkDir::new(&random_folder).max_depth(999).into_iter().flatten().count();
-            // warn!("{:?} {:?} {}", all_temp_files.len(), random_folder, count);
 
             let output_result = execute_command_on_pack_of_files(obj, &random_folder, &all_temp_files);
 
@@ -144,26 +142,9 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
             if settings.debug_print_results {
                 info!("{}", output_result.get_output());
             }
-            // info!("Group {}, elements {} - result {}", number , group.len(), is_really_broken || obj.is_broken(&output));
 
             if output_result.is_broken() {
                 info!("Group {number} is broken");
-                // TODO debug print - everything should be handled by setting
-                // info!("Command - {}", output_result.get_command_str());
-                // info!("Output: {}", output_result.get_output()); // TODO handle this via setting
-                // output_result.debug_print();
-                //
-                // // Save files to custom folder
-                // let folder_idx: u64 = random();
-                // let new_folder_name = format!("{}/{folder_idx}", settings.custom_folder_path);
-                // fs::create_dir_all(&new_folder_name).expect("Failed to create new folder");
-                //
-                // for (idx, file_name) in group.iter().enumerate() {
-                //     let extension = Path::new(file_name).extension().unwrap().to_str().unwrap();
-                //     let temp_name = format!("{new_folder_name}/{idx}.{extension}");
-                //     fs::copy(file_name, &temp_name).expect("Failed to copy file");
-                // }
-
                 Some(Some(group))
             } else {
                 Some(None)
@@ -179,6 +160,9 @@ fn test_files_in_group(files: Vec<String>, settings: &Setting, obj: &Box<dyn Pro
     remove_and_create_entire_folder(&settings.temp_folder);
     res
 }
+
+/// Print sample output exactly once across the entire program lifetime.
+static SAMPLE_PRINTED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 fn test_files(
     files: Vec<String>,
@@ -200,7 +184,19 @@ fn test_files(
             if check_if_app_ends() {
                 return None;
             }
-            let output_result = execute_command_and_connect_output(obj, &full_name);
+            let Some(output_result) = execute_command_and_connect_output(obj, &full_name) else {
+                // Filesystem hiccup — skip this file but don't abort the whole loop.
+                return Some(());
+            };
+
+            // Print sample output exactly once across the entire program run
+            if !SAMPLE_PRINTED.swap(true, Ordering::Relaxed) {
+                info!(
+                    " Sample output (first file: {full_name}) \n{}\n End sample ",
+                    output_result.get_output()
+                );
+            }
+
             if settings.debug_print_results {
                 info!("{}", output_result.get_output());
             }

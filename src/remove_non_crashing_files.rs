@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::fs::File;
 use std::io::Write;
@@ -8,15 +9,27 @@ use jwalk::WalkDir;
 use log::info;
 use rand::random;
 use rayon::prelude::*;
+use serde::Serialize;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
-use crate::common::{
-    CheckGroupFileMode, collect_command_to_string, execute_command_and_connect_output,
-    execute_command_on_pack_of_files, remove_and_create_entire_folder,
-};
+use crate::common::{collect_command_to_string, execute_command_and_connect_output, remove_and_create_entire_folder};
+use crate::error_signature::{ErrorSignature, parse_error_signature};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
+
+#[derive(Serialize)]
+struct ReportMetadata {
+    error_type: String,
+    error_signature: String,
+    short_description: String,
+    source_file: String,
+    source_line: u32,
+    issue_title: String,
+    project: String,
+    found_date: String,
+    file_size: usize,
+}
 
 pub const MAX_FILES: usize = 999_999_999_999;
 
@@ -25,92 +38,14 @@ pub(crate) fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn Progra
 
     let broken_files: Vec<String> = collect_broken_files(settings).into_iter().take(MAX_FILES).collect();
     info!("Found {} broken files to check", broken_files.len());
-    // let broken_files_before = broken_files.len();
 
     remove_non_crashing(broken_files, settings, obj, 1);
 
-    // let broken_files: Vec<String> = collect_broken_files(settings);
-    // let broken_files_after = broken_files.len();
-    //
-    // remove_non_crashing(broken_files, settings, obj, 2);
-    //
-    // let broken_files: Vec<String> = collect_broken_files(settings);
-    // let broken_files_after2 = broken_files.len();
-    //
-    // info!("At start there was {broken_files_before} files, after first pass {broken_files_after}, after second pass {broken_files_after2}");
-    // if broken_files_after != broken_files_after2 {
-    //     error!("There is unstable checking for broken files");
-    // }
     let broken_files: Vec<String> = collect_broken_files(settings);
     info!("After checking {} broken files left", broken_files.len());
 }
 
-#[allow(dead_code)]
-#[allow(unused)]
-fn remove_non_crashing_in_group(
-    broken_files: Vec<String>,
-    settings: &Setting,
-    obj: &Box<dyn ProgramConfig>,
-) -> Vec<String> {
-    // TODO this check may be broken - test it
-    return broken_files;
-
-    if settings.grouping == 1 || obj.get_files_group_mode() == CheckGroupFileMode::None {
-        return broken_files;
-    }
-    info!("Removing non-crashing files in group");
-    let group_size = 20;
-    let atomic_counter = AtomicUsize::new(0);
-    let all_chunks = broken_files.chunks(group_size).count();
-
-    let still_broken_files = broken_files
-        .into_par_iter()
-        .chunks(group_size)
-        .enumerate()
-        .filter_map(|(chunk_idx, chunk)| {
-            let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
-            info!("_____ Processed already {idx} / {all_chunks} chunk (step {group_size})");
-            let temp_folder = format!("{}/{}", settings.temp_folder, random::<u64>());
-            fs::create_dir_all(&temp_folder).unwrap();
-
-            for (idx, full_name) in chunk.iter().enumerate() {
-                let extension = Path::new(full_name).extension().unwrap().to_str().unwrap();
-                let new_name = format!("{temp_folder}/{idx}.{extension}");
-                fs::copy(full_name, &new_name).unwrap();
-            }
-
-            let output_result = execute_command_on_pack_of_files(obj, &temp_folder, &[]);
-            if settings.debug_print_results {
-                info!("File pack {temp_folder}\n{}", output_result.get_output());
-            }
-
-            fs::remove_dir_all(&temp_folder).unwrap();
-
-            if output_result.is_broken() {
-                info!("Chunk {chunk_idx} is broken");
-                Some(chunk.clone())
-            } else {
-                info!("Chunk {chunk_idx} is not broken");
-                for full_name in chunk {
-                    fs::remove_file(&full_name).unwrap();
-                }
-                None
-            }
-        })
-        .flatten()
-        .collect();
-    info!("Removing non-crashing files in group done");
-    still_broken_files
-}
 fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
-    // Processing in groups - not needed currently
-    // let still_broken_files = broken_files;
-    // let still_broken_files = if obj.get_files_group_mode() != CheckGroupFileMode::None {
-    //     remove_non_crashing_in_group(broken_files, settings, obj)
-    // } else {
-    //     broken_files
-    // };
-    //
     let still_broken_files = broken_files
         .into_iter()
         .filter(|e| {
@@ -128,171 +63,392 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     let results = still_broken_files
         .into_par_iter()
         .filter_map(|full_name| {
-            let start_text = fs::read(&full_name).unwrap();
+            let Ok(start_text) = fs::read(&full_name) else {
+                log::warn!("Cannot read {full_name}; skipping");
+                return None;
+            };
             let idx = atomic_counter.fetch_add(1, Ordering::Relaxed);
             if idx.is_multiple_of(100) {
                 info!("_____ Processed already {idx} / {all} (step {step})");
             }
-            let output_result = execute_command_and_connect_output(obj, &full_name);
+            let Some(output_result) = execute_command_and_connect_output(obj, &full_name) else {
+                // Filesystem error during the run — don't classify, don't delete.
+                return None;
+            };
             if settings.debug_print_results {
                 info!("File {full_name}\n{}", output_result.get_output());
             }
             if output_result.is_broken() {
-                fs::write(&full_name, start_text).unwrap();
+                if let Err(e) = fs::write(&full_name, start_text) {
+                    log::warn!("Cannot restore {full_name}: {e}");
+                }
                 return Some((full_name, output_result.get_output().trim().to_string()));
             }
             info!("File {full_name} is not broken, and will be removed");
 
-            fs::remove_file(&full_name).unwrap();
+            if let Err(e) = fs::remove_file(&full_name) {
+                log::warn!("Cannot remove non-broken {full_name}: {e}");
+            }
             None
         })
         .collect::<Vec<_>>();
 
-    remove_and_create_entire_folder(&settings.temp_folder);
+    // Only reset temp_folder when we actually have reports to write —
+    // otherwise we'd destroy reports from a previous run for no reason.
+    if !results.is_empty() {
+        remove_and_create_entire_folder(&settings.temp_folder);
+    }
 
     save_results_to_file(obj, settings, results);
 }
 
+struct CrashCandidate {
+    file_name: String,
+    result: String,
+    signature: ErrorSignature,
+    group_key: String,
+    file_size: usize,
+}
+
 pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
-    info!("Saving results to file");
+    if content.is_empty() {
+        info!("save_results_to_file: no reproducible crashes to report (input was empty)");
+        return;
+    }
+    info!(
+        "save_results_to_file: starting with {} reproducible crashes",
+        content.len()
+    );
     let command = obj.get_full_command("TEST___FILE");
     let command_str = collect_command_to_string(&command);
+    let crate_code = try_read_crate_code(&settings.name);
 
+    //  Group all crashes by error signature (project__type__src_line)
+    let mut groups: HashMap<String, Vec<CrashCandidate>> = HashMap::new();
     for (file_name, result) in content {
-        let content = fs::read(&file_name).unwrap();
-        let extension = Path::new(&file_name).extension().unwrap().to_str().unwrap();
-        let command_str_with_extension = command_str.replace("TEST___FILE", &format!("TEST___FILE.{extension}"));
-        let mut file_content = String::new();
+        let file_size = fs::metadata(&file_name).map(|m| m.len() as usize).unwrap_or(usize::MAX);
+        let signature = parse_error_signature(&result);
 
-        let mut cnt_text = String::new();
-        let content_to_string = String::from_utf8(content.clone());
-        if let Ok(content_string) = content_to_string {
-            cnt_text += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
-            cnt_text += "```\n";
-            cnt_text += &content_string;
-            cnt_text += "\n```";
-        } else {
-            cnt_text += "File content is binary, so is available only in zip file";
-        }
-        let error_type = match result {
-            _ if result.contains("memory allocation of") => "memory_failure",
-            _ if result.contains("stack overflow") => "stack_overflow",
-            _ if result.contains("stack-overflow") => "asan_stack_overflow",
-            _ if result.contains("heap-use-after-free") => "asan_heap_use_after_free",
-            _ if result.contains("segmentation fault") => "segmentation_fault",
-            _ if result.contains("Killed") => "killed",
-            _ if result.contains("is not a char boundary") => "char_boundary",
-            _ if result.contains("divide by zero") => "divide_by_zero",
-            _ if result.contains("attempt to subtract with overflow") => "overflow_s",
-            _ if result.contains("attempt to multiply with overflow") => "overflow_m",
-            _ if result.contains("attempt to add with overflow") => "overflow_a",
-            _ if result.contains("attempt to shift right with overflow") => "overflow_sr",
-            _ if result.contains("attempt to shift left with overflow") => "overflow_sl",
-            _ if result.contains("index out of bounds:") => "index_out_of_bounds",
-            _ if result.contains("is out of bounds:") => "out_of_bounds",
-            _ if result.contains("is out of bounds of") => "out_of_bounds_of",
-            _ if result.contains("Option::unwrap()") => "option_unwrap",
-            _ if result.contains("Result::unwrap()") => "result_unwrap",
-            _ if result.contains("when slicing `") => "slicing",
-            _ if result.contains("internal error: entered unreachable code") => "unreachable_code",
-            _ if result.contains("not implemented: ") => "not_implemented",
-            _ if result.contains("Aborted") => "aborted",
-            _ if result.contains("output signal \"Some(15)\"") => "out_of_memory",
-            _ if result.contains("AddressSanitizer: out of memory") => "asan_out_of_memory",
-            _ if result.contains("output signal \"Some(11)\"") => "segmentation_fault2",
-            _ if result.contains("AddressSanitizer") => "address_sanitizer",
-            _ if result.contains("ThreadSanitizer") => "thread_sanitizer",
-            _ if result.contains("LeakSanitizer") => "leak_sanitizer",
-            _ if result.contains("assertion `") => "assertion",
-            _ if result.contains("assertion failed:") => "assertion_failed",
-            _ if result.contains("out of range for") => "out_of_range",
-            _ if result.contains("panicked at ") => "panicked",
-            _ if result.contains("RUST_BACKTRACE") => "panic",
-            _ if result.contains("output status \"Some(124)\"") => "timeout",
-            _ if result.contains("Fix introduced a syntax error") => "syntax_error",
-            _ => "",
-        };
-
-        let folder = format!(
-            "{}/{}_{}__({} bytes) - {}",
-            settings.temp_folder,
-            settings.name,
-            error_type,
-            content.len(),
-            random::<u64>()
+        let src_part = signature
+            .source_file
+            .as_deref()
+            .unwrap_or("unknown")
+            .replace(['/', '\\'], "_");
+        let line_suffix = signature.source_line.map(|l| format!("_{l}")).unwrap_or_default();
+        let group_key = format!(
+            "{}__{}__{}{}",
+            settings.name, signature.error_type, src_part, line_suffix
         );
-        let _ = fs::create_dir_all(&folder);
 
-        file_content += &r#"$CNT_TEXT
+        groups.entry(group_key.clone()).or_default().push(CrashCandidate {
+            file_name,
+            result,
+            signature,
+            group_key,
+            file_size,
+        });
+    }
 
-command
-```
-$COMMAND
-```
+    let total_crashes: usize = groups.values().map(|v| v.len()).sum();
+    let total_groups = groups.len();
+    info!("Grouped {total_crashes} crashes into {total_groups} unique signatures; keeping smallest per group");
 
-App was compiled with nightly rust compiler to be able to use address sanitizer
-(You can ignore this part if there is no address sanitizer error)
-On Ubuntu 24.04, the commands to compile were:
-```
-rustup default nightly
-rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu
-rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu
-
-export RUST_BACKTRACE=1 # or full depending on project
-export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-export ASAN_OPTIONS=symbolize=1
-RUSTFLAGS="-Zsanitizer=address" cargo +nightly build --target x86_64-unknown-linux-gnu
-```
-
-cause this
-```
-$ERROR
-```
-"#
-        .replace("$CNT_TEXT", &cnt_text)
-        .replace("$COMMAND", &command_str_with_extension)
-        .replace("$ERROR", &result)
-        .replace("\n\n```", "\n```");
-
-        fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
-
-        fs::write(format!("{folder}/problematic_file.{extension}"), &content).unwrap();
-
-        let zip_filename = format!("{folder}/compressed.zip");
-        let only_file_name = Path::new(&file_name).file_name().unwrap().to_string_lossy().to_string();
-        zip_file(&zip_filename, &only_file_name, &content);
+    //  For each group, pick the smallest crash as representative
+    for (group_key, mut candidates) in groups {
+        let group_size = candidates.len();
+        candidates.sort_by_key(|c| c.file_size);
+        let rep = candidates.into_iter().next().unwrap();
+        info!(
+            "Group [{group_key}]: {group_size} crashes, picking smallest ({} bytes, {})",
+            rep.file_size, rep.file_name
+        );
+        write_report_for_representative(settings, &rep, &command_str, crate_code.as_deref());
     }
 }
 
+fn write_report_for_representative(
+    settings: &Setting,
+    rep: &CrashCandidate,
+    command_str: &str,
+    crate_code: Option<&str>,
+) {
+    let content = match fs::read(&rep.file_name) {
+        Ok(c) => c,
+        Err(e) => {
+            log::error!("Failed to read representative {}: {e}", rep.file_name);
+            return;
+        }
+    };
+    let extension = Path::new(&rep.file_name)
+        .extension()
+        .map(|e| e.to_str().unwrap().to_string())
+        .unwrap_or_default();
+    let command_str_with_extension = command_str.replace("TEST___FILE", &format!("TEST___FILE.{extension}"));
+
+    let group_folder = format!("{}/{}", settings.temp_folder, rep.group_key);
+    let _ = fs::create_dir_all(&group_folder);
+
+    let file_size = content.len();
+    let file_idx = random::<u64>();
+    let folder = format!("{group_folder}/{file_size}_bytes_{file_idx}");
+    let _ = fs::create_dir_all(&folder);
+
+    //  Build to_report.txt
+    let mut report = String::new();
+
+    let content_to_string = String::from_utf8(content.clone());
+    if let Ok(content_string) = &content_to_string {
+        report += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
+        report += "```\n";
+        report += content_string;
+        report += "\n```\n\n";
+    } else {
+        report += &format!(
+            "File content is binary ({} bytes), so is available only in zip file at the bottom of page\n\n",
+            humansize::format_size(file_size, humansize::BINARY)
+        );
+    }
+
+    let reproducer_path = format!("{}.reproducer.rs", rep.file_name);
+    let reproducer_code = fs::read_to_string(&reproducer_path).ok();
+    let code_to_include = reproducer_code.as_deref().or(crate_code);
+
+    if let Some(code) = code_to_include {
+        report += "### Reproducer\n\n";
+        report += "I tried this code:\n\n";
+        report += "```rust\n";
+        report += code;
+        report += "\n```\n\n";
+    }
+
+    report += "command\n```\n";
+    report += &command_str_with_extension;
+    report += "\n```\n\n";
+
+    report += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
+    report += "(You can ignore this part if there is no address sanitizer error)\n";
+    report += "On Ubuntu 24.04, the commands to compile were:\n```\n";
+    report += "rustup default nightly\n";
+    report += "rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu\n";
+    report += "rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu\n\n";
+    report += "export RUST_BACKTRACE=1 # or full depending on project\n";
+    report += "export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)\n";
+    report += "export ASAN_OPTIONS=symbolize=1\n";
+    report += "RUSTFLAGS=\"-Zsanitizer=address\" cargo +nightly build --target x86_64-unknown-linux-gnu\n";
+    report += "```\n\ncause this\n```\n";
+    report += &rep.result;
+    report += "\n```\n";
+
+    fs::write(format!("{folder}/to_report.txt"), &report).unwrap();
+
+    let metadata = ReportMetadata {
+        error_type: rep.signature.error_type.clone(),
+        error_signature: rep.signature.signature(),
+        short_description: rep.signature.short_description.clone(),
+        source_file: rep.signature.source_file.as_deref().unwrap_or("").to_string(),
+        source_line: rep.signature.source_line.unwrap_or(0),
+        issue_title: rep.signature.issue_title(),
+        project: settings.name.clone(),
+        found_date: chrono::Local::now().format("%Y-%m-%d").to_string(),
+        file_size,
+    };
+    let metadata_str = toml::to_string_pretty(&metadata).unwrap();
+    fs::write(format!("{folder}/to_report_metadata.toml"), metadata_str).unwrap();
+
+    fs::write(format!("{folder}/crash_output.txt"), &rep.result).unwrap();
+
+    if !extension.is_empty() {
+        fs::write(format!("{folder}/problematic_file.{extension}"), &content).unwrap();
+    } else {
+        fs::write(format!("{folder}/problematic_file"), &content).unwrap();
+    }
+    let zip_filename = format!("{folder}/compressed.zip");
+    let only_file_name = Path::new(&rep.file_name)
+        .file_name()
+        .unwrap()
+        .to_string_lossy()
+        .to_string();
+    zip_file(&zip_filename, &only_file_name, &content);
+
+    let issue_title = rep.signature.issue_title();
+    let repo = detect_github_repo(&settings.name);
+    let repo_flag = if let Some(ref r) = repo {
+        format!("--repo \"{r}\"")
+    } else {
+        "# WARNING: Could not detect repo. Add --repo \"owner/repo\" manually.".to_string()
+    };
+
+    let script = format!(
+        r#"#!/bin/bash
+# Issue: {issue_title}
+# Repo:  {repo_display}
+# Review the issue_body.md before running!
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo "Creating issue: {issue_title}"
+echo ""
+
+ISSUE_URL=$(gh issue create \
+    {repo_flag} \
+    --title "$(cat "$DIR/issue_title.txt")" \
+    --body-file "$DIR/issue_body.md" 2>&1)
+
+echo ""
+echo "Issue created:"
+echo "$ISSUE_URL"
+echo ""
+echo "Opening in browser to attach compressed.zip..."
+xdg-open "$ISSUE_URL" 2>/dev/null || open "$ISSUE_URL" 2>/dev/null || echo "Open manually: $ISSUE_URL"
+echo ""
+echo "Attach this file: $DIR/compressed.zip"
+"#,
+        repo_display = repo.as_deref().unwrap_or("UNKNOWN - set manually"),
+    );
+    fs::write(format!("{folder}/create_issue.sh"), &script).unwrap();
+    fs::write(format!("{folder}/issue_title.txt"), &issue_title).unwrap();
+
+    let mut body = String::new();
+    body += &report;
+    body += "\n[Compressed archive placeholder - looks that I forgot to attach the file.]\n";
+    fs::write(format!("{folder}/issue_body.md"), &body).unwrap();
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let _ = fs::set_permissions(format!("{folder}/create_issue.sh"), fs::Permissions::from_mode(0o755));
+    }
+}
+
+/// Try to read crate source code from crates/<name>/src/main.rs
+/// Simplifies by replacing the directory-walking main() with a minimal version.
+fn try_read_crate_code(project_name: &str) -> Option<String> {
+    let path = format!("crates/{}/src/main.rs", project_name);
+    let code = fs::read_to_string(&path).ok()?;
+
+    // Build a simplified version:
+    // - Replace the boilerplate main() with a simple one-file version
+    // - Remove walkdir import and usage
+    let mut simplified = String::new();
+
+    // Collect use lines (skip walkdir)
+    for line in code.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with("use walkdir") {
+            continue;
+        }
+        if trimmed.starts_with("use ") || trimmed.starts_with("//") || trimmed.is_empty() {
+            simplified.push_str(line);
+            simplified.push('\n');
+            continue;
+        }
+        break; // stop at first non-use/non-comment/non-empty line
+    }
+
+    // Add simplified main
+    simplified.push_str("fn main() {\n");
+    simplified.push_str("    let path = std::env::args().nth(1).unwrap();\n");
+    simplified.push_str("    check_file(&path);\n");
+    simplified.push_str("}\n\n");
+
+    // Add check_file and everything after it. If the crate doesn't follow the
+    // `fn check_file(path: &str)` convention, the simplified main() above has no
+    // function to call — skip the reproducer entirely rather than dumping the
+    // raw, un-simplified source.
+    let idx = code.find("fn check_file(")?;
+    simplified.push_str(&code[idx..]);
+
+    Some(simplified)
+}
+
+/// Detect GitHub repo (owner/name) from crates/<name>/Cargo.toml git dependencies
+fn detect_github_repo(project_name: &str) -> Option<String> {
+    let cargo_path = format!("crates/{}/Cargo.toml", project_name);
+    let content = fs::read_to_string(&cargo_path).ok()?;
+
+    // Look for git = "https://github.com/OWNER/REPO..." (first non-commented one)
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('#') {
+            continue;
+        }
+        if let Some(idx) = trimmed.find("github.com/") {
+            let after = &trimmed[idx + "github.com/".len()..];
+            // Extract "OWNER/REPO" — strip .git and anything after
+            let repo_part = after.split('"').next()?.trim_end_matches('/').trim_end_matches(".git");
+            // Should have exactly one slash: owner/repo
+            if repo_part.contains('/') && repo_part.matches('/').count() == 1 {
+                return Some(repo_part.to_string());
+            }
+        }
+    }
+    None
+}
+
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
-    WalkDir::new(&settings.broken_files_dir)
+    let mut total = 0usize;
+    let mut skipped_examples: Vec<String> = Vec::new();
+    let matched: Vec<String> = WalkDir::new(&settings.broken_files_dir)
         .into_iter()
         .flatten()
         .filter_map(|entry| {
             if !entry.file_type().is_file() {
                 return None;
             }
-
+            total += 1;
             let path = entry.path().to_string_lossy().to_string();
             let path_to_lowercase = path.to_lowercase();
 
             if settings.extensions.iter().any(|e| path_to_lowercase.ends_with(e)) {
-                return Some(path);
+                Some(path)
+            } else {
+                if skipped_examples.len() < 5 {
+                    skipped_examples.push(path);
+                }
+                None
             }
-
-            None
         })
-        .collect()
+        .collect();
+
+    info!(
+        "collect_broken_files: dir={} total_files={} matched={} extensions={:?}",
+        settings.broken_files_dir,
+        total,
+        matched.len(),
+        settings.extensions
+    );
+    if matched.is_empty() && total > 0 {
+        log::warn!(
+            "collect_broken_files: {total} files present but none match extensions {:?}. Examples skipped: {:?}",
+            settings.extensions, skipped_examples
+        );
+    }
+    matched
 }
 
 pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &[u8]) {
-    let zip_file = File::create(zip_filename).unwrap();
+    let zip_file = match File::create(zip_filename) {
+        Ok(f) => f,
+        Err(e) => {
+            log::error!("Failed to create zip file {zip_filename}: {e}");
+            return;
+        }
+    };
     let mut zip_writer = ZipWriter::new(zip_file);
 
     let options = SimpleFileOptions::default()
         .compression_method(zip::CompressionMethod::Deflated)
         .unix_permissions(0o755);
 
-    let _ = zip_writer.start_file(file_name, options);
-    let _ = zip_writer.write_all(file_code);
+    if let Err(e) = zip_writer.start_file(file_name, options) {
+        log::error!("Failed to start zip entry {file_name}: {e}");
+        return;
+    }
+    if let Err(e) = zip_writer.write_all(file_code) {
+        log::error!("Failed to write zip content for {file_name}: {e}");
+        return;
+    }
+    if let Err(e) = zip_writer.finish() {
+        log::error!("Failed to finalize zip {zip_filename}: {e}");
+    }
 }

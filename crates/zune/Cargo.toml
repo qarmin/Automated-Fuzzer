@@ -1,0 +1,17 @@
+[package]
+name = "zune"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
+zune-image = { git = "https://github.com/etemesi254/zune-image.git" }
+zune-core = { git = "https://github.com/etemesi254/zune-image.git" }
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

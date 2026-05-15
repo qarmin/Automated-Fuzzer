@@ -22,7 +22,7 @@ pub(crate) fn find_broken_files_by_different_output(settings: &Setting, obj: &Bo
         info!("Starting loop {i} out of all {loop_number}");
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
 
@@ -34,7 +34,7 @@ pub(crate) fn find_broken_files_by_different_output(settings: &Setting, obj: &Bo
         info!("generated files");
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
 
@@ -43,7 +43,7 @@ pub(crate) fn find_broken_files_by_different_output(settings: &Setting, obj: &Bo
         info!("Removed non parsable files");
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
         info!("Collecting files");
@@ -57,7 +57,7 @@ pub(crate) fn find_broken_files_by_different_output(settings: &Setting, obj: &Bo
         let atomic_broken = AtomicU32::new(0);
 
         if check_if_app_ends() {
-            info!("Timeout reached, exiting");
+            info!("Timeout reached or stop requested, exiting");
             break;
         }
         test_files(files, settings, obj, &atomic_broken, &atomic_all_broken);
@@ -99,22 +99,31 @@ fn test_files(
             if check_if_app_ends() {
                 return None;
             }
-            let file_content = fs::read(&full_name).unwrap();
+            let Ok(file_content) = fs::read(&full_name) else {
+                return Some(());
+            };
             let mut outputs = Vec::new();
             let mut file_after_content = Vec::new();
             for _ in 0..settings.stability_runs {
-                let output_result = execute_command_and_connect_output(obj, &full_name);
+                let Some(output_result) = execute_command_and_connect_output(obj, &full_name) else {
+                    return Some(());
+                };
                 if settings.debug_print_results {
                     info!("{}", output_result.get_output());
                 }
 
                 if [StabilityMode::OutputContent, StabilityMode::FileContent].contains(&obj.get_stability_mode()) {
-                    file_after_content.push(fs::read(&full_name).unwrap());
+                    let Ok(after) = fs::read(&full_name) else {
+                        return Some(());
+                    };
+                    file_after_content.push(after);
                 }
                 if [StabilityMode::OutputContent, StabilityMode::ConsoleOutput].contains(&obj.get_stability_mode()) {
                     outputs.push(output_result.get_output().to_string());
                 }
-                fs::write(&full_name, &file_content).unwrap();
+                if fs::write(&full_name, &file_content).is_err() {
+                    return Some(());
+                }
             }
 
             let is_output_different = !outputs.is_empty() && outputs.windows(2).any(|w| w[0] != w[1]);
@@ -123,7 +132,6 @@ fn test_files(
             if is_file_different || is_output_different {
                 atomic_broken.fetch_add(1, Ordering::Relaxed);
                 atomic_all_broken.fetch_add(1, Ordering::Relaxed);
-                // TODO - maybe later add minimization, but I doubt that this will easy and reproducible
                 obj.validate_txt_and_save_file(full_name, &outputs);
                 return Some(());
             }

@@ -6,7 +6,7 @@ use std::{fs, io};
 
 use libfuzzer_sys::{Corpus, fuzz_target};
 use tempfile::tempdir;
-use vid_dup_finder_lib::ffmpeg_builder;
+use vid_dup_finder_lib::VideoHashBuilder;
 
 fuzz_target!(|data: &[u8]| -> Corpus {
     if calculate_hash(data.to_vec()).is_ok() {
@@ -22,7 +22,7 @@ pub(crate) fn calculate_hash(content: Vec<u8>) -> Result<(), String> {
 
     fs::write(&temp_file, content).map_err(|e| e.to_string())?;
 
-    let res = ffmpeg_builder::VideoHashBuilder::default().hash(PathBuf::from(&temp_file));
+    let res = VideoHashBuilder::default().hash(PathBuf::from(&temp_file));
 
     let _ = fs::remove_file(temp_file);
 

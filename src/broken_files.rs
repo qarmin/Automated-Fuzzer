@@ -71,7 +71,6 @@ const LUA_ARGS: &[&str] = &[
     "<", ">", "=", "(", ")", "{", "}", "[", "]", ";", ":", ",", ".", "..", "...", "\"", "\'", "\'\'", "\"\"",
 ];
 
-// "|", "||",  "|=", "--", "-="  cause some problems
 const GO_ARGS: &[&str] = &[
     "<", "<=", "[", "+", "&", "+=", "&=", "&&", "==", "!=", "(", ")", "-", "*", "]", "^", "*=", "^=", "<-", ">", ">=",
     "{", "}", "/", "<<", "/=", "<<=", "++", "=", ":=", ",", ";", "%", ">>", "%=", ">>=", "!", "...", ".", ":", "&^",
@@ -81,7 +80,6 @@ const GO_ARGS: &[&str] = &[
     "                                                                                        ", "https",
 ];
 
-// "|", "||",  "|=", "--", "-=", "\0", "->"  cause some problems
 const RUST_ARGS: &[&str] = &[
     "as", "break", "const", "continue", "crate", "else", "enum", "extern", "false", "fn", "for", "if", "impl", "in",
     "let", "loop", "match", "mod", "move", "mut", "pub", "ref", "return", "self", "Self", "static", "struct", "super",
@@ -95,47 +93,30 @@ const RUST_ARGS: &[&str] = &[
 ];
 
 const SVG_ARGS: &[&str] = &[
-    "<svg>", "</svg>", // podstawowe atrybuty SVG
-    "width", "height", "viewBox", "preserveAspectRatio", "xmlns", "xmlns:xlink", // atrybuty globalne
-    "id", "class", "style", "transform", "visibility", // współrzędne i rozmiary
-    "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", // kolory i style
-    "fill", "fill-opacity", "stroke", "stroke-width", "stroke-linecap", "stroke-dasharray", "opacity",
-    // tekst
-    "font-family", "font-size", "font-style", "font-weight", "text-anchor", "letter-spacing", "word-spacing",
-    // gradienci i filtry
-    "gradientUnits", "gradientTransform", "filter", "flood-color", "flood-opacity", // animacja
-    "from", "to", "dur", "repeatCount", "keyTimes", "keyPoints", // linki i odwołania
-    "href", "xlink:href", // atrybuty dodatkowe
-    "cursor", "clip-path", "clip-rule", "opacity", "viewTarget", "=", "=\"\"", "5", "0.2", "<", ">",
+    "<svg>", "</svg>", "width", "height", "viewBox", "preserveAspectRatio", "xmlns", "xmlns:xlink", "id", "class",
+    "style", "transform", "visibility", "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "fill",
+    "fill-opacity", "stroke", "stroke-width", "stroke-linecap", "stroke-dasharray", "opacity", "font-family",
+    "font-size", "font-style", "font-weight", "text-anchor", "letter-spacing", "word-spacing", "gradientUnits",
+    "gradientTransform", "filter", "flood-color", "flood-opacity", "from", "to", "dur", "repeatCount", "keyTimes",
+    "keyPoints", "href", "xlink:href", "cursor", "clip-path", "clip-rule", "opacity", "viewTarget", "=", "=\"\"", "5",
+    "0.2", "<", ">",
 ];
 
-// "-=",
-// "->"
-//
-//
 const GDSCRIPT_ARGS: &[&str] = &[
-    // --- keywords ---
     "and", "as", "assert", "await", "break", "class", "class_name", "const", "continue", "elif", "else", "enum",
     "extends", "for", "func", "if", "in", "is", "match", "not", "or", "pass", "return", "signal", "static", "tool",
-    "var", "while", "yield", // --- types ---
-    "bool", "int", "float", "String", "StringName", "NodePath", "Vector2", "Vector2i", "Vector3", "Vector3i",
-    "Vector4", "Vector4i", "Color", "Transform2D", "Transform3D", "Quaternion", "Basis", "Rect2", "Rect2i", "RID",
-    "Array", "PackedByteArray", "PackedInt32Array", "PackedInt64Array", "PackedFloat32Array", "PackedFloat64Array",
-    "PackedStringArray", "PackedVector2Array", "PackedVector3Array", "PackedColorArray", "Dictionary", "Variant",
-    "Resource", "Node", "Object", // --- logic values ---
-    "true", "false", "null", // --- operators ---
-    "+", "-", "*", "/", "%", "**", "//", "=", "+=", "*=", "/=", "%=", "**=", "==", "!=", "<", ">", "<=", ">=", "and",
-    "or", "not", "is", "in", "!", "??", "&", "|", "^", "~", ">>", "<<", "&=", "|=", "^=", ">>=", "<<=",
-    // --- separators ---
-    ".", "..", "...", ",", ";", ":", "::", "(", ")", "[", "]", "{", "}", "@", "_", "=>", "?", ":", "\\", "'", "\"",
-    // --- comments and whitespace ---
-    "#", "\"\"\"", "\'", "\r", "\n", "\t", " ", // --- numeric literals ---
-    "0x", "0b", "0o", "e", "E", "inf", "nan", // --- common methods ---
-    "self", "super", "get", "set", "export", "onready", "remote", "master", "puppet", "sync", "static", "const",
-    "enum", "signal", "func", "class_name", "extends", "tool", "var", "setget", // --- annotations ---
-    "@export", "@onready", "@rpc", "@master", "@puppet", "@tool", "@icon", "@warning_ignore",
-    // --- others ---
-    "pass", "breakpoint", "match", "case", "default",
+    "var", "while", "yield", "bool", "int", "float", "String", "StringName", "NodePath", "Vector2", "Vector2i",
+    "Vector3", "Vector3i", "Vector4", "Vector4i", "Color", "Transform2D", "Transform3D", "Quaternion", "Basis",
+    "Rect2", "Rect2i", "RID", "Array", "PackedByteArray", "PackedInt32Array", "PackedInt64Array", "PackedFloat32Array",
+    "PackedFloat64Array", "PackedStringArray", "PackedVector2Array", "PackedVector3Array", "PackedColorArray",
+    "Dictionary", "Variant", "Resource", "Node", "Object", "true", "false", "null", "+", "-", "*", "/", "%", "**",
+    "//", "=", "+=", "*=", "/=", "%=", "**=", "==", "!=", "<", ">", "<=", ">=", "and", "or", "not", "is", "in", "!",
+    "??", "&", "|", "^", "~", ">>", "<<", "&=", "|=", "^=", ">>=", "<<=", ".", "..", "...", ",", ";", ":", "::", "(",
+    ")", "[", "]", "{", "}", "@", "_", "=>", "?", ":", "\\", "'", "\"", "#", "\"\"\"", "\'", "\r", "\n", "\t", " ",
+    "0x", "0b", "0o", "e", "E", "inf", "nan", "self", "super", "get", "set", "export", "onready", "remote", "master",
+    "puppet", "sync", "static", "const", "enum", "signal", "func", "class_name", "extends", "tool", "var", "setget",
+    "@export", "@onready", "@rpc", "@master", "@puppet", "@tool", "@icon", "@warning_ignore", "pass", "breakpoint",
+    "match", "case", "default",
 ];
 
 pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child {
@@ -179,8 +160,6 @@ pub(crate) fn create_broken_files(obj: &dyn ProgramConfig, lang: LANGS) -> Child
             );
         }
     }
-
-    // info!("Command: {:?}", com);
 
     com.stderr(Stdio::piped()).stdout(Stdio::piped()).spawn().unwrap()
 }

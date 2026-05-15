@@ -1,0 +1,48 @@
+[general]
+loop_number = 5000
+broken_files_for_each_file = 200
+minimize_output = true
+temp_possible_broken_files_dir = "/opt/POSSIBLY_BROKEN_FILES_DIR"
+minimization_attempts = 3000
+minimization_repeat = true
+minimization_time = 1800
+minimization_attempts_with_signal_timeout = 10
+debug_print_results = false
+debug_executed_commands = false
+debug_print_broken_files_creator = false
+remove_non_crashing_items_from_broken_files = false
+check_for_stability = false
+stability_runs = 3
+temp_folder = "TMP_FOLDER_TO_REPLACE"
+timeout_group = 100
+timeout = 30
+allowed_signal_statuses = ""
+allowed_error_statuses = "0,1,2,101"
+max_file_size_limit = 50000
+max_collected_files = 1000000000
+ignore_file_if_contains_searched_items = false
+check_if_file_is_parsable = false
+grouping = 100
+custom_folder_path = "/opt/CUSTOM"
+
+current_mode = "custom"
+
+[custom]
+name = "pdf_writer"
+command = "pdf_writer_normal|FILE_PATHS_TO_PROVIDE"
+extensions = "bin"
+valid_input_files_dir = "/opt/VALID_FILES_DIR"
+broken_files_dir = "/opt/BROKEN_FILES_DIR"
+group_mode = "none"
+
+search_item_1 = "RUST_BACKTRACE"
+search_item_2 = "panicked at"
+search_item_100 = "AddressSanitizer"
+search_item_101 = "LeakSanitizer"
+search_item_102 = "ThreadSanitizer"
+search_item_103 = "timeout: sending signal"
+search_item_125 = "(core dumped)"
+search_item_126 = "segmentation fault"
+
+file_type = "binary"
+stability_mode = "none"

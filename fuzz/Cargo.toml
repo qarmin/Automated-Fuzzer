@@ -24,7 +24,7 @@ image = { git = "https://github.com/image-rs/image", default-features = false, f
 lopdf = { git = "https://github.com/J-F-Liu/lopdf.git", optional = true }
 rustybuzz = { git = "https://github.com/RazrFalcon/rustybuzz.git", optional = true }
 #pdf = { git = "https://github.com/pdf-rs/pdf/" , optional = true}
-symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], branch = "dev-0.6", optional = true }
+symphonia = { git = "https://github.com/pdeljanov/Symphonia.git", features = ["all"], branch = "main", optional = true }
 #symphonia = { git = "https://github.com/sscobici/Symphonia.git", features = ["all"], branch = "mp4-panic-fixes", optional = true}
 zip = { git = "https://github.com/zip-rs/zip2.git", optional = true }
 

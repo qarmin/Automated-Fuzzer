@@ -1,5 +1,5 @@
 use std::process::{Child, Command};
-use std::sync::RwLock;
+use std::sync::atomic::{AtomicBool, Ordering};
 
 use log::error;
 
@@ -9,7 +9,19 @@ use crate::common::{
 };
 use crate::settings::{Setting, StabilityMode};
 
-pub static USE_ASAN_ENVS: state::InitCell<RwLock<bool>> = state::InitCell::new();
+pub static USE_ASAN_ENVS: AtomicBool = AtomicBool::new(false);
+
+/// Apply ASAN-related environment variables to `cmd` if the global ASAN flag is set.
+/// Centralises the env triple so every fuzz-target run sees the same configuration.
+pub fn apply_asan_envs(cmd: &mut Command) {
+    if USE_ASAN_ENVS.load(Ordering::Relaxed) {
+        cmd.envs([
+            ("RUST_BACKTRACE", "1"),
+            ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
+            ("ASAN_OPTIONS", "symbolize=1"),
+        ]);
+    }
+}
 
 pub trait ProgramConfig: Sync {
     fn get_broken_items_list(&self) -> &[String];
@@ -23,7 +35,11 @@ pub trait ProgramConfig: Sync {
         let new_name = create_new_file_name(self.get_settings(), &full_name);
         error!("File {full_name} saved to {new_name}\n{output}");
 
-        try_to_save_file(&full_name, &new_name);
+        // If the copy failed, we must not return a path that doesn't exist on disk —
+        // downstream callers (e.g. minimize_new) would fail mysteriously.
+        if !try_to_save_file(&full_name, &new_name) {
+            return None;
+        }
         Some(new_name)
     }
     fn get_stability_mode(&self) -> StabilityMode;
@@ -45,12 +61,12 @@ pub trait ProgramConfig: Sync {
 
         error!("File {full_name} saved to {new_name}\n{diff}");
 
-        try_to_save_file(&full_name, &new_name);
+        if !try_to_save_file(&full_name, &new_name) {
+            return None;
+        }
         Some(new_name)
     }
 
-    // When app crashes, sometimes it not gives any status code
-    // To be able to ignore certain groups of files, we can use this function
     fn ignored_signal_output(&self, _output: &str) -> bool {
         false
     }
@@ -58,13 +74,7 @@ pub trait ProgramConfig: Sync {
     fn get_full_command(&self, full_name: &str) -> Command {
         let mut command = self.get_basic_run_command();
         command.arg(full_name);
-        if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
-            command.envs([
-                ("RUST_BACKTRACE", "1"),
-                ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
-                ("ASAN_OPTIONS", "symbolize=1"),
-            ]);
-        }
+        apply_asan_envs(&mut command);
         command
     }
     fn get_group_command(&self, files: &[String]) -> Command {
@@ -87,7 +97,6 @@ pub trait ProgramConfig: Sync {
         let mut run_command_as_string = collect_command_to_string(&run_command);
         run_command_as_string = run_command_as_string.replace(temp_file_name, "{}");
 
-        // minimizer --input-file input.txt --output-file output.txt --command "echo {}" --attempts 300 --broken-info "BROKEN"
         let mut minimize_command = Command::new("minimizer");
         let broken_info = self
             .get_broken_items_list()
@@ -108,9 +117,6 @@ pub trait ProgramConfig: Sync {
             &run_command_as_string,
             "--attempts",
             &self.get_settings().minimization_attempts.to_string(),
-            // "-v", // Disable verbose flag if not needed
-            // "-e",
-            // "-p",
             "-t",
             &self.get_settings().minimization_time.to_string(),
         ]);
@@ -129,20 +135,7 @@ pub trait ProgramConfig: Sync {
     fn get_settings(&self) -> &Setting;
     fn init(&mut self) {}
     fn remove_non_parsable_files(&self, _dir_to_check: &str) {}
-    // fn is_parsable(&self, _file_to_check: &str) -> bool {
-    //     true
-    // }
     fn get_files_group_mode(&self) -> CheckGroupFileMode {
         CheckGroupFileMode::None
     }
-    // fn get_number_of_minimization(&self, output_result: &OutputResult) -> u32 {
-    //     if output_result.is_only_signal_broken() {
-    //         self.get_settings().minimization_attempts_with_signal_timeout
-    //     } else {
-    //         self.get_settings().minimization_attempts
-    //     }
-    // }
-    // fn remove_not_needed_lines_from_output(&self, output: String) -> String {
-    //     output
-    // }
 }

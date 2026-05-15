@@ -3,7 +3,7 @@ use std::process::{Child, Command, Stdio};
 
 use crate::broken_files::create_broken_files;
 use crate::common::CheckGroupFileMode;
-use crate::obj::{ProgramConfig, USE_ASAN_ENVS};
+use crate::obj::{ProgramConfig, apply_asan_envs};
 use crate::settings::{CustomItems, Setting, StabilityMode};
 
 pub struct CustomStruct {
@@ -25,7 +25,7 @@ impl ProgramConfig for CustomStruct {
             if let Some(file_name) = file_name {
                 if let Ok(data_str) = fs::read_to_string(&file_name) {
                     if self.custom_items.search_items.iter().any(|x| data_str.contains(x)) {
-                        return false; // File contains searched item, so ignore it, because it is possible that it is not broken, but only e.g. in error there is printed searched item
+                        return false;
                     }
                 }
             }
@@ -51,13 +51,7 @@ impl ProgramConfig for CustomStruct {
                 .skip(1)
                 .map(|e| e.replace("FILE_PATHS_TO_PROVIDE", full_name)),
         );
-        if *USE_ASAN_ENVS.get().read().expect("Failed to get ASAN envs") {
-            command.envs([
-                ("RUST_BACKTRACE", "1"),
-                ("ASAN_SYMBOLIZER_PATH", "/usr/bin/llvm-symbolizer"),
-                ("ASAN_OPTIONS", "symbolize=1"),
-            ]);
-        }
+        apply_asan_envs(&mut command);
         command
     }
     fn get_group_command(&self, full_name: &[String]) -> Command {

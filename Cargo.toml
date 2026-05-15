@@ -1,22 +1,30 @@
 [package]
-name = "automated_fuzzer"
+name = "auto_fuzzer"
 authors = ["Rafał Mikrut <mikrutrafal@protonmail.com>"]
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 license = "MIT"
 
+[[bin]]
+name = "auto_fuzzer"
+path = "src/main.rs"
+
 [dependencies]
+clap = { version = "4", features = ["derive"] }
 jwalk = "0.8"
 rayon = "1.10"
 rand = "0.10"
 config = { version = "0.15", default-features = false, features = ["toml"] }
-zip = { version = "8.2.0", default-features = false, features = ["deflate"] }
+zip = { version = "8.2", default-features = false, features = ["deflate"] }
 handsome_logger = "0.9"
 log = "0.4"
-state ="0.6.0"
-once_cell = "1.19.0"
-
-humansize = "2.1.3"
+humansize = "2.1"
+serde = { version = "1", features = ["derive"] }
+toml = "1.1"
+regex = "1"
+chrono = "0.4"
+ctrlc = "3"
+libc = "0.2"
 
 [profile.release]
 debug = true

@@ -1,0 +1,17 @@
+[package]
+name = "moxcms"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
+moxcms = { git = "https://github.com/awxkee/moxcms.git" }
+zune-jpeg = { git = "https://github.com/etemesi254/zune-image.git" }
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

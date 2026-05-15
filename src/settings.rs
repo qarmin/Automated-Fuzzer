@@ -61,12 +61,12 @@ pub struct CustomItems {
 }
 
 fn get_stability_mode(tool_hashmap: &HashMap<String, String>) -> StabilityMode {
-    match tool_hashmap["stability_mode"].as_str() {
+    match tool_hashmap.get("stability_mode").map(|s| s.as_str()).unwrap_or("none") {
         "none" => StabilityMode::None,
         "console_output" => StabilityMode::ConsoleOutput,
         "file_content" => StabilityMode::FileContent,
         "output_content" => StabilityMode::OutputContent,
-        _ => panic!("Invalid stability mode {}", tool_hashmap["stability_mode"]),
+        other => panic!("Invalid stability mode {other}"),
     }
 }
 pub(crate) fn process_custom_struct(
@@ -74,11 +74,11 @@ pub(crate) fn process_custom_struct(
     tool_hashmap: &HashMap<String, String>,
 ) -> CustomItems {
     let stability_mode = get_stability_mode(tool_hashmap);
-    let group_mode = match tool_hashmap["group_mode"].as_str() {
+    let group_mode = match tool_hashmap.get("group_mode").map(|s| s.as_str()).unwrap_or("none") {
         "none" => CheckGroupFileMode::None,
         "by_files" => CheckGroupFileMode::ByFilesGroup,
         "by_group" => CheckGroupFileMode::ByFolder,
-        _ => panic!("Invalid group mode {}", tool_hashmap["group_mode"]),
+        other => panic!("Invalid group mode {other}"),
     };
 
     let mut command_parts = Vec::new();
@@ -151,7 +151,7 @@ pub(crate) fn process_custom_struct(
         "jsvuesvelte" => LANGS::JSVUESVELTE,
         "svg" => LANGS::SVG,
         "gdscript" => LANGS::GDSCRIPT,
-        _ => panic!("Invalid file type {}", tool_hashmap["file_type"]),
+        other => panic!("Invalid file type {other}"),
     };
 
     CustomItems {
@@ -165,8 +165,12 @@ pub(crate) fn process_custom_struct(
     }
 }
 pub(crate) fn load_settings() -> Setting {
+    load_settings_from_path("fuzz_settings")
+}
+
+pub(crate) fn load_settings_from_path(config_path: &str) -> Setting {
     let settings = Config::builder()
-        .add_source(config::File::with_name("fuzz_settings"))
+        .add_source(config::File::with_name(config_path))
         .build()
         .unwrap();
     let config = settings
@@ -210,7 +214,8 @@ pub(crate) fn load_settings() -> Setting {
         debug_print_results: general["debug_print_results"].parse().unwrap(),
         allowed_error_statuses: general["allowed_error_statuses"]
             .split(',')
-            .map(|e| e.parse().unwrap())
+            .filter(|e| !e.trim().is_empty())
+            .map(|e| e.trim().parse().unwrap())
             .collect(),
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
