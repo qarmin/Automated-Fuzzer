@@ -53,7 +53,6 @@ ignored_item_55 = " == dest.height" # https://github.com/linebender/resvg/issues
 ignored_item_556 = " == dest.width" # https://github.com/linebender/resvg/issues/934
 ignored_item_6 = "val.is_finite" # https://github.com/linebender/resvg/issues/935
 ignored_item_111 = ".is_finite" # https://github.com/linebender/resvg/issues/935
-ignored_item_7 = "attempt to add with overflow" # https://github.com/linebender/resvg/issues/936
 ignored_item_8 = "attempt to multiply with overflow" # https://github.com/linebender/resvg/issues/937
 ignored_item_9 = "alpha_runs.rs:189:51" # https://github.com/linebender/resvg/issues/940
 ignored_item_95 = "alpha_runs.rs:170:51" # https://github.com/linebender/resvg/issues/940

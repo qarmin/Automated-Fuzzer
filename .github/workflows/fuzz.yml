@@ -425,20 +425,22 @@ jobs:
             SIZE=$(stat -c%s "$file" 2>/dev/null || echo "?")
             FNAME=$(basename "$file")
 
-            echo "──────────────────────────────────────────────────"
-            echo "[$IDX/$CRASH_COUNT] $FNAME ($SIZE bytes)"
-            echo "──────────────────────────────────────────────────"
+            timeout -v 120 ${{ matrix.binary }}_normal "$file" > /tmp/crash_out_$IDX.txt 2>&1
+            EXIT=$?
 
-            # Run the binary and capture output (with timeout for hangs)
-            OUTPUT=$(timeout -v 120 ${{ matrix.binary }}_normal "$file" 2>&1 || true)
-
-            # Print full output (capped at 80 lines per file)
-            echo "$OUTPUT" | tail -80
+            echo "──────────────────────────────────────────────────"
+            if [ "$EXIT" -eq 124 ]; then
+              echo "[$IDX/$CRASH_COUNT] $FNAME ($SIZE bytes) — exit: timeout"
+            else
+              echo "[$IDX/$CRASH_COUNT] $FNAME ($SIZE bytes) — exit: $EXIT"
+            fi
+            echo "──────────────────────────────────────────────────"
+            tail -80 /tmp/crash_out_$IDX.txt
             echo ""
           done
 
           echo "═══════════════════════════════════════════════════"
-          echo "  Summary: $CRASH_COUNT unique crashes"
+          echo "  Total: $CRASH_COUNT crash files"
           echo "═══════════════════════════════════════════════════"
 
       # Generate reports from ALL_CRASHES if the ASAN verification step

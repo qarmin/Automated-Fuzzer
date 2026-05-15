@@ -169,6 +169,8 @@ fn test_files(
     atomic_all_broken: &AtomicU32,
 ) {
     let atomic = AtomicU32::new(0);
+    // Print full output of the first file always, so CI logs show what the tool produces
+    let debug_printed = AtomicU32::new(0);
     let all = files.len();
 
     files
@@ -182,6 +184,12 @@ fn test_files(
                 return None;
             }
             let output_result = execute_command_and_connect_output(obj, &full_name);
+
+            // Always print first file's output for visibility
+            if debug_printed.fetch_add(1, Ordering::Relaxed) == 0 {
+                info!("── Sample output (first file: {full_name}) ──\n{}\n── End sample ──", output_result.get_output());
+            }
+
             if settings.debug_print_results {
                 info!("{}", output_result.get_output());
             }

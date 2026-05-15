@@ -1,7 +1,7 @@
 use std::env::args;
 use std::fs;
 use std::path::Path;
-
+use std::time::Duration;
 use fuzz_utils::ByteInput;
 use pdf_writer::{Content, Finish, Name, Pdf, Rect, Ref, Str, TextStr};
 use walkdir::WalkDir;
@@ -62,6 +62,8 @@ fn run_pdf_writer(input: &mut ByteInput) -> Option<()> {
 
     // Create each page
     for i in 0..page_count {
+        thread::sleep(Duration::from_secs(20));
+        panic!();
         if input.is_empty() {
             break;
         }

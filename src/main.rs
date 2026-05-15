@@ -15,7 +15,6 @@ use crate::finding_text_status::find_broken_files_by_text_status;
 use crate::fuzz_cargo::run_cargo_fuzz;
 use crate::ignore_list::{IgnoreEntry, IgnoreList};
 use crate::settings::{StabilityMode, get_object, load_settings, load_settings_from_path};
-use crate::validate::validate_links;
 
 mod apps;
 mod broken_files;
@@ -102,12 +101,6 @@ enum Commands {
         action: IgnoreAction,
     },
 
-    /// Validate issue links in ignore list
-    Validate {
-        #[command(subcommand)]
-        action: ValidateAction,
-    },
-
     /// CI mode with state management between runs
     Ci {
         #[command(subcommand)]
@@ -186,22 +179,16 @@ enum IgnoreAction {
         /// Pattern to remove
         pattern: String,
     },
-    /// List all ignored patterns
+    /// List all ignored patterns (from ignore_list.toml and fuzz configs)
     List {
         /// Filter by project name
         #[arg(long)]
         project: Option<String>,
     },
-}
-
-#[derive(Subcommand)]
-enum ValidateAction {
-    /// Check if ignored issues have been closed
-    Links {
-        /// Automatically remove entries for closed issues
-        #[arg(long)]
-        auto_remove: bool,
-    },
+    /// Check if ignored issues have been closed (read-only)
+    Verify,
+    /// Check and remove entries for closed issues
+    Clean,
 }
 
 #[derive(Subcommand)]
@@ -360,15 +347,18 @@ fn main() {
                 }
                 IgnoreAction::List { project } => {
                     ignore.print_list(project.as_deref());
+                    ignore_list::print_config_ignored_items(project.as_deref());
+                }
+                IgnoreAction::Verify => {
+                    validate::validate_links(false);
+                    validate::validate_config_ignored_items(false);
+                }
+                IgnoreAction::Clean => {
+                    validate::validate_links(true);
+                    validate::validate_config_ignored_items(true);
                 }
             }
         }
-
-        Commands::Validate { action } => match action {
-            ValidateAction::Links { auto_remove } => {
-                validate_links(auto_remove);
-            }
-        },
 
         Commands::Ci { action } => match action {
             CiAction::Run {

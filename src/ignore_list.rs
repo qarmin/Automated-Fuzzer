@@ -98,3 +98,94 @@ impl IgnoreList {
             .collect()
     }
 }
+
+/// Print ignored_item_N entries from all crates/*/fuzz_settings_ci.toml files.
+pub fn print_config_ignored_items(project_filter: Option<&str>) {
+    let crates_dir = Path::new("crates");
+    if !crates_dir.is_dir() {
+        return;
+    }
+
+    let mut found_any = false;
+
+    let mut dirs: Vec<_> = fs::read_dir(crates_dir)
+        .into_iter()
+        .flatten()
+        .flatten()
+        .filter(|e| e.file_type().map(|t| t.is_dir()).unwrap_or(false))
+        .collect();
+    dirs.sort_by_key(|e| e.file_name());
+
+    for entry in dirs {
+        let config_path = entry.path().join("fuzz_settings_ci.toml");
+        if !config_path.exists() {
+            continue;
+        }
+        let Ok(content) = fs::read_to_string(&config_path) else {
+            continue;
+        };
+
+        // Extract project name from config
+        let project_name = content
+            .lines()
+            .find(|l| l.trim().starts_with("name"))
+            .and_then(|l| l.split('=').nth(1))
+            .map(|v| v.trim().trim_matches('"').to_string())
+            .unwrap_or_else(|| entry.file_name().to_string_lossy().to_string());
+
+        if let Some(filter) = project_filter {
+            if project_name != filter {
+                continue;
+            }
+        }
+
+        // Collect ignored_item_N entries
+        let mut items: Vec<(String, String)> = Vec::new(); // (pattern, comment)
+        for line in content.lines() {
+            let trimmed = line.trim();
+            if trimmed.starts_with('#') {
+                continue;
+            }
+            if !trimmed.starts_with("ignored_item_") {
+                continue;
+            }
+            let Some((key_part, rest)) = trimmed.split_once('=') else {
+                continue;
+            };
+            let _ = key_part; // ignored_item_N
+
+            // Split value from comment: "pattern" # url
+            let rest = rest.trim();
+            let (value, comment) = if let Some(hash_pos) = rest.find(" #") {
+                (&rest[..hash_pos], rest[hash_pos + 2..].trim())
+            } else {
+                (rest, "")
+            };
+            let pattern = value.trim().trim_matches('"').to_string();
+            if !pattern.is_empty() {
+                items.push((pattern, comment.to_string()));
+            }
+        }
+
+        if items.is_empty() {
+            continue;
+        }
+
+        if !found_any {
+            println!("\n── Ignored patterns from fuzz configs ──");
+            found_any = true;
+        }
+        println!("\n  {} ({}):", project_name, config_path.display());
+        for (pattern, comment) in &items {
+            if comment.is_empty() {
+                println!("    \"{}\"", pattern);
+            } else {
+                println!("    \"{}\"  {}", pattern, comment);
+            }
+        }
+    }
+
+    if !found_any && project_filter.is_some() {
+        println!("\nNo ignored patterns in fuzz configs for '{}'.", project_filter.unwrap());
+    }
+}

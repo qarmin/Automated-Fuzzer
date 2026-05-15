@@ -94,8 +94,13 @@ ignore-add project pattern url:
 ignore-list project="":
     auto_fuzzer ignore list {{ if project != "" { "--project " + project } else { "" } }}
 
-validate-links:
-    auto_fuzzer validate links --auto-remove
+# Check if ignored issues have been closed (read-only)
+ignore-verify:
+    auto_fuzzer ignore verify
+
+# Check and remove entries for closed issues
+ignore-clean:
+    auto_fuzzer ignore clean
 
 # ── CI ────────────────────────────────────────────────────────
 
