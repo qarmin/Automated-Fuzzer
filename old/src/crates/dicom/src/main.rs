@@ -3,7 +3,6 @@ use std::fs;
 use std::path::Path;
 
 use dicom_object::from_reader;
-// use dicom_core::header::Header;
 use walkdir::WalkDir;
 
 fn main() {

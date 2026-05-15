@@ -3,6 +3,7 @@ use std::fs;
 use std::path::Path;
 use std::sync::Arc;
 
+use hayro::hayro_interpret::font::FontQuery;
 use hayro::hayro_interpret::InterpreterSettings;
 use hayro::hayro_syntax::Pdf;
 use hayro::{render, RenderCache, RenderSettings};
@@ -45,7 +46,7 @@ fn check_file(file_path: &str, save_path: Option<&str>) {
         }
     };
 
-    // Iterate through all PDF objects (forces parsing)
+    // Exercise document-level APIs
     let _ = pdf.version();
     let _ = pdf.len();
     for _obj in pdf.objects() {}
@@ -54,6 +55,32 @@ fn check_file(file_path: &str, save_path: Option<&str>) {
     let xref = pdf.xref();
     let _ = xref.root_id();
     let _ = xref.has_optional_content_groups();
+
+    // Interpreter settings with font resolver
+    let interp_with_fonts = InterpreterSettings {
+        font_resolver: Arc::new(|query| match query {
+            FontQuery::Standard(s) => Some(s.get_font_data()),
+            FontQuery::Fallback(f) => Some(f.pick_standard_font().get_font_data()),
+        }),
+        ..Default::default()
+    };
+
+    let interp_default = InterpreterSettings::default();
+
+    // Render settings at different scales
+    let render_settings_low = RenderSettings {
+        x_scale: 0.5,
+        y_scale: 0.5,
+        ..Default::default()
+    };
+    let render_settings_default = RenderSettings::default();
+    let render_settings_high = RenderSettings {
+        x_scale: 2.0,
+        y_scale: 2.0,
+        ..Default::default()
+    };
+
+    let cache = RenderCache::default();
 
     // Process each page
     for (idx, page) in pdf.pages().iter().enumerate() {
@@ -76,20 +103,47 @@ fn check_file(file_path: &str, save_path: Option<&str>) {
         let resources = page.resources();
         let _ = resources.parent();
 
-        // Render the page
-        let pixmap = render(page, &RenderCache::default(), &InterpreterSettings::default(), &RenderSettings::default());
+        // Render with default settings (no font resolver)
+        let pixmap = render(page, &cache, &interp_default, &render_settings_default);
+        let _ = pixmap.width();
+        let _ = pixmap.height();
+        let _ = pixmap.data();
 
-        if let Some(save_path) = save_path {
-            match pixmap.into_png() {
-                Ok(png) => {
+        // Render with font resolver at low scale
+        let pixmap_low = render(page, &cache, &interp_with_fonts, &render_settings_low);
+        let _ = pixmap_low.width();
+        let _ = pixmap_low.height();
+
+        // Render at high scale
+        let pixmap_high = render(page, &cache, &interp_with_fonts, &render_settings_high);
+
+        // Exercise pixel access
+        let w = pixmap_high.width();
+        let h = pixmap_high.height();
+        if w > 0 && h > 0 {
+            let _ = pixmap_high.sample(0, 0);
+            let _ = pixmap_high.sample(w - 1, h - 1);
+        }
+        let _ = pixmap_high.data_as_u8_slice();
+
+        // Try PNG encoding (consumes pixmap)
+        match pixmap_high.into_png() {
+            Ok(png) => {
+                if let Some(save_path) = save_path {
                     let output_path = format!("{save_path}_{}.png", page_num);
-                    if let Err(e) = fs::write(&output_path, png) {
+                    if let Err(e) = fs::write(&output_path, &png) {
                         eprintln!("Failed to write PNG {}: {}", output_path, e);
                     }
                 }
-                Err(e) => eprintln!("Failed to encode PNG for page {}: {:?}", page_num, e),
             }
+            Err(e) => eprintln!("Failed to encode PNG for page {}: {:?}", page_num, e),
         }
+
+        // Take unpremultiplied pixels from the low-scale render
+        let _ = pixmap_low.take_unpremultiplied();
+
+        // Take premultiplied pixels from the default render
+        let _ = pixmap.take();
     }
 
     println!("OK: {file_path}");

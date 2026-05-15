@@ -3,7 +3,6 @@ use std::fs;
 use std::path::Path;
 
 use boa_engine::{Context, Source};
-// use dicom_core::header::Header;
 use walkdir::WalkDir;
 fn main() {
     let path = args().nth(1).unwrap().clone();

@@ -45,9 +45,21 @@ impl ErrorSignature {
         sig
     }
 
-    /// Returns issue title appropriate for the error type
+    /// Returns issue title appropriate for the error type.
+    ///
+    /// Examples:
+    ///   Panic `attempt to subtract with overflow` in `src/foo.rs`
+    ///   Timeout when processing file
+    ///   AddressSanitizer `heap-buffer-overflow` in `src/bar.rs`
     pub fn issue_title(&self) -> String {
         let desc = &self.short_description;
+
+        // Types where the prefix alone is the full description (no backtick-quoting needed)
+        let standalone = matches!(
+            self.error_type.as_str(),
+            "timeout" | "memory_failure" | "out_of_memory" | "segmentation_fault" | "aborted"
+        );
+
         let prefix = match self.error_type.as_str() {
             "timeout" => "Timeout",
             "memory_failure" => "Memory allocation failure",
@@ -62,17 +74,16 @@ impl ErrorSignature {
             "syntax_error" => "Syntax error",
             _ => "Panic",
         };
-        if let Some(ref src) = self.source_file {
-            format!("{prefix} `{desc}` in `{src}`")
-        } else {
-            match self.error_type.as_str() {
-                // For these, the prefix IS the description — don't repeat
-                "timeout" | "memory_failure" | "out_of_memory" | "stack_overflow"
-                | "segmentation_fault" | "aborted" => {
-                    format!("{prefix} when processing file")
-                }
-                _ => format!("{prefix} `{desc}`"),
-            }
+
+        match (standalone, &self.source_file) {
+            // "Timeout when processing file", "Segmentation fault when processing file"
+            (true, None) => format!("{prefix} when processing file"),
+            // "Timeout when processing file in `src/foo.rs`"  (rare but possible with ASAN)
+            (true, Some(src)) => format!("{prefix} in `{src}`"),
+            // "Panic `msg` in `src/foo.rs`"
+            (false, Some(src)) => format!("{prefix} `{desc}` in `{src}`"),
+            // "Panic `msg`"
+            (false, None) => format!("{prefix} `{desc}`"),
         }
     }
 }

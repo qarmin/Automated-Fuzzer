@@ -7,6 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  DEFAULT_TIMEOUT: 200
 
 jobs:
   fuzz:
@@ -16,48 +17,42 @@ jobs:
       matrix:
         include:
           # ── Custom fuzzing (local crates) ──
+          # Set custom_timeout to override DEFAULT_TIMEOUT for specific jobs
           - name: LITTLE_EXIF
             mode: custom
             crate: little_exif
             binary: little_exif
             files: "AA_NOM_EXIF_VALID_FILES.7z"
-            timeout: 200
           - name: LOPDF
             mode: custom
             crate: lopdf
             binary: lopdf
             files: "AA_PDF_VALID_FILES2.7z"
-            timeout: 200
           - name: BOA
             mode: custom
             crate: boa
             binary: boa
             files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            timeout: 200
           - name: HAYRO
             mode: custom
             crate: hayro
             binary: hayro
             files: "AA_PDF_VALID_FILES2.7z"
-            timeout: 200
           - name: MOXCMS
             mode: custom
             crate: moxcms
             binary: moxcms
             files: "AA_ICC_VALID_FILES.7z"
-            timeout: 200
           - name: ZUNE
             mode: custom
             crate: zune
             binary: zune
             files: "AA_IMAGE_VALID_FILES.7z"
-            timeout: 200
           - name: SYMPHONIA
             mode: custom
             crate: symphonia
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
-            timeout: 200
 
           # ── Cargo-fuzz (local crates) ──
           - name: IMAGE
@@ -67,7 +62,6 @@ jobs:
             fuzz_target: image
             fuzz_features: image_f
             files: "AA_IMAGE_VALID_FILES.7z"
-            timeout: 200
           - name: HAYRO_CF
             mode: cargo-fuzz
             crate: hayro
@@ -75,7 +69,6 @@ jobs:
             fuzz_target: hayro
             fuzz_features: hayro_f
             files: "AA_PDF_VALID_FILES2.7z"
-            timeout: 200
           - name: ZUNE_CF
             mode: cargo-fuzz
             crate: zune
@@ -83,7 +76,6 @@ jobs:
             fuzz_target: zune
             fuzz_features: zune_f
             files: "AA_IMAGE_VALID_FILES.7z"
-            timeout: 200
           - name: SYMPHONIA_CF
             mode: cargo-fuzz
             crate: symphonia
@@ -91,7 +83,6 @@ jobs:
             fuzz_target: symphonia
             fuzz_features: symphonia_f
             files: "AA_MUSIC_VALID_FILES.7z"
-            timeout: 200
 
           # ── Custom fuzzing (external projects) ──
           - name: TYRUF
@@ -102,7 +93,6 @@ jobs:
             cargo_toml_dir: "ruff-main"
             binary: ty
             files: "FILES_21.zip"
-            timeout: 200
             post_clone: |
               sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
           - name: PYREFLY
@@ -113,7 +103,6 @@ jobs:
             cargo_toml_dir: "pyrefly-main"
             binary: pyrefly
             files: "FILES_21.zip"
-            timeout: 200
           - name: SWC
             mode: custom
             external: true
@@ -122,7 +111,6 @@ jobs:
             cargo_toml_dir: "swc-main"
             binary: swc
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            timeout: 200
 
     steps:
       - uses: actions/checkout@v5
@@ -250,7 +238,7 @@ jobs:
           fi
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           export RUST_BACKTRACE=1
-          auto_fuzzer fuzz --mode custom --timeout ${{ matrix.timeout }}
+          auto_fuzzer fuzz --mode custom --timeout ${{ matrix.custom_timeout || env.DEFAULT_TIMEOUT }}
 
       - name: "Verify: custom mode (ASAN)"
         if: ${{ matrix.mode == 'custom' }}
@@ -269,7 +257,7 @@ jobs:
             "${{ matrix.fuzz_target }}" \
             "${{ matrix.fuzz_features }}" \
             "/opt/INPUT_FILES_DIR" \
-            "${{ matrix.timeout }}" \
+            "${{ matrix.custom_timeout || env.DEFAULT_TIMEOUT }}" \
             4
 
       - name: "Minimize: cargo-fuzz crashes"
@@ -428,7 +416,7 @@ jobs:
       # ══════════════════════════════════════════════════════════
       - name: Store reports
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: ignore
           name: REPORTS___${{ matrix.name }}
@@ -436,7 +424,7 @@ jobs:
 
       - name: Store crash files
         if: always()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           if-no-files-found: ignore
           name: CRASHES___${{ matrix.name }}
