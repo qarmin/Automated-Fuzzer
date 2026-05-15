@@ -184,7 +184,7 @@ pub fn print_config_ignored_items(project_filter: Option<&str>) {
         }
 
         if !found_any {
-            println!("\n── Ignored patterns from fuzz configs ──");
+            println!("\n Ignored patterns from fuzz configs ");
             found_any = true;
         }
         println!("\n  {} ({}):", project_name, config_path.display());

@@ -123,7 +123,7 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
     let command_str = collect_command_to_string(&command);
     let crate_code = try_read_crate_code(&settings.name);
 
-    // ── Group all crashes by error signature (project__type__src_line) ──
+    //  Group all crashes by error signature (project__type__src_line)
     let mut groups: HashMap<String, Vec<CrashCandidate>> = HashMap::new();
     for (file_name, result) in content {
         let file_size = fs::metadata(&file_name).map(|m| m.len() as usize).unwrap_or(usize::MAX);
@@ -153,7 +153,7 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
     let total_groups = groups.len();
     info!("Grouped {total_crashes} crashes into {total_groups} unique signatures; keeping smallest per group");
 
-    // ── For each group, pick the smallest crash as representative ──
+    //  For each group, pick the smallest crash as representative
     for (group_key, mut candidates) in groups {
         let group_size = candidates.len();
         candidates.sort_by_key(|c| c.file_size);
@@ -193,7 +193,7 @@ fn write_report_for_representative(
     let folder = format!("{group_folder}/{file_size}_bytes_{file_idx}");
     let _ = fs::create_dir_all(&folder);
 
-    // ── Build to_report.txt ──
+    //  Build to_report.txt
     let mut report = String::new();
 
     let content_to_string = String::from_utf8(content.clone());

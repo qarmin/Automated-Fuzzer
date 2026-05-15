@@ -60,7 +60,7 @@ def main():
             run("cargo update", FUZZ_DIR)
         print()
 
-    # ── Check crates ──
+    #  Check crates 
     total = 0
     passed = []
     failed = {}  # name -> log
@@ -90,7 +90,7 @@ def main():
             print("FAILED")
             failed[name] = log
 
-    # ── Check fuzz targets ──
+    #  Check fuzz targets 
     fuzz_features = get_fuzz_features()
     if fuzz_features and os.path.isdir(FUZZ_DIR):
         if upgrade:
@@ -139,7 +139,7 @@ def main():
                     print("FAILED")
                     failed[label] = out2
 
-    # ── Check main project ──
+    #  Check main project 
     print("\n=== Checking main project ===")
     sys.stdout.write("  auto_fuzzer ... ")
     sys.stdout.flush()
@@ -152,7 +152,7 @@ def main():
         print("FAILED")
         failed["auto_fuzzer"] = out
 
-    # ── Summary ──
+    #  Summary 
     print(f"\n=== Results ===")
     print(f"Passed: {len(passed)}/{total}")
 

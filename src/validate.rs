@@ -15,7 +15,7 @@ pub fn validate_links(auto_remove: bool) {
         return;
     }
 
-    println!("── ignore_list.toml ──");
+    println!(" ignore_list.toml ");
     let mut to_remove: Vec<(String, String)> = Vec::new();
 
     for entry in &ignore.ignore {
@@ -137,7 +137,7 @@ pub fn validate_config_ignored_items(auto_remove: bool) {
         }
 
         if !any_printed {
-            println!("\n── Fuzz config ignored items ──");
+            println!("\n Fuzz config ignored items ");
             any_printed = true;
         }
         println!("\n  {} ({}):", project_name, config_path.display());

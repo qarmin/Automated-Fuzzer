@@ -192,7 +192,7 @@ fn test_files(
             // Print sample output exactly once across the entire program run
             if !SAMPLE_PRINTED.swap(true, Ordering::Relaxed) {
                 info!(
-                    "── Sample output (first file: {full_name}) ──\n{}\n── End sample ──",
+                    " Sample output (first file: {full_name}) \n{}\n End sample ",
                     output_result.get_output()
                 );
             }

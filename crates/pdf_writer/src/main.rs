@@ -33,11 +33,11 @@ fn check_file(path: &str) {
     run_pdf_writer(&tc);
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+//
 // TestCase: structured representation of a fuzzed PDF.
 // Built from raw bytes (deterministic), executed as-is, and emitted as
 // standalone Rust code for the crash reproducer.
-// ──────────────────────────────────────────────────────────────────────────────
+//
 
 struct TestCase {
     pages: Vec<PageCase>,
@@ -195,9 +195,9 @@ impl DocInfo {
     }
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+//
 // Runner: takes a TestCase and drives pdf-writer with it.
-// ──────────────────────────────────────────────────────────────────────────────
+//
 
 fn run_pdf_writer(tc: &TestCase) {
     let mut pdf = Pdf::new();
@@ -280,10 +280,10 @@ fn run_pdf_writer(tc: &TestCase) {
     assert!(!output.is_empty(), "PDF output should not be empty");
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+//
 // Reproducer emission: standalone Rust code with all values hardcoded.
 // The output has zero dependencies beyond `pdf-writer` itself.
-// ──────────────────────────────────────────────────────────────────────────────
+//
 
 impl TestCase {
     fn to_rust_reproducer(&self) -> String {
@@ -321,7 +321,7 @@ impl TestCase {
 
 impl PageCase {
     fn emit(&self, out: &mut String, i: i32, total: i32) {
-        out.push_str(&format!("    // ── Page {i} ──\n"));
+        out.push_str(&format!("    //  Page {i} \n"));
         out.push_str("    {\n");
         out.push_str(&format!("        let page_ref = Ref::new({});\n", 3 + i));
         out.push_str(&format!("        let content_ref = Ref::new({});\n", 3 + total + i));
@@ -458,10 +458,10 @@ fn fmt_bytes(b: &[u8]) -> String {
     s
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
+//
 // Cursor: minimal byte reader used only for fuzz-input → TestCase.
 // Not exposed; the reproducer code never references it.
-// ──────────────────────────────────────────────────────────────────────────────
+//
 
 struct Cursor<'a> {
     data: &'a [u8],

@@ -7,7 +7,7 @@ config-path name:
     elif [ -f "configs/external/fuzz_{{name}}_settings_ci.toml" ]; then echo "configs/external/fuzz_{{name}}_settings_ci"; \
     else echo "fuzz_settings" ; fi
 
-# ── Build ──────────────────────────────────────────────────────
+#  Build
 
 # Build the fuzzer binary
 build:
@@ -41,7 +41,7 @@ install-crate name:
 install-tools:
     cargo install create_broken_files minimizer
 
-# ── Fuzzing ───────────────────────────────────────────────────
+#  Fuzzing
 
 # Run custom fuzzer with a config: just fuzz symphonia 3600
 fuzz name timeout="0":
@@ -57,7 +57,7 @@ cargo-fuzz name timeout="3600":
     auto_fuzzer fuzz --mode cargo-fuzz --target {{name}} --corpus /opt/INPUT_FILES_DIR \
         --features "{{name}}_f" --timeout {{timeout}}
 
-# ── Results ───────────────────────────────────────────────────
+#  Results
 
 # Remove non-crashing files (verification pass with ASAN)
 verify name:
@@ -86,7 +86,7 @@ report-create dir repo="" version="" variant="cli":
         {{ if version != "" { "--version " + version } else { "" } }} \
         --variant {{variant}}
 
-# ── Ignore list ───────────────────────────────────────────────
+#  Ignore list
 
 ignore-add project pattern url:
     auto_fuzzer ignore add "{{project}}" "{{pattern}}" "{{url}}"
@@ -102,7 +102,7 @@ ignore-verify:
 ignore-clean:
     auto_fuzzer ignore clean
 
-# ── CI ────────────────────────────────────────────────────────
+#  CI
 
 ci-run name timeout state_dir="/opt/fuzzer_state" output_dir="/opt/results":
     auto_fuzzer ci run --config $(just config-path {{name}}).toml \
@@ -111,7 +111,7 @@ ci-run name timeout state_dir="/opt/fuzzer_state" output_dir="/opt/results":
 ci-verify name state_dir="/opt/fuzzer_state":
     auto_fuzzer ci verify-regressions --config $(just config-path {{name}}).toml --state-dir {{state_dir}}
 
-# ── Maintenance ───────────────────────────────────────────────
+#  Maintenance
 
 upgrade:
     cargo +nightly -Z unstable-options update --breaking
@@ -142,7 +142,7 @@ fix-crates:
 test:
     cargo test
 
-# ── Setup helpers ─────────────────────────────────────────────
+#  Setup helpers
 
 setup-dirs:
     mkdir -p /opt/VALID_FILES_DIR /opt/BROKEN_FILES_DIR /opt/POSSIBLY_BROKEN_FILES_DIR /tmp/tmp_folder/data /opt/CUSTOM /opt/INPUT_FILES_DIR

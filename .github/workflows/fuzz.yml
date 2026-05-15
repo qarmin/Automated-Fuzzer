@@ -7,7 +7,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  DEFAULT_TIMEOUT: 200
+  DEFAULT_TIMEOUT: 10000
 
 jobs:
   fuzz:
@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # ── Custom fuzzing (local crates) ──
+          #  Custom fuzzing (local crates) 
           # Set custom_timeout to override DEFAULT_TIMEOUT for specific jobs
           - name: LITTLE_EXIF
             mode: custom
@@ -54,7 +54,7 @@ jobs:
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
 
-          # ── Structured fuzzing (random byte input, no file corpus) ──
+          #  Structured fuzzing (random byte input, no file corpus) 
           - name: PDF_WRITER
             mode: custom
             crate: pdf_writer
@@ -64,7 +64,7 @@ jobs:
             corpus_count: 500
             corpus_max_size: 2048
 
-          # ── Cargo-fuzz (local crates) ──
+          #  Cargo-fuzz (local crates) 
           - name: IMAGE
             mode: cargo-fuzz
             crate: image
@@ -94,7 +94,7 @@ jobs:
             fuzz_features: symphonia_f
             files: "AA_MUSIC_VALID_FILES.7z"
 
-          # ── Custom fuzzing (external projects) ──
+          #  Custom fuzzing (external projects) 
           - name: TYRUF
             mode: custom
             external: true
@@ -257,7 +257,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.PAT2 }}
 
-      # ── Custom fuzzing ──
+      #  Custom fuzzing 
       - name: "Fuzz: custom mode"
         if: ${{ matrix.mode == 'custom' }}
         run: |
@@ -279,7 +279,7 @@ jobs:
           export ASAN_OPTIONS="symbolize=1"
           auto_fuzzer legacy --remove-non-crashing || true
 
-      # ── Cargo-fuzz ──
+      #  Cargo-fuzz 
       - name: "Fuzz: cargo-fuzz mode (loop until timeout)"
         if: ${{ matrix.mode == 'cargo-fuzz' }}
         run: |
@@ -440,13 +440,13 @@ jobs:
             EXIT=0
             timeout -v 120 ${{ matrix.binary }}_normal "$file" > /tmp/crash_out_$IDX.txt 2>&1 || EXIT=$?
 
-            echo "──────────────────────────────────────────────────"
+            echo ""
             if [ "$EXIT" -eq 124 ]; then
               echo "[$IDX/$CRASH_COUNT] $FNAME ($SIZE bytes) — exit: timeout"
             else
               echo "[$IDX/$CRASH_COUNT] $FNAME ($SIZE bytes) — exit: $EXIT"
             fi
-            echo "──────────────────────────────────────────────────"
+            echo ""
             tail -80 /tmp/crash_out_$IDX.txt
             echo ""
           done
