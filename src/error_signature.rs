@@ -517,8 +517,7 @@ fn is_external_source(path: &str) -> bool {
 /// Skips matches inside rustc/std/registry paths so that crashes are attributed
 /// to the actual project source rather than to a transitive dependency.
 fn extract_source_file_and_line(output: &str) -> (Option<String>, Option<u32>) {
-    let regexes: &[&LazyLock<Regex>] =
-        &[&RE_PANIC_OLD, &RE_PANIC_NEW, &RE_SOURCE_LOC, &RE_BT_SRC, &RE_BT_ANY];
+    let regexes: &[&LazyLock<Regex>] = &[&RE_PANIC_OLD, &RE_PANIC_NEW, &RE_SOURCE_LOC, &RE_BT_SRC, &RE_BT_ANY];
     for re in regexes {
         for cap in re.captures_iter(output) {
             let raw = cap.get(1).unwrap().as_str();

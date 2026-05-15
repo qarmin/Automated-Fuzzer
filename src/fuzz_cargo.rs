@@ -115,9 +115,6 @@ fn signal_child_group(child: &std::process::Child) {
     // `cmd.process_group(0)` having put the child in its own group.
     let rc = unsafe { libc::kill(-pid, libc::SIGTERM) };
     if rc < 0 {
-        log::warn!(
-            "kill(-{pid}, SIGTERM) failed: {}",
-            std::io::Error::last_os_error()
-        );
+        log::warn!("kill(-{pid}, SIGTERM) failed: {}", std::io::Error::last_os_error());
     }
 }
