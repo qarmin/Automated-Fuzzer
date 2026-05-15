@@ -1,4 +1,4 @@
-name: "\U0001F41B Fuzz"
+name: "Fuzz"
 on:
   push:
   pull_request:
@@ -15,48 +15,89 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # ── Library crates (built from crates/) ──
+          # ── Custom fuzzing (local crates) ──
           - name: LITTLE_EXIF
+            mode: custom
             crate: little_exif
             binary: little_exif
             files: "AA_NOM_EXIF_VALID_FILES.7z"
             timeout: 200
           - name: LOPDF
+            mode: custom
             crate: lopdf
             binary: lopdf
             files: "AA_PDF_VALID_FILES2.7z"
             timeout: 200
           - name: BOA
+            mode: custom
             crate: boa
             binary: boa
             files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
             timeout: 200
           - name: HAYRO
+            mode: custom
             crate: hayro
             binary: hayro
             files: "AA_PDF_VALID_FILES2.7z"
             timeout: 200
           - name: MOXCMS
+            mode: custom
             crate: moxcms
             binary: moxcms
             files: "AA_ICC_VALID_FILES.7z"
             timeout: 200
           - name: ZUNE
+            mode: custom
             crate: zune
             binary: zune
             files: "AA_IMAGE_VALID_FILES.7z"
             timeout: 200
           - name: SYMPHONIA
+            mode: custom
             crate: symphonia
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
             timeout: 200
 
-          # ── External projects (cloned from GitHub, no local crate) ──
+          # ── Cargo-fuzz (local crates) ──
+          - name: IMAGE
+            mode: cargo-fuzz
+            crate: image
+            binary: image
+            fuzz_target: image
+            fuzz_features: image_f
+            files: "AA_IMAGE_VALID_FILES.7z"
+            timeout: 200
+          - name: HAYRO_CF
+            mode: cargo-fuzz
+            crate: hayro
+            binary: hayro
+            fuzz_target: hayro
+            fuzz_features: hayro_f
+            files: "AA_PDF_VALID_FILES2.7z"
+            timeout: 200
+          - name: ZUNE_CF
+            mode: cargo-fuzz
+            crate: zune
+            binary: zune
+            fuzz_target: zune
+            fuzz_features: zune_f
+            files: "AA_IMAGE_VALID_FILES.7z"
+            timeout: 200
+          - name: SYMPHONIA_CF
+            mode: cargo-fuzz
+            crate: symphonia
+            binary: symphonia
+            fuzz_target: symphonia
+            fuzz_features: symphonia_f
+            files: "AA_MUSIC_VALID_FILES.7z"
+            timeout: 200
+
+          # ── Custom fuzzing (external projects) ──
           - name: TYRUF
+            mode: custom
             external: true
             clone_url: "https://github.com/astral-sh/ruff/archive/refs/heads/main.zip"
-            clone_dir: "ruff-main"
             install_path: "ruff-main/crates/ty"
             cargo_toml_dir: "ruff-main"
             binary: ty
@@ -65,18 +106,18 @@ jobs:
             post_clone: |
               sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
           - name: PYREFLY
+            mode: custom
             external: true
             clone_url: "https://github.com/facebook/pyrefly/archive/refs/heads/main.zip"
-            clone_dir: "pyrefly-main"
             install_path: "pyrefly-main/pyrefly"
             cargo_toml_dir: "pyrefly-main"
             binary: pyrefly
             files: "FILES_21.zip"
             timeout: 200
           - name: SWC
+            mode: custom
             external: true
             clone_url: "https://github.com/swc-project/swc/archive/refs/heads/main.zip"
-            clone_dir: "swc-main"
             install_path: "swc-main/crates/swc_cli_impl"
             cargo_toml_dir: "swc-main"
             binary: swc
@@ -101,28 +142,13 @@ jobs:
         run: |
           cargo install create_broken_files minimizer
           cargo install --path .
-
-      # ── Download previous crashes from Nightly release ──
-      - name: Download previous crashes
-        run: |
-          mkdir -p /opt/PREVIOUS_CRASHES
-          # Try to download previous crash archive for this project
-          gh release download Nightly \
-            --pattern "crashes_${{ matrix.name }}.7z" \
-            --dir /opt/PREVIOUS_CRASHES \
-            --clobber 2>/dev/null || echo "No previous crashes found for ${{ matrix.name }}"
-          if [ -f "/opt/PREVIOUS_CRASHES/crashes_${{ matrix.name }}.7z" ]; then
-            cd /opt/PREVIOUS_CRASHES
-            7z x "crashes_${{ matrix.name }}.7z" -ocrashes || true
-            rm -f "crashes_${{ matrix.name }}.7z"
-            echo "Loaded $(find crashes -type f 2>/dev/null | wc -l) previous crash files"
+          if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
+            cargo install  Doda
           fi
-        env:
-          GH_TOKEN: ${{ secrets.PAT2 }}
 
-      # ── Build the target binary ──
-
-      # Local crate
+      # ══════════════════════════════════════════════════════════
+      # PHASE 1: Build
+      # ══════════════════════════════════════════════════════════
       - name: Build local crate
         if: ${{ matrix.external != true }}
         run: |
@@ -132,124 +158,90 @@ jobs:
           cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
             cargo +nightly install --path . --target x86_64-unknown-linux-gnu
           sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}_normal
-
           # ASAN build
           RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path . --target x86_64-unknown-linux-gnu
           sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}
 
-      # External project
       - name: Clone external project
         if: ${{ matrix.external == true }}
         run: |
-          wget -q "${{ matrix.clone_url }}"
-          unzip -q *.zip
-          rm -f *.zip
+          wget -q "${{ matrix.clone_url }}" && unzip -q *.zip && rm -f *.zip
           ${{ matrix.post_clone }}
-
-      - name: Patch release profile
-        if: ${{ matrix.external == true }}
-        run: |
+          # Patch release profile
           TOML="${{ matrix.cargo_toml_dir }}/Cargo.toml"
           sed -i '/^\[profile\.release\]/,/^\[.*\]/ { /^\[profile\.release\]/d; /^\[.*\]/!d; }' "$TOML"
-          cat >> "$TOML" << 'EOF'
+          cat >> "$TOML" << 'EOPROFILE'
           [profile.release]
           overflow-checks = true
           debug = true
           debug-assertions = true
           lto = "thin"
           codegen-units = 1
-          EOF
-
-      - name: Remove rust-toolchain files
-        if: ${{ matrix.external == true }}
-        run: |
+          EOPROFILE
           find . -name "rust-toolchain.toml" -exec rm -f {} \; || true
           find . -name ".cargo" -exec rm -rf {} \; || true
 
       - name: Build external project
         if: ${{ matrix.external == true }}
         run: |
-          # Normal
           cargo +nightly install --path "${{ matrix.install_path }}" --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
             cargo +nightly install --path "${{ matrix.install_path }}" --target x86_64-unknown-linux-gnu
           sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}_normal
-
-          # ASAN
           RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
             RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" --target x86_64-unknown-linux-gnu
           sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}
 
-      - name: Clean build artifacts
-        run: git clean -xqdf || true
+      - name: Build cargo-fuzz targets
+        if: ${{ matrix.mode == 'cargo-fuzz' }}
+        run: |
+          cd fuzz && cargo update && cd ..
+          export RUSTFLAGS="-Zsanitizer=address"
+          cargo fuzz build ${{ matrix.fuzz_target }} --release --features "${{ matrix.fuzz_features }}"
 
-      # ── Pack binaries for Nightly release ──
-      - name: Pack binaries
+      - name: Clean build artifacts + upload binaries
         run: |
           7z a "${{ matrix.binary }}_normal.7z" "/usr/local/bin/${{ matrix.binary }}_normal"
           7z a "${{ matrix.binary }}.7z" "/usr/local/bin/${{ matrix.binary }}"
+          gh release upload Nightly "${{ matrix.binary }}_normal.7z" "${{ matrix.binary }}.7z" --clobber 2>/dev/null || true
+          git clean -xqdf || true
+        env:
+          GH_TOKEN: ${{ secrets.PAT2 }}
 
-      - name: Upload binaries to Nightly
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "Nightly"
-          files: |
-            ${{ matrix.binary }}.7z
-            ${{ matrix.binary }}_normal.7z
-          token: ${{ secrets.PAT2 }}
-
-      # ── Prepare dirs and files ──
+      # ══════════════════════════════════════════════════════════
+      # PHASE 2: Prepare data + Fuzz
+      # ══════════════════════════════════════════════════════════
       - name: Create directories
-        run: |
-          mkdir -p /opt/VALID_FILES_DIR /opt/BROKEN_FILES_DIR /opt/POSSIBLY_BROKEN_FILES_DIR /tmp/tmp_folder/data /opt/CUSTOM
+        run: mkdir -p /opt/VALID_FILES_DIR /opt/BROKEN_FILES_DIR /opt/POSSIBLY_BROKEN_FILES_DIR /tmp/tmp_folder/data /opt/CUSTOM /opt/INPUT_FILES_DIR
 
       - name: Download test files
         run: |
           CURR_DIR=$(pwd)
-          cd /opt/VALID_FILES_DIR
+          TARGET_DIR="/opt/VALID_FILES_DIR"
+          if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
+            TARGET_DIR="/opt/INPUT_FILES_DIR"
+          fi
+          cd "$TARGET_DIR"
           python3 "$CURR_DIR/download_helper.py" "${{ matrix.files }}"
           cd "$CURR_DIR"
-
-      # ── Verify previous crashes (regression check) ──
-      - name: Verify previous crashes
-        run: |
-          if [ -d "/opt/PREVIOUS_CRASHES/crashes" ] && [ "$(ls -A /opt/PREVIOUS_CRASHES/crashes 2>/dev/null)" ]; then
-            echo "=== Verifying $(find /opt/PREVIOUS_CRASHES/crashes -type f | wc -l) previous crash files ==="
-
-            # Copy previous crashes to broken_files_dir for verification
-            cp /opt/PREVIOUS_CRASHES/crashes/* /opt/BROKEN_FILES_DIR/ 2>/dev/null || true
-
-            # Determine config path
-            if [ -f "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" ]; then
-              cp "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" fuzz_settings.toml
-            elif [ -f "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" ]; then
-              cp "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" fuzz_settings.toml
+          # cargo-fuzz also needs corpus in INPUT_FILES_DIR
+          if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
+            # Download previous corpus if exists
+            gh release download Nightly \
+              --pattern "corpus_${{ matrix.name }}.7z" \
+              --dir /tmp --clobber 2>/dev/null || true
+            if [ -f "/tmp/corpus_${{ matrix.name }}.7z" ]; then
+              cd /opt/INPUT_FILES_DIR
+              7z x "/tmp/corpus_${{ matrix.name }}.7z" 2>/dev/null || true
+              cd "$CURR_DIR"
             fi
-            sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data_regression" fuzz_settings.toml
-            sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-
-            export RUST_BACKTRACE=1
-            export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-            export ASAN_OPTIONS="symbolize=1"
-            auto_fuzzer legacy --remove-non-crashing || true
-
-            # Files remaining in BROKEN_FILES_DIR are still broken
-            STILL_BROKEN=$(find /opt/BROKEN_FILES_DIR -type f | wc -l)
-            echo "Regression check: $STILL_BROKEN files still crash"
-
-            # Clean for fresh fuzzing
-            rm -rf /opt/BROKEN_FILES_DIR/*
-            # Keep the still-broken files aside
-            if [ -d "/tmp/tmp_folder/data_regression" ] && [ "$(ls -A /tmp/tmp_folder/data_regression 2>/dev/null)" ]; then
-              mkdir -p /opt/STILL_BROKEN
-              cp -r /tmp/tmp_folder/data_regression/* /opt/STILL_BROKEN/ 2>/dev/null || true
-            fi
-          else
-            echo "No previous crashes to verify"
           fi
+        env:
+          GH_TOKEN: ${{ secrets.PAT2 }}
 
-      # ── Run fuzzer ──
-      - name: Prepare config for fuzzing
+      # ── Custom fuzzing ──
+      - name: "Fuzz: custom mode"
+        if: ${{ matrix.mode == 'custom' }}
         run: |
           if [ -f "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" ]; then
             cp "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" fuzz_settings.toml
@@ -257,57 +249,145 @@ jobs:
             cp "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" fuzz_settings.toml
           fi
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
-
-      - name: Run fuzzer
-        run: |
           export RUST_BACKTRACE=1
           auto_fuzzer fuzz --mode custom --timeout ${{ matrix.timeout }}
 
-      # ── Verify results ──
-      - name: Verify and generate reports
+      - name: "Verify: custom mode (ASAN)"
+        if: ${{ matrix.mode == 'custom' }}
         run: |
           sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-
           export RUST_BACKTRACE=1
           export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
           export ASAN_OPTIONS="symbolize=1"
           auto_fuzzer legacy --remove-non-crashing || true
 
-      # ── Dedup and pack crashes ──
-      - name: Collect and dedup all crashes
+      # ── Cargo-fuzz ──
+      - name: "Fuzz: cargo-fuzz mode (loop until timeout)"
+        if: ${{ matrix.mode == 'cargo-fuzz' }}
+        run: |
+          bash ci_cargo_fuzz_loop.sh \
+            "${{ matrix.fuzz_target }}" \
+            "${{ matrix.fuzz_features }}" \
+            "/opt/INPUT_FILES_DIR" \
+            "${{ matrix.timeout }}" \
+            4
+
+      - name: "Minimize: cargo-fuzz crashes"
+        if: ${{ matrix.mode == 'cargo-fuzz' }}
+        run: |
+          ARTIFACT_DIR="fuzz/artifacts/${{ matrix.fuzz_target }}"
+          if [ -d "$ARTIFACT_DIR" ] && [ "$(ls -A "$ARTIFACT_DIR" 2>/dev/null)" ]; then
+            export RUST_BACKTRACE=1
+            export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+            export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
+            for file in "$ARTIFACT_DIR"/*; do
+              [ -f "$file" ] || continue
+              minimizer --input-file "$file" \
+                --output-file "${file}_minimized" \
+                --command "timeout -v 100 ${{ matrix.fuzz_target }} {}" \
+                --attempts 10000 -r \
+                -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" \
+                -b "LeakSanitizer" -b "ThreadSanitizer" \
+                -b "timeout: sending signal" -b "memory allocation of" \
+                -v -t 1200 -s general_multi || true
+            done
+          fi
+
+      # ══════════════════════════════════════════════════════════
+      # PHASE 3: Collect crashes into /opt/ALL_CRASHES
+      # ══════════════════════════════════════════════════════════
+      - name: "Collect all local crashes"
         run: |
           mkdir -p /opt/ALL_CRASHES
 
-          # Gather crashes from broken_files_dir
+          # Custom mode: crashes are in /opt/BROKEN_FILES_DIR
           find /opt/BROKEN_FILES_DIR -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
 
-          # Add still-broken files from regression check
-          find /opt/STILL_BROKEN -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
+          # Cargo-fuzz mode: crashes are in fuzz/artifacts/<target>/
+          if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
+            find "fuzz/artifacts/${{ matrix.fuzz_target }}" -type f -exec cp {} /opt/ALL_CRASHES/ \; 2>/dev/null || true
+          fi
 
-          # Dedup by MD5
           python3 dedup_files.py /opt/ALL_CRASHES
+          echo "Local crash files: $(find /opt/ALL_CRASHES -type f | wc -l)"
 
-          CRASH_COUNT=$(find /opt/ALL_CRASHES -type f | wc -l)
-          echo "Total unique crash files: $CRASH_COUNT"
-          echo "CRASH_COUNT=$CRASH_COUNT" >> $GITHUB_ENV
+      # ══════════════════════════════════════════════════════════
+      # PHASE 4: Download old crashes (post-fuzz = small race window),
+      #          regression check, merge, upload with retry
+      # ══════════════════════════════════════════════════════════
 
-      - name: Pack crashes for Nightly
-        if: ${{ env.CRASH_COUNT != '0' }}
+      # Use the BASE name for the archive (HAYRO_CF -> HAYRO, ZUNE_CF -> ZUNE)
+      # So cargo-fuzz and custom results share the same crash file
+      - name: "Download previous crashes + regression check"
         run: |
-          cd /opt/ALL_CRASHES
-          7z a "${{ github.workspace }}/crashes_${{ matrix.name }}.7z" .
+          # Strip _CF suffix so both modes share the same crash archive
+          BASE_NAME=$(echo "${{ matrix.name }}" | sed 's/_CF$//')
+          echo "BASE_NAME=$BASE_NAME" >> $GITHUB_ENV
+
+          ARCHIVE="crashes_${BASE_NAME}.7z"
+          mkdir -p /opt/PREV/crashes
+
+          gh release download Nightly \
+            --pattern "$ARCHIVE" \
+            --dir /opt/PREV --clobber 2>/dev/null || echo "No previous crashes for $BASE_NAME"
+
+          if [ -f "/opt/PREV/$ARCHIVE" ]; then
+            cd /opt/PREV && 7z x "$ARCHIVE" -ocrashes || true
+            cd "${{ github.workspace }}"
+            PREV_COUNT=$(find /opt/PREV/crashes -type f 2>/dev/null | wc -l)
+            echo "Downloaded $PREV_COUNT previous crash files"
+
+            # Regression check
+            STILL=0
+            FIXED=0
+            for file in /opt/PREV/crashes/*; do
+              [ -f "$file" ] || continue
+              OUTPUT=$(timeout -v 120 ${{ matrix.binary }}_normal "$file" 2>&1 || true)
+              if echo "$OUTPUT" | grep -qE "RUST_BACKTRACE|panicked at|AddressSanitizer|timeout: sending signal|segmentation fault|\(core dumped\)"; then
+                cp "$file" /opt/ALL_CRASHES/
+                STILL=$((STILL + 1))
+              else
+                FIXED=$((FIXED + 1))
+              fi
+            done
+            echo "Regression: $STILL still broken, $FIXED fixed"
+          fi
+
+          # Final dedup of everything
+          python3 dedup_files.py /opt/ALL_CRASHES
+          TOTAL=$(find /opt/ALL_CRASHES -type f | wc -l)
+          echo "Total unique crashes: $TOTAL"
+        env:
+          GH_TOKEN: ${{ secrets.PAT2 }}
+
+      - name: "Upload crashes (with retry)"
+        run: |
+          # ci_upload_crashes.sh uses BASE_NAME from env
+          RESULT=$(bash ci_upload_crashes.sh "${{ env.BASE_NAME }}" /opt/ALL_CRASHES 10)
+          echo "$RESULT"
+
+          # Extract CRASH_COUNT from output
+          COUNT=$(echo "$RESULT" | grep "^CRASH_COUNT=" | tail -1 | cut -d= -f2)
+          echo "CRASH_COUNT=${COUNT:-0}" >> $GITHUB_ENV
+        env:
+          GH_TOKEN: ${{ secrets.PAT2 }}
+
+      # Upload corpus for cargo-fuzz
+      - name: "Upload corpus"
+        if: ${{ matrix.mode == 'cargo-fuzz' }}
+        run: |
+          cd /opt/INPUT_FILES_DIR
+          7z a "${{ github.workspace }}/corpus_${{ matrix.name }}.7z" . -mx0
           cd "${{ github.workspace }}"
+          gh release upload Nightly "corpus_${{ matrix.name }}.7z" --clobber
+        env:
+          GH_TOKEN: ${{ secrets.PAT2 }}
 
-      - name: Upload crashes to Nightly release
-        if: ${{ env.CRASH_COUNT != '0' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: "Nightly"
-          files: crashes_${{ matrix.name }}.7z
-          token: ${{ secrets.PAT2 }}
-
-      # ── Store artifacts ──
+      # ══════════════════════════════════════════════════════════
+      # PHASE 5: Artifacts + CI result
+      # ══════════════════════════════════════════════════════════
       - name: Store reports
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
@@ -315,21 +395,13 @@ jobs:
           path: /tmp/tmp_folder/data
 
       - name: Store crash files
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           if-no-files-found: ignore
           name: CRASHES___${{ matrix.name }}
           path: /opt/ALL_CRASHES
 
-      - name: Store regression results
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          if-no-files-found: ignore
-          name: REGRESSION___${{ matrix.name }}
-          path: /opt/STILL_BROKEN
-
-      # ── Fail if crashes found ──
       - name: Fail if crashes found
         run: |
-          [ "$CRASH_COUNT" != "0" ] && exit 1 || true
+          [ "${CRASH_COUNT:-0}" != "0" ] && exit 1 || true

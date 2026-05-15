@@ -3,11 +3,11 @@ use std::sync::LazyLock;
 use regex::Regex;
 
 // Pre-compiled regexes for hot-path performance
-static RE_PANIC_OLD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at '.*?',\s*(\S+?\.rs):\d+").unwrap());
-static RE_PANIC_NEW: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at (\S+?\.rs):\d+").unwrap());
-static RE_SOURCE_LOC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"Source Location:\s*(\S+?\.rs):\d+").unwrap());
-static RE_BT_SRC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat ((?:\S*?/)?src/\S+?\.rs):\d+").unwrap());
-static RE_BT_ANY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat (\S+?\.rs):\d+").unwrap());
+static RE_PANIC_OLD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at '.*?',\s*(\S+?\.rs):(\d+)").unwrap());
+static RE_PANIC_NEW: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at (\S+?\.rs):(\d+)").unwrap());
+static RE_SOURCE_LOC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"Source Location:\s*(\S+?\.rs):(\d+)").unwrap());
+static RE_BT_SRC: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat ((?:\S*?/)?src/\S+?\.rs):(\d+)").unwrap());
+static RE_BT_ANY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"\bat (\S+?\.rs):(\d+)").unwrap());
 static RE_ASSERT_FAILED: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"assertion failed:\s*(.+)").unwrap());
 static RE_ASSERT_BACKTICK: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"assertion `([^`]+)` failed").unwrap());
 static RE_PANIC_MSG_OLD: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"panicked at '([^']+)'").unwrap());
@@ -22,6 +22,8 @@ pub struct ErrorSignature {
     pub error_type: String,
     /// Source file where the error occurred (without line number)
     pub source_file: Option<String>,
+    /// Line number in source file (for folder naming, not for issue titles)
+    pub source_line: Option<u32>,
     /// Detailed condition/message (e.g., "a > 25" for assertion)
     pub condition: Option<String>,
     /// Short description for issue title
@@ -90,10 +92,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Char boundary
     if output.contains("is not a char boundary") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "char_boundary".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "is not a char boundary".to_string(),
         };
@@ -101,10 +104,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Divide by zero
     if output.contains("divide by zero") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "divide_by_zero".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "attempt to divide by zero".to_string(),
         };
@@ -112,10 +116,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Option::unwrap()
     if output.contains("Option::unwrap()") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "option_unwrap".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "called `Option::unwrap()` on a `None` value".to_string(),
         };
@@ -123,10 +128,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Result::unwrap()
     if output.contains("Result::unwrap()") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "result_unwrap".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "called `Result::unwrap()` on an `Err` value".to_string(),
         };
@@ -134,10 +140,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Slicing error
     if output.contains("when slicing `") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "slicing".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "range error when slicing".to_string(),
         };
@@ -145,10 +152,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Out of range
     if output.contains("out of range for") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "out_of_range".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "out of range".to_string(),
         };
@@ -159,6 +167,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "memory_failure".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "memory allocation failure".to_string(),
         };
@@ -166,10 +175,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Stack overflow
     if output.contains("stack overflow") || output.contains("stack-overflow") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "stack_overflow".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "stack overflow".to_string(),
         };
@@ -177,10 +187,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Heap use after free (ASAN)
     if output.contains("heap-use-after-free") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "heap_use_after_free".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "heap-use-after-free".to_string(),
         };
@@ -188,11 +199,12 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // AddressSanitizer (generic)
     if output.contains("AddressSanitizer") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         let detail = extract_asan_type(output);
         return ErrorSignature {
             error_type: "address_sanitizer".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: detail.clone(),
             short_description: detail.unwrap_or_else(|| "AddressSanitizer error".to_string()),
         };
@@ -203,6 +215,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "thread_sanitizer".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "ThreadSanitizer error".to_string(),
         };
@@ -213,6 +226,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "leak_sanitizer".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "LeakSanitizer: memory leak detected".to_string(),
         };
@@ -223,6 +237,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "segmentation_fault".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "segmentation fault".to_string(),
         };
@@ -233,6 +248,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "out_of_memory".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "killed (likely out of memory)".to_string(),
         };
@@ -243,6 +259,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "timeout".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "timeout when processing file".to_string(),
         };
@@ -250,10 +267,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Aborted
     if output.contains("Aborted") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "aborted".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "aborted".to_string(),
         };
@@ -261,12 +279,13 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Generic panic with panicked at message
     if output.contains("panicked at") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         let msg = extract_panic_message(output);
         let short = msg.clone().unwrap_or_else(|| "panicked".to_string());
         return ErrorSignature {
             error_type: "panic".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: msg,
             short_description: truncate_str(&short, 80),
         };
@@ -274,10 +293,11 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
 
     // Generic RUST_BACKTRACE
     if output.contains("RUST_BACKTRACE") {
-        let src = extract_source_file(output);
+        let (src, src_line) = extract_source_file_and_line(output);
         return ErrorSignature {
             error_type: "panic".to_string(),
             source_file: src,
+            source_line: src_line,
             condition: None,
             short_description: "panic".to_string(),
         };
@@ -288,6 +308,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
         return ErrorSignature {
             error_type: "syntax_error".to_string(),
             source_file: None,
+            source_line: None,
             condition: None,
             short_description: "fix introduced a syntax error".to_string(),
         };
@@ -297,6 +318,7 @@ pub fn parse_error_signature(output: &str) -> ErrorSignature {
     ErrorSignature {
         error_type: "unknown".to_string(),
         source_file: None,
+        source_line: None,
         condition: None,
         short_description: "unknown error".to_string(),
     }
@@ -312,10 +334,11 @@ fn try_parse_assertion_eq(output: &str) -> Option<ErrorSignature> {
     } else {
         "ne"
     };
-    let src = extract_source_file(output);
+    let (src, src_line) = extract_source_file_and_line(output);
     Some(ErrorSignature {
         error_type: format!("assertion_{op}"),
         source_file: src,
+        source_line: src_line,
         condition: None,
         short_description: format!("assertion `left {op} right` failed"),
     })
@@ -339,11 +362,12 @@ fn try_parse_assertion_custom(output: &str) -> Option<ErrorSignature> {
         return None;
     }
 
-    let src = extract_source_file(output);
+    let (src, src_line) = extract_source_file_and_line(output);
     let short = format!("assertion failed: {condition}");
     Some(ErrorSignature {
         error_type: "assertion".to_string(),
         source_file: src,
+        source_line: src_line,
         condition: Some(condition),
         short_description: truncate_str(&short, 80),
     })
@@ -362,10 +386,11 @@ fn try_parse_overflow(output: &str) -> Option<ErrorSignature> {
 
     for (pattern, error_type) in patterns {
         if output.contains(pattern) {
-            let src = extract_source_file(output);
+            let (src, src_line) = extract_source_file_and_line(output);
             return Some(ErrorSignature {
                 error_type: error_type.to_string(),
                 source_file: src,
+                source_line: src_line,
                 condition: None,
                 short_description: pattern.to_string(),
             });
@@ -378,10 +403,11 @@ fn try_parse_index_out_of_bounds(output: &str) -> Option<ErrorSignature> {
     if !output.contains("index out of bounds") && !output.contains("is out of bounds") {
         return None;
     }
-    let src = extract_source_file(output);
+    let (src, src_line) = extract_source_file_and_line(output);
     Some(ErrorSignature {
         error_type: "index_out_of_bounds".to_string(),
         source_file: src,
+        source_line: src_line,
         condition: None,
         short_description: "index out of bounds".to_string(),
     })
@@ -391,7 +417,7 @@ fn try_parse_unreachable(output: &str) -> Option<ErrorSignature> {
     if !output.contains("entered unreachable code") {
         return None;
     }
-    let src = extract_source_file(output);
+    let (src, src_line) = extract_source_file_and_line(output);
 
     // Extract the message after "entered unreachable code: "
     let condition = if let Some(idx) = output.find("entered unreachable code: ") {
@@ -413,6 +439,7 @@ fn try_parse_unreachable(output: &str) -> Option<ErrorSignature> {
     Some(ErrorSignature {
         error_type: "unreachable_code".to_string(),
         source_file: src,
+        source_line: src_line,
         condition,
         short_description: truncate_str(&short, 80),
     })
@@ -422,7 +449,7 @@ fn try_parse_not_implemented(output: &str) -> Option<ErrorSignature> {
     if !output.contains("not implemented:") && !output.contains("not yet implemented") {
         return None;
     }
-    let src = extract_source_file(output);
+    let (src, src_line) = extract_source_file_and_line(output);
     let condition = if let Some(idx) = output.find("not implemented: ") {
         let msg_start = idx + "not implemented: ".len();
         let msg = &output[msg_start..];
@@ -441,43 +468,38 @@ fn try_parse_not_implemented(output: &str) -> Option<ErrorSignature> {
     Some(ErrorSignature {
         error_type: "not_implemented".to_string(),
         source_file: src,
+        source_line: src_line,
         condition,
         short_description: truncate_str(&short, 80),
     })
 }
 
-/// Extract source file path from Rust panic/backtrace output (without line number)
-fn extract_source_file(output: &str) -> Option<String> {
-    // Pattern 1: "panicked at 'msg', src/file.rs:123:45" (old format)
-    if let Some(cap) = RE_PANIC_OLD.captures(output) {
-        return Some(normalize_source_path(cap.get(1)?.as_str()));
-    }
-
-    // Pattern 2: "panicked at src/file.rs:123:45:" (new format)
-    if let Some(cap) = RE_PANIC_NEW.captures(output) {
-        return Some(normalize_source_path(cap.get(1)?.as_str()));
-    }
-
-    // Pattern 3: "Source Location: crates/foo/src/bar.rs:123:45"
-    if let Some(cap) = RE_SOURCE_LOC.captures(output) {
-        return Some(normalize_source_path(cap.get(1)?.as_str()));
-    }
-
-    // Pattern 4: Find "src/" paths in backtrace lines like "at src/foo/bar.rs:123"
-    if let Some(cap) = RE_BT_SRC.captures(output) {
-        return Some(normalize_source_path(cap.get(1)?.as_str()));
+/// Extract source file path and line number from Rust panic/backtrace output
+fn extract_source_file_and_line(output: &str) -> (Option<String>, Option<u32>) {
+    let regexes: &[&LazyLock<Regex>] = &[
+        &RE_PANIC_OLD,
+        &RE_PANIC_NEW,
+        &RE_SOURCE_LOC,
+        &RE_BT_SRC,
+    ];
+    for re in regexes {
+        if let Some(cap) = re.captures(output) {
+            let path = normalize_source_path(cap.get(1).unwrap().as_str());
+            let line = cap.get(2).and_then(|m| m.as_str().parse().ok());
+            return (Some(path), line);
+        }
     }
 
     // Pattern 5: Any .rs file in backtrace
     if let Some(cap) = RE_BT_ANY.captures(output) {
-        let path = cap.get(1)?.as_str();
-        // Skip standard library/rustc paths
+        let path = cap.get(1).unwrap().as_str();
         if !path.contains("rustc/") && !path.contains(".cargo/registry") && !path.contains("library/") {
-            return Some(normalize_source_path(path));
+            let line = cap.get(2).and_then(|m| m.as_str().parse().ok());
+            return (Some(normalize_source_path(path)), line);
         }
     }
 
-    None
+    (None, None)
 }
 
 /// Normalize source path - keep from "src/" onwards, strip absolute prefix

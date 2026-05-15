@@ -26,6 +26,7 @@ struct ReportMetadata {
     error_signature: String,
     short_description: String,
     source_file: String,
+    source_line: u32,
     issue_title: String,
     project: String,
     found_date: String,
@@ -94,6 +95,9 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
     let command = obj.get_full_command("TEST___FILE");
     let command_str = collect_command_to_string(&command);
 
+    // Try to read crate source code for library-style reports
+    let crate_code = try_read_crate_code(&settings.name);
+
     for (file_name, result) in content {
         let content = fs::read(&file_name).unwrap();
         let extension = Path::new(&file_name)
@@ -106,55 +110,85 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
         let signature = parse_error_signature(&result);
         let legacy_error_type = get_legacy_error_type(&result);
 
-        let mut file_content = String::new();
-
-        let mut cnt_text = String::new();
-        let content_to_string = String::from_utf8(content.clone());
-        if let Ok(content_string) = content_to_string {
-            cnt_text += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
-            cnt_text += "```\n";
-            cnt_text += &content_string;
-            cnt_text += "\n```";
+        // ── Build group folder name: project__type__file_line ──
+        let src_part = signature
+            .source_file
+            .as_deref()
+            .unwrap_or("unknown")
+            .replace('/', "_")
+            .replace('\\', "_");
+        let line_suffix = signature
+            .source_line
+            .map(|l| format!("_{l}"))
+            .unwrap_or_default();
+        let error_type_str = if legacy_error_type.is_empty() {
+            &signature.error_type
         } else {
-            cnt_text += "File content is binary, so is available only in zip file";
-        }
-
-        let folder = format!(
-            "{}/{}_{}__({} bytes) - {}",
-            settings.temp_folder,
-            settings.name,
-            if legacy_error_type.is_empty() { &signature.error_type } else { legacy_error_type },
-            content.len(),
-            random::<u64>()
+            legacy_error_type
+        };
+        // e.g. "zune__assertion_eq__src_image.rs_482"
+        let group_folder = format!(
+            "{}/{}__{}__{}{}",
+            settings.temp_folder, settings.name, error_type_str, src_part, line_suffix
         );
+        let _ = fs::create_dir_all(&group_folder);
+
+        let file_idx = random::<u64>();
+        let folder = format!("{group_folder}/{file_idx}");
         let _ = fs::create_dir_all(&folder);
 
-        file_content += &cnt_text;
-        file_content += "\n\ncommand\n```\n";
-        file_content += &command_str_with_extension;
-        file_content += "\n```\n\n";
-        file_content += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
-        file_content += "(You can ignore this part if there is no address sanitizer error)\n";
-        file_content += "On Ubuntu 24.04, the commands to compile were:\n```\n";
-        file_content += "rustup default nightly\n";
-        file_content += "rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu\n";
-        file_content += "rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu\n\n";
-        file_content += "export RUST_BACKTRACE=1 # or full depending on project\n";
-        file_content += "export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)\n";
-        file_content += "export ASAN_OPTIONS=symbolize=1\n";
-        file_content += "RUSTFLAGS=\"-Zsanitizer=address\" cargo +nightly build --target x86_64-unknown-linux-gnu\n";
-        file_content += "```\n\ncause this\n```\n";
-        file_content += &result;
-        file_content += "\n```\n";
+        // ── Build to_report.txt ──
+        let mut report = String::new();
 
-        fs::write(format!("{folder}/to_report.txt"), &file_content).unwrap();
+        // File content section
+        let content_to_string = String::from_utf8(content.clone());
+        if let Ok(content_string) = &content_to_string {
+            report += "File content(at the bottom should be attached raw, not formatted file - github removes some non-printable characters, so copying from here may not work):\n";
+            report += "```\n";
+            report += content_string;
+            report += "\n```\n\n";
+        } else {
+            report += "File content is binary, so is available only in zip file\n\n";
+        }
 
-        // Write metadata file with signature info
+        // If we have crate code, include it as reproducer (library style)
+        if let Some(ref code) = crate_code {
+            report += "### Reproducer\n\n";
+            report += "I tried this code:\n\n";
+            report += "```rust\n";
+            report += code;
+            report += "\n```\n\n";
+        }
+
+        // Command
+        report += "command\n```\n";
+        report += &command_str_with_extension;
+        report += "\n```\n\n";
+
+        // ASAN instructions
+        report += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
+        report += "(You can ignore this part if there is no address sanitizer error)\n";
+        report += "On Ubuntu 24.04, the commands to compile were:\n```\n";
+        report += "rustup default nightly\n";
+        report += "rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu\n";
+        report += "rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu\n\n";
+        report += "export RUST_BACKTRACE=1 # or full depending on project\n";
+        report += "export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)\n";
+        report += "export ASAN_OPTIONS=symbolize=1\n";
+        report += "RUSTFLAGS=\"-Zsanitizer=address\" cargo +nightly build --target x86_64-unknown-linux-gnu\n";
+        report += "```\n\ncause this\n```\n";
+        report += &result;
+        report += "\n```\n";
+
+        fs::write(format!("{folder}/to_report.txt"), &report).unwrap();
+
+        // ── Metadata ──
         let metadata = ReportMetadata {
             error_type: signature.error_type.clone(),
             error_signature: signature.signature(),
             short_description: signature.short_description.clone(),
             source_file: signature.source_file.as_deref().unwrap_or("").to_string(),
+            source_line: signature.source_line.unwrap_or(0),
             issue_title: signature.issue_title(),
             project: settings.name.clone(),
             found_date: chrono::Local::now().format("%Y-%m-%d").to_string(),
@@ -163,18 +197,107 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
         let metadata_str = toml::to_string_pretty(&metadata).unwrap();
         fs::write(format!("{folder}/to_report_metadata.toml"), metadata_str).unwrap();
 
+        // ── Crash output ──
         fs::write(format!("{folder}/crash_output.txt"), &result).unwrap();
 
+        // ── Problematic file + zip ──
         if !extension.is_empty() {
             fs::write(format!("{folder}/problematic_file.{extension}"), &content).unwrap();
         } else {
             fs::write(format!("{folder}/problematic_file"), &content).unwrap();
         }
-
         let zip_filename = format!("{folder}/compressed.zip");
         let only_file_name = Path::new(&file_name).file_name().unwrap().to_string_lossy().to_string();
         zip_file(&zip_filename, &only_file_name, &content);
+
+        // ── create_issue.sh ──
+        let issue_title = signature.issue_title();
+        let repo = detect_github_repo(&settings.name);
+        let repo_flag = if let Some(ref r) = repo {
+            format!("--repo \"{r}\"")
+        } else {
+            "# WARNING: Could not detect repo. Add --repo \"owner/repo\" manually.".to_string()
+        };
+
+        let script = format!(
+            r#"#!/bin/bash
+# Issue: {issue_title}
+# Repo:  {repo_display}
+# Review the issue_body.md before running!
+
+DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo "Creating issue: {issue_title}"
+echo ""
+
+ISSUE_URL=$(gh issue create \
+    {repo_flag} \
+    --title "$(cat "$DIR/issue_title.txt")" \
+    --body-file "$DIR/issue_body.md" 2>&1)
+
+echo ""
+echo "Issue created:"
+echo "$ISSUE_URL"
+echo ""
+echo "Opening in browser to attach compressed.zip..."
+xdg-open "$ISSUE_URL" 2>/dev/null || open "$ISSUE_URL" 2>/dev/null || echo "Open manually: $ISSUE_URL"
+echo ""
+echo "Attach this file: $DIR/compressed.zip"
+"#,
+            repo_display = repo.as_deref().unwrap_or("UNKNOWN - set manually"),
+        );
+        fs::write(format!("{folder}/create_issue.sh"), &script).unwrap();
+        fs::write(format!("{folder}/issue_title.txt"), &issue_title).unwrap();
+
+        // Build issue body markdown
+        let mut body = String::new();
+        body += &report;
+        body += "\n[Compressed archive placeholder (attachment not included) - looks that I forgot to attach the file.]\n";
+        fs::write(format!("{folder}/issue_body.md"), &body).unwrap();
+
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            let _ = fs::set_permissions(
+                format!("{folder}/create_issue.sh"),
+                fs::Permissions::from_mode(0o755),
+            );
+        }
     }
+}
+
+/// Try to read crate source code from crates/<name>/src/main.rs
+fn try_read_crate_code(project_name: &str) -> Option<String> {
+    let path = format!("crates/{}/src/main.rs", project_name);
+    fs::read_to_string(&path).ok()
+}
+
+/// Detect GitHub repo (owner/name) from crates/<name>/Cargo.toml git dependencies
+fn detect_github_repo(project_name: &str) -> Option<String> {
+    let cargo_path = format!("crates/{}/Cargo.toml", project_name);
+    let content = fs::read_to_string(&cargo_path).ok()?;
+
+    // Look for git = "https://github.com/OWNER/REPO..." (first non-commented one)
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('#') {
+            continue;
+        }
+        if let Some(idx) = trimmed.find("github.com/") {
+            let after = &trimmed[idx + "github.com/".len()..];
+            // Extract "OWNER/REPO" — strip .git and anything after
+            let repo_part = after
+                .split('"')
+                .next()?
+                .trim_end_matches('/')
+                .trim_end_matches(".git");
+            // Should have exactly one slash: owner/repo
+            if repo_part.contains('/') && repo_part.matches('/').count() == 1 {
+                return Some(repo_part.to_string());
+            }
+        }
+    }
+    None
 }
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
