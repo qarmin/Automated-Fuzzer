@@ -17,19 +17,19 @@ jobs:
         include:
           - name: IMAGE
             fuzz_target: image
-            timeout: 18000
+            timeout: 200
             files: "AA_IMAGE_VALID_FILES.7z"
           - name: HAYRO
             fuzz_target: hayro
-            timeout: 18000
+            timeout: 200
             files: "AA_PDF_VALID_FILES2.7z"
           - name: ZUNE
             fuzz_target: zune
-            timeout: 18000
+            timeout: 200
             files: "AA_IMAGE_VALID_FILES.7z"
           - name: SYMPHONIA
             fuzz_target: symphonia
-            timeout: 18000
+            timeout: 200
             files: "AA_MUSIC_VALID_FILES.7z"
 
     steps:

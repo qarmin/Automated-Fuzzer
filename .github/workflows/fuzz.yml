@@ -20,37 +20,37 @@ jobs:
             crate: little_exif
             binary: little_exif
             files: "AA_NOM_EXIF_VALID_FILES.7z"
-            timeout: 16000
+            timeout: 200
           - name: LOPDF
             crate: lopdf
             binary: lopdf
             files: "AA_PDF_VALID_FILES2.7z"
-            timeout: 16000
+            timeout: 200
           - name: BOA
             crate: boa
             binary: boa
             files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
-            timeout: 16000
+            timeout: 200
           - name: HAYRO
             crate: hayro
             binary: hayro
             files: "AA_PDF_VALID_FILES2.7z"
-            timeout: 16000
+            timeout: 200
           - name: MOXCMS
             crate: moxcms
             binary: moxcms
             files: "AA_ICC_VALID_FILES.7z"
-            timeout: 16000
+            timeout: 200
           - name: ZUNE
             crate: zune
             binary: zune
             files: "AA_IMAGE_VALID_FILES.7z"
-            timeout: 16000
+            timeout: 200
           - name: SYMPHONIA
             crate: symphonia
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
-            timeout: 16000
+            timeout: 200
 
           # ── External projects (cloned from GitHub, no local crate) ──
           - name: TYRUF
@@ -61,7 +61,7 @@ jobs:
             cargo_toml_dir: "ruff-main"
             binary: ty
             files: "FILES_21.zip"
-            timeout: 16000
+            timeout: 200
             post_clone: |
               sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
           - name: PYREFLY
@@ -72,7 +72,7 @@ jobs:
             cargo_toml_dir: "pyrefly-main"
             binary: pyrefly
             files: "FILES_21.zip"
-            timeout: 16000
+            timeout: 200
           - name: SWC
             external: true
             clone_url: "https://github.com/swc-project/swc/archive/refs/heads/main.zip"
@@ -81,7 +81,7 @@ jobs:
             cargo_toml_dir: "swc-main"
             binary: swc
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
-            timeout: 16000
+            timeout: 200
 
     steps:
       - uses: actions/checkout@v4

@@ -3,7 +3,7 @@ use std::fs;
 use std::io::Cursor;
 use std::path::Path;
 
-use nom_exif::{ExifIter, MediaParser, MediaSource, TrackInfo};
+use nom_exif::{ExifIter, MediaParser, MediaSource};
 use walkdir::WalkDir;
 
 fn main() {
@@ -42,48 +42,28 @@ fn check_file(path: &str) {
     let Ok(ms) = MediaSource::unseekable(reader) else {
         return;
     };
-    let iter: Result<ExifIter, _> = parser.parse(ms);
+    let iter: Result<ExifIter, _> = parser.parse_exif(ms);
     if let Ok(iter) = iter {
-        let _ = iter.parse_gps_info();
-        for i in iter {
-            let s = i;
-            s.tag_code();
-            s.get_value();
-            let _ = s.get_result();
+        let _ = iter.parse_gps();
+        for s in iter {
+            let _ = s.value();
+            let _ = s.result();
             s.tag();
-            s.ifd_index();
-            s.has_value();
         }
     }
-
-    let reader = Cursor::new(&content);
-    let Ok(ms) = MediaSource::unseekable(reader) else {
-        return;
-    };
-    let _: Result<TrackInfo, _> = parser.parse(ms);
 
     // Parse seekable
     let reader = Cursor::new(&content);
     let Ok(ms) = MediaSource::seekable(reader) else {
         return;
     };
-    let iter: Result<ExifIter, _> = parser.parse(ms);
+    let iter: Result<ExifIter, _> = parser.parse_exif(ms);
     if let Ok(iter) = iter {
-        let _ = iter.parse_gps_info();
-        for i in iter {
-            let s = i;
-            s.tag_code();
-            s.get_value();
-            let _ = s.get_result();
+        let _ = iter.parse_gps();
+        for s in iter {
+            let _ = s.value();
+            let _ = s.result();
             s.tag();
-            s.ifd_index();
-            s.has_value();
         }
     }
-
-    let reader = Cursor::new(&content);
-    let Ok(ms) = MediaSource::seekable(reader) else {
-        return;
-    };
-    let _: Result<TrackInfo, _> = parser.parse(ms);
 }

@@ -114,6 +114,14 @@ upgrade:
     for dir in crates/*/; do if [ -f "$dir/Cargo.toml" ]; then (cd "$dir" && cargo +nightly -Z unstable-options update --breaking && cargo update) || true; fi; done
     cd fuzz && cargo update && cd ..
 
+# Update all deps and verify every crate compiles
+upgrade-check:
+    python3 check_crates.py --upgrade
+
+# Check all crates compile (without updating)
+check-crates:
+    python3 check_crates.py
+
 fix:
     cargo +nightly fmt
     cargo clippy --fix --allow-dirty --allow-staged

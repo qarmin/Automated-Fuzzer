@@ -1,7 +1,9 @@
 #![no_main]
 
 use hayro::{render, RenderCache};
-use hayro::{InterpreterSettings, Pdf, RenderSettings};
+use hayro::hayro_interpret::InterpreterSettings;
+use hayro::hayro_syntax::Pdf;
+use hayro::RenderSettings;
 use libfuzzer_sys::{Corpus, fuzz_target};
 use std::sync::Arc;
 

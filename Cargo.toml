@@ -1,6 +1,6 @@
 [package]
 name = "auto_fuzzer"
-authors = ["Rafal Mikrut <mikrutrafal@protonmail.com>"]
+authors = ["Rafał Mikrut <mikrutrafal@protonmail.com>"]
 version = "0.2.0"
 edition = "2024"
 license = "MIT"
@@ -20,7 +20,7 @@ handsome_logger = "0.9"
 log = "0.4"
 humansize = "2.1"
 serde = { version = "1", features = ["derive"] }
-toml = "0.8"
+toml = "1.1"
 regex = "1"
 chrono = "0.4"
 ctrlc = "3"

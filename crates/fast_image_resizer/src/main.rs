@@ -52,11 +52,11 @@ const PIXEL_TYPES: &[PixelType] = &[
 ];
 
 fn check_file(file_path: &str) {
-    let Ok(src_image) = ImageReader::open(file_path) else {
+    let Ok(mut src_image) = ImageReader::open(file_path) else {
         eprintln!("Error while reading image: {:?}", file_path);
         return;
     };
-    let Ok(decoded) = src_image.decode() else {
+    let Ok((decoded, _metadata)) = src_image.decode() else {
         eprintln!("Error while decoding image: {:?} (probably not image)", file_path);
         return;
     };
