@@ -1,0 +1,25 @@
+[package]
+name = "dicom"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+#dicom-core = "0.6.3"
+dicom-core = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-object = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-ul = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-encoding = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-dictionary-std = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-transfer-syntax-registry = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-dump = {git = "https://github.com/Enet4/dicom-rs"}
+dicom-json = {git = "https://github.com/Enet4/dicom-rs"}
+
+walkdir = "2.5.0"
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

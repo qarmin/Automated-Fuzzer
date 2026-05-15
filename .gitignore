@@ -1,8 +1,13 @@
 /target
 .idea/
 *.iml
-src/crates/*/target
+crates/*/target
+crates/*/Cargo.lock
+fuzz/target
+fuzz/corpus
+fuzz/artifacts
+fuzz/coverage
+fuzz/Cargo.lock
 *.zip
-src/crates/*/Cargo.lock
 *.txt
-test_ty/Cargo.lock
+old/
