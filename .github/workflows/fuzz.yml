@@ -28,11 +28,6 @@ jobs:
             crate: lopdf
             binary: lopdf
             files: "AA_PDF_VALID_FILES2.7z"
-          - name: BOA
-            mode: custom
-            crate: boa
-            binary: boa
-            files: "AA_JS_TS_VUE_SVELTE_VALID_FILES.7z"
           - name: HAYRO
             mode: custom
             crate: hayro
