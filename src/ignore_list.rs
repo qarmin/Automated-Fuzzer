@@ -29,15 +29,6 @@ impl IgnoreList {
         }
     }
 
-    pub fn load_from(path: &str) -> Self {
-        if Path::new(path).exists() {
-            let content = fs::read_to_string(path).unwrap_or_default();
-            toml::from_str(&content).unwrap_or_default()
-        } else {
-            Self::default()
-        }
-    }
-
     pub fn save(&self) {
         self.save_to(IGNORE_LIST_PATH);
     }
@@ -92,22 +83,6 @@ impl IgnoreList {
                 entry.project, entry.pattern, entry.issue_url, entry.added_date
             );
         }
-    }
-
-    /// Check if a crash output matches any ignore pattern for a given project
-    pub fn is_ignored(&self, project: &str, output: &str) -> bool {
-        self.ignore
-            .iter()
-            .filter(|e| e.project == project)
-            .any(|e| output.contains(&e.pattern))
-    }
-
-    /// Get matching ignore entries for a given crash output
-    pub fn find_matching(&self, project: &str, output: &str) -> Vec<&IgnoreEntry> {
-        self.ignore
-            .iter()
-            .filter(|e| e.project == project && output.contains(&e.pattern))
-            .collect()
     }
 }
 
@@ -197,10 +172,9 @@ pub fn print_config_ignored_items(project_filter: Option<&str>) {
         }
     }
 
-    if !found_any && project_filter.is_some() {
-        println!(
-            "\nNo ignored patterns in fuzz configs for '{}'.",
-            project_filter.unwrap()
-        );
+    if !found_any {
+        if let Some(filter) = project_filter {
+            println!("\nNo ignored patterns in fuzz configs for '{filter}'.");
+        }
     }
 }

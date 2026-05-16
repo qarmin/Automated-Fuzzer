@@ -16,7 +16,6 @@ pub struct Setting {
     pub minimization_attempts: u32,
     pub minimization_time: u32,
     pub minimization_repeat: bool,
-    pub minimization_attempts_with_signal_timeout: u32,
     pub remove_non_crashing_items_from_broken_files: bool,
     pub temp_folder: String,
     pub extensions: Vec<String>,
@@ -30,10 +29,8 @@ pub struct Setting {
     pub allowed_error_statuses: Vec<i32>,
     pub debug_print_broken_files_creator: bool,
     pub max_collected_files: usize,
-    pub check_if_file_is_parsable: bool,
     pub max_file_size_limit: u64,
     pub grouping: u32,
-    pub debug_executed_commands: bool,
     pub check_for_stability: bool,
     pub stability_runs: u32,
     pub custom_items: CustomItems,
@@ -190,7 +187,6 @@ pub(crate) fn load_settings_from_path(config_path: &str) -> Setting {
     let remove_non_crashing_items_from_broken_files =
         general["remove_non_crashing_items_from_broken_files"].parse().unwrap();
     let grouping = general["grouping"].parse().unwrap();
-    let debug_executed_commands = general["debug_executed_commands"].parse().unwrap();
     let custom_items = process_custom_struct(&general, &curr_setting);
 
     Setting {
@@ -201,9 +197,6 @@ pub(crate) fn load_settings_from_path(config_path: &str) -> Setting {
         minimization_time: general["minimization_time"].parse().unwrap(),
         minimization_attempts: general["minimization_attempts"].parse().unwrap(),
         minimization_repeat: general["minimization_repeat"].parse().unwrap(),
-        minimization_attempts_with_signal_timeout: general["minimization_attempts_with_signal_timeout"]
-            .parse()
-            .unwrap(),
         remove_non_crashing_items_from_broken_files,
         extensions,
         timeout: general["timeout"].parse().unwrap(),
@@ -220,9 +213,7 @@ pub(crate) fn load_settings_from_path(config_path: &str) -> Setting {
         debug_print_broken_files_creator: general["debug_print_broken_files_creator"].parse().unwrap(),
         max_collected_files: general["max_collected_files"].parse().unwrap(),
         temp_folder: general["temp_folder"].clone(),
-        check_if_file_is_parsable: general["check_if_file_is_parsable"].parse().unwrap(),
         grouping,
-        debug_executed_commands,
         custom_items,
         check_for_stability: general["check_for_stability"].parse().unwrap(),
         stability_runs: general["stability_runs"].parse().unwrap(),

@@ -102,6 +102,7 @@ jobs:
             install_path: "ruff-main/crates/ty"
             cargo_toml_dir: "ruff-main"
             binary: ty
+            run_args: "check"
             files: "FILES_21.zip"
             post_clone: |
               sd -F "std::mem::forget(db);" "//std::mem::forget(db);" ruff-main/crates/ty/src/lib.rs
@@ -112,6 +113,7 @@ jobs:
             install_path: "pyrefly-main/pyrefly"
             cargo_toml_dir: "pyrefly-main"
             binary: pyrefly
+            run_args: "check"
             files: "FILES_21.zip"
           - name: SWC
             mode: custom
@@ -120,6 +122,7 @@ jobs:
             install_path: "swc-main/crates/swc_cli_impl"
             cargo_toml_dir: "swc-main"
             binary: swc
+            run_args: "compile"
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
 
     steps:
@@ -438,7 +441,7 @@ jobs:
             FNAME=$(basename "$file")
 
             EXIT=0
-            timeout -v 120 ${{ matrix.binary }}_normal "$file" > /tmp/crash_out_$IDX.txt 2>&1 || EXIT=$?
+            timeout -v 120 ${{ matrix.binary }}_normal ${{ matrix.run_args }} "$file" > /tmp/crash_out_$IDX.txt 2>&1 || EXIT=$?
 
             echo ""
             if [ "$EXIT" -eq 124 ]; then
@@ -489,12 +492,37 @@ jobs:
             if [ -f "fuzz_settings.toml" ]; then
               sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml || true
               sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml || true
-              echo "DIAG: fuzz_settings.toml relevant lines:"
-              grep -E "broken_files_dir|extensions|name = |current_mode|temp_folder|max_file_size_limit" fuzz_settings.toml || true
+
+              # /opt/ALL_CRASHES holds confirmed crashes from any source:
+              # custom-fuzz output, cargo-fuzz artifacts (extension-less
+              # `crash-<hash>` and `<file>_minimized`), regression files, etc.
+              # Filtering by the project's primary extension drops most of
+              # them silently. Make the fallback permissive — empty extensions
+              # = accept everything in the dir.
+              sd '(?m)^extensions = ".*"' 'extensions = ""' fuzz_settings.toml || true
+
+              # For cargo-fuzz mode the per-project config is never installed,
+              # so the checked-in default (name="pdf_writer", command using
+              # pdf_writer_normal) gets used. Rewire name + command to the
+              # binary actually built for this job, otherwise auto_fuzzer
+              # runs a non-existent binary against the crash files and reports 0.
+              if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
+                sd '(?m)^name = ".*"' 'name = "${{ matrix.binary }}"' fuzz_settings.toml || true
+                sd '(?m)^command = ".*"' 'command = "${{ matrix.binary }}_normal|FILE_PATHS_TO_PROVIDE"' fuzz_settings.toml || true
+              fi
+
+              echo "DIAG: fuzz_settings.toml relevant lines after override:"
+              grep -E "broken_files_dir|extensions|^name = |^command = |current_mode|temp_folder|max_file_size_limit" fuzz_settings.toml || true
+
+              CONFIG_NAME=$(grep -E '^name *= *' fuzz_settings.toml | head -1 | sed -E 's/^name *= *"([^"]+)".*/\1/')
+              if [ "$CONFIG_NAME" != "${{ matrix.binary }}" ]; then
+                echo "::warning::fuzz_settings.toml is for project '$CONFIG_NAME' but this job runs binary '${{ matrix.binary }}' — reports may be misgrouped."
+              fi
+
               export RUST_BACKTRACE=1
               auto_fuzzer legacy --remove-non-crashing || true
             else
-              echo "DIAG: fuzz_settings.toml MISSING in $(pwd)"
+              echo "::warning::fuzz_settings.toml MISSING in $(pwd) — cannot generate fallback reports"
             fi
 
             REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)

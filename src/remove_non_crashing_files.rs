@@ -34,6 +34,8 @@ struct ReportMetadata {
 pub const MAX_FILES: usize = 999_999_999_999;
 
 pub(crate) fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+    log_settings_summary("remove_non_crashing_files", settings, obj);
+
     obj.remove_non_parsable_files(&settings.broken_files_dir);
 
     let broken_files: Vec<String> = collect_broken_files(settings).into_iter().take(MAX_FILES).collect();
@@ -43,6 +45,28 @@ pub(crate) fn remove_non_crashing_files(settings: &Setting, obj: &Box<dyn Progra
 
     let broken_files: Vec<String> = collect_broken_files(settings);
     info!("After checking {} broken files left", broken_files.len());
+}
+
+/// Print a compact summary of the loaded configuration. Useful when something
+/// goes wrong silently (e.g. wrong config picked up, mismatched extensions,
+/// 0 reports generated): the very first lines of the log make the situation
+/// obvious without needing to grep through the TOML.
+pub(crate) fn log_settings_summary(context: &str, settings: &Setting, obj: &Box<dyn ProgramConfig>) {
+    let command = obj.get_full_command("FILE");
+    let command_str = collect_command_to_string(&command);
+    info!("=== CONFIG SUMMARY ({context}) ===");
+    info!("  project name           = {}", settings.name);
+    info!("  command                = {command_str}");
+    info!("  extensions             = {:?}", settings.extensions);
+    info!("  broken_files_dir       = {}", settings.broken_files_dir);
+    info!("  valid_input_files_dir  = {}", settings.valid_input_files_dir);
+    info!("  temp_folder (reports)  = {}", settings.temp_folder);
+    info!("  max_file_size_limit    = {}", settings.max_file_size_limit);
+    info!(
+        "  remove_non_crashing    = {}",
+        settings.remove_non_crashing_items_from_broken_files
+    );
+    info!("=== END CONFIG SUMMARY ===");
 }
 
 fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<dyn ProgramConfig>, step: u32) {
@@ -112,12 +136,20 @@ struct CrashCandidate {
 
 pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Setting, content: Vec<(String, String)>) {
     if content.is_empty() {
-        info!("save_results_to_file: no reproducible crashes to report (input was empty)");
+        log::warn!(
+            "save_results_to_file: 0 reports will be written. \
+             Reasons this can happen: (1) no input files matched extensions {:?} in {}, \
+             (2) all crashes were filtered out by max_file_size_limit={}, \
+             (3) none of the candidates reproduced under the configured command (binary mismatch?). \
+             Check the CONFIG SUMMARY at the top of the log.",
+            settings.extensions, settings.broken_files_dir, settings.max_file_size_limit
+        );
         return;
     }
     info!(
-        "save_results_to_file: starting with {} reproducible crashes",
-        content.len()
+        "save_results_to_file: starting with {} reproducible crashes; reports go to {}",
+        content.len(),
+        settings.temp_folder
     );
     let command = obj.get_full_command("TEST___FILE");
     let command_str = collect_command_to_string(&command);
@@ -386,6 +418,14 @@ fn detect_github_repo(project_name: &str) -> Option<String> {
 }
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
+    // Empty extensions list = accept everything. Used by the CI fallback
+    // ("Generate reports from crashes"), where /opt/ALL_CRASHES contains a mix
+    // of original-extension files (e.g. .png) and cargo-fuzz artifacts with no
+    // extension at all (e.g. `crash-<hash>`, `crash-<hash>_minimized`). The
+    // files are already confirmed crashes upstream, so filtering by extension
+    // there would silently drop most of them.
+    let accept_all = settings.extensions.is_empty();
+
     let mut total = 0usize;
     let mut skipped_examples: Vec<String> = Vec::new();
     let matched: Vec<String> = WalkDir::new(&settings.broken_files_dir)
@@ -397,9 +437,16 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
             }
             total += 1;
             let path = entry.path().to_string_lossy().to_string();
-            let path_to_lowercase = path.to_lowercase();
 
-            if settings.extensions.iter().any(|e| path_to_lowercase.ends_with(e)) {
+            if accept_all {
+                return Some(path);
+            }
+
+            let path_to_lowercase = path.to_lowercase();
+            // Match if extension is in the allow-list OR the file has no
+            // extension at all (cargo-fuzz outputs like `crash-<hash>`).
+            let has_no_extension = Path::new(&path).extension().is_none();
+            if has_no_extension || settings.extensions.iter().any(|e| path_to_lowercase.ends_with(e)) {
                 Some(path)
             } else {
                 if skipped_examples.len() < 5 {
@@ -411,11 +458,11 @@ fn collect_broken_files(settings: &Setting) -> Vec<String> {
         .collect();
 
     info!(
-        "collect_broken_files: dir={} total_files={} matched={} extensions={:?}",
+        "collect_broken_files: dir={} total_files={} matched={} extensions={:?} accept_all={accept_all}",
         settings.broken_files_dir,
         total,
         matched.len(),
-        settings.extensions
+        settings.extensions,
     );
     if matched.is_empty() && total > 0 {
         log::warn!(

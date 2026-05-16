@@ -267,6 +267,8 @@ fn main() {
                     let mut obj = get_object(settings.clone());
                     obj.init();
 
+                    remove_non_crashing_files::log_settings_summary("fuzz/custom", &settings, &obj);
+
                     let _ = fs::create_dir_all(&settings.temp_folder);
                     let _ = fs::create_dir_all(&settings.broken_files_dir);
                     let _ = fs::create_dir_all(&settings.custom_folder_path);
@@ -394,6 +396,8 @@ fn main() {
                 remove_non_crashing_files::remove_non_crashing_files(&settings, &obj);
                 return;
             }
+
+            remove_non_crashing_files::log_settings_summary("legacy/fuzz", &settings, &obj);
 
             check_files_number("Valid input dir", &settings.valid_input_files_dir);
             check_files_number("Broken files dir", &settings.broken_files_dir);
