@@ -273,16 +273,7 @@ jobs:
           export RUST_BACKTRACE=1
           auto_fuzzer fuzz --mode custom --timeout ${{ matrix.custom_timeout || env.DEFAULT_TIMEOUT }}
 
-      - name: "Verify: custom mode (ASAN)"
-        if: ${{ matrix.mode == 'custom' }}
-        run: |
-          sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml
-          export RUST_BACKTRACE=1
-          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
-          export ASAN_OPTIONS="symbolize=1"
-          auto_fuzzer legacy --remove-non-crashing || true
-
-      #  Cargo-fuzz 
+      #  Cargo-fuzz
       - name: "Fuzz: cargo-fuzz mode (loop until timeout)"
         if: ${{ matrix.mode == 'cargo-fuzz' }}
         run: |
@@ -315,93 +306,83 @@ jobs:
           fi
 
       # ══════════════════════════════════════════════════════════
-      # PHASE 3: Collect crashes into /opt/ALL_CRASHES
+      # PHASE 3: Stage local crashes in /opt/BROKEN_FILES_DIR
       # ══════════════════════════════════════════════════════════
-      - name: "Collect all local crashes"
+      # Custom mode already writes there during the fuzz step. Cargo-fuzz
+      # artifacts (fuzz/artifacts/<target>/) need to be copied in. From this
+      # point on, /opt/BROKEN_FILES_DIR is the single working set — the
+      # sync/filter loop merges remote crashes here, then the built-in filter
+      # (auto_fuzzer legacy --remove-non-crashing) prunes anything that does
+      # not reproduce per the project's TOML config.
+      - name: "Stage local crashes"
         run: |
-          mkdir -p /opt/ALL_CRASHES /opt/BROKEN_FILES_DIR
+          mkdir -p /opt/BROKEN_FILES_DIR
 
-          # Custom mode: crashes are in /opt/BROKEN_FILES_DIR.
-          # Errors here are NOT silenced — losing crashes is never acceptable.
-          if [ -d /opt/BROKEN_FILES_DIR ]; then
-            BEFORE=$(find /opt/ALL_CRASHES -type f | wc -l)
-            find /opt/BROKEN_FILES_DIR -type f -exec cp {} /opt/ALL_CRASHES/ \;
-            AFTER=$(find /opt/ALL_CRASHES -type f | wc -l)
-            echo "Copied $((AFTER - BEFORE)) custom-mode crashes from BROKEN_FILES_DIR"
-          fi
-
-          # Cargo-fuzz mode: crashes are in fuzz/artifacts/<target>/
           if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
             ARTIFACT_DIR="fuzz/artifacts/${{ matrix.fuzz_target }}"
             if [ -d "$ARTIFACT_DIR" ]; then
-              BEFORE=$(find /opt/ALL_CRASHES -type f | wc -l)
-              find "$ARTIFACT_DIR" -type f -exec cp {} /opt/ALL_CRASHES/ \;
-              AFTER=$(find /opt/ALL_CRASHES -type f | wc -l)
+              BEFORE=$(find /opt/BROKEN_FILES_DIR -type f | wc -l)
+              find "$ARTIFACT_DIR" -type f -exec cp {} /opt/BROKEN_FILES_DIR/ \;
+              AFTER=$(find /opt/BROKEN_FILES_DIR -type f | wc -l)
               echo "Copied $((AFTER - BEFORE)) cargo-fuzz crashes from $ARTIFACT_DIR"
             fi
           fi
 
-          python3 dedup_files.py /opt/ALL_CRASHES
-          echo "Local crash files: $(find /opt/ALL_CRASHES -type f | wc -l)"
+          python3 dedup_files.py /opt/BROKEN_FILES_DIR
+          echo "Local crash files: $(find /opt/BROKEN_FILES_DIR -type f | wc -l)"
 
       # ══════════════════════════════════════════════════════════
-      # PHASE 4: Download old crashes (post-fuzz = small race window),
-      #          regression check, merge, upload with retry
+      # PHASE 4: Sync with remote archive, filter via built-in mechanism,
+      #          upload crashes + reports. All in one race-safe loop.
       # ══════════════════════════════════════════════════════════
-
-      # Use the BASE name for the archive (HAYRO_CF -> HAYRO, ZUNE_CF -> ZUNE)
-      # So cargo-fuzz and custom results share the same crash file
-      - name: "Download previous crashes + regression check"
+      # Strip _CF suffix so cargo-fuzz and custom results share the same archive.
+      - name: "Sync, filter, upload (loop)"
         run: |
-          # Strip _CF suffix so both modes share the same crash archive
           BASE_NAME=$(echo "${{ matrix.name }}" | sed 's/_CF$//')
           echo "BASE_NAME=$BASE_NAME" >> $GITHUB_ENV
 
-          ARCHIVE="crashes_${BASE_NAME}.7z"
-          mkdir -p /opt/PREV/crashes
+          # Make sure fuzz_settings.toml is set up for the filter step.
+          # Custom mode has it already (copied during the fuzz step). Cargo-fuzz
+          # mode never copies one — point at the project's checked-in config if
+          # it exists, else fall back to the repo default.
+          if [ ! -f fuzz_settings.toml ]; then
+            if [ -f "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" ]; then
+              cp "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" fuzz_settings.toml
+            elif [ -f "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" ]; then
+              cp "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" fuzz_settings.toml
+            fi
+          fi
+          sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml || true
 
-          gh release download Nightly \
-            --pattern "$ARCHIVE" \
-            --dir /opt/PREV --clobber 2>/dev/null || echo "No previous crashes for $BASE_NAME"
+          # The filter only runs when this flag is true.
+          sd "remove_non_crashing_items_from_broken_files = false" \
+             "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml || true
 
-          if [ -f "/opt/PREV/$ARCHIVE" ]; then
-            cd /opt/PREV && 7z x "$ARCHIVE" -ocrashes || true
-            cd "${{ github.workspace }}"
-            PREV_COUNT=$(find /opt/PREV/crashes -type f 2>/dev/null | wc -l)
-            echo "Downloaded $PREV_COUNT previous crash files"
+          # Be permissive about extensions: remote archives may contain
+          # extension-less cargo-fuzz crash files (`crash-<hash>`, `*_minimized`)
+          # alongside files with the project's normal extension.
+          sd '(?m)^extensions = ".*"' 'extensions = ""' fuzz_settings.toml || true
 
-            # Regression check
-            STILL=0
-            FIXED=0
-            for file in /opt/PREV/crashes/*; do
-              [ -f "$file" ] || continue
-              OUTPUT=$(timeout -v 120 ${{ matrix.binary }}_normal "$file" 2>&1 || true)
-              if echo "$OUTPUT" | grep -qE "RUST_BACKTRACE|panicked at|AddressSanitizer|timeout: sending signal|segmentation fault|\(core dumped\)"; then
-                cp "$file" /opt/ALL_CRASHES/
-                STILL=$((STILL + 1))
-              else
-                FIXED=$((FIXED + 1))
-              fi
-            done
-            echo "Regression: $STILL still broken, $FIXED fixed"
+          # Cargo-fuzz mode: the per-target config (if any) may not exist or may
+          # name the wrong binary. Rewire to the binary that was actually built.
+          if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
+            sd '(?m)^name = ".*"' 'name = "${{ matrix.binary }}"' fuzz_settings.toml || true
+            sd '(?m)^command = ".*"' 'command = "${{ matrix.binary }}_normal|FILE_PATHS_TO_PROVIDE"' fuzz_settings.toml || true
           fi
 
-          # Final dedup of everything
-          python3 dedup_files.py /opt/ALL_CRASHES
-          TOTAL=$(find /opt/ALL_CRASHES -type f | wc -l)
-          echo "Total unique crashes: $TOTAL"
-        env:
-          GH_TOKEN: ${{ secrets.PAT2 }}
+          echo "DIAG: fuzz_settings.toml relevant lines:"
+          grep -E "broken_files_dir|extensions|^name = |^command = |current_mode|temp_folder|max_file_size_limit" fuzz_settings.toml || true
 
-      - name: "Upload crashes (with retry)"
-        run: |
-          # ci_upload_crashes.sh uses BASE_NAME from env
-          RESULT=$(bash ci_upload_crashes.sh "${{ env.BASE_NAME }}" /opt/ALL_CRASHES 10)
+          export RUST_BACKTRACE=1
+          export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
+          export ASAN_OPTIONS="symbolize=1"
+
+          RESULT=$(bash ci_merge_filter_upload.sh "$BASE_NAME" /opt/BROKEN_FILES_DIR /tmp/tmp_folder/data 10)
           echo "$RESULT"
-
-          # Extract CRASH_COUNT from output
           COUNT=$(echo "$RESULT" | grep "^CRASH_COUNT=" | tail -1 | cut -d= -f2)
+          REPORTS=$(echo "$RESULT" | grep "^REPORT_COUNT=" | tail -1 | cut -d= -f2)
           echo "CRASH_COUNT=${COUNT:-0}" >> $GITHUB_ENV
+          echo "REPORT_COUNT=${REPORTS:-0}" >> $GITHUB_ENV
         env:
           GH_TOKEN: ${{ secrets.PAT2 }}
 
@@ -422,9 +403,9 @@ jobs:
       - name: "Print crash details"
         if: always()
         run: |
-          CRASH_COUNT=$(find /opt/ALL_CRASHES -type f 2>/dev/null | wc -l)
+          CRASH_COUNT=$(find /opt/BROKEN_FILES_DIR -type f 2>/dev/null | wc -l)
           if [ "$CRASH_COUNT" -eq 0 ]; then
-            echo "No crashes found."
+            echo "No crashes survived filter."
             exit 0
           fi
 
@@ -434,7 +415,7 @@ jobs:
           echo ""
 
           IDX=0
-          for file in /opt/ALL_CRASHES/*; do
+          for file in /opt/BROKEN_FILES_DIR/*; do
             [ -f "$file" ] || continue
             IDX=$((IDX + 1))
             SIZE=$(stat -c%s "$file" 2>/dev/null || echo "?")
@@ -458,79 +439,6 @@ jobs:
           echo "  Total: $CRASH_COUNT crash files"
           echo "═══════════════════════════════════════════════════"
 
-      # Generate reports from ALL_CRASHES if the ASAN verification step
-      # didn't produce any (e.g. OOM crashes that ASAN binary can't reproduce)
-      - name: "Generate reports from crashes"
-        if: always()
-        run: |
-          set -x
-          CRASH_COUNT=$(find /opt/ALL_CRASHES -type f 2>/dev/null | wc -l)
-          REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)
-          echo "DIAG: CRASH_COUNT=$CRASH_COUNT REPORT_COUNT=$REPORT_COUNT"
-
-          if [ "$CRASH_COUNT" -gt 0 ] && [ "$REPORT_COUNT" -eq 0 ]; then
-            echo "ASAN verification produced no reports — generating from raw crashes"
-
-            # Ensure dest exists and is empty
-            mkdir -p /opt/BROKEN_FILES_DIR
-            find /opt/BROKEN_FILES_DIR -mindepth 1 -delete || true
-            echo "DIAG: BROKEN_FILES_DIR after cleanup: $(find /opt/BROKEN_FILES_DIR -type f | wc -l) files"
-            echo "DIAG: ALL_CRASHES sample (first 10):"
-            find /opt/ALL_CRASHES -type f | head -10
-            echo "DIAG: extension breakdown in ALL_CRASHES:"
-            find /opt/ALL_CRASHES -type f | sed -E 's/.*\.([^.]+)$/.\1/' | sort | uniq -c | sort -rn | head -20
-
-            # Copy with verbose output so failures are visible
-            COPY_ERR=$(find /opt/ALL_CRASHES -type f -exec cp {} /opt/BROKEN_FILES_DIR/ \; 2>&1)
-            if [ -n "$COPY_ERR" ]; then
-              echo "DIAG: cp produced output/errors:"
-              echo "$COPY_ERR" | head -20
-            fi
-            COPIED=$(find /opt/BROKEN_FILES_DIR -type f | wc -l)
-            echo "DIAG: BROKEN_FILES_DIR after cp: $COPIED files"
-
-            if [ -f "fuzz_settings.toml" ]; then
-              sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml || true
-              sd "remove_non_crashing_items_from_broken_files = false" "remove_non_crashing_items_from_broken_files = true" fuzz_settings.toml || true
-
-              # /opt/ALL_CRASHES holds confirmed crashes from any source:
-              # custom-fuzz output, cargo-fuzz artifacts (extension-less
-              # `crash-<hash>` and `<file>_minimized`), regression files, etc.
-              # Filtering by the project's primary extension drops most of
-              # them silently. Make the fallback permissive — empty extensions
-              # = accept everything in the dir.
-              sd '(?m)^extensions = ".*"' 'extensions = ""' fuzz_settings.toml || true
-
-              # For cargo-fuzz mode the per-project config is never installed,
-              # so the checked-in default (name="pdf_writer", command using
-              # pdf_writer_normal) gets used. Rewire name + command to the
-              # binary actually built for this job, otherwise auto_fuzzer
-              # runs a non-existent binary against the crash files and reports 0.
-              if [ "${{ matrix.mode }}" = "cargo-fuzz" ]; then
-                sd '(?m)^name = ".*"' 'name = "${{ matrix.binary }}"' fuzz_settings.toml || true
-                sd '(?m)^command = ".*"' 'command = "${{ matrix.binary }}_normal|FILE_PATHS_TO_PROVIDE"' fuzz_settings.toml || true
-              fi
-
-              echo "DIAG: fuzz_settings.toml relevant lines after override:"
-              grep -E "broken_files_dir|extensions|^name = |^command = |current_mode|temp_folder|max_file_size_limit" fuzz_settings.toml || true
-
-              CONFIG_NAME=$(grep -E '^name *= *' fuzz_settings.toml | head -1 | sed -E 's/^name *= *"([^"]+)".*/\1/')
-              if [ "$CONFIG_NAME" != "${{ matrix.binary }}" ]; then
-                echo "::warning::fuzz_settings.toml is for project '$CONFIG_NAME' but this job runs binary '${{ matrix.binary }}' — reports may be misgrouped."
-              fi
-
-              export RUST_BACKTRACE=1
-              auto_fuzzer legacy --remove-non-crashing || true
-            else
-              echo "::warning::fuzz_settings.toml MISSING in $(pwd) — cannot generate fallback reports"
-            fi
-
-            REPORT_COUNT=$(find /tmp/tmp_folder/data -type f 2>/dev/null | wc -l)
-            echo "Generated $REPORT_COUNT report files"
-          else
-            echo "Reports: $REPORT_COUNT files (from ASAN verification)"
-          fi
-
       # ══════════════════════════════════════════════════════════
       # PHASE 6: Artifacts + CI result
       # ══════════════════════════════════════════════════════════
@@ -548,7 +456,7 @@ jobs:
         with:
           if-no-files-found: ignore
           name: CRASHES___${{ matrix.name }}
-          path: /opt/ALL_CRASHES
+          path: /opt/BROKEN_FILES_DIR
 
       - name: Fail if crashes found
         run: |

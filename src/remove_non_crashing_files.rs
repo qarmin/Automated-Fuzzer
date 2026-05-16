@@ -418,12 +418,11 @@ fn detect_github_repo(project_name: &str) -> Option<String> {
 }
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
-    // Empty extensions list = accept everything. Used by the CI fallback
-    // ("Generate reports from crashes"), where /opt/ALL_CRASHES contains a mix
-    // of original-extension files (e.g. .png) and cargo-fuzz artifacts with no
-    // extension at all (e.g. `crash-<hash>`, `crash-<hash>_minimized`). The
-    // files are already confirmed crashes upstream, so filtering by extension
-    // there would silently drop most of them.
+    // Empty extensions list = accept everything. Used by the CI sync/filter
+    // loop, where broken_files_dir holds a mix of original-extension files
+    // (e.g. .png) and cargo-fuzz artifacts with no extension at all
+    // (e.g. `crash-<hash>`, `crash-<hash>_minimized`). Filtering by extension
+    // there would silently drop most candidates.
     let accept_all = settings.extensions.is_empty();
 
     let mut total = 0usize;
