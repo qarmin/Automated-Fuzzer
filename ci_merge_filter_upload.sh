@@ -23,6 +23,7 @@ PROJECT="$1"
 BROKEN_DIR="$2"
 REPORTS_DIR="$3"
 MAX_RETRIES="${4:-10}"
+SIZE_LIMIT_MB="${5:-500}"   # max total size of crash files per project, in MB
 CRASHES_ARCHIVE="crashes_${PROJECT}.7z"
 REPORTS_ARCHIVE="reports_${PROJECT}.7z"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -35,6 +36,61 @@ run_filter() {
     # Any file in BROKEN_DIR that does NOT reproduce gets deleted; reports for
     # the ones that do are written under temp_folder.
     auto_fuzzer legacy --remove-non-crashing || true
+}
+
+# Trim crash files to stay within SIZE_LIMIT_MB.
+# Files are grouped by extension (no-extension files form their own group).
+# Within each group we remove the largest files first, but we never remove
+# the sole remaining representative of a group — so every unique crash
+# category keeps at least one example file.
+trim_crashes_to_limit() {
+    local dir="$1"
+    local limit_bytes=$(( SIZE_LIMIT_MB * 1024 * 1024 ))
+
+    local total_size
+    total_size=$(du -sb "$dir" 2>/dev/null | awk '{print $1}')
+
+    if [ "$total_size" -le "$limit_bytes" ]; then
+        echo "Crash dir size: $((total_size / 1024 / 1024)) MB — within ${SIZE_LIMIT_MB} MB limit, no trimming needed."
+        return
+    fi
+
+    echo "Crash dir size: $((total_size / 1024 / 1024)) MB — trimming to ~${SIZE_LIMIT_MB} MB (removing largest from over-represented groups)..."
+
+    local removed=0
+    while [ "$total_size" -gt "$limit_bytes" ]; do
+        # Build size-sorted list (largest first)
+        find "$dir" -maxdepth 1 -type f -printf '%s %p\n' | sort -rn > /tmp/_trim_list.txt
+
+        local candidate=""
+        while read -r _size fpath; do
+            local fname
+            fname=$(basename "$fpath")
+            local count
+            if [[ "$fname" == *.* ]]; then
+                local ext="${fname##*.}"
+                count=$(find "$dir" -maxdepth 1 -type f -name "*.$ext" | wc -l)
+            else
+                count=$(find "$dir" -maxdepth 1 -type f ! -name "*.*" | wc -l)
+            fi
+            if [ "$count" -gt 1 ]; then
+                candidate="$fpath"
+                break
+            fi
+        done < /tmp/_trim_list.txt
+        rm -f /tmp/_trim_list.txt
+
+        if [ -z "$candidate" ]; then
+            echo "Cannot trim further — every remaining category has only 1 file."
+            break
+        fi
+
+        rm -f "$candidate"
+        removed=$(( removed + 1 ))
+        total_size=$(du -sb "$dir" 2>/dev/null | awk '{print $1}')
+    done
+
+    echo "Trimmed $removed crash file(s). Final size: $((total_size / 1024 / 1024)) MB ($(find "$dir" -maxdepth 1 -type f | wc -l) files remaining)."
 }
 
 for ATTEMPT in $(seq 1 "$MAX_RETRIES"); do
@@ -77,6 +133,13 @@ for ATTEMPT in $(seq 1 "$MAX_RETRIES"); do
     AFTER_FILTER=$(find "$BROKEN_DIR" -type f | wc -l)
     REPORT_COUNT=$(find "$REPORTS_DIR" -type f 2>/dev/null | wc -l)
     echo "After filter: $AFTER_FILTER files (filter removed $((BEFORE_FILTER - AFTER_FILTER))), $REPORT_COUNT report files"
+
+    # 4b. Enforce size limit — remove the largest files from over-represented
+    #     extension groups so total stays within SIZE_LIMIT_MB.
+    if [ "$AFTER_FILTER" -gt 0 ]; then
+        trim_crashes_to_limit "$BROKEN_DIR"
+        AFTER_FILTER=$(find "$BROKEN_DIR" -type f | wc -l)
+    fi
 
     # 5. Pack our filtered set
     rm -f "/tmp/sync_work/$CRASHES_ARCHIVE"
