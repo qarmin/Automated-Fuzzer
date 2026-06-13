@@ -13,7 +13,9 @@ use serde::Serialize;
 use zip::ZipWriter;
 use zip::write::SimpleFileOptions;
 
-use crate::common::{collect_command_to_string, execute_command_and_connect_output, remove_and_create_entire_folder};
+use crate::common::{
+    check_if_app_ends, collect_command_to_string, execute_command_and_connect_output, remove_and_create_entire_folder,
+};
 use crate::error_signature::{ErrorSignature, parse_error_signature};
 use crate::obj::ProgramConfig;
 use crate::settings::Setting;
@@ -83,10 +85,20 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
     info!("After filtering by size, {} files left", still_broken_files.len());
 
     let atomic_counter = AtomicUsize::new(0);
+    let skipped_counter = AtomicUsize::new(0);
     let all = still_broken_files.len();
     let results = still_broken_files
         .into_par_iter()
         .filter_map(|full_name| {
+            // Respect the global wall-clock budget (set via `set_timeout`) and
+            // Ctrl+C. Once the budget is exhausted we stop *checking* further
+            // files but leave them untouched on disk: an incomplete filter is
+            // far better than a CI job killed at the 6h hard limit. Files left
+            // unchecked simply stay in broken_files_dir for the next run.
+            if check_if_app_ends() {
+                skipped_counter.fetch_add(1, Ordering::Relaxed);
+                return None;
+            }
             let Ok(start_text) = fs::read(&full_name) else {
                 log::warn!("Cannot read {full_name}; skipping");
                 return None;
@@ -116,6 +128,15 @@ fn remove_non_crashing(broken_files: Vec<String>, settings: &Setting, obj: &Box<
             None
         })
         .collect::<Vec<_>>();
+
+    let skipped = skipped_counter.load(Ordering::Relaxed);
+    if skipped > 0 {
+        log::warn!(
+            "Time/stop budget reached: {skipped}/{all} files left UNCHECKED and kept as-is in {} \
+             (step {step}). Raise the legacy timeout argument or re-run to finish them.",
+            settings.broken_files_dir
+        );
+    }
 
     // Only reset temp_folder when we actually have reports to write —
     // otherwise we'd destroy reports from a previous run for no reason.

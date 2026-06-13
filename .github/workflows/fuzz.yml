@@ -287,8 +287,27 @@ jobs:
             export RUST_BACKTRACE=1
             export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)
             export ASAN_OPTIONS="symbolize=1:allocator_may_return_null=1"
+
+            # Hard wall-clock budget for the whole minimize phase so it can never
+            # eat the 6h job limit. Per-file time is also capped (and shrunk to
+            # whatever budget is left) so a single stubborn artifact can't run
+            # away. `-t 1200` per file with N artifacts was the timeout cause.
+            MINIMIZE_BUDGET="${MINIMIZE_BUDGET:-2700}"   # 45 min overall
+            MINIMIZE_PER_FILE="${MINIMIZE_PER_FILE:-300}" # 5 min per file
+            MIN_DEADLINE=$(( $(date +%s) + MINIMIZE_BUDGET ))
+
             for file in "$ARTIFACT_DIR"/*; do
               [ -f "$file" ] || continue
+
+              REMAINING=$(( MIN_DEADLINE - $(date +%s) ))
+              if [ "$REMAINING" -le 10 ]; then
+                echo "=== Minimize budget (${MINIMIZE_BUDGET}s) exhausted — skipping remaining artifacts ==="
+                break
+              fi
+
+              PER_FILE=$MINIMIZE_PER_FILE
+              [ "$PER_FILE" -gt "$REMAINING" ] && PER_FILE=$REMAINING
+
               minimizer --input-file "$file" \
                 --output-file "${file}_minimized" \
                 --command "timeout -v 100 ${{ matrix.fuzz_target }} {}" \
@@ -296,7 +315,7 @@ jobs:
                 -b "RUST_BACKTRACE" -b "panicked at" -b "AddressSanitizer" \
                 -b "LeakSanitizer" -b "ThreadSanitizer" \
                 -b "timeout: sending signal" -b "memory allocation of" \
-                -v -t 1200 -s general_multi || true
+                -v -t "$PER_FILE" -s general_multi || true
             done
           fi
 

@@ -24,6 +24,7 @@ BROKEN_DIR="$2"
 REPORTS_DIR="$3"
 MAX_RETRIES="${4:-10}"
 SIZE_LIMIT_MB="${5:-500}"   # max total size of crash files per project, in MB
+FILTER_TIMEOUT="${6:-2700}" # wall-clock budget (s) for the reproduce/filter pass (45 min)
 CRASHES_ARCHIVE="crashes_${PROJECT}.7z"
 REPORTS_ARCHIVE="reports_${PROJECT}.7z"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
@@ -35,7 +36,13 @@ run_filter() {
     # what is a real crash via search_items minus ignored_items in the config.
     # Any file in BROKEN_DIR that does NOT reproduce gets deleted; reports for
     # the ones that do are written under temp_folder.
-    auto_fuzzer legacy --remove-non-crashing || true
+    #
+    # The positional timeout is a HARD wall-clock budget: once it elapses the
+    # filter stops checking further files (leaving them in place) instead of
+    # running until the 6h CI limit kills the whole job. With many duplicate
+    # crashes that each hit the per-file `timeout -v N`, the full sweep can take
+    # hours, so this cap is what keeps the job alive.
+    auto_fuzzer legacy "$FILTER_TIMEOUT" --remove-non-crashing || true
 }
 
 # Trim crash files to stay within SIZE_LIMIT_MB.
