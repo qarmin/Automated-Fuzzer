@@ -3,6 +3,7 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use jwalk::WalkDir;
@@ -175,6 +176,11 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
     let command = obj.get_full_command("TEST___FILE");
     let command_str = collect_command_to_string(&command);
     let crate_code = try_read_crate_code(&settings.name);
+    let version_note = detect_tested_version(settings);
+    match &version_note {
+        Some(v) => info!("Tested version detected for report:\n{v}"),
+        None => info!("Tested version could not be detected (no crate Cargo.lock and no `_normal` binary version)"),
+    }
 
     //  Group all crashes by error signature (project__type__src_line)
     let mut groups: HashMap<String, Vec<CrashCandidate>> = HashMap::new();
@@ -215,7 +221,7 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
             "Group [{group_key}]: {group_size} crashes, picking smallest ({} bytes, {})",
             rep.file_size, rep.file_name
         );
-        write_report_for_representative(settings, &rep, &command_str, crate_code.as_deref());
+        write_report_for_representative(settings, &rep, &command_str, crate_code.as_deref(), version_note.as_deref());
     }
 }
 
@@ -224,6 +230,7 @@ fn write_report_for_representative(
     rep: &CrashCandidate,
     command_str: &str,
     crate_code: Option<&str>,
+    version_note: Option<&str>,
 ) {
     let content = match fs::read(&rep.file_name) {
         Ok(c) => c,
@@ -236,7 +243,11 @@ fn write_report_for_representative(
         .extension()
         .map(|e| e.to_str().unwrap().to_string())
         .unwrap_or_default();
-    let command_str_with_extension = command_str.replace("TEST___FILE", &format!("TEST___FILE.{extension}"));
+    let command_str_with_extension = command_str
+        .replace("TEST___FILE", &format!("TEST___FILE.{extension}"))
+        // CI installs the non-ASAN tool as `<binary>_normal`; the report should show the real
+        // binary name (e.g. `biome`), since that is what a maintainer actually has installed.
+        .replace("_normal ", " ");
 
     let group_folder = format!("{}/{}", settings.temp_folder, rep.group_key);
     let _ = fs::create_dir_all(&group_folder);
@@ -248,6 +259,11 @@ fn write_report_for_representative(
 
     //  Build to_report.txt
     let mut report = String::new();
+
+    if let Some(version) = version_note {
+        report += version;
+        report += "\n\n";
+    }
 
     let content_to_string = String::from_utf8(content.clone());
     if let Ok(content_string) = &content_to_string {
@@ -278,17 +294,20 @@ fn write_report_for_representative(
     report += &command_str_with_extension;
     report += "\n```\n\n";
 
-    report += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
-    report += "(You can ignore this part if there is no address sanitizer error)\n";
-    report += "On Ubuntu 24.04, the commands to compile were:\n```\n";
-    report += "rustup default nightly\n";
-    report += "rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu\n";
-    report += "rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu\n\n";
-    report += "export RUST_BACKTRACE=1 # or full depending on project\n";
-    report += "export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)\n";
-    report += "export ASAN_OPTIONS=symbolize=1\n";
-    report += "RUSTFLAGS=\"-Zsanitizer=address\" cargo +nightly build --target x86_64-unknown-linux-gnu\n";
-    report += "```\n\ncause this\n```\n";
+    if rep.result.contains("Sanitizer") {
+        report += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
+        report += "On Ubuntu 24.04, the commands to compile were:\n```\n";
+        report += "rustup default nightly\n";
+        report += "rustup component add rust-src --toolchain nightly-x86_64-unknown-linux-gnu\n";
+        report += "rustup component add llvm-tools-preview --toolchain nightly-x86_64-unknown-linux-gnu\n\n";
+        report += "export RUST_BACKTRACE=1 # or full depending on project\n";
+        report += "export ASAN_SYMBOLIZER_PATH=$(which llvm-symbolizer-18)\n";
+        report += "export ASAN_OPTIONS=symbolize=1\n";
+        report += "RUSTFLAGS=\"-Zsanitizer=address\" cargo +nightly build --target x86_64-unknown-linux-gnu\n";
+        report += "```\n\n";
+    }
+
+    report += "cause this\n```\n";
     report += &rep.result;
     report += "\n```\n";
 
@@ -444,6 +463,67 @@ fn detect_github_repo(project_name: &str) -> Option<String> {
     None
 }
 
+/// Detect the exact upstream version/commit that was fuzzed, for inclusion in the issue.
+/// Local crates pin the commit in `crates/<name>/Cargo.lock` (`git+<url>#<hash>`); external CLI
+/// tools have no checkout at report time, so we ask the installed `<binary>_normal` via `--version`.
+fn detect_tested_version(settings: &Setting) -> Option<String> {
+    version_from_cargo_lock(&settings.name).or_else(|| version_from_binary(settings))
+}
+
+/// Pull the pinned `git+<url>#<hash>` sources out of a local crate's Cargo.lock.
+fn version_from_cargo_lock(project_name: &str) -> Option<String> {
+    let path = format!("crates/{project_name}/Cargo.lock");
+    let content = fs::read_to_string(&path).ok()?;
+    parse_git_sources(&content)
+}
+
+fn parse_git_sources(cargo_lock: &str) -> Option<String> {
+    let mut seen = std::collections::BTreeSet::new();
+    let mut lines = Vec::new();
+    for line in cargo_lock.lines() {
+        let trimmed = line.trim();
+        let Some(rest) = trimmed.strip_prefix("source = \"git+") else {
+            continue;
+        };
+        let rest = rest.trim_end_matches('"');
+        let Some((url, hash)) = rest.rsplit_once('#') else {
+            continue;
+        };
+        // Drop any `?branch=`/`?rev=` query and the trailing `.git` so the base is a clean repo URL.
+        let base = url.split('?').next().unwrap_or(url).trim_end_matches(".git");
+        if !seen.insert((base.to_string(), hash.to_string())) {
+            continue;
+        }
+        let short = &hash[..hash.len().min(12)];
+        lines.push(format!("- `{base}` @ `{short}` ({base}/commit/{hash})"));
+    }
+
+    if lines.is_empty() {
+        return None;
+    }
+    Some(format!("Tested against upstream commit:\n{}", lines.join("\n")))
+}
+
+/// Ask the installed external binary for its version. The command uses `<binary>_normal` (the
+/// non-ASAN build CI installs); we wrap it in `timeout` so a misbehaving `--version` cannot hang.
+fn version_from_binary(settings: &Setting) -> Option<String> {
+    let binary = settings.custom_items.command_parts.iter().find(|p| p.ends_with("_normal"))?;
+    let output = Command::new("timeout").arg("10").arg(binary).arg("--version").output().ok()?;
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let text = if stdout.trim().is_empty() {
+        String::from_utf8_lossy(&output.stderr).trim().to_string()
+    } else {
+        stdout.trim().to_string()
+    };
+    if text.is_empty() {
+        return None;
+    }
+
+    let display = binary.trim_end_matches("_normal");
+    Some(format!("Tested binary version (`{display} --version`):\n```\n{text}\n```"))
+}
+
 fn collect_broken_files(settings: &Setting) -> Vec<String> {
     // Empty extensions list = accept everything. Used by the CI sync/filter
     // loop, where broken_files_dir holds a mix of original-extension files
@@ -523,5 +603,42 @@ pub fn zip_file(zip_filename: &str, file_name: &str, file_code: &[u8]) {
     }
     if let Err(e) = zip_writer.finish() {
         log::error!("Failed to finalize zip {zip_filename}: {e}");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_git_sources_dedups_and_links() {
+        let lock = r#"
+name = "zune-image"
+source = "git+https://github.com/etemesi254/zune-image.git#43624422622918186141e04b6ed01ec80786bcbb"
+
+name = "zune-core"
+source = "git+https://github.com/etemesi254/zune-image.git#43624422622918186141e04b6ed01ec80786bcbb"
+
+name = "regex"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+"#;
+        let out = parse_git_sources(lock).unwrap();
+        assert_eq!(out.matches("- `").count(), 1, "duplicate repo+hash should collapse to one line");
+        assert!(out.contains("`https://github.com/etemesi254/zune-image` @ `436244226229`"));
+        assert!(out.contains("/commit/43624422622918186141e04b6ed01ec80786bcbb"));
+    }
+
+    #[test]
+    fn test_parse_git_sources_strips_branch_query() {
+        let lock = "source = \"git+https://github.com/a/b.git?branch=main#abcdef0123456789\"";
+        let out = parse_git_sources(lock).unwrap();
+        assert!(out.contains("`https://github.com/a/b` @ `abcdef012345`"));
+        assert!(out.contains("(https://github.com/a/b/commit/abcdef0123456789)"));
+    }
+
+    #[test]
+    fn test_parse_git_sources_none_when_no_git() {
+        let lock = "source = \"registry+https://github.com/rust-lang/crates.io-index\"";
+        assert!(parse_git_sources(lock).is_none());
     }
 }

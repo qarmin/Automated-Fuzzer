@@ -76,17 +76,27 @@ impl ErrorSignature {
             _ => "Panic",
         };
 
+        // Backticks inside the message/source would close our own backtick-quoting early and
+        // garble the title (e.g. "Panic `assertion `left == right` failed` in ...").
+        let desc = strip_backticks(desc);
+
         match (standalone, &self.source_file) {
             // "Timeout when processing file", "Segmentation fault when processing file"
             (true, None) => format!("{prefix} when processing file"),
             // "Timeout when processing file in `src/foo.rs`"  (rare but possible with ASAN)
-            (true, Some(src)) => format!("{prefix} in `{src}`"),
+            (true, Some(src)) => format!("{prefix} in `{}`", strip_backticks(src)),
             // "Panic `msg` in `src/foo.rs`"
-            (false, Some(src)) => format!("{prefix} `{desc}` in `{src}`"),
+            (false, Some(src)) => format!("{prefix} `{desc}` in `{}`", strip_backticks(src)),
             // "Panic `msg`"
             (false, None) => format!("{prefix} `{desc}`"),
         }
     }
+}
+
+/// Remove backtick characters so an interpolated value cannot break the title's own
+/// backtick-quoting. Surrounding whitespace left by the removal is collapsed and trimmed.
+fn strip_backticks(s: &str) -> String {
+    s.replace('`', "").split_whitespace().collect::<Vec<_>>().join(" ")
 }
 
 /// Parse crash output into a structured ErrorSignature
@@ -602,6 +612,18 @@ mod tests {
             sig.issue_title(),
             "Panic `attempt to subtract with overflow` in `src/wavpack/properties.rs`"
         );
+    }
+
+    #[test]
+    fn test_issue_title_strips_backticks_from_message() {
+        let sig = ErrorSignature {
+            error_type: "assertion".to_string(),
+            source_file: Some("src/foo.rs".to_string()),
+            source_line: Some(1),
+            condition: None,
+            short_description: "assertion `left == right` failed".to_string(),
+        };
+        assert_eq!(sig.issue_title(), "Panic `assertion left == right failed` in `src/foo.rs`");
     }
 
     #[test]
