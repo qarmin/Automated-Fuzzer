@@ -119,6 +119,42 @@ jobs:
             binary: swc
             run_args: "compile"
             files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          - name: BIOME
+            mode: custom
+            external: true
+            clone_url: "https://github.com/biomejs/biome/archive/refs/heads/main.zip"
+            install_path: "biome-main/crates/biome_cli"
+            cargo_toml_dir: "biome-main"
+            binary: biome
+            run_args: "lint"
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          - name: BIOME_FORMAT
+            mode: custom
+            external: true
+            clone_url: "https://github.com/biomejs/biome/archive/refs/heads/main.zip"
+            install_path: "biome-main/crates/biome_cli"
+            cargo_toml_dir: "biome-main"
+            binary: biome
+            run_args: "format"
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          - name: OXLINT
+            mode: custom
+            external: true
+            clone_url: "https://github.com/oxc-project/oxc/archive/refs/heads/main.zip"
+            install_path: "oxc-main/apps/oxlint"
+            cargo_toml_dir: "oxc-main"
+            binary: oxlint
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          - name: OXFMT
+            mode: custom
+            external: true
+            clone_url: "https://github.com/oxc-project/oxc/archive/refs/heads/main.zip"
+            install_path: "oxc-main/apps/oxfmt"
+            install_args: "--no-default-features"
+            cargo_toml_dir: "oxc-main"
+            binary: oxfmt
+            run_args: "--check"
+            files: "AA_JAVASCRIPT_VALID_FILES.7z"
 
     steps:
       - uses: actions/checkout@v5
@@ -181,11 +217,12 @@ jobs:
       - name: Build external project
         if: ${{ matrix.external == true }}
         run: |
-          cargo +nightly install --path "${{ matrix.install_path }}" --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
-            cargo +nightly install --path "${{ matrix.install_path }}" --target x86_64-unknown-linux-gnu
+          INSTALL_ARGS="${{ matrix.install_args }}"
+          cargo +nightly install --path "${{ matrix.install_path }}" $INSTALL_ARGS --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
+            cargo +nightly install --path "${{ matrix.install_path }}" $INSTALL_ARGS --target x86_64-unknown-linux-gnu
           sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}_normal
-          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
-            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" --target x86_64-unknown-linux-gnu
+          RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" $INSTALL_ARGS --locked --target x86_64-unknown-linux-gnu 2>/dev/null || \
+            RUSTFLAGS="-Zsanitizer=address" cargo +nightly install --path "${{ matrix.install_path }}" $INSTALL_ARGS --target x86_64-unknown-linux-gnu
           sudo cp "$(which ${{ matrix.binary }})" /usr/local/bin/${{ matrix.binary }}
 
       - name: Build cargo-fuzz targets
