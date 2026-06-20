@@ -1,0 +1,14 @@
+[package]
+name = "miniz_oxide"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fuzz_utils = { path = "../fuzz_utils" }
+miniz_oxide = { git = "https://github.com/Frommi/miniz_oxide.git" }
+
+[profile.release]
+overflow-checks = true
+panic = "abort"
+debug = true
+debug-assertions = true

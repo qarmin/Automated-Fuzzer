@@ -48,8 +48,18 @@ jobs:
             crate: symphonia
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
+          - name: SWASH
+            mode: custom
+            crate: swash
+            binary: swash
+            files: "AA_FONT_VALID_FILES_MORE.7z"
+          - name: INFER
+            mode: custom
+            crate: infer
+            binary: infer
+            files: "AA_IMAGE_VALID_FILES.7z"
 
-          #  Structured fuzzing (random byte input, no file corpus) 
+          #  Structured fuzzing (random byte input, no file corpus)
           - name: PDF_WRITER
             mode: custom
             crate: pdf_writer
