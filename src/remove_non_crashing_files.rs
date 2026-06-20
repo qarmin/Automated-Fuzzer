@@ -325,10 +325,17 @@ fn write_report_for_representative(
 
     let issue_title = rep.signature.issue_title();
     let repo = detect_github_repo(&settings.name);
-    let repo_flag = if let Some(ref r) = repo {
-        format!("--repo \"{r}\"")
+    // repo_flag_line must never be a bash comment: it sits between two backslash-continued
+    // lines of `gh issue create \`, and a leading `#` there swallows the rest of the
+    // continuation, splitting the command (each following line then runs as its own command).
+    let repo_flag_line = repo
+        .as_ref()
+        .map(|r| format!("    --repo \"{r}\" \\\n"))
+        .unwrap_or_default();
+    let repo_warning = if repo.is_none() {
+        "echo \"WARNING: Could not detect repo - add --repo owner/repo to the gh command below if it fails.\"\necho \"\"\n"
     } else {
-        "# WARNING: Could not detect repo. Add --repo \"owner/repo\" manually.".to_string()
+        ""
     };
 
     let script = format!(
@@ -339,12 +346,11 @@ fn write_report_for_representative(
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "Creating issue: {issue_title}"
+echo "Creating issue: $(cat "$DIR/issue_title.txt")"
 echo ""
-
+{repo_warning}
 ISSUE_URL=$(gh issue create \
-    {repo_flag} \
-    --title "$(cat "$DIR/issue_title.txt")" \
+{repo_flag_line}    --title "$(cat "$DIR/issue_title.txt")" \
     --body-file "$DIR/issue_body.md" 2>&1)
 
 echo ""

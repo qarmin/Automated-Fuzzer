@@ -110,15 +110,16 @@ jobs:
             binary: pyrefly
             run_args: "check"
             files: "FILES_21.zip"
-          - name: SWC
-            mode: custom
-            external: true
-            clone_url: "https://github.com/swc-project/swc/archive/refs/heads/main.zip"
-            install_path: "swc-main/crates/swc_cli_impl"
-            cargo_toml_dir: "swc-main"
-            binary: swc
-            run_args: "compile"
-            files: "AA_JAVASCRIPT_VALID_FILES.7z"
+          # SWC temporarily disabled - lock file pins old rustix that fails to build on current nightly
+          # - name: SWC
+          #   mode: custom
+          #   external: true
+          #   clone_url: "https://github.com/swc-project/swc/archive/refs/heads/main.zip"
+          #   install_path: "swc-main/crates/swc_cli_impl"
+          #   cargo_toml_dir: "swc-main"
+          #   binary: swc
+          #   run_args: "compile"
+          #   files: "AA_JAVASCRIPT_VALID_FILES.7z"
           - name: BIOME
             mode: custom
             external: true
@@ -300,6 +301,9 @@ jobs:
             cp "crates/${{ matrix.crate }}/fuzz_settings_ci.toml" fuzz_settings.toml
           elif [ -f "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" ]; then
             cp "configs/external/fuzz_$(echo '${{ matrix.name }}' | tr '[:upper:]' '[:lower:]')_settings_ci.toml" fuzz_settings.toml
+          else
+            echo "ERROR: no fuzz config for '${{ matrix.name }}' (crate='${{ matrix.crate }}'). Expected crates/<crate>/fuzz_settings_ci.toml or configs/external/fuzz_<name-lowercased>_settings_ci.toml. Refusing to fall back to the checked-in default."
+            exit 1
           fi
           sd "TMP_FOLDER_TO_REPLACE" "/tmp/tmp_folder/data" fuzz_settings.toml
           export RUST_BACKTRACE=1
