@@ -3,7 +3,6 @@ use std::fs;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-use std::process::Command;
 use std::sync::atomic::{AtomicUsize, Ordering};
 
 use jwalk::WalkDir;
@@ -179,7 +178,7 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
     let version_note = detect_tested_version(settings);
     match &version_note {
         Some(v) => info!("Tested version detected for report:\n{v}"),
-        None => info!("Tested version could not be detected (no crate Cargo.lock and no `_normal` binary version)"),
+        None => info!("Tested version could not be detected (no crate Cargo.lock and no /tmp/tested_version/ CI note)"),
     }
 
     //  Group all crashes by error signature (project__type__src_line)
@@ -243,11 +242,14 @@ fn write_report_for_representative(
         .extension()
         .map(|e| e.to_str().unwrap().to_string())
         .unwrap_or_default();
-    let command_str_with_extension = command_str
-        .replace("TEST___FILE", &format!("TEST___FILE.{extension}"))
-        // CI installs the non-ASAN tool as `<binary>_normal`; the report should show the real
-        // binary name (e.g. `biome`), since that is what a maintainer actually has installed.
-        .replace("_normal ", " ");
+    let command_str_with_extension = if extension.is_empty() {
+        command_str.to_string()
+    } else {
+        command_str.replace("TEST___FILE", &format!("TEST___FILE.{extension}"))
+    }
+    // CI installs the non-ASAN tool as `<binary>_normal`; the report should show the real
+    // binary name (e.g. `biome`), since that is what a maintainer actually has installed.
+    .replace("_normal ", " ");
 
     let group_folder = format!("{}/{}", settings.temp_folder, rep.group_key);
     let _ = fs::create_dir_all(&group_folder);
@@ -259,11 +261,6 @@ fn write_report_for_representative(
 
     //  Build to_report.txt
     let mut report = String::new();
-
-    if let Some(version) = version_note {
-        report += version;
-        report += "\n\n";
-    }
 
     let content_to_string = String::from_utf8(content.clone());
     if let Ok(content_string) = &content_to_string {
@@ -293,6 +290,11 @@ fn write_report_for_representative(
     report += "command\n```\n";
     report += &command_str_with_extension;
     report += "\n```\n\n";
+
+    if let Some(version) = version_note {
+        report += version;
+        report += "\n\n";
+    }
 
     if rep.result.contains("Sanitizer") {
         report += "App was compiled with nightly rust compiler to be able to use address sanitizer\n";
@@ -465,16 +467,30 @@ fn detect_github_repo(project_name: &str) -> Option<String> {
 
 /// Detect the exact upstream version/commit that was fuzzed, for inclusion in the issue.
 /// Local crates pin the commit in `crates/<name>/Cargo.lock` (`git+<url>#<hash>`); external CLI
-/// tools have no checkout at report time, so we ask the installed `<binary>_normal` via `--version`.
+/// tools have no checkout left at report time (CI clones a HEAD zip, not a git repo, and removes
+/// it after building), so CI resolves their commit up front and drops a note in
+/// `/tmp/tested_version/` before cleaning up - see "Save tested version info" in fuzz.yml.
+///
+/// This deliberately never runs the fuzzed binary itself (e.g. `<binary> --version`): local
+/// crates are driven by `fuzz_utils::run`, which treats argv[1] as a file/dir path and panics on
+/// an unrecognized flag like `--version`, and not every external tool supports the flag either.
 fn detect_tested_version(settings: &Setting) -> Option<String> {
-    version_from_cargo_lock(&settings.name).or_else(|| version_from_binary(settings))
+    version_from_cargo_lock(&settings.name).or_else(|| version_from_ci_file(&settings.name))
 }
 
-/// Pull the pinned `git+<url>#<hash>` sources out of a local crate's Cargo.lock.
+/// Pull the pinned `git+<url>#<hash>` sources out of a local crate's Cargo.lock. Checks the
+/// crate's own (gitignored) lock file first, then the copy CI saves to `/tmp/tested_version/`
+/// before `git clean -xqdf` wipes the gitignored original.
 fn version_from_cargo_lock(project_name: &str) -> Option<String> {
-    let path = format!("crates/{project_name}/Cargo.lock");
-    let content = fs::read_to_string(&path).ok()?;
-    parse_git_sources(&content)
+    for path in [
+        format!("crates/{project_name}/Cargo.lock"),
+        format!("/tmp/tested_version/{project_name}.lock"),
+    ] {
+        if let Some(content) = fs::read_to_string(&path).ok().and_then(|c| parse_git_sources(&c)) {
+            return Some(content);
+        }
+    }
+    None
 }
 
 fn parse_git_sources(cargo_lock: &str) -> Option<String> {
@@ -504,24 +520,12 @@ fn parse_git_sources(cargo_lock: &str) -> Option<String> {
     Some(format!("Tested against upstream commit:\n{}", lines.join("\n")))
 }
 
-/// Ask the installed external binary for its version. The command uses `<binary>_normal` (the
-/// non-ASAN build CI installs); we wrap it in `timeout` so a misbehaving `--version` cannot hang.
-fn version_from_binary(settings: &Setting) -> Option<String> {
-    let binary = settings.custom_items.command_parts.iter().find(|p| p.ends_with("_normal"))?;
-    let output = Command::new("timeout").arg("10").arg(binary).arg("--version").output().ok()?;
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let text = if stdout.trim().is_empty() {
-        String::from_utf8_lossy(&output.stderr).trim().to_string()
-    } else {
-        stdout.trim().to_string()
-    };
-    if text.is_empty() {
-        return None;
-    }
-
-    let display = binary.trim_end_matches("_normal");
-    Some(format!("Tested binary version (`{display} --version`):\n```\n{text}\n```"))
+/// Read the upstream commit note CI resolved for an external tool via `git ls-remote` at build
+/// time (see fuzz.yml). Absent outside CI, in which case no version note is included.
+fn version_from_ci_file(project_name: &str) -> Option<String> {
+    let content = fs::read_to_string(format!("/tmp/tested_version/{project_name}.txt")).ok()?;
+    let trimmed = content.trim();
+    (!trimmed.is_empty()).then(|| trimmed.to_string())
 }
 
 fn collect_broken_files(settings: &Setting) -> Vec<String> {

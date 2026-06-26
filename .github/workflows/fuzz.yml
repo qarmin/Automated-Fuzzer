@@ -48,6 +48,11 @@ jobs:
             crate: symphonia
             binary: symphonia
             files: "AA_MUSIC_VALID_FILES.7z"
+          - name: SIMILARIO_CORE
+            mode: custom
+            crate: similario_core
+            binary: similario_core
+            files: "AA_MUSIC_VALID_FILES.7z"
           - name: SWASH
             mode: custom
             crate: swash
@@ -242,6 +247,26 @@ jobs:
           cd fuzz && cargo update && cd ..
           export RUSTFLAGS="-Zsanitizer=address"
           cargo fuzz build ${{ matrix.fuzz_target }} --release --features "${{ matrix.fuzz_features }}"
+
+      # `git clean -xqdf` below wipes the gitignored crates/*/Cargo.lock and, for external
+      # tools, the whole cloned source tree - so the upstream commit has to be captured here,
+      # before cleanup, and handed to the report step some other way. The report step used to
+      # run `<binary> --version` instead, but that crashes local crates (fuzz_utils::run treats
+      # argv[1] as a file path, not a flag) and isn't supported by every external tool either.
+      - name: Save tested version info
+        run: |
+          mkdir -p /tmp/tested_version
+          if [ "${{ matrix.external }}" = "true" ]; then
+            REPO_URL=$(echo "${{ matrix.clone_url }}" | sed -E 's#(https://github\.com/[^/]+/[^/]+)/archive/.*#\1#')
+            COMMIT=$(git ls-remote "$REPO_URL.git" HEAD 2>/dev/null | cut -f1)
+            if [ -n "$COMMIT" ]; then
+              printf 'Tested against upstream commit:\n- `%s` @ `%s` (%s/commit/%s)\n' \
+                "$REPO_URL" "${COMMIT:0:12}" "$REPO_URL" "$COMMIT" \
+                > "/tmp/tested_version/${{ matrix.binary }}.txt"
+            fi
+          else
+            cp "crates/${{ matrix.crate }}/Cargo.lock" "/tmp/tested_version/${{ matrix.binary }}.lock" 2>/dev/null || true
+          fi
 
       - name: Clean build artifacts + upload binaries
         run: |
