@@ -32,7 +32,7 @@ current_mode = "custom"
 name = "similario_core"
 command = "similario_core_normal|FILE_PATHS_TO_PROVIDE"
 
-extensions = "mp3,flac,wav,ogg,m4a,aac,aiff,pcm,aif,aiff,aifc,m3a,mp2,mp4a,mp2a,mpga,wave,weba,wma,oga"
+extensions = "mp4,mkv,avi,mov,wmv,flv,webm,m4v,mpg,mpeg,ts,mts,m2ts,vob,3gp,ogv,divx"
 valid_input_files_dir = "/opt/VALID_FILES_DIR"
 broken_files_dir = "/opt/BROKEN_FILES_DIR"
 group_mode = "none" # available: none, by_files, by_group

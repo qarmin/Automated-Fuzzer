@@ -623,7 +623,10 @@ mod tests {
             condition: None,
             short_description: "assertion `left == right` failed".to_string(),
         };
-        assert_eq!(sig.issue_title(), "Panic `assertion left == right failed` in `src/foo.rs`");
+        assert_eq!(
+            sig.issue_title(),
+            "Panic `assertion left == right failed` in `src/foo.rs`"
+        );
     }
 
     #[test]

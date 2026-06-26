@@ -52,7 +52,7 @@ jobs:
             mode: custom
             crate: similario_core
             binary: similario_core
-            files: "AA_MUSIC_VALID_FILES.7z"
+            files: "AA_VIDEO_VALID_FILES.7z"
           - name: SWASH
             mode: custom
             crate: swash

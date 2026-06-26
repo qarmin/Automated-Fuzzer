@@ -220,7 +220,13 @@ pub(crate) fn save_results_to_file(obj: &Box<dyn ProgramConfig>, settings: &Sett
             "Group [{group_key}]: {group_size} crashes, picking smallest ({} bytes, {})",
             rep.file_size, rep.file_name
         );
-        write_report_for_representative(settings, &rep, &command_str, crate_code.as_deref(), version_note.as_deref());
+        write_report_for_representative(
+            settings,
+            &rep,
+            &command_str,
+            crate_code.as_deref(),
+            version_note.as_deref(),
+        );
     }
 }
 
@@ -627,7 +633,11 @@ name = "regex"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 "#;
         let out = parse_git_sources(lock).unwrap();
-        assert_eq!(out.matches("- `").count(), 1, "duplicate repo+hash should collapse to one line");
+        assert_eq!(
+            out.matches("- `").count(),
+            1,
+            "duplicate repo+hash should collapse to one line"
+        );
         assert!(out.contains("`https://github.com/etemesi254/zune-image` @ `436244226229`"));
         assert!(out.contains("/commit/43624422622918186141e04b6ed01ec80786bcbb"));
     }

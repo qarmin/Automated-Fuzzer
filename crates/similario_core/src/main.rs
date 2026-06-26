@@ -1,19 +1,14 @@
-use std::fs;
 use std::path::Path;
 use std::sync::atomic::AtomicBool;
 
-use similario_core::audio::compute_fingerprint;
+use similario_core::visual::{SignatureConfig, VideoSignature};
 
 fn main() {
     fuzz_utils::run(check_file);
 }
 
 fn check_file(path: &str) {
-    if fs::read(path).is_err() {
-        return;
-    }
-
-    println!("Checking file: {path:?}");
     let stop_flag = AtomicBool::new(false);
-    let _ = compute_fingerprint(Path::new(path), &stop_flag);
+    let config = SignatureConfig::default();
+    let _ = VideoSignature::from_path(Path::new(path), &config, &stop_flag);
 }
